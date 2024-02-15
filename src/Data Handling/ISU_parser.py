@@ -14,30 +14,44 @@ class ParserISU:
     def parse_users_data(self):
         base_isu_person_link = 'https://isu.itmo.ru/person/'
 
+        try:
+            persons: dict = json.load(open('persons.json', 'r', encoding='utf-8'))
+            open('persons.json', 'w', encoding='utf-8')
+        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            persons = {}
+        try:
+            no_exist_isu_ids = open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()
+            open('no_exist_isu_ids.txt', 'w', encoding='utf-8')
+        except FileNotFoundError:
+            no_exist_isu_ids = []
         for isu_person_id in range(103466, int(1e6)):
-            sleep(0.2 + random())
             person_link = base_isu_person_link + str(isu_person_id)
+            print(f'user {isu_person_id} started -> {person_link}')
             try:
-                response = requests.get(person_link, cookies=self.cookies)
-                print(isu_person_id, response.status_code)
-                person_data = self.parse_data_from_html(response.text)
+                response = requests.get(person_link, cookies=self.cookies, timeout=5)
             except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
-                print(f'User with ISU id {isu_person_id} does not exist')
-
-            open('page.html', 'w', encoding='utf-8').write(response.text)
-            break
+                no_exist_isu_ids.append(isu_person_id)
+                open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
+            else:
+                persons[isu_person_id] = {'isu_id': isu_person_id, 'data': self.parse_data_from_html(response.text)}
+            finally:
+                open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
+            print(f'user {isu_person_id} done')
+            sleep(120 + random())
 
     def parse_data_from_html(self, html_text):
         soup = BSoup(html_text, 'html.parser')
 
-        data = {'publications': self.parse_publications(soup),
+        return {'publications': self.parse_publications(soup),
                 'rids': self.parse_rids(soup),
                 'projects': self.parse_projects(soup),
                 'events': self.parse_events(soup)}
-        return data
 
     def parse_publications(self, soup: BSoup):
-        data = self.extract_data_from_soup(soup)
+        try:
+            data: dict = self.extract_data_from_soup(str(soup.find('span', id='R1724073431179133097').find('script')))
+        except AttributeError:
+            return None
         publications = []
         for row in data['data']:
             year_index = row[3].find('>') + 1
@@ -48,7 +62,10 @@ class ParserISU:
         return publications
 
     def parse_rids(self, soup: BSoup):
-        data = self.extract_data_from_soup(soup)
+        try:
+            data: dict = self.extract_data_from_soup(str(soup.find('span', id='R1724086259370226350').find('script')))
+        except AttributeError:
+            return None
         rids = []
         for row in data['data']:
             year_index = row[1].find('>') + 1
@@ -60,7 +77,10 @@ class ParserISU:
         return rids
 
     def parse_projects(self, soup: BSoup):
-        data = self.extract_data_from_soup(soup)
+        try:
+            data: dict = self.extract_data_from_soup(str(soup.find('span', id='R1724464641275058427').find('script')))
+        except AttributeError:
+            return None
         projects = []
         for row in data['data']:
             projects.append({
@@ -76,22 +96,28 @@ class ParserISU:
         return projects
 
     def parse_events(self, soup: BSoup):
-        data = self.extract_data_from_soup(soup)
+        try:
+            data: dict = self.extract_data_from_soup(str(soup.find('div', id='R1293424228395371640').find('script')))
+        except AttributeError:
+            return None
         events = []
         for row in data['data']:
             events.append({
                 'title': row[0].strip(),
-                'date_start': row[1][row[1].find('>') + 1:row[1].find(' - ')].strip(),
-                'date_end': row[1][row[1].find(' - ') + 3:row[1].rfind('<')].strip(),
                 'year': int(row[2]),
                 'type': row[3].strip(),
                 'rank': row[4].strip(),
                 'role': row[5].strip()})
+            if ' - ' in row[1]:
+                events[-1]['date_start'] = row[1][row[1].find('>') + 1:row[1].find(' - ')].strip()
+                events[-1]['date_end'] = row[1][row[1].find(' - ') + 3:row[1].rfind('<')].strip()
+            else:
+                events[-1]['date_start'] = events[-1]['date_end'] = row[1][
+                                                                    row[1].find('>') + 1:row[1].rfind('<')].strip()
         return events
 
     @staticmethod
-    def extract_data_from_soup(soup: BSoup):
-        data: str = str(soup.find('div', id='R1293424228395371640').find('script'))
+    def extract_data_from_soup(data: str):
         data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
         data.pop('recordsFiltered')
         return data
@@ -111,8 +137,8 @@ class ParserISU:
 
 
 if __name__ == '__main__':
-    parser = ParserISU('your_cookie',
-                       'your_sso_token')
+    parser = ParserISU('ORA_WWV-LpNjxV3XfSsXG419xIqJ9BMi',
+                       '5C0DBBEF3E6209E2077AFCB2489C6CA4:188760328BF889B6C00003C2D225BEC3D5A915796C6C2E33822C27B362AA82248E2D5FF3B06EE15B9A5DE1155EF6A1B3')
 
-    # parser.parse_users_data()
-    print(parser.parse_data_from_html(open('page.html', 'r', encoding='utf-8').read()))
+    parser.parse_users_data()
+    # print(parser.parse_data_from_html(open('page.html', 'r', encoding='utf-8').read()))

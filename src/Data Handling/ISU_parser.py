@@ -32,7 +32,8 @@ class ParserISU:
 
         data = {'publications': self.parse_publications(soup),
                 'rid': self.parse_rid(soup),
-                'projects': self.parse_projects(soup)}
+                'projects': self.parse_projects(soup),
+                'events': self.parse_events(soup)}
 
         return data
 
@@ -88,6 +89,24 @@ class ParserISU:
                 'customer': row[10].strip()
             })
         return projects
+
+    def parse_events(self, soup: BSoup):
+        data: str = str(soup.find('div', id='R1293424228395371640').find('script'))
+        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
+        data.pop('recordsFiltered')
+
+        events = []
+        for row in data['data']:
+            events.append({
+                'title': row[0].strip(),
+                'date_start': row[1][row[1].find('>') + 1:row[1].find(' - ')].strip(),
+                'date_end': row[1][row[1].find(' - ') + 3:row[1].rfind('<')].strip(),
+                'year': int(row[2]),
+                'type': row[3].strip(),
+                'rank': row[4].strip(),
+                'role': row[5].strip()
+            })
+        return events
 
     @staticmethod
     def parse_authors(authors_string: str) -> list:

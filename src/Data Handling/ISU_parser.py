@@ -31,34 +31,24 @@ class ParserISU:
         soup = BSoup(html_text, 'html.parser')
 
         data = {'publications': self.parse_publications(soup),
-                'rid': self.parse_rid(soup),
+                'rids': self.parse_rids(soup),
                 'projects': self.parse_projects(soup),
                 'events': self.parse_events(soup)}
-
         return data
 
     def parse_publications(self, soup: BSoup):
-        data: str = str(soup.find('span', id='R1724073431179133097').find('script'))
-
+        data = self.extract_data_from_soup(soup)
         publications = []
-        data = (data[data.find('.jsonData={') + 10:data.find('};') + 1])
-        data: dict = json.loads(data)
-        data.pop('recordsFiltered')
-
         for row in data['data']:
             year_index = row[3].find('>') + 1
             publications.append({'type': row[1],
                                  'year': int(row[3][year_index:year_index + 4]),
                                  'authors': self.parse_authors(row[2]),
-                                 'title': row[2][row[2].rfind('</a>') + 5:]
-                                 })
+                                 'title': row[2][row[2].rfind('</a>') + 5:]})
         return publications
 
-    def parse_rid(self, soup: BSoup):
-        data: str = str(soup.find('span', id='R1724086259370226350').find('script'))
-        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
-        data.pop('recordsFiltered')
-
+    def parse_rids(self, soup: BSoup):
+        data = self.extract_data_from_soup(soup)
         rids = []
         for row in data['data']:
             year_index = row[1].find('>') + 1
@@ -66,15 +56,11 @@ class ParserISU:
                 'year': int(row[1][year_index:year_index + 4]),
                 'type': row[2].strip(),
                 'title': row[3].strip(),
-                'authors': self.parse_authors(row[5])
-            })
+                'authors': self.parse_authors(row[5])})
         return rids
 
     def parse_projects(self, soup: BSoup):
-        data: str = str(soup.find('span', id='R1724464641275058427').find('script'))
-        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
-        data.pop('recordsFiltered')
-
+        data = self.extract_data_from_soup(soup)
         projects = []
         for row in data['data']:
             projects.append({
@@ -86,15 +72,11 @@ class ParserISU:
                 'date_end': row[6].strip(),
                 'key_words': tuple(el.strip() for el in row[7].split(',')),
                 'role': row[9].strip(),
-                'customer': row[10].strip()
-            })
+                'customer': row[10].strip()})
         return projects
 
     def parse_events(self, soup: BSoup):
-        data: str = str(soup.find('div', id='R1293424228395371640').find('script'))
-        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
-        data.pop('recordsFiltered')
-
+        data = self.extract_data_from_soup(soup)
         events = []
         for row in data['data']:
             events.append({
@@ -104,9 +86,15 @@ class ParserISU:
                 'year': int(row[2]),
                 'type': row[3].strip(),
                 'rank': row[4].strip(),
-                'role': row[5].strip()
-            })
+                'role': row[5].strip()})
         return events
+
+    @staticmethod
+    def extract_data_from_soup(soup: BSoup):
+        data: str = str(soup.find('div', id='R1293424228395371640').find('script'))
+        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
+        data.pop('recordsFiltered')
+        return data
 
     @staticmethod
     def parse_authors(authors_string: str) -> list:

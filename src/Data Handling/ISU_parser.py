@@ -30,8 +30,9 @@ class ParserISU:
     def parse_data_from_html(self, html_text):
         soup = BSoup(html_text, 'html.parser')
 
-        data = {'publications': self.parse_publications(soup), 'rid': self.parse_rid(soup)}
-        # data = {'rid': self.parse_rid(soup)}
+        data = {'publications': self.parse_publications(soup),
+                'rid': self.parse_rid(soup),
+                'projects': self.parse_projects(soup)}
 
         return data
 
@@ -68,6 +69,26 @@ class ParserISU:
             })
         return rids
 
+    def parse_projects(self, soup: BSoup):
+        data: str = str(soup.find('span', id='R1724464641275058427').find('script'))
+        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1])
+        data.pop('recordsFiltered')
+
+        projects = []
+        for row in data['data']:
+            projects.append({
+                'theme_id': int(row[1]),
+                'type': row[2].strip(),
+                'title': row[3].strip(),
+                'department_id': int(row[4][row[4].find('[') + 1:row[4].find(']')]),
+                'date_start': row[5].strip(),
+                'date_end': row[6].strip(),
+                'key_words': tuple(el.strip() for el in row[7].split(',')),
+                'role': row[9].strip(),
+                'customer': row[10].strip()
+            })
+        return projects
+
     @staticmethod
     def parse_authors(authors_string: str) -> list:
         authors = []
@@ -88,6 +109,3 @@ if __name__ == '__main__':
 
     # parser.parse_users_data()
     print(parser.parse_data_from_html(open('page.html', 'r', encoding='utf-8').read()))
-
-# ["<center><span class=\"npr text-primary-click \"
-#

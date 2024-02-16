@@ -18,6 +18,11 @@ class ParserISU:
     def parse_users_data(self):
         base_isu_person_link = 'https://isu.itmo.ru/person/'
         try:
+            with open('persons.json', 'r', encoding='utf-8') as source_file:
+                data = json.load(source_file)
+            with open('persons_copy.json', 'w', encoding='utf-8') as target_file:
+                json.dump(data, target_file, ensure_ascii=False, indent=2)
+
             persons: dict = json.load(open('persons.json', 'r', encoding='utf-8'))
             open('persons.json', 'w', encoding='utf-8')
         except (FileNotFoundError, json.decoder.JSONDecodeError):
@@ -28,23 +33,34 @@ class ParserISU:
         except FileNotFoundError:
             no_exist_isu_ids = []
 
-        for isu_person_id in range(409000, int(1e6)):
-            person_link = base_isu_person_link + str(isu_person_id)
-            # print(f'user {isu_person_id} started -> {person_link}')
-            try:
-                response = requests.get(person_link, cookies=self.cookies, timeout=1)
-            except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
-                no_exist_isu_ids.append(isu_person_id)
-                open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
-                print(f'user {isu_person_id} does not exist')
-            else:
-                persons[str(isu_person_id)] = {'isu_id': str(isu_person_id),
-                                               'data': self.parse_data_from_html(response.text)}
-                print(f'user {isu_person_id} done')
-            finally:
-                open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
-            # sleep(181 + random())
-            sleep(.5 + random())
+        try:
+            reserve_saving_counter = 0
+            for isu_person_id in range(205826, int(1e6)):
+                person_link = base_isu_person_link + str(isu_person_id)
+                print(f'user {isu_person_id} started -> {person_link}', end=' ')
+                try:
+                    response = requests.get(person_link, cookies=self.cookies, timeout=1.5)
+                except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
+                    no_exist_isu_ids.append(isu_person_id)
+                    print(f'does not exist')
+                else:
+                    persons[str(isu_person_id)] = {'isu_id': str(isu_person_id),
+                                                   'data': self.parse_data_from_html(response.text)}
+                    reserve_saving_counter += 1
+                    print(f'done {reserve_saving_counter}/100 to reserve save')
+                if reserve_saving_counter >= 100:
+                    reserve_saving_counter = 0
+                    open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
+                    open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
+                    print('saved')
+                sleep(.5 + random())
+
+
+        except KeyboardInterrupt:
+            return
+        finally:
+            open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
+            open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
 
     def parse_data_from_html(self, html_text):
         soup = BSoup(html_text, 'html.parser')
@@ -114,7 +130,7 @@ class ParserISU:
         for row in data['data']:
             events.append({
                 'title': row[0].strip(),
-                'year': int(row[2]),
+                'year': int(row[2]) if row[2] else '',
                 'type': row[3].strip(),
                 'rank': row[4].strip(),
                 'role': row[5].strip()})
@@ -140,8 +156,8 @@ class ParserISU:
             second_quote = first_quote + author[first_quote + 1:].find('"') + 1
             third_quote = second_quote + author[second_quote + 1:].find('"') + 1
             fourth_quote = third_quote + author[third_quote + 1:].find('"') + 1
-            author = {'isu_profile': author[first_quote + 1:second_quote],
-                      'name': author[third_quote + 1: fourth_quote]}
+            author = {'isu_profile': author[first_quote + 1:second_quote].strip(),
+                      'name': author[third_quote + 1: fourth_quote].strip()}
             authors.append(author)
         return authors
 

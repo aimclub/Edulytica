@@ -1,4 +1,3 @@
-import ast
 import json
 from random import random
 from dotenv import load_dotenv
@@ -11,38 +10,47 @@ load_dotenv('./isu-env')
 
 
 class ParserISU:
-    def __init__(self, cookie: str, remember_sso):
+    def __init__(self, cookie: str, remember_sso: str) -> None:
+        """
+
+        :param cookie: ISU user's cookie token
+        :param remember_sso: ISU user's remember_sso token
+        """
         self.cookies = {'ISU_AP_COOKIE': cookie,
                         'REMEMBER_SSO': remember_sso}
 
-    def parse_users_data(self):
+    def parse_users_data(self) -> None:
+        """
+        main method to parse persons data from ISU website
+        writes parsed data to json file -> persons.json
+        :return:
+        """
         base_isu_person_link = 'https://isu.itmo.ru/person/'
         try:
-            with open('persons.json', 'r', encoding='utf-8') as source_file:
-                data = json.load(source_file)
-            with open('persons_copy.json', 'w', encoding='utf-8') as target_file:
-                json.dump(data, target_file, ensure_ascii=False, indent=2)
+            # Copying parsed data for backup
+            json.dump(json.load(open('persons.json', 'r', encoding='utf-8')),
+                      open('persons_copy.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 
-            persons: dict = json.load(open('persons.json', 'r', encoding='utf-8'))
-            open('persons.json', 'w', encoding='utf-8')
+            persons = json.load(open('persons.json', 'r', encoding='utf-8'))
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             persons = {}
+
+        # isu ids that don't relate to any person
         try:
             no_exist_isu_ids = open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()
-            open('no_exist_isu_ids.txt', 'w', encoding='utf-8')
         except FileNotFoundError:
             no_exist_isu_ids = []
 
         try:
             reserve_saving_counter = 0
-            for isu_person_id in range(205826, int(1e6)):
+            for isu_person_id in range(336773, int(1e6)):
                 person_link = base_isu_person_link + str(isu_person_id)
                 print(f'user {isu_person_id} started -> {person_link}', end=' ')
                 try:
                     response = requests.get(person_link, cookies=self.cookies, timeout=1.5)
                 except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
                     no_exist_isu_ids.append(isu_person_id)
-                    print(f'does not exist')
+                    print(f'does not exist {reserve_saving_counter}/100 to reserve save')
                 else:
                     persons[str(isu_person_id)] = {'isu_id': str(isu_person_id),
                                                    'data': self.parse_data_from_html(response.text)}
@@ -53,23 +61,34 @@ class ParserISU:
                     open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
                     open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
                     print('saved')
-                sleep(.5 + random())
-
-
+                    sleep(.5 + random())
         except KeyboardInterrupt:
             return
         finally:
             open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
             open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
 
-    def parse_data_from_html(self, html_text):
+    def parse_data_from_html(self, html_text: str) -> dict:
+        """
+        requires person's html page text and return dictionary with data from html page which contains users information
+
+        :param html_text: person's page in string format
+        :return: parsed data as dictionary with keys 'publications', 'rids', 'projects', 'events' or None if no data is found
+        """
         soup = BSoup(html_text, 'html.parser')
         return {'publications': self.parse_publications(soup),
                 'rids': self.parse_rids(soup),
                 'projects': self.parse_projects(soup),
                 'events': self.parse_events(soup)}
 
-    def parse_publications(self, soup: BSoup):
+    def parse_publications(self, soup: BSoup) -> list[dict] or None:
+        """
+        requires person's html page text and return list of dictionaries with person's publications
+
+        :param soup: BeautifulSoup object of person's html page
+        :return: person's publications list which contains
+                 dictionaries with keys 'type', 'year', 'authors', 'title' or None if no data is found
+        """
         try:
             data: dict = self.extract_data_from_soup(
                 str(soup.find('span', id='R1724073431179133097').find('script')).replace('&quot;', "'"))
@@ -84,7 +103,15 @@ class ParserISU:
                                  'title': row[2][row[2].rfind('</a>') + 5:]})
         return publications
 
-    def parse_rids(self, soup: BSoup):
+    def parse_rids(self, soup: BSoup) -> list[dict] or None:
+        """
+        requires person's html page text and return list of dictionaries with person's rids
+
+        :param soup: BeautifulSoup object of person's html page
+        :return: person's rids list which contains
+                 dictionaries with keys 'year', 'type', 'title', 'authors' or None if no data is found
+        """
+
         try:
             data: dict = self.extract_data_from_soup(
                 str(soup.find('span', id='R1724086259370226350').find('script')).replace('&quot;', "'"))
@@ -100,7 +127,16 @@ class ParserISU:
                 'authors': self.parse_authors(row[5])})
         return rids
 
-    def parse_projects(self, soup: BSoup):
+    def parse_projects(self, soup: BSoup) -> list[dict] or None:
+        """
+        requires person's html page text and return list of dictionaries with person's projects
+
+        :param soup: BeautifulSoup object of person's html page
+        :return: person's projects list which contains dictionaries
+        with keys 'theme_id', 'type', 'title', 'department_id', 'date_start', 'date_end',
+        'key_words', 'role', 'customer' or None if no data is found
+        """
+
         try:
             data: dict = self.extract_data_from_soup(
                 str(soup.find('span', id='R1724464641275058427').find('script')).replace('&quot;', "'"))
@@ -120,7 +156,15 @@ class ParserISU:
                 'customer': row[10].strip()})
         return projects
 
-    def parse_events(self, soup: BSoup):
+    def parse_events(self, soup: BSoup) -> list[dict] or None:
+        """
+        requires person's html page text and return list of dictionaries with person's events
+
+        :param soup: BeautifulSoup object of person's html page
+        :return: person's events list which contains
+                 dictionaries with keys 'title', 'year', 'type', 'rank', 'role' or None if no data is found
+        """
+
         try:
             data: dict = self.extract_data_from_soup(
                 str(soup.find('div', id='R1293424228395371640').find('script')).replace('&quot;', "'"))
@@ -142,14 +186,42 @@ class ParserISU:
                                                                     row[1].find('>') + 1:row[1].rfind('<')].strip()
         return events
 
+    def parse_education(self, soup: BSoup) -> list[dict] or None:
+        """
+        requires person's html page text and return list of dictionaries with person's current education
+
+        :param soup: BeautifulSoup object of person's html page
+        :return: person's current education list which contains
+                 dictionaries with keys  or None if no data is found
+        """
+
+        try:
+            data: dict = self.extract_data_from_soup(
+                str(soup.find('div', id='R887645516601269238').find('script', id='person-edu').replace('&quot', "'")))
+        except (TypeError, AttributeError):
+            return None
+        education = {}
+
     @staticmethod
-    def extract_data_from_soup(data: str):
+    def extract_data_from_soup(data: str) -> dict:
+        """
+        static method to extract person's data from html string
+
+        :param data: person's page html fragment containing data
+        :return: dictionary with person's data
+        """
         data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1].replace('&quot', "'"))
         data.pop('recordsFiltered')
         return data
 
     @staticmethod
     def parse_authors(authors_string: str) -> list:
+        """
+        static method to extract authors of the person's publication from html string
+
+        :param authors_string: person's page html fragment containing publication's authors
+        :return: list of person's publication authors
+        """
         authors = []
         for author in authors_string.split(','):
             first_quote = author.find('"')
@@ -167,4 +239,3 @@ if __name__ == '__main__':
                        os.getenv('SSO_REMEMBER'))
 
     parser.parse_users_data()
-    # print(parser.parse_data_from_html(open('page.html', 'r', encoding='utf-8').read()))

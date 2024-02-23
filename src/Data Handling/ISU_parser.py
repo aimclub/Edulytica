@@ -10,9 +10,12 @@ load_dotenv('./isu-env')
 
 
 class ParserISU:
+    """
+    This class is responsible for parsing ISU persons' data: education, publications, rids, projects and events
+    """
+
     def __init__(self, cookie: str, remember_sso: str) -> None:
         """
-
         :param cookie: ISU user's cookie token
         :param remember_sso: ISU user's remember_sso token
         """
@@ -43,11 +46,13 @@ class ParserISU:
 
         try:
             reserve_saving_counter = 0
-            for isu_person_id in range(336773, int(1e6)):
+            for isu_person_id in range(287434, int(1e6)):
                 person_link = base_isu_person_link + str(isu_person_id)
                 print(f'user {isu_person_id} started -> {person_link}', end=' ')
+
                 try:
                     response = requests.get(person_link, cookies=self.cookies, timeout=1.5)
+                    open('page.html', 'w', encoding='utf-8').write(response.text)
                 except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
                     no_exist_isu_ids.append(isu_person_id)
                     print(f'does not exist {reserve_saving_counter}/100 to reserve save')
@@ -56,12 +61,13 @@ class ParserISU:
                                                    'data': self.parse_data_from_html(response.text)}
                     reserve_saving_counter += 1
                     print(f'done {reserve_saving_counter}/100 to reserve save')
+
                 if reserve_saving_counter >= 100:
                     reserve_saving_counter = 0
                     open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
                     open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
                     print('saved')
-                    sleep(.5 + random())
+                sleep(1 + random())
         except KeyboardInterrupt:
             return
         finally:
@@ -76,7 +82,8 @@ class ParserISU:
         :return: parsed data as dictionary with keys 'publications', 'rids', 'projects', 'events' or None if no data is found
         """
         soup = BSoup(html_text, 'html.parser')
-        return {'publications': self.parse_publications(soup),
+        return {'bio': self.parse_bio(soup),
+                'publications': self.parse_publications(soup),
                 'rids': self.parse_rids(soup),
                 'projects': self.parse_projects(soup),
                 'events': self.parse_events(soup)}
@@ -90,8 +97,7 @@ class ParserISU:
                  dictionaries with keys 'type', 'year', 'authors', 'title' or None if no data is found
         """
         try:
-            data: dict = self.extract_data_from_soup(
-                str(soup.find('span', id='R1724073431179133097').find('script')).replace('&quot;', "'"))
+            data: dict = self.extract_data_from_soup(soup.find('span', id='R1724073431179133097').find('script'))
         except (TypeError, AttributeError):
             return None
         publications = []
@@ -113,8 +119,7 @@ class ParserISU:
         """
 
         try:
-            data: dict = self.extract_data_from_soup(
-                str(soup.find('span', id='R1724086259370226350').find('script')).replace('&quot;', "'"))
+            data: dict = self.extract_data_from_soup(soup.find('span', id='R1724086259370226350').find('script'))
         except (TypeError, AttributeError):
             return None
         rids = []
@@ -138,8 +143,7 @@ class ParserISU:
         """
 
         try:
-            data: dict = self.extract_data_from_soup(
-                str(soup.find('span', id='R1724464641275058427').find('script')).replace('&quot;', "'"))
+            data: dict = self.extract_data_from_soup(soup.find('span', id='R1724464641275058427').find('script'))
         except (TypeError, AttributeError):
             return None
         projects = []
@@ -166,8 +170,8 @@ class ParserISU:
         """
 
         try:
-            data: dict = self.extract_data_from_soup(
-                str(soup.find('div', id='R1293424228395371640').find('script')).replace('&quot;', "'"))
+            data: dict = self.extract_data_from_soup(soup.find('div', id='R1293424228395371640').find('script'))
+
         except (TypeError, AttributeError):
             return None
         events = []
@@ -186,7 +190,7 @@ class ParserISU:
                                                                     row[1].find('>') + 1:row[1].rfind('<')].strip()
         return events
 
-    def parse_education(self, soup: BSoup) -> list[dict] or None:
+    def parse_bio(self, soup: BSoup) -> list[dict] or None:
         """
         requires person's html page text and return list of dictionaries with person's current education
 
@@ -195,21 +199,65 @@ class ParserISU:
                  dictionaries with keys  or None if no data is found
         """
 
-        try:
-            data: dict = self.extract_data_from_soup(
-                str(soup.find('div', id='R887645516601269238').find('script', id='person-edu').replace('&quot', "'")))
-        except (TypeError, AttributeError):
-            return None
-        education = {}
+        data_job, data_duties, data_education = self.extract_bio_from_soup(soup)
+        person_bio = {'jobs': [], 'duties': [], 'education': {}}
+
+        for job in data_job:
+            position = job['position']
+            person_bio['jobs'].append(
+                {'position': {'id': position['id'], 'name': position['name'],
+                              'rate': float(position['rate']['value'])},
+                 'department': {'id': job['department']['id'],
+                                'name': job['department']['name']}})
+
+        for duty in data_duties:
+            person_bio['duties'].append(
+                {'position': {'id': duty['position']['id'], 'name': duty['position']['name']},
+                 'department': duty['str']})
+
+        if data_education is not None:
+            person_bio['education'] = {'year': data_education['year'],
+                                       'faculty': {'id': data_education['faculty']['id'],
+                                                   'name': data_education['faculty']['name']}}
+            if 'stud' in data_education:
+                person_bio['education']['study'] = 'std'
+                person_bio['education']['program'] = {'id': data_education['program']['id'],
+                                                      'name': data_education['program']['name']}
+            elif 'asp' in data_education:
+                person_bio['education']['study'] = 'asp'
+            else:
+                print(data_education.keys())
+
+        return person_bio
 
     @staticmethod
-    def extract_data_from_soup(data: str) -> dict:
+    def extract_bio_from_soup(soup: BSoup) -> tuple:
+        try:
+            data_job: list = json.loads(
+                soup.find('span', attrs={'data-mustache-template': 'person-job'}).contents[0])['positions']
+        except (TypeError, AttributeError):
+            data_job = []
+        try:
+            data_duties: list = json.loads(
+                soup.find('span', attrs={'data-mustache-template': 'person-duties'}).contents[0])['positions']
+        except (TypeError, AttributeError):
+            data_duties = []
+        try:
+            data_education: dict = json.loads(
+                soup.find('span', attrs={'data-mustache-template': 'person-edu'}).contents[0])['education'][0]
+        except (TypeError, AttributeError):
+            data_education = None
+        return data_job, data_duties, data_education
+
+    @staticmethod
+    def extract_data_from_soup(data: BSoup) -> dict:
         """
         static method to extract person's data from html string
 
         :param data: person's page html fragment containing data
         :return: dictionary with person's data
         """
+        data = str(data)
         data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1].replace('&quot', "'"))
         data.pop('recordsFiltered')
         return data

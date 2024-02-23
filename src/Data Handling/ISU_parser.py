@@ -271,13 +271,13 @@ class ParserISU:
         :return: list of person's publication authors
         """
         authors = []
-        for author in authors_string.split(','):
+        for author in authors_string.split('</a>')[:-1]:
             first_quote = author.find('"')
-            second_quote = first_quote + author[first_quote + 1:].find('"') + 1
-            third_quote = second_quote + author[second_quote + 1:].find('"') + 1
-            fourth_quote = third_quote + author[third_quote + 1:].find('"') + 1
+            second_quote = author.find('"', first_quote + 1)
+            third_quote = author.find('"', second_quote + 1)
+            fourth_quote = author.find('"', third_quote + 1)
             author = {'isu_profile': author[first_quote + 1:second_quote].strip(),
-                      'name': author[third_quote + 1: fourth_quote].strip()}
+                      'name': author[third_quote + 1:fourth_quote].strip()}
             authors.append(author)
         return authors
 

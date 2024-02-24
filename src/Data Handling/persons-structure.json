@@ -73,8 +73,8 @@
           "type": "НИР",
           "title": "project title",
           "department_id": "department id as int",
-          "date_start": "peoject start date as 01.01.0001",
-          "date_end": "peoject end date as 31.12.9999",
+          "date_start": "project start date as 01.01.0001",
+          "date_end": "project end date as 31.12.9999",
           "key_words": [
             "list of project keywords"
           ],

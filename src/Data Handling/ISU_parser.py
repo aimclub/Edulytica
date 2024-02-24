@@ -12,6 +12,7 @@ load_dotenv('./isu-env')
 class ParserISU:
     """
     This class is responsible for parsing ISU persons' data: education, publications, rids, projects and events
+    Use parse_users_date method to parse
     """
 
     def __init__(self, cookie: str, remember_sso: str) -> None:
@@ -19,15 +20,16 @@ class ParserISU:
         :param cookie: ISU user's cookie token
         :param remember_sso: ISU user's remember_sso token
         """
+
         self.cookies = {'ISU_AP_COOKIE': cookie,
                         'REMEMBER_SSO': remember_sso}
 
     def parse_users_data(self) -> None:
         """
-        main method to parse persons data from ISU website
-        writes parsed data to json file -> persons.json
-        :return:
+        Main method to parse persons data from ISU website
+        Writes parsed data to json file -> persons.json
         """
+
         base_isu_person_link = 'https://isu.itmo.ru/person/'
         try:
             # Copying parsed data for backup
@@ -40,13 +42,16 @@ class ParserISU:
 
         # isu ids that don't relate to any person
         try:
-            no_exist_isu_ids = open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()
+            no_exist_isu_ids = set(map(int, open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()))
         except FileNotFoundError:
-            no_exist_isu_ids = []
+            no_exist_isu_ids = set()
 
         try:
             reserve_saving_counter = 0
-            for isu_person_id in range(287434, int(1e6)):
+            for isu_person_id in range(100494, 10 ** 6):
+                if isu_person_id in no_exist_isu_ids:
+                    print(f'person isu id is in not exist ids: {isu_person_id}')
+                    continue
                 person_link = base_isu_person_link + str(isu_person_id)
                 print(f'user {isu_person_id} started -> {person_link}', end=' ')
 
@@ -54,33 +59,38 @@ class ParserISU:
                     response = requests.get(person_link, cookies=self.cookies, timeout=1.5)
                     open('page.html', 'w', encoding='utf-8').write(response.text)
                 except (requests.exceptions.ConnectTimeout, requests.exceptions.ReadTimeout):
-                    no_exist_isu_ids.append(isu_person_id)
-                    print(f'does not exist {reserve_saving_counter}/100 to reserve save')
+                    no_exist_isu_ids.add(isu_person_id)
+                    print(f'does not exist', end='')
                 else:
                     persons[str(isu_person_id)] = {'isu_id': str(isu_person_id),
                                                    'data': self.parse_data_from_html(response.text)}
+                    print('done', end='')
+                finally:
                     reserve_saving_counter += 1
-                    print(f'done {reserve_saving_counter}/100 to reserve save')
+                    print(f' {reserve_saving_counter}/100 to reserve save')
 
                 if reserve_saving_counter >= 100:
                     reserve_saving_counter = 0
                     open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
-                    open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
+                    open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+                        ' '.join(map(str, sorted(no_exist_isu_ids))))
                     print('saved')
-                sleep(1 + random())
+                sleep(.1 + random())
         except KeyboardInterrupt:
             return
         finally:
+            print(isu_person_id)
             open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
-            open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, no_exist_isu_ids)))
+            open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(no_exist_isu_ids))))
 
     def parse_data_from_html(self, html_text: str) -> dict:
         """
-        requires person's html page text and return dictionary with data from html page which contains users information
+        Requires person's html page text and return dictionary with data from html page which contains users information
 
         :param html_text: person's page in string format
-        :return: parsed data as dictionary with keys 'publications', 'rids', 'projects', 'events' or None if no data is found
+        :return: parsed data as dictionary or None if no data is found
         """
+
         soup = BSoup(html_text, 'html.parser')
         return {'bio': self.parse_bio(soup),
                 'publications': self.parse_publications(soup),
@@ -90,15 +100,15 @@ class ParserISU:
 
     def parse_publications(self, soup: BSoup) -> list[dict] or None:
         """
-        requires person's html page text and return list of dictionaries with person's publications
+        Requires person's html page text and return list of dictionaries with person's publications
 
         :param soup: BeautifulSoup object of person's html page
-        :return: person's publications list which contains
-                 dictionaries with keys 'type', 'year', 'authors', 'title' or None if no data is found
+        :return: person's publications list which contains dictionaries or None if no data is found
         """
+
         try:
             data: dict = self.extract_data_from_soup(soup.find('span', id='R1724073431179133097').find('script'))
-        except (TypeError, AttributeError):
+        except (TypeError, AttributeError, json.decoder.JSONDecodeError):
             return None
         publications = []
         for row in data['data']:
@@ -111,11 +121,10 @@ class ParserISU:
 
     def parse_rids(self, soup: BSoup) -> list[dict] or None:
         """
-        requires person's html page text and return list of dictionaries with person's rids
+        Requires person's html page text and return list of dictionaries with person's rids
 
         :param soup: BeautifulSoup object of person's html page
-        :return: person's rids list which contains
-                 dictionaries with keys 'year', 'type', 'title', 'authors' or None if no data is found
+        :return: person's rids list which contains dictionaries or None if no data is found
         """
 
         try:
@@ -134,12 +143,10 @@ class ParserISU:
 
     def parse_projects(self, soup: BSoup) -> list[dict] or None:
         """
-        requires person's html page text and return list of dictionaries with person's projects
+        Requires person's html page text and return list of dictionaries with person's projects
 
         :param soup: BeautifulSoup object of person's html page
-        :return: person's projects list which contains dictionaries
-        with keys 'theme_id', 'type', 'title', 'department_id', 'date_start', 'date_end',
-        'key_words', 'role', 'customer' or None if no data is found
+        :return: person's projects list which contains dictionaries or None if no data is found
         """
 
         try:
@@ -162,7 +169,7 @@ class ParserISU:
 
     def parse_events(self, soup: BSoup) -> list[dict] or None:
         """
-        requires person's html page text and return list of dictionaries with person's events
+        Requires person's html page text and return list of dictionaries with person's events
 
         :param soup: BeautifulSoup object of person's html page
         :return: person's events list which contains
@@ -192,7 +199,7 @@ class ParserISU:
 
     def parse_bio(self, soup: BSoup) -> list[dict] or None:
         """
-        requires person's html page text and return list of dictionaries with person's current education
+        Requires person's html page text and return list of dictionaries with person's current education
 
         :param soup: BeautifulSoup object of person's html page
         :return: person's current education list which contains
@@ -205,23 +212,23 @@ class ParserISU:
         for job in data_job:
             position = job['position']
             person_bio['jobs'].append(
-                {'position': {'id': position['id'], 'name': position['name'],
-                              'rate': float(position['rate']['value'])},
-                 'department': {'id': job['department']['id'],
+                {'position': {'id': int(position['id']), 'name': position['name'],
+                              'rate': float(position['rate']['value']) if position['rate'] is not None else 1.},
+                 'department': {'id': int(job['department']['id']),
                                 'name': job['department']['name']}})
 
         for duty in data_duties:
             person_bio['duties'].append(
-                {'position': {'id': duty['position']['id'], 'name': duty['position']['name']},
+                {'position': {'id': int(duty['position']['id']), 'name': duty['position']['name']},
                  'department': duty['str']})
 
         if data_education is not None:
-            person_bio['education'] = {'year': data_education['year'],
-                                       'faculty': {'id': data_education['faculty']['id'],
+            person_bio['education'] = {'year': int(data_education['year']),
+                                       'faculty': {'id': int(data_education['faculty']['id']),
                                                    'name': data_education['faculty']['name']}}
             if 'stud' in data_education:
                 person_bio['education']['study'] = 'std'
-                person_bio['education']['program'] = {'id': data_education['program']['id'],
+                person_bio['education']['program'] = {'id': int(data_education['program']['id']),
                                                       'name': data_education['program']['name']}
             elif 'asp' in data_education:
                 person_bio['education']['study'] = 'asp'
@@ -232,6 +239,13 @@ class ParserISU:
 
     @staticmethod
     def extract_bio_from_soup(soup: BSoup) -> tuple:
+        """
+        Extracts bio from soup object
+
+        :param soup: BeautifulSoup object of person bio
+        :return: tuple of data_job, data_duties and data_education
+        """
+
         try:
             data_job: list = json.loads(
                 soup.find('span', attrs={'data-mustache-template': 'person-job'}).contents[0])['positions']
@@ -250,13 +264,14 @@ class ParserISU:
         return data_job, data_duties, data_education
 
     @staticmethod
-    def extract_data_from_soup(data: BSoup) -> dict:
+    def extract_data_from_soup(data: BSoup) -> dict | None:
         """
-        static method to extract person's data from html string
+        Static method to extract person's data from html string
 
         :param data: person's page html fragment containing data
         :return: dictionary with person's data
         """
+
         data = str(data)
         data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1].replace('&quot', "'"))
         data.pop('recordsFiltered')
@@ -265,11 +280,12 @@ class ParserISU:
     @staticmethod
     def parse_authors(authors_string: str) -> list:
         """
-        static method to extract authors of the person's publication from html string
+        Static method to extract authors of the person's publication from html string
 
         :param authors_string: person's page html fragment containing publication's authors
         :return: list of person's publication authors
         """
+
         authors = []
         for author in authors_string.split('</a>')[:-1]:
             first_quote = author.find('"')

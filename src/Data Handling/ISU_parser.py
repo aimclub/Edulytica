@@ -33,13 +33,26 @@ class ParserISU:
         self.async_requests = []
         self.async_responses = []
 
-    async def parse_all_isu_ids(self):
+    def parse_users_date(self):
+        """
+        Method to asynchronous parse persons isu ids from ISU website
+        Launches async method
+        """
+
+        asyncio.run(self._async_parse_all_isu_ids())
+
+    async def _async_parse_all_isu_ids(self):
+        """
+        Method to asynchronous parse persons isu ids from ISU website
+        Writes parsed isu ids to txt file -> persons_ids.txt
+        """
+
         try:
             persons = set(map(int, json.load(open('persons.json', 'r', encoding='utf-8')).keys()))
         except (FileNotFoundError, json.decoder.JSONDecodeError):
             persons = set()
         try:
-            no_exist_isu_ids = set(map(int, open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()))
+            no_exist_isu_ids = set(map(int, open('../no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()))
         except FileNotFoundError:
             no_exist_isu_ids = set()
         try:
@@ -66,7 +79,7 @@ class ParserISU:
                     if reserve_saving_number >= 100:
                         reserve_saving_number = 0
                         open('persons_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(persons))))
-                        open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+                        open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
                             ' '.join(map(str, sorted(no_exist_isu_ids))))
                         print(i, 'saved')
         except KeyboardInterrupt:
@@ -74,12 +87,31 @@ class ParserISU:
         finally:
             print(isu_person_id)
             open('persons_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(persons))))
-            open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(no_exist_isu_ids))))
+            open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(no_exist_isu_ids))))
 
     def parse_users_data(self, start_isu=0):
+        """
+        Main method that runs the asynchronous parse method
+        Launches async method
+
+        :param start_isu: isu to start parsing from
+        """
+
         asyncio.run(self._async_parse_users_data(start_isu))
 
-    async def _async_parse_users_data(self, start_isu=0):
+    async def _async_parse_users_data(self, start_isu: int = 0):
+        """
+        Method to asynchronous parse persons data from ISU website
+        Writes parsed data to json file -> persons.json
+
+        :param start_isu: isu to start parsing from
+        """
+
+        if 'id.itmo.ru' in str((await self._parse_website(409878))[1].url.host):
+            return print('Your cookie is expired or None')
+        if not all(filter(lambda x: x[1], [await self._parse_website(409878) for _ in range(5)])):
+            return print('Your ip address is not valid. You need to use ITMO ip address or ITMO vpn')
+
         try:
             # Copying parsed data for backup
             json.dump(json.load(open('persons.json', 'r', encoding='utf-8')),
@@ -91,7 +123,7 @@ class ParserISU:
 
         # isu ids that don't relate to any person
         try:
-            no_exist_isu_ids = set(open('no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split())
+            no_exist_isu_ids = set(open('../no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split())
         except FileNotFoundError:
             no_exist_isu_ids = set()
 
@@ -128,7 +160,7 @@ class ParserISU:
                     reserve_saving_counter = 0
                     open('persons.json', 'w', encoding='utf-8').write(
                         json.dumps(persons, indent=2, ensure_ascii=False))
-                    open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+                    open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
                         ' '.join(map(str, sorted(map(int, no_exist_isu_ids)))))
                     print('saved')
         except KeyboardInterrupt:
@@ -136,13 +168,13 @@ class ParserISU:
         finally:
             print(isu_person_id)
             open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
-            open('no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+            open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
                 ' '.join(map(str, sorted(map(int, no_exist_isu_ids)))))
 
     async def _fetch_url(self, url):
         async with aiohttp.ClientSession(cookies=self.cookies, timeout=ClientTimeout(1.5)) as session:
             async with session.get(url) as response:
-                return await response.text()
+                return response
 
     async def _parse_website(self, isu_user_id):
         try:
@@ -150,6 +182,7 @@ class ParserISU:
                 (isu_user_id, await self._fetch_url(f'{self.base_isu_person_link}{isu_user_id}')))
         except asyncio.exceptions.TimeoutError:
             self.async_responses.append((isu_user_id, None))
+        return self.async_responses[-1]
 
     def _parse_data_from_html(self, html_text: str) -> dict:
         """

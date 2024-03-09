@@ -18,7 +18,7 @@ load_dotenv('./isu-env')
 class ParserISU:
     """
     This class is responsible for parsing ISU persons' data: education, publications, rids, projects and events
-    Use parse_users_date method to parse
+    Use parse_users_data method to parse
     """
 
     def __init__(self, cookie: str, remember_sso: str) -> None:
@@ -33,7 +33,7 @@ class ParserISU:
         self.async_requests = []
         self.async_responses = []
 
-    def parse_users_date(self):
+    def parse_users_ids(self):
         """
         Method to asynchronous parse persons isu ids from ISU website
         Launches async method

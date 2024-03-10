@@ -1,4 +1,4 @@
-name: Python-Documents-Modifier Workflow
+name: Edu-Analysis-Framework Workflow
 
 on: [push, pull_request]
 

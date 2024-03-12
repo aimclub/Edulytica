@@ -1,13 +1,14 @@
 import asyncio
 import json
+import os
 from random import random
+from time import sleep
 
 import aiohttp
+import requests
 from aiohttp import ClientTimeout
-from dotenv import load_dotenv
-import os
-from time import sleep
 from bs4 import BeautifulSoup as BSoup
+from dotenv import load_dotenv
 
 """
 before launching you need to insert your ISU_cookie and SSO_REMEMBER to isu-env file
@@ -47,6 +48,10 @@ class ParserISU:
         Writes parsed isu ids to txt file -> persons_ids.txt
         """
 
+        connection_troubles = self._check_connection()
+        if connection_troubles:
+            return connection_troubles
+
         try:
             persons = set(map(int, json.load(open('persons.json', 'r', encoding='utf-8')).keys()))
         except (FileNotFoundError, json.decoder.JSONDecodeError):
@@ -57,6 +62,8 @@ class ParserISU:
             no_exist_isu_ids = set()
         try:
             reserve_saving_number = 0
+            self.async_requests.clear()
+            self.async_responses.clear()
             for isu_person_id in range(300000, 10 ** 6):
                 if isu_person_id in no_exist_isu_ids or isu_person_id in persons:
                     print(f'{isu_person_id} already done')
@@ -99,7 +106,7 @@ class ParserISU:
 
         asyncio.run(self._async_parse_users_data(start_isu))
 
-    async def _async_parse_users_data(self, start_isu: int = 0):
+    async def _async_parse_users_data(self, start_isu: int = 0) -> None:
         """
         Method to asynchronous parse persons data from ISU website
         Writes parsed data to json file -> persons.json
@@ -107,10 +114,9 @@ class ParserISU:
         :param start_isu: isu to start parsing from
         """
 
-        if 'id.itmo.ru' in str((await self._parse_website(409878))[1].url.host):
-            return print('Your cookie is expired or None')
-        if not all(filter(lambda x: x[1], [await self._parse_website(409878) for _ in range(5)])):
-            return print('Your ip address is not valid. You need to use ITMO ip address or ITMO vpn')
+        connection_troubles = self._check_connection()
+        if connection_troubles:
+            return print(connection_troubles)
 
         try:
             # Copying parsed data for backup
@@ -129,6 +135,8 @@ class ParserISU:
 
         try:
             reserve_saving_counter = 0
+            self.async_requests.clear()
+            self.async_responses.clear()
             for isu_person_id in range(start_isu, 10 ** 6):
                 if str(isu_person_id) in no_exist_isu_ids or str(isu_person_id) in persons:
                     print(f'already have the person: {isu_person_id}')
@@ -171,18 +179,27 @@ class ParserISU:
             open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
                 ' '.join(map(str, sorted(map(int, no_exist_isu_ids)))))
 
-    async def _fetch_url(self, url):
-        async with aiohttp.ClientSession(cookies=self.cookies, timeout=ClientTimeout(1.5)) as session:
+    async def _fetch_url(self, url, timeout):
+        async with aiohttp.ClientSession(cookies=self.cookies, timeout=ClientTimeout(timeout)) as session:
             async with session.get(url) as response:
-                return response
+                return await response.text()
 
-    async def _parse_website(self, isu_user_id):
+    async def _parse_website(self, isu_user_id, timeout=1.5):
         try:
             self.async_responses.append(
-                (isu_user_id, await self._fetch_url(f'{self.base_isu_person_link}{isu_user_id}')))
+                (isu_user_id, await self._fetch_url(f'{self.base_isu_person_link}{isu_user_id}', timeout=timeout)))
         except asyncio.exceptions.TimeoutError:
             self.async_responses.append((isu_user_id, None))
         return self.async_responses[-1]
+
+    def _check_connection(self):
+        response = requests.get(f'{self.base_isu_person_link}409878', cookies=self.cookies)
+        if not response.ok or 'id.itmo.ru' in response.url:
+            return 'Your cookie is expired or None'
+        if not all(filter(lambda x: x.ok,
+                          [requests.get(f'{self.base_isu_person_link}409878') for _ in range(5)])):
+            return 'Your ip address is not valid. You need to use ITMO ip address or ITMO vpn'
+        return None
 
     def _parse_data_from_html(self, html_text: str) -> dict:
         """

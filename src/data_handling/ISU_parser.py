@@ -7,7 +7,7 @@ from time import sleep
 import aiohttp
 import requests
 from aiohttp import ClientTimeout
-from bs4 import BeautifulSoup as BSoup
+from bs4 import BeautifulSoup as BSoup, Tag
 from dotenv import load_dotenv
 
 """
@@ -29,74 +29,26 @@ class ParserISU:
         """
 
         self.base_isu_person_link = 'https://isu.itmo.ru/person/'
+        self.registration_host_url = 'id.itmo.ru'
+        self.isu_id_to_check_connection = 409878
+
+        self.persons_filename = 'persons.json'
+        self.no_exists_persons_filename = 'no_exist_isu_ids.txt'
+        self.persons_copy_filename = 'persons_copy.json'
+
+        self.session_exception_message = 'Your cookie is expired or None'
+        self.ip_address_exception_message = 'Your ip address is not valid. You need to use ITMO ip address or ITMO vpn'
+        self.successful_connection_message = 'Connection established'
+        self.requests_limit = 5  # limit on requests sent at one time
+        self.requests_count_to_save = 100
+        self.requests_cooldown_seconds = .2
+
         self.cookies = {'ISU_AP_COOKIE': cookie,
                         'REMEMBER_SSO': remember_sso}
         self.async_requests = []
         self.async_responses = []
 
-    def parse_users_ids(self):
-        """
-        Method to asynchronous parse persons isu ids from ISU website
-        Launches async method
-        """
-
-        asyncio.run(self._async_parse_all_isu_ids())
-
-    async def _async_parse_all_isu_ids(self):
-        """
-        Method to asynchronous parse persons isu ids from ISU website
-        Writes parsed isu ids to txt file -> persons_ids.txt
-        """
-
-        connection_troubles = self._check_connection()
-        if connection_troubles:
-            return connection_troubles
-
-        try:
-            persons = set(map(int, json.load(open('persons.json', 'r', encoding='utf-8')).keys()))
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
-            persons = set()
-        try:
-            no_exist_isu_ids = set(map(int, open('../no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split()))
-        except FileNotFoundError:
-            no_exist_isu_ids = set()
-        try:
-            reserve_saving_number = 0
-            self.async_requests.clear()
-            self.async_responses.clear()
-            for isu_person_id in range(300000, 10 ** 6):
-                if isu_person_id in no_exist_isu_ids or isu_person_id in persons:
-                    print(f'{isu_person_id} already done')
-                    continue
-                self.async_requests.append(isu_person_id)
-                if len(self.async_requests) < 5:
-                    continue
-                self.async_responses.clear()
-                tasks = [self._parse_website(i) for i in self.async_requests]
-                self.async_requests.clear()
-                await asyncio.gather(*tasks)
-                for i, response in self.async_responses:
-                    reserve_saving_number += 1
-                    if response:
-                        persons.add(i)
-                        print(f'{i} found -> {reserve_saving_number}/100 to save')
-                    else:
-                        no_exist_isu_ids.add(i)
-                        print(f'{i} does not exist -> {reserve_saving_number}/100 to save')
-                    if reserve_saving_number >= 100:
-                        reserve_saving_number = 0
-                        open('persons_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(persons))))
-                        open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
-                            ' '.join(map(str, sorted(no_exist_isu_ids))))
-                        print(i, 'saved')
-        except KeyboardInterrupt:
-            return print('Keyboard Interrupt')
-        finally:
-            print(isu_person_id)
-            open('persons_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(persons))))
-            open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, sorted(no_exist_isu_ids))))
-
-    def parse_users_data(self, start_isu=0):
+    def parse_users_data(self, start_isu: int = 0):
         """
         Main method that runs the asynchronous parse method
         Launches async method
@@ -106,7 +58,7 @@ class ParserISU:
 
         asyncio.run(self._async_parse_users_data(start_isu))
 
-    async def _async_parse_users_data(self, start_isu: int = 0) -> None:
+    async def _async_parse_users_data(self, start_isu: int) -> None:
         """
         Method to asynchronous parse persons data from ISU website
         Writes parsed data to json file -> persons.json
@@ -120,63 +72,67 @@ class ParserISU:
 
         try:
             # Copying parsed data for backup
-            json.dump(json.load(open('persons.json', 'r', encoding='utf-8')),
-                      open('persons_copy.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
+            json.dump(json.load(open(self.persons_filename, 'r', encoding='utf-8')),
+                      open(self.persons_copy_filename, 'w', encoding='utf-8'), ensure_ascii=False, indent=2)
 
-            persons = json.load(open('persons.json', 'r', encoding='utf-8'))
-        except (FileNotFoundError, json.decoder.JSONDecodeError):
+            persons = json.load(open(self.persons_filename, 'r', encoding='utf-8'))
+        except (FileNotFoundError, json.decoder.JSONDecodeError) as e:
+            print(e)
             persons = {}
 
         # isu ids that don't relate to any person
         try:
-            no_exist_isu_ids = set(open('../no_exist_isu_ids.txt', 'r', encoding='utf-8').read().split())
+            no_exist_isu_ids = set(open(self.no_exists_persons_filename, 'r', encoding='utf-8').read().split())
         except FileNotFoundError:
             no_exist_isu_ids = set()
 
+        isu_person_id = start_isu
         try:
-            reserve_saving_counter = 0
-            self.async_requests.clear()
-            self.async_responses.clear()
+            saving_counter = 0
+            self.async_requests = []
+            self.async_responses = []
             for isu_person_id in range(start_isu, 10 ** 6):
                 if str(isu_person_id) in no_exist_isu_ids or str(isu_person_id) in persons:
                     print(f'already have the person: {isu_person_id}')
                     continue
-                sleep(.2 + random() * .5)
-                person_link = self.base_isu_person_link + str(isu_person_id)
-                print(f'user {isu_person_id} added -> {person_link}')
+
+                sleep(self.requests_cooldown_seconds + random() * .5)
+
+                print(f'user {isu_person_id} added')
                 self.async_requests.append(isu_person_id)
 
-                if len(self.async_requests) < 5:
+                if len(self.async_requests) < self.requests_limit:
                     continue
 
-                self.async_responses.clear()
+                self.async_responses = []
                 tasks = [self._parse_website(i) for i in self.async_requests]
-                self.async_requests.clear()
-
+                self.async_requests = []
                 await asyncio.gather(*tasks)
+
+                responses_status = []
                 for i, response in self.async_responses:
-                    reserve_saving_counter += 1
+                    saving_counter += 1
                     if response:
                         persons[i] = {'isu_id': str(i), 'data': self._parse_data_from_html(response)}
-                        print(f'{i} done', end='\t|\t')
+                        responses_status.append(f'{i} done')
                     else:
                         no_exist_isu_ids.add(str(i))
-                        print(f'{i} not exists', end='\t|\t')
-                print()
-                print(f'{reserve_saving_counter}/100 to reserve save')
-                if reserve_saving_counter >= 100:
-                    reserve_saving_counter = 0
-                    open('persons.json', 'w', encoding='utf-8').write(
-                        json.dumps(persons, indent=2, ensure_ascii=False))
-                    open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+                        responses_status.append(f'{i} not exists')
+                print(' | '.join(responses_status))
+                print(f'{saving_counter}/{self.requests_count_to_save} to reserve save')
+                if saving_counter >= self.requests_count_to_save:
+                    saving_counter = 0
+                    open(self.persons_filename, 'w', encoding='utf-8').write(json.dumps(persons, indent=2,
+                                                                                        ensure_ascii=False))
+                    open(self.no_exists_persons_filename, 'w', encoding='utf-8').write(
                         ' '.join(map(str, sorted(map(int, no_exist_isu_ids)))))
                     print('saved')
         except KeyboardInterrupt:
             return print('Keyboard Interrupt')
         finally:
             print(isu_person_id)
-            open('persons.json', 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
-            open('../no_exist_isu_ids.txt', 'w', encoding='utf-8').write(
+            open(self.persons_filename, 'w', encoding='utf-8').write(json.dumps(persons, indent=2, ensure_ascii=False))
+            open(self.no_exists_persons_filename, 'w', encoding='utf-8').write(
                 ' '.join(map(str, sorted(map(int, no_exist_isu_ids)))))
 
     async def _fetch_url(self, url, timeout):
@@ -184,7 +140,7 @@ class ParserISU:
             async with session.get(url) as response:
                 return await response.text()
 
-    async def _parse_website(self, isu_user_id, timeout=1.5):
+    async def _parse_website(self, isu_user_id, timeout=3):
         try:
             self.async_responses.append(
                 (isu_user_id, await self._fetch_url(f'{self.base_isu_person_link}{isu_user_id}', timeout=timeout)))
@@ -193,13 +149,21 @@ class ParserISU:
         return self.async_responses[-1]
 
     def _check_connection(self):
-        response = requests.get(f'{self.base_isu_person_link}409878', cookies=self.cookies)
-        if not response.ok or 'id.itmo.ru' in response.url:
-            return 'Your cookie is expired or None'
-        if not all(filter(lambda x: x.ok,
-                          [requests.get(f'{self.base_isu_person_link}409878') for _ in range(5)])):
-            return 'Your ip address is not valid. You need to use ITMO ip address or ITMO vpn'
-        return None
+        """
+        Method that checks if the connection is established
+
+        :return: string if the connection is not established and None if it is successfully connected
+        """
+
+        try:
+            response = [requests.get(f'{self.base_isu_person_link}{self.isu_id_to_check_connection}',
+                                     cookies=self.cookies, timeout=3)
+                        for _ in range(self.requests_limit)][-1]
+            if not response.ok or self.registration_host_url in response.url:
+                return self.session_exception_message
+        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            return self.ip_address_exception_message
+        return print(self.successful_connection_message)
 
     def _parse_data_from_html(self, html_text: str) -> dict:
         """
@@ -326,7 +290,7 @@ class ParserISU:
         """
 
         data_job, data_duties, data_education = self._extract_bio_from_soup(soup)
-        person_bio = {'jobs': [], 'duties': [], 'education': {}}
+        person_bio: dict = {'jobs': [], 'duties': [], 'education': {}}
 
         for job in data_job:
             position = job['position']
@@ -341,7 +305,7 @@ class ParserISU:
                 {'position': {'id': int(duty['position']['id']), 'name': duty['position']['name']},
                  'department': duty['str']})
 
-        if data_education is not None:
+        if data_education:
             person_bio['education'] = {'year': int(data_education['year']),
                                        'faculty': {'id': int(data_education['faculty']['id']),
                                                    'name': data_education['faculty']['name']}}
@@ -351,13 +315,10 @@ class ParserISU:
                                                       'name': data_education['program']['name']}
             elif 'asp' in data_education:
                 person_bio['education']['study'] = 'asp'
-            else:
-                print(data_education.keys())
 
         return person_bio
 
-    @staticmethod
-    def _extract_bio_from_soup(soup: BSoup) -> tuple:
+    def _extract_bio_from_soup(self, soup: BSoup) -> tuple:
         """
         Extracts bio from soup object
 
@@ -365,25 +326,43 @@ class ParserISU:
         :return: tuple of data_job, data_duties and data_education
         """
 
-        try:
-            data_job: list = json.loads(
-                soup.find('span', attrs={'data-mustache-template': 'person-job'}).contents[0])['positions']
-        except (TypeError, AttributeError):
-            data_job = []
-        try:
-            data_duties: list = json.loads(
-                soup.find('span', attrs={'data-mustache-template': 'person-duties'}).contents[0])['positions']
-        except (TypeError, AttributeError):
-            data_duties = []
-        try:
-            data_education: dict = json.loads(
-                soup.find('span', attrs={'data-mustache-template': 'person-edu'}).contents[0])['education'][0]
-        except (TypeError, AttributeError):
-            data_education = None
-        return data_job, data_duties, data_education
+        return (self._extract_jobs_or_duties_from_soup(soup, 'job'),
+                self._extract_jobs_or_duties_from_soup(soup, 'duties'),
+                self._extract_education_from_soup(soup))
 
     @staticmethod
-    def _extract_data_from_soup(data: BSoup) -> dict | None:
+    def _extract_jobs_or_duties_from_soup(soup: BSoup, key) -> list:
+        """
+        Extracts jobs or duties from soup object
+
+        :param soup: BeautifulSoup object of person bio
+        :param key: key of job or duties
+        :return: list of person's jobs or duties
+        """
+
+        try:
+            return json.loads(
+                str(soup.find('span', attrs={'data-mustache-template': f'person-{key}'}).contents[0]))['positions']
+        except (TypeError, AttributeError):
+            return []
+
+    @staticmethod
+    def _extract_education_from_soup(soup: BSoup) -> dict:
+        """
+        Extracts education from soup object
+
+        :param soup: BeautifulSoup object of person bio
+        :return: dictionary of person's education
+        """
+
+        try:
+            return json.loads(
+                str(soup.find('span', attrs={'data-mustache-template': 'person-edu'}).contents[0]))['education'][0]
+        except (TypeError, AttributeError):
+            return {}
+
+    @staticmethod
+    def _extract_data_from_soup(data: Tag) -> dict | None:
         """
         Static method to extract person's data from html string
 
@@ -391,8 +370,8 @@ class ParserISU:
         :return: dictionary with person's data
         """
 
-        data = str(data)
-        data: dict = json.loads(data[data.find('jsonData={') + 9:data.find('};') + 1].replace('&quot', "'"))
+        data_str = str(data)
+        data: dict = json.loads(data_str[data_str.find('jsonData={') + 9:data_str.find('};') + 1].replace('&quot', "'"))
         data.pop('recordsFiltered')
         return data
 

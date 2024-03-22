@@ -21,12 +21,11 @@ class DataManager:
         self.persons_json: dict = json.load(open(self.origin_persons_filename, 'r', encoding='utf-8'))
         self.factorization_size = 1000
 
-    def get_processed_persons(self, with_empty: bool = False, saving_filepath: str = None) -> dict:
+    def get_processed_persons(self, with_empty: bool = False) -> dict:
         """
         Main method for getting cleaned persons data
 
         :param with_empty: whether to save persons with empty fields
-        :param saving_filepath: filepath for result persons json file
         :return: dictionary with cleaned persons data -> person's isu id is a key, cleaned string is a value
         """
 
@@ -45,7 +44,7 @@ class DataManager:
                 persons[person_isu] = person
 
         persons = self._lemmatize_persons(persons)
-        self._save_persons(persons, saving_filepath)
+        self._save_persons(persons)
 
         return persons
 

@@ -7,10 +7,12 @@ from pymystem3.mystem import Mystem
 class DataManager:
     cyrillic_lower_letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
-    def __init__(self, persons_json_filename='persons.json'):
-        self.persons_json: dict = json.load(open(persons_json_filename, 'r', encoding='utf-8'))
+    def __init__(self, persons_json_filename='persons.json', result_json_filename='persons_result.json'):
+        self.origin_persons_filename = persons_json_filename
+        self.result_persons_filename = result_json_filename
+        self.persons_json: dict = json.load(open(self.origin_persons_filename, 'r', encoding='utf-8'))
 
-    def get_processed_persons(self) -> dict:
+    def get_processed_persons(self, with_empty: bool = False, saving_filepath=None) -> dict:
         persons = {}
         for person_isu in self.persons_json:
             person_json = self.persons_json[person_isu]['data']
@@ -20,11 +22,13 @@ class DataManager:
             projects = self._get_person_projects(person_json)
             events = self._get_person_events(person_json)
 
-            person = ' '.join((bio, education, events, publications, projects, events))
+            person = ' '.join((bio, education, events, publications, projects, events)).strip()
 
-            persons[person_isu] = person
+            if with_empty or person:
+                persons[person_isu] = person
 
         persons = self.lemmatize_persons(persons)
+        self.save_persons(persons, saving_filepath)
 
         return persons
 
@@ -98,6 +102,10 @@ class DataManager:
     @staticmethod
     def _factorize_persons(persons: list, size: int = 1000) -> list[list[tuple[str, dict]]]:
         return [persons[i:i + size] for i in range(0, len(persons), size)]
+
+    def save_persons(self, persons: dict, filepath: str = None):
+        json.dump(persons, open(filepath or self.result_persons_filename, 'w', encoding='utf-8'), ensure_ascii=False,
+                  indent=2)
 
 
 if __name__ == '__main__':

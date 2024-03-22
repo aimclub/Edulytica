@@ -1,6 +1,8 @@
 import json
 from string import ascii_lowercase, digits
 
+from pymystem3.mystem import Mystem
+
 
 class DataManager:
     cyrillic_lower_letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
@@ -18,8 +20,11 @@ class DataManager:
             projects = self._get_person_projects(person_json)
             events = self._get_person_events(person_json)
 
-            person = {'bio': bio, 'education': education, 'events': ' '.join((publications, projects, events)).strip()}
+            person = ' '.join((bio, education, events, publications, projects, events))
+
             persons[person_isu] = person
+
+        persons = self.lemmatize_persons(persons)
 
         return persons
 
@@ -67,9 +72,28 @@ class DataManager:
     def _cleanse_text(self, text: str, allow_digits: bool = False) -> str:
         for let in set(text):
             if let.lower() not in ascii_lowercase + self.cyrillic_lower_letters + ' ' + digits * allow_digits:
-                text = text.replace(let, '')
+                text = text.replace(let, ' ')
         text = ' '.join(word for word in text.lower().split())
         return text
+
+    def lemmatize_persons(self, original_persons: dict) -> dict:
+        persons_isu_ids, persons_texts = list(original_persons.keys()), list(original_persons.values())
+        factorized_persons = self._factorize_persons(persons_texts)
+        result = []
+        mystem = Mystem()
+        for part in factorized_persons:
+            all_texts = ' '.join([f'{txt} br ' for txt in part])
+            words = mystem.lemmatize(all_texts)
+            doc = []
+            for txt in words:
+                if txt != '\n' and txt.strip():
+                    if txt == 'br':
+                        result.append(' '.join(doc))
+                        doc = []
+                    else:
+                        doc.append(txt)
+        persons = dict(zip(persons_isu_ids, result))
+        return persons
 
     @staticmethod
     def _factorize_persons(persons: list, size: int = 1000) -> list[list[tuple[str, dict]]]:

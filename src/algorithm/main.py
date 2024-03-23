@@ -1,4 +1,4 @@
-from how_many_words_transformed import transformed_words
+from function import transformed_words
 
 texts = []
 n = 5

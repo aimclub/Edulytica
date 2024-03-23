@@ -3,10 +3,16 @@ from src.data_handling.data_manager import DataManager
 
 
 class DataManagerTest(unittest.TestCase):
+    def test_init(self):
+        with self.assertRaises(FileNotFoundError):
+            DataManager('filenotexists.json')
+
     def setUp(self):
         test_persons_file = './tests/data_handling/test_persons.json'
-        self.data_manager = DataManager(persons_json_filename=test_persons_file)
-        self.empty_data_manager = DataManager(persons_json_filename=test_persons_file)
+        stop_words_file = './src/data_handling/stop_words.txt'
+        self.data_manager = DataManager(persons_json_filename=test_persons_file, stop_words_filename=stop_words_file)
+        self.empty_data_manager = DataManager(persons_json_filename=test_persons_file,
+                                              stop_words_filename=stop_words_file)
         self.empty_data_manager.persons_json = {}
 
     def test_get_processed_persons(self):
@@ -17,8 +23,6 @@ class DataManagerTest(unittest.TestCase):
         self.assertIsInstance(without_empty, dict)
         self.assertFalse(self.empty_data_manager.get_processed_persons(with_empty=True, save_file_flag=False))
         self.assertFalse(self.empty_data_manager.get_processed_persons(with_empty=False, save_file_flag=False))
-        with self.assertRaises(FileNotFoundError):
-            DataManager('filenotexists.json')
 
     def test_cleanse_text(self):
         self.assertEqual(self.data_manager._cleanse_text('qwe123DW'), 'qwe dw')
@@ -38,6 +42,13 @@ class DataManagerTest(unittest.TestCase):
         self.assertEqual(self.data_manager._factorize_persons(['aaa', 'bbb', 'ccc']), [['aaa'], ['bbb'], ['ccc']])
         self.data_manager.factorization_size = 1000
         self.assertEqual(self.data_manager._factorize_persons(['aaa', 'bbb', 'ccc']), [['aaa', 'bbb', 'ccc']])
+
+    def test_remove_stop_words(self):
+        self.assertEqual(self.data_manager.remove_stop_words('вышел во двор'), 'вышел двор')
+        self.assertEqual(self.data_manager.remove_stop_words('in a background'), 'background')
+        self.assertEqual(self.data_manager.remove_stop_words(''), '')
+        self.assertEqual(self.data_manager.remove_stop_words('  '), '')
+        self.assertEqual(self.data_manager.remove_stop_words(' a в a '), '')
 
 
 if __name__ == '__main__':

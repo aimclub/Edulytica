@@ -10,7 +10,8 @@ class DataManager:
     cyrillic_lower_letters = 'абвгдеёжзийклмнопрстуфхцчшщъыьэюя'
 
     def __init__(self, persons_json_filename: str = 'persons.json',
-                 result_json_filename: str = 'persons_result.json') -> None:
+                 result_json_filename: str = 'persons_result.json',
+                 stop_words_filename: str = 'stop_words.txt') -> None:
         """
         :param persons_json_filename: filepath to persons.json file
         :param result_json_filename: filepath to cleansed result persons json file
@@ -18,7 +19,9 @@ class DataManager:
 
         self.origin_persons_filename = persons_json_filename
         self.result_persons_filename = result_json_filename
-        with open(self.origin_persons_filename, 'r', encoding='utf-8') as persons_file:
+        self.stop_words_filename = stop_words_filename
+        self.encoding = 'utf-8'
+        with open(self.origin_persons_filename, 'r', encoding=self.encoding) as persons_file:
             self.persons_json: dict = json.load(persons_file)
         self.factorization_size = 1000
 
@@ -132,7 +135,7 @@ class DataManager:
         for let in set(text):
             if let.lower() not in ascii_lowercase + self.cyrillic_lower_letters + ' ' + digits * allow_digits:
                 text = text.replace(let, ' ')
-        text = ' '.join(word for word in text.lower().split())
+        text = self.remove_stop_words(text.lower())
         return text
 
     def _lemmatize_persons(self, original_persons: dict) -> dict:
@@ -181,10 +184,20 @@ class DataManager:
         :param filepath: filepath where to save the persons dictionary
         :return:
         """
-        json.dump(persons, open(filepath or self.result_persons_filename, 'w', encoding='utf-8'), ensure_ascii=False,
-                  indent=2)
+        json.dump(persons, open(filepath or self.result_persons_filename, 'w', encoding=self.encoding),
+                  ensure_ascii=False, indent=2)
+
+    def remove_stop_words(self, text: str) -> str:
+        """
+        Method for removing stop words from text
+
+        :param text: original string
+        :return: text without stop words
+        """
+        stop_words = set(open(self.stop_words_filename, 'r', encoding=self.encoding).readline().split())
+        return ' '.join(word for word in text.split() if word not in stop_words)
 
 
 if __name__ == '__main__':
     dw = DataManager()
-    dw.get_processed_persons()
+    print(dw.get_processed_persons())

@@ -2,9 +2,9 @@ import unittest
 from src.data_handling.data_manager import DataManager
 
 
-class MyTestCase(unittest.TestCase):
+class DataManagerTest(unittest.TestCase):
     def setUp(self):
-        test_persons_file = 'test_persons.json'
+        test_persons_file = './tests/data_handling/test_persons.json'
         self.data_manager = DataManager(persons_json_filename=test_persons_file)
         self.empty_data_manager = DataManager(persons_json_filename=test_persons_file)
         self.empty_data_manager.persons_json = {}

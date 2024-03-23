@@ -18,14 +18,16 @@ class DataManager:
 
         self.origin_persons_filename = persons_json_filename
         self.result_persons_filename = result_json_filename
-        self.persons_json: dict = json.load(open(self.origin_persons_filename, 'r', encoding='utf-8'))
+        with open(self.origin_persons_filename, 'r', encoding='utf-8') as persons_file:
+            self.persons_json: dict = json.load(persons_file)
         self.factorization_size = 1000
 
-    def get_processed_persons(self, with_empty: bool = False) -> dict:
+    def get_processed_persons(self, with_empty: bool = False, save_file_flag: bool = True) -> dict:
         """
         Main method for getting cleaned persons data
 
         :param with_empty: whether to save persons with empty fields
+        :param save_file_flag: whether to save persons data
         :return: dictionary with cleaned persons data -> person's isu id is a key, cleaned string is a value
         """
 
@@ -44,7 +46,8 @@ class DataManager:
                 persons[person_isu] = person
 
         persons = self._lemmatize_persons(persons)
-        self._save_persons(persons)
+        if save_file_flag:
+            self._save_persons(persons)
 
         return persons
 
@@ -165,7 +168,6 @@ class DataManager:
         Method for decomposing the persons list into several lists of strings of the size parameter
 
         :param persons: original list of persons
-        :param size: integer representing the length of the inner lists with string contains persons' data
         :return: list of strings containing persons' data
         """
 

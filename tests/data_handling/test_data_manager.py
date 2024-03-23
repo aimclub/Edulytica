@@ -4,8 +4,9 @@ from src.data_handling.data_manager import DataManager
 
 class MyTestCase(unittest.TestCase):
     def setUp(self):
-        self.data_manager = DataManager(persons_json_filename='../../src/data_handling/persons.json')
-        self.empty_data_manager = DataManager(persons_json_filename='../../src/data_handling/persons.json')
+        test_persons_file = 'test_persons.json'
+        self.data_manager = DataManager(persons_json_filename=test_persons_file)
+        self.empty_data_manager = DataManager(persons_json_filename=test_persons_file)
         self.empty_data_manager.persons_json = {}
 
     def test_get_processed_persons(self):

@@ -1,0 +1,49 @@
+{
+"params": ["font size", "font type", "line spacing", "color", "format", "background color"],
+"elements": [
+{ "element": "scope of application", "description": "Description of GOST and its application" },
+{ "element": "requirements for structural elements of the report", "description": "Dictionary containing all structural elements of the report with requirements" },
+{ "element": "design rules", "description": "Rules for the design of various tools like fonts, sizes, colors, styles, etc." }
+],
+"gost_params": {
+"scope of application": {
+"application_area": "GOST is widely used for content coverage in Scopus"
+},
+"requirements for structural elements of the report": {
+"cover_page": ["Title of the report", "Author's name", "Date of submission"],
+"table_of_contents": ["List of all sections and subsections with page numbers"],
+"abstract": ["Concise summary of the report"],
+"introduction": ["Background information", "Purpose of the report", "Scope of work"],
+"methodology": ["Description of research methods", "Data collection techniques"],
+"results": ["Presentation of findings", "Statistical analysis"],
+"discussion": ["Interpretation of results", "Comparison with existing literature"],
+"conclusion": ["Summary of key findings", "Recommendations"],
+"references": ["Citations in a standard format", "Listed alphabetically"]
+},
+"design rules": {
+"fonts": {
+"body_text": {"font_family": "Arial", "font_size": "11pt"},
+"headings": {"font_family": "Times New Roman", "font_size": "14pt"}
+},
+"colors": {
+"background": {"color": "white"},
+"text": {"color": "black"}
+},
+"spacing": {
+"line_spacing": "1.5"
+},
+"table_design": {
+"border_thickness": "1px",
+"cell_padding": "5px"
+},
+"figures": {
+"caption_style": "Italic",
+"image_resolution": "300dpi"
+},
+"links": {
+"text_color": "blue",
+"hover_effect": "underline"
+}
+}
+}
+}

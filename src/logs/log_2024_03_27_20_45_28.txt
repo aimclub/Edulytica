@@ -1,0 +1,46 @@
+{
+"params": ["font size", "font type", "line spacing", "color", "url"],
+"elements": [
+{"element": "Scope of application", "description": "Description of where GOST is applied"},
+{"element": "Requirements for structural elements of the report", "description": "A dictionary containing all structural elements of the report"},
+{"element": "Design rules", "description": "Design rules for various tools like fonts, sizes, colors, etc."}
+],
+"gost_params": {
+"Scope of application": "GOST is applied in defining the complete coverage of Scopus, including the expansion of humanities titles and book coverage.",
+"Requirements for structural elements of the report": {
+"titles": ["Humanities titles", "Arts & Humanities titles", "Book titles", "Cited references", "Abstracts", "Journals from various publishers"],
+"requirements": {
+"Humanities titles": "Includes 3,500 titles (4,200 humanities-related titles) and 116,000 book titles added since 2014.",
+"Arts & Humanities titles": "Part of the social sciences subject cluster and can be excluded or limited in search results.",
+"Book titles": "Over 55% of added books represent arts & humanities and social sciences.",
+"Cited references": "Going back to 1970 through the Cited Reference Expansion project.",
+"Abstracts": "73% of articles have an abstract dating back to 1823.",
+"Journals from various publishers": "Back files (pre-1996) from publishers are added when available."
+}
+},
+"Design rules": {
+"General": {
+"Font": {"size": "12 pt", "type": "Times New Roman"},
+"Line spacing": "1.5"
+},
+"Tables": {
+"Font": {"size": "10 pt", "type": "Arial"},
+"Color": "Light gray"
+},
+"Figures": {
+"Font": {"size": "11 pt", "type": "Calibri"},
+"Color": "Black"
+},
+"Footnotes": {
+"Font": {"size": "10 pt", "type": "Times New Roman"}
+},
+"Links": {
+"Color": "Blue",
+"Underline": "True"
+},
+"URLs": {
+"Color": "Green"
+}
+}
+}
+}

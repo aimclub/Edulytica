@@ -1,0 +1,14 @@
+{
+"params": ["font_size", "font_type", "paper_color", "paper_format", "line_spacing", "page", "length", "element_name", "description"],
+"elements": [
+{ "element_name": "Title", "description": "The title of the paper. It should be brief and represent the content (findings) of the research. The title is usually written after the research is completed. It should reflect what is the research about"}, 
+{ "element_name": "Abstract", "description": "A single paragraph of between 100-250 words that provides a summary of each of the main sections of the paper (Introduction, Materials and Methods, Results, and Discussion)"},
+{ "element_name": "Introduction", "description": "The introduction explains why the study is important. It describes the author's motivation, references their problem and the existing knowledge surrounding it, and states the method of the investigation" },
+{ "element_name": "Materials and Methods", "description": "Provides full details of the methods used in the research, justifying their choice to the reader. Describes and defends the experimental design"}},
+"gost_params": {
+"Title": {"font_size": "12 pt","font_type": "Times New Roman"},
+"Abstract": {"length": {"max": 250,"min":100}},
+"Introduction": {"font_size": "14 pt","line_spacing": 1.5},
+"Materials and Methods": {"font_size": "14 pt", "line_spacing": 1.5}
+}
+}

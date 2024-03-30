@@ -1,0 +1,39 @@
+{
+"params": ["font size", "font type", "line spacing", "color", "format", "article processing time"],
+"elements": [
+{"element": "Scopus coverage", "description": "Information about the coverage of Scopus in terms of humanities titles, book titles, and growth since 2014."},
+{"element": "Complete coverage", "description": "Details about Scopus coverage including backfilling content, cited references, and launch dates."},
+{"element": "Records pre- and post-1996", "description": "Coverage completeness information for Scopus pre- and post-1996 including the percentage of articles with abstracts."},
+{"element": "MEDLINE coverage", "description": "Explanation of MEDLINE coverage within Scopus and the integration advantages."},
+{"element": "Processing of Scopus content", "description": "Details on how Scopus obtains content from publishers and the processing times for different formats."},
+{"element": "Articles-in-Press (AiP)", "description": "Information on pre-published versions of articles and their availability in Scopus."},
+{"element": "Conclusion", "description": "Final remarks about the overview guide and where to find updated content numbers."}
+],
+"gost_params": {
+"font": {"size": "12 pt", "type": "variable", "color": "black"},
+"line_spacing": "1.5",
+"paper_format": {"color": "white", "format": "A4"},
+"table_design": {
+"fonts": [("variable", "Times New Roman")],
+"sizes": [("headings", "12 pt"), ("content", "11 pt")],
+"indents": [("first line", "1 cm"), ("spacing", "0.5 cm")],
+"colors": [("headings", "black"), ("content", "black")]
+},
+"figures_design": {
+"fonts": [("variable", "Arial")],
+"sizes": [("captions", "10 pt"), ("labels", "9 pt")],
+"colors": [("captions", "black"), ("labels", "black")],
+"styles": [("bold captions", "true")]
+},
+"formulas_design": {
+"fonts": [("variable", "Cambria Math")],
+"sizes": [("variables", "10 pt"), ("numbers", "10 pt")],
+"colors": [("variables", "black"), ("numbers", "black")],
+"styles": [("italic variables", "true")]
+},
+"links_design": {
+"colors": [("standard", "blue"), ("visited", "purple"), ("hover", "red")],
+"text_decorations": [("standard", "underline"), ("hover", "underline")]
+}
+}
+}

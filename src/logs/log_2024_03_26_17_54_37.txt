@@ -1,0 +1,39 @@
+{
+"params": ["ISBN", "physical formats", "monograph", "edited volumes", "reference works", "textbooks", "book coverage", "publisher-based selection policy", "book indexing level", "secondary documents", "patents", "metadata coverage", "document types", "abstracts", "keywords", "index terms", "cited references"],
+"elements": [
+{"element": "non-serial sources", "description": "Publication with an ISBN, excludes reports, book series, proceeding, or patent"},
+{"element": "book coverage expansion", "description": "Including monographs, edited volumes, reference works, textbooks"},
+{"element": "publisher-based selection policy", "description": "Review publishers based on relevance and quality of complete books list to index in Scopus"},
+{"element": "book indexing levels", "description": "Books are indexed at both book and chapter levels"},
+{"element": "secondary documents", "description": "Approximately 90 million non-core records in Scopus, cited in Scopus core records but not indexed"},
+{"element": "patents", "description": "Over 27 million patent records available in Scopus from five patent offices"},
+{"element": "metadata coverage", "description": "Scopus coverage focuses on primary document types, excludes secondary document types"},
+{"element": "document types covered", "description": "Scopus includes article, book, chapter, conference paper, editorial, erratum, letter, note, review, and short survey"},
+{"element": "document types not covered", "description": "Scopus excludes book reviews and conference meeting abstracts"},
+{"element": "abstracts", "description": "Over 44 million Scopus records contain abstracts, providing comprehensive information about the research"},
+{"element": "keywords and index terms", "description": "Scopus manually adds index terms from controlled vocabularies for 80% of included titles"},
+{"element": "cited references", "description": "Cited references in Scopus go back to 1970, with the Cited References Expansion project adding pre-1996 references"}
+],
+"gost_params": {
+"ISBN": {
+"element": ["non-serial sources"],
+"meaning": "Identifies publications to be excluded unless they are reports, part of a book series, proceeding, or patent"
+},
+"monograph": {
+"element": ["non-serial sources", "book coverage expansion"],
+"meaning": "Mainly associated with non-serial sources, expanded coverage in book contents"
+},
+"metadata coverage": {
+"element": ["document types"],
+"meaning": "Scopus focuses on primary document types excluding secondary document types"
+},
+"abstracts": {
+"element": ["abstracts"],
+"meaning": "Over 44 million records in Scopus contain abstracts to enhance research visibility"
+},
+"cited references": {
+"element": ["cited references"],
+"meaning": "Scopus provides cited references dating back to 1970, with ongoing projects adding pre-1996 references"
+}
+}
+}

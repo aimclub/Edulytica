@@ -1,0 +1,31 @@
+{
+"params": ["font size", "font type", "line spacing", "spacing before and after paragraphs", "colors", "styles"],
+"elements": [
+{"element": "scope of application", "description": "Brief description of GOST, where it is applied"},
+{"element": "requirements for structural elements of the report", "description": "A dictionary containing all structural elements of the report as keys and a list of requirements for each element"},
+{"element": "design rules", "description": "All rules for the design of various tools (fonts, sizes, indents, colors, styles, numbering, etc.) should be written down in this paragraph."}
+],
+"gost_params": {
+"font size": "12 pt",
+"font type": "Times New Roman",
+"line spacing": 1.5,
+"spacing before and after paragraphs": "6 pt",
+"colors": {
+"text": "Black",
+"headings": "Blue",
+"links": "Blue"
+},
+"styles": {
+"headings": "Bold",
+"tables": "Borders with 0.5 pt thickness",
+"figures": "Caption centered below the figure",
+"footnotes": "Font size 10 pt, single spacing, superscript",
+"formulas": "Italicized, numbered on the right side",
+"links": {
+"normal": "Underlined",
+"visited": "Purple",
+"hover": "Red"
+}
+}
+}
+}

@@ -1,0 +1,57 @@
+{
+"params": ["font", "spacing", "color", "size", "margin", "indent", "numbering"],
+"elements": [
+{"element": "Scopus", "description": "Abstract and citation database of peer-reviewed literature covering various fields"},
+{"element": "Content Selection & Advisory Board", "description": "Established group of experts evaluating content for inclusion in Scopus"},
+{"element": "Purpose and scope", "description": "Document providing an overview of content coverage in Scopus"},
+{"element": "Source types coverage", "description": "Coverage of serial and non-serial publications in Scopus"},
+{"element": "Document types", "description": "Different types of documents indexed in Scopus like journal articles, books, conference papers"},
+{"element": "Font size", "description": "Font size in the document"},
+{"element": "Table design", "description": "Formatting rules for tables in Scopus"},
+{"element": "Figure design", "description": "Design guidelines for figures in Scopus"},
+{"element": "Footnote design", "description": "Formatting rules for footnotes in Scopus"},
+{"element": "Formula design", "description": "Guidelines for the design of formulas in Scopus"},
+{"element": "Link design", "description": "Design rules for links in Scopus"}
+],
+"gost_params": {
+"application_area": "Content coverage in Scopus includes various fields like science, technology, medicine, social science, and arts and humanities",
+"report_structure_requirements": {
+"Title": ["Clear and descriptive title at the beginning of each section"],
+"Table of Contents": ["List of all section headings with page numbers"],
+"Introduction": ["Overview of Scopus, launch date, and content overview"],
+"Content Selection & Advisory Board": ["Description of the board's purpose and members"],
+"Scope": ["Detailed information about the purpose and scope of the document"],
+"Coverage of Source Types": ["Breakdown of source types and their coverage in Scopus"],
+"Processing of Scopus Content": ["Information on how content is processed in Scopus"]
+},
+"design_rules": {
+"font": {
+"size": "12 pt",
+"type": "Times New Roman"
+},
+"spacing": {
+"line": "1.5"
+},
+"color": {
+"text": "Black",
+"background": "White"
+},
+"size": {
+"paper": "A4"
+},
+"margin": {
+"top": "1 inch",
+"bottom": "1 inch",
+"left": "1 inch",
+"right": "1 inch"
+},
+"indent": {
+"paragraph": "0.5 inch"
+},
+"numbering": {
+"figures": "Figure X.X.",
+"tables": "Table X.X.",
+"footnotes": "Numeric"
+}
+}
+}

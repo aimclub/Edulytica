@@ -1,0 +1,16 @@
+{
+    "params": ["размер шрифта", "абзацный отступ"],
+    "elements": [
+        {"element": "текст, повторяющийся в строках одной и той же графы", "description": "одиночные слова заменяются кавычками"},
+        {"element": "текст, повторяющийся в строках одной и той же графы", "description": "при первом повторении заменяется словами 'то же', а далее кавычками"},
+        {"element": "цифры, буквенно-цифровые обозначения, знаки и символы", "description": "замена на кавычки не допускается"},
+        {"element": "примечания", "description": "необходимы для пояснений или справочных данных к тексту, таблицам или графическому материалу"}
+    ],
+    "gost_params": [
+        {"id_gost": 1, "id_element": 1, "value": "кавычки", "id_param": 1, "is_recommented": 0, "operator": "заменять"},
+        {"id_gost": 1, "id_element": 2, "value": "словами 'то же'", "id_param": 1, "is_recommented": 0, "operator": "заменять"},
+        {"id_gost": 1, "id_element": 2, "value": "кавычки", "id_param": 1, "is_recommented": 0, "operator": "заменять"},
+        {"id_gost": 1, "id_element": 3, "value": "кавычки", "id_param": 1, "is_recommented": 0, "operator": "не допускается замена"},
+        {"id_gost": 1, "id_element": 4, "value": "-", "id_param": 2, "is_recommented": 0, "operator": "необходимы для пояснений"}
+    ]
+}

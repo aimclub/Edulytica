@@ -1,0 +1,32 @@
+{
+"params": ["abstract", "index terms", "cited references", "affiliation data", "author profiles", "ORCID integration"],
+"elements": [
+{"element": "Articles", "description": "Articles in peer-reviewed journals are usually several pages in length, most often subdivided into sections: abstract, introduction, materials & methods, results, conclusions, discussion, and references."},
+{"element": "Article-in-Press (AiP)", "description": "Accepted article made available online before official publication."},
+{"element": "Book", "description": "A whole monograph or entire book."},
+{"element": "Chapter", "description": "A complete chapter in a book or book series volume."},
+{"element": "Conference paper", "description": "Original article reporting data presented at a conference or symposium."},
+{"element": "Editorial", "description": "Summary of several articles or provides editorial opinions or news."},
+{"element": "Erratum", "description": "Report of an error, correction, or retraction of a previously published paper."},
+{"element": "Letter", "description": "Letter to or correspondence with the editor."},
+{"element": "Note", "description": "Note, discussion, or commentary."},
+{"element": "Review", "description": "Significant review of original research, also includes conference papers."},
+{"element": "Short Survey", "description": "Short or mini-review of original research."},
+{"element": "Book Reviews", "description": "Book reviews not included in Scopus as they are not primary literature and not often cited in research literature. This applies to trade journals."},
+{"element": "Conference meeting abstracts", "description": "More details in section 2.1, not covered in this summary."},
+{"element": "Abstracts", "description": "Over 44 million records in Scopus contain an abstract."},
+{"element": "Keywords and Index Terms", "description": "Scopus manually adds index terms for 80% of the titles included in Scopus."},
+{"element": "Cited References", "description": "Cited references in Scopus go back to 1970, with updates as of December 2015 for pre-1996 content."},
+{"element": "Affiliation Data", "description": "Search Scopus based on affiliation data, which is automatically identified and matched."},
+{"element": "Author Profiles", "description": "Search Scopus based on author data, with an automatically identified Scopus Author Identifier."},
+{"element": "ORCID Integration", "description": "ORCID is integrated into Scopus to assign a unique identifier to each author."},
+],
+"gost_params": {
+"Font": {"size": "12 pt", "type": "Times New Roman"},
+"Table": {"borders": "1px solid black", "background_color": "white"},
+"Figure": {"caption": "Bold", "label": "Italic"},
+"Footnotes": {"numbering": "Numeric", "placement": "Bottom of page"},
+"Formulas": {"font": "Italic", "alignment": "Centered"},
+"Links": {"color": "Blue", "underline": true},
+}
+}

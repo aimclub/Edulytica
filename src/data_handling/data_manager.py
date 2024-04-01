@@ -34,6 +34,7 @@ class DataManager:
         :return: dictionary with cleaned persons data -> person's isu id is a key, cleaned string is a value
         """
 
+        used = set()
         persons = {}
         for person_isu in self.persons_json:
             person_json = self.persons_json[person_isu]['data']
@@ -46,8 +47,9 @@ class DataManager:
             person = ' '.join((bio, education, events, publications, projects, events)).strip()
 
             if with_empty or person:
-                persons[person_isu] = person
-
+                if person not in used:
+                    persons[person_isu] = person
+                    used.add(person)
         persons = self._lemmatize_persons(persons)
         if save_file_flag:
             self._save_persons(persons)
@@ -72,8 +74,8 @@ class DataManager:
             if education_json:
                 education = self._cleanse_text(education_json['faculty']['name'])
                 education = self._cleanse_text(
-                    f"{education} {education_json['year']}"
-                    f" {education_json['program']['name'] if education_json['study'] == 'std' else ''}", True)
+                    f"{education} {education_json['program']['name'] if education_json['study'] == 'std' else ''}",
+                    True)
 
         return bio, education
 
@@ -88,7 +90,7 @@ class DataManager:
         publications = ''
         for publication in (person_json['publications'] or []) + (person_json['rids'] or []):
             publications = self._cleanse_text(f"{publication['type']} {(publication['title'])}")
-            publications = self._cleanse_text(f"{publications} {publication['year']}", True)
+            publications = self._cleanse_text(f"{publications}", True)
 
         return publications
 
@@ -119,7 +121,7 @@ class DataManager:
         for event in person_json['events'] or []:
             events = self._cleanse_text(f"{event['rank']} "
                                         f"{event['title']} {event['type']} {event['role']}")
-            events = self._cleanse_text(f"{events} {event['year']}", True)
+            events = self._cleanse_text(f"{events}", True)
 
         return events
 
@@ -159,7 +161,7 @@ class DataManager:
             for txt in words:
                 if txt != '\n' and txt.strip():
                     if txt == 'br':
-                        result.append(' '.join(doc))
+                        result.append(self._cleanse_text(' '.join(doc), allow_digits=True))
                         doc = []
                     else:
                         doc.append(txt)

@@ -19,6 +19,7 @@ class ParserVKR:
         self.bachelor_start_id = start_person_id | 790
         self.bachelor_end_id = 45210
         self.BACHELOR_STUDIES = 'BACHELOR STUDIES'
+        self.MASTERS_STUDIES = "MASTER'S STUDIES"
         self.data_path = 'VKRsData'
         self.user_agent = 'Mozilla/5.0'
 
@@ -38,7 +39,7 @@ class ParserVKR:
 
         try:
             start_person_id = max(self.bachelor_start_id, int(open('last_person_id.txt', 'r').read()))
-        except FileNotFoundError:
+        except (FileNotFoundError, ValueError):
             start_person_id = self.bachelor_start_id
         for person_id in range(start_person_id, self.bachelor_end_id + 1):
             sleep(2 + random())
@@ -47,7 +48,11 @@ class ParserVKR:
             response = self._make_request(url)
             print(url, response.status_code, end=' ')
             if response.status_code == 200:
-                if self.BACHELOR_STUDIES not in response.text:
+                if self.BACHELOR_STUDIES in response.text:
+                    person_type = 'bachelor'
+                elif self.MASTERS_STUDIES in response.text:
+                    person_type = 'master'
+                else:
                     print('No Vkr')
                     continue
                 print('Vkr')
@@ -57,11 +62,11 @@ class ParserVKR:
                 file_url = urljoin(self.main_page_url,
                                    soup.find('td', attrs={'headers': 't1', 'class': 'standard'}).contents[0]['href'])
                 try:
-                    open(f'{self.data_path}/{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                    open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
                         self._make_request(file_url).content)
                 except FileNotFoundError:
                     mkdir(self.data_path)
-                    open(f'{self.data_path}/{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                    open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
                         self._make_request(file_url).content)
             else:
                 print()

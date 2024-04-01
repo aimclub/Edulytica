@@ -74,7 +74,7 @@ class ParserVKR:
         :return: response
         """
 
-        return requests.get(url, headers={'User-Agent': self.user_agent})
+        return requests.get(url, headers={'User-Agent': self.user_agent}, timeout=5)
 
 
 if __name__ == '__main__':

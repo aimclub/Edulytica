@@ -12,11 +12,11 @@ class ParserVKR:
     This class is responsible for parsing VKR files
     """
 
-    def __init__(self) -> None:
+    def __init__(self, start_person_id: int = None) -> None:
         self.main_page_url = f'https://dspace.spbu.ru'
         self.persons_url = 'handle'
         self.bachelor_main_id = 11701
-        self.bachelor_start_id = 790
+        self.bachelor_start_id = start_person_id | 790
         self.bachelor_end_id = 45210
         self.BACHELOR_STUDIES = 'BACHELOR STUDIES'
         self.data_path = 'VKRsData'
@@ -78,5 +78,7 @@ class ParserVKR:
 
 
 if __name__ == '__main__':
-    parser = ParserVKR()
+    start_id = 790
+
+    parser = ParserVKR(start_id)
     parser.parse_vkrs()

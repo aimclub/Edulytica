@@ -18,6 +18,10 @@ class ParserVKR:
         self.person_main_id = 11701
         self.master_start_id = start_person_id or 790
         self.person_end_id = end_person_id or 45210
+        try:
+            self.excluded_ids = set(map(int, open('excluded_ids.txt').readline().split()))
+        except FileNotFoundError:
+            self.excluded_ids = set()
         self.BACHELOR_STUDIES = 'BACHELOR STUDIES'
         self.MASTERS_STUDIES = "MASTER'S STUDIES"
         self.data_path = 'VKRsData'
@@ -55,19 +59,27 @@ class ParserVKR:
                 else:
                     print('No Vkr')
                     continue
-                print('Vkr')
-                sleep(2 + random())
 
                 soup = BSoup(response.text, 'html.parser')
-                file_url = urljoin(self.main_page_url,
-                                   soup.find('td', attrs={'headers': 't1', 'class': 'standard'}).contents[0]['href'])
                 try:
-                    open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
-                        self._make_request(file_url).content)
-                except FileNotFoundError:
-                    mkdir(self.data_path)
-                    open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
-                        self._make_request(file_url).content)
+                    file_url = urljoin(self.main_page_url,
+                                       soup.find('td', attrs={'headers': 't1', 'class': 'standard'}).contents[0][
+                                           'href'])
+                    try:
+                        print('Vkr')
+                        sleep(2 + random())
+                        open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                            self._make_request(file_url).content)
+
+                    except FileNotFoundError:
+                        mkdir(self.data_path)
+                        open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                            self._make_request(file_url).content)
+
+                except AttributeError:
+                    self.excluded_ids.add(person_id)
+                    open('excluded_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, self.excluded_ids)))
+                    print('Wrong')
             else:
                 print()
 
@@ -79,12 +91,12 @@ class ParserVKR:
         :return: response
         """
 
-        return requests.get(url, headers={'User-Agent': self.user_agent}, timeout=5)
+        return requests.get(url, headers={'User-Agent': self.user_agent}, timeout=10)
 
 
 if __name__ == '__main__':
-    start_id = None
-    end_id = None
+    start_id = 723
+    end_id = 15552
 
     parser = ParserVKR(start_id, end_id)
     parser.parse_vkrs()

@@ -12,12 +12,12 @@ class ParserVKR:
     This class is responsible for parsing VKR files
     """
 
-    def __init__(self, start_person_id: int = None) -> None:
+    def __init__(self, start_person_id: int = None, end_person_id: int = None) -> None:
         self.main_page_url = f'https://dspace.spbu.ru'
         self.persons_url = 'handle'
-        self.bachelor_main_id = 11701
-        self.bachelor_start_id = start_person_id | 790
-        self.bachelor_end_id = 45210
+        self.person_main_id = 11701
+        self.master_start_id = start_person_id or 790
+        self.person_end_id = end_person_id or 45210
         self.BACHELOR_STUDIES = 'BACHELOR STUDIES'
         self.MASTERS_STUDIES = "MASTER'S STUDIES"
         self.data_path = 'VKRsData'
@@ -38,13 +38,13 @@ class ParserVKR:
         """
 
         try:
-            start_person_id = max(self.bachelor_start_id, int(open('last_person_id.txt', 'r').read()))
+            start_person_id = max(self.master_start_id, int(open('last_person_id.txt', 'r').read()))
         except (FileNotFoundError, ValueError):
-            start_person_id = self.bachelor_start_id
-        for person_id in range(start_person_id, self.bachelor_end_id + 1):
+            start_person_id = self.master_start_id
+        for person_id in range(start_person_id, self.person_end_id + 1):
             sleep(2 + random())
             open('last_person_id.txt', 'w').write(f'{person_id}')
-            url = f'{self.main_page_url}/{self.persons_url}/{self.bachelor_main_id}/{person_id}'
+            url = f'{self.main_page_url}/{self.persons_url}/{self.person_main_id}/{person_id}'
             response = self._make_request(url)
             print(url, response.status_code, end=' ')
             if response.status_code == 200:
@@ -83,7 +83,8 @@ class ParserVKR:
 
 
 if __name__ == '__main__':
-    start_id = 790
+    start_id = None
+    end_id = None
 
-    parser = ParserVKR(start_id)
+    parser = ParserVKR(start_id, end_id)
     parser.parse_vkrs()

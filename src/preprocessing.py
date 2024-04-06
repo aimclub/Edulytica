@@ -21,7 +21,7 @@ def preprocess_text(text):
 
 
 def text_to_chunks(
-        text: str, chunk_size: int = 512, chunk_overlap: int = 10
+        text: str, chunk_size: int = 500, chunk_overlap: int = 10
 ) -> List[str]:
 
     if chunk_size <= 0:

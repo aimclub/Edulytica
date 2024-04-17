@@ -39,7 +39,14 @@ class SemanticSearcher:
         self.fitted = True
 
     def search(self, query_text: str, return_distance: bool = True) -> Union[List[Dict[str, Union[str, float]]], List[str]]:
-        """Perform semantic search."""
+        """
+        Searches for semantically similar chunks of text based on a query string.
+
+        :param query_text: The query string to search for.
+        :param return_distance: Whether to return the distance metric with the search results.
+        :return: If return_distance is true, returns a list of dictionaries
+                 with text and their corresponding distances. Otherwise, returns only a list of texts.
+        """
         if not self.fitted:
             raise ValueError("Cannot search before fit is called.")
         query_embedding = self.openai_embeddings.embed_documents([query_text])[0]

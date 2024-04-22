@@ -143,7 +143,7 @@ class DataManager:
     def _lemmatize_persons(self, original_persons: dict) -> dict:
         """
         Method that lemmatizes persons' data.
-        for faster lemmaization, it combines persons to groups and run algorithm together.
+        for faster lemmatization, it combines persons to groups and run algorithm together.
         You can change the size class parameter to reshape the groups
 
         :param original_persons: original persons dictionary

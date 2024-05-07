@@ -3,6 +3,7 @@ import csv
 import os
 import sys
 
+import pdfminer.pdfparser
 import pdfplumber
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer, LTRect, LTChar
@@ -11,13 +12,20 @@ csv.field_size_limit(int(sys.maxsize // 1e13))
 
 
 class PDFParser:
-    def parse_files(self, pdfs_directory, csv_filename=None):
+    def __init__(self):
+        self.intro_strs = 'введение', 'introduction'
+        self.origins_strs = 'источник', 'литератур'
+        self.lines_to_title_check = 10
+
+    def parse_files(self, pdfs_directory, csv_filename=None, clear_csv=False):
         try:
             if csv_filename is None:
                 csv_filename = './pdfs_data.csv'
             os.chdir(pdfs_directory)
             try:
-                with open(csv_filename, 'r', newline='', encoding='utf-8') as csvfile:
+                if clear_csv:
+                    self.clear_csv(csv_filename)
+                with open(f'../{csv_filename}', 'r', newline='', encoding='utf-8') as csvfile:
                     pdf_reader = csv.reader(csvfile)
                     pdfs = dict(pdf_reader)
             except FileNotFoundError:
@@ -29,8 +37,11 @@ class PDFParser:
                 if pdf_filename[:-4] in pdfs:
                     print('skipped')
                 else:
-                    pdfs[pdf_filename[:-4]] = self.parse_file(pdf_filename)
-                    print('done')
+                    try:
+                        pdfs[pdf_filename[:-4]] = self.parse_file(pdf_filename)
+                        print('done')
+                    except pdfminer.pdfparser.PDFSyntaxError:
+                        print('pdf can not be opened')
         except Exception as e:
             print(e)
         finally:
@@ -43,7 +54,30 @@ class PDFParser:
 
     def parse_file(self, pdf_path: str) -> str:
         pages = []
+
+        start_page, stop_page = 0, None
         for page_num, page in enumerate(extract_pages(pdf_path)):
+            page_elements = [(element.y1, element) for element in page._objs]
+            page_elements.sort(key=lambda x: -x[0])
+
+            for i in range(min(self.lines_to_title_check, len(page_elements))):
+                page_title = page_elements[i][1]
+                if not isinstance(page_title, LTTextContainer):
+                    continue
+                if not start_page and not any(
+                        intro_str in page_title.get_text().lower() for intro_str in self.intro_strs):
+                    continue
+                if not start_page:
+                    start_page = page_num
+                if any(origins_str in page_title.get_text().strip().lower() for origins_str in self.origins_strs):
+                    stop_page = page_num
+                    break
+            if start_page and stop_page:
+                break
+        else:
+            stop_page = page_num
+
+        for page_num, page in enumerate(list(extract_pages(pdf_path))[start_page:stop_page]):
             text_from_tables = []
             page_content = []
             table_num = 0
@@ -83,7 +117,7 @@ class PDFParser:
                         table_num += 1
             pages.append(page_content)
 
-        return ''.join(row for page in pages for row in page).replace('\n', ' \n').replace('\0', '')
+        return ''.join(row for page in pages for row in page).replace('\0', '')
 
     @staticmethod
     def _extract_text(element):
@@ -113,6 +147,10 @@ class PDFParser:
                 item in row]
             table_string += f"|{'|'.join(cleansed_row)}|\n"
         return table_string[:-1]
+
+    @staticmethod
+    def clear_csv(csv_filename: str):
+        open(csv_filename, 'w', encoding='utf-8').close()
 
 
 if __name__ == '__main__':

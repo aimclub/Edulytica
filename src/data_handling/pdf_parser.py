@@ -1,27 +1,47 @@
+import _csv
 import csv
 import os
+import sys
 
 import pdfplumber
 from pdfminer.high_level import extract_pages
 from pdfminer.layout import LTTextContainer, LTRect, LTChar
 
+csv.field_size_limit(int(sys.maxsize // 1e13))
 
-# noinspection DuplicatedCode
+
 class PDFParser:
-    def parse_files(self, pdfs_directory):
-        os.chdir(pdfs_directory)
-        with open('../pdfs_data.csv', 'a', newline='', encoding='utf-8') as csv_file:
-            writer = csv.DictWriter(csv_file, fieldnames=['id', 'data'], escapechar='\\')
-            pdf_filenames = sorted(filter(lambda x: x[-4:] == '.pdf', os.listdir()))
-            for i, filename in enumerate(pdf_filenames):
-                print(i, filename)
-                if filename[-4:] == '.pdf':
-                    try:
-                        writer.writerow({'id': i, 'data': self.parse_file(filename)})
-                    except Exception as e:
-                        print(e)
+    def parse_files(self, pdfs_directory, csv_filename=None):
+        try:
+            if csv_filename is None:
+                csv_filename = './pdfs_data.csv'
+            os.chdir(pdfs_directory)
+            try:
+                with open(csv_filename, 'r', newline='', encoding='utf-8') as csvfile:
+                    pdf_reader = csv.reader(csvfile)
+                    pdfs = dict(pdf_reader)
+            except FileNotFoundError:
+                pdfs = {}
 
-    def parse_file(self, pdf_path: str):
+            pdf_filenames = sorted(filter(lambda x: x[-4:] == '.pdf', os.listdir()), reverse=True)
+            for i, pdf_filename in enumerate(pdf_filenames):
+                print(i, pdf_filename, end=' ')
+                if pdf_filename[:-4] in pdfs:
+                    print('skipped')
+                else:
+                    pdfs[pdf_filename[:-4]] = self.parse_file(pdf_filename)
+                    print('done')
+        except Exception as e:
+            print(e)
+        finally:
+            os.chdir('..')
+            with open(csv_filename, 'w', newline='', encoding='utf-8') as csv_file:
+                writer = csv.writer(csv_file)
+                for pdf_filename, data in pdfs.items():
+                    writer.writerow((pdf_filename, data))
+            print('\ndata saved')
+
+    def parse_file(self, pdf_path: str) -> str:
         pages = []
         for page_num, page in enumerate(extract_pages(pdf_path)):
             text_from_tables = []
@@ -63,7 +83,7 @@ class PDFParser:
                         table_num += 1
             pages.append(page_content)
 
-        return ''.join(row for page in pages for row in page).replace('\n', ' \\n ')
+        return ''.join(row for page in pages for row in page).replace('\n', ' \n').replace('\0', '')
 
     @staticmethod
     def _extract_text(element):

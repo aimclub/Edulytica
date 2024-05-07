@@ -12,20 +12,31 @@ csv.field_size_limit(int(sys.maxsize // 1e13))
 
 
 class PDFParser:
+    """Parse text from pdf to csv"""
+
     def __init__(self):
         self.intro_strs = 'введение', 'introduction'
         self.origins_strs = 'источник', 'литератур'
         self.lines_to_title_check = 10
+        self.csv_filename = './pdfs_data.csv'
+        self.encoding = 'utf-8'
 
-    def parse_files(self, pdfs_directory, csv_filename=None, clear_csv=False):
+    def parse_files(self, pdfs_directory: str = '.', csv_filename: str = None, clear_csv: bool = False):
+        """Parse all pdfs in directory and save to csv file
+
+        :param pdfs_directory: directory where pdfs located
+        :param csv_filename: result csv file
+        :param clear_csv: whether to clear the result csv file
+        :return None
+        """
+
         try:
-            if csv_filename is None:
-                csv_filename = './pdfs_data.csv'
+            self.csv_filename = csv_filename or self.csv_filename
             os.chdir(pdfs_directory)
             try:
                 if clear_csv:
                     self.clear_csv(csv_filename)
-                with open(f'../{csv_filename}', 'r', newline='', encoding='utf-8') as csvfile:
+                with open(f'../{csv_filename}', 'r', newline='', encoding=self.encoding) as csvfile:
                     pdf_reader = csv.reader(csvfile)
                     pdfs = dict(pdf_reader)
             except FileNotFoundError:
@@ -53,6 +64,13 @@ class PDFParser:
             print('\ndata saved')
 
     def parse_file(self, pdf_path: str) -> str:
+        """
+        Parse pdf file and return it contains as a string without pages before a introduction and used references page
+
+        :param pdf_path: path to pdf file
+        :return: string containing pdf
+        """
+
         pages = []
 
         start_page, stop_page = 0, None
@@ -120,7 +138,14 @@ class PDFParser:
         return ''.join(row for page in pages for row in page).replace('\0', '')
 
     @staticmethod
-    def _extract_text(element):
+    def _extract_text(element: LTTextContainer) -> (str, tuple):
+        """
+        Extract text from LTRect object
+
+        :param element: LTRect object
+        :return: tuple with the string of extracted text and format of extracted text
+        """
+
         line_text = element.get_text()
         line_formats = []
         for text_line in element:
@@ -135,10 +160,26 @@ class PDFParser:
 
     @staticmethod
     def _extract_table(pdf_path, page_num, table_num):
+        """
+        Extract table from pdf file
+
+        :param pdf_path: path to pdf file
+        :param page_num: page index
+        :param table_num: number of table on page
+        :return: table object
+        """
+
         return pdfplumber.open(pdf_path).pages[page_num].extract_tables()[table_num]
 
     @staticmethod
     def _table_converter(table):
+        """
+        Convert table to string
+
+        :param table: table object
+        :return: table as a string
+        """
+
         table_string = ''
         for row_num in range(len(table)):
             row = table[row_num]
@@ -150,9 +191,16 @@ class PDFParser:
 
     @staticmethod
     def clear_csv(csv_filename: str):
+        """
+        Clear csv file
+
+        :param csv_filename: csv file name
+        :return: None
+        """
+
         open(csv_filename, 'w', encoding='utf-8').close()
 
 
 if __name__ == '__main__':
     pdf_parser = PDFParser()
-    pdf_parser.parse_files('../../../VKRsData')
+    pdf_parser.parse_files()

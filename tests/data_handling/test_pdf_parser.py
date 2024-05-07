@@ -24,3 +24,7 @@ class PDFParserTest(unittest.TestCase):
     def tearDown(self):
         if os.path.exists(f'{self.tests_folder}testresult.csv'):
             os.remove(f'{self.tests_folder}testresult.csv')
+
+
+if __name__ == '__main__':
+    unittest.main()

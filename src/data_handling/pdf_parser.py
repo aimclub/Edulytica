@@ -1,4 +1,3 @@
-import _csv
 import csv
 import os
 import sys
@@ -31,7 +30,7 @@ class PDFParser:
         """
 
         try:
-            self.csv_filename = csv_filename or self.csv_filename
+            csv_filename = csv_filename or self.csv_filename
             os.chdir(pdfs_directory)
             try:
                 if clear_csv:
@@ -203,4 +202,4 @@ class PDFParser:
 
 if __name__ == '__main__':
     pdf_parser = PDFParser()
-    pdf_parser.parse_files()
+    pdf_parser.parse_files('../../../VKRsData')

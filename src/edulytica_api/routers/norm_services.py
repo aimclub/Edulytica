@@ -2,7 +2,6 @@ from src.edulytica_api.models.files import *
 
 from fastapi import APIRouter, Depends
 from src.edulytica_api.database import SessionLocal
-from src.edulytica_api.routers.auth_bearer import JWTBearer
 from src.edulytica_api.routers.decorators import token_required
 
 

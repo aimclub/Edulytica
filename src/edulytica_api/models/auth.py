@@ -9,12 +9,12 @@ class User(Base):
     username = Column(String(50),  nullable=False)
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
+    disabled = Column(Boolean, nullable=False, default=False)
 
 class Token(Base):
     __tablename__ = "tokens"
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
-    access_token = Column(String(450), unique=True)
     refresh_token = Column(String(450), nullable=False)
     status = Column(Boolean)
     created_date = Column(DateTime, default=datetime.datetime.now)

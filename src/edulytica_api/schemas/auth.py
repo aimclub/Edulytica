@@ -1,3 +1,5 @@
+import uuid
+
 from pydantic import BaseModel, ConfigDict
 import datetime
 
@@ -12,31 +14,34 @@ class UserCreate(UserUpdate):
     password: str
 
 class UserGet(UserCreate):
-    id: int
+    id: uuid.UUID
     username: str
     email: str
     password: str
+    disabled: bool
 
 
 class UserLogin(BaseModel):
     username: str
     password: str
 
-
-class TokenSchema(BaseModel):
-    access_token: str
-    refresh_token: str
-
-
 class changepassword(BaseModel):
     username: str
     old_password: str
     new_password: str
 
-
-class TokenCreate(BaseModel):
-    user_id: str
-    access_token: str
+class TokenUpdate(BaseModel):
+    id: uuid.UUID
+    model_config = ConfigDict(from_attributes=True)
     refresh_token: str
+    checker: uuid.UUID
     status: bool
+
+class TokenCreate(TokenUpdate):
+    user_id: uuid.UUID
     created_date: datetime.datetime
+
+class TokenGet(TokenCreate):
+    user_id: uuid.UUID
+    refresh_token: str
+    checker: uuid.UUID

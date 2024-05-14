@@ -94,7 +94,7 @@ class PDFParser:
 
             lower_side, upper_side = 0, 0
 
-            for i in range(2):
+            for i in range(min(2, len(page_elements))):
                 first_element = page_elements[i][1]
                 if isinstance(first_element, LTTextContainer):
                     line_text, format_for_line = self._extract_text(first_element)

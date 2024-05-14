@@ -45,7 +45,11 @@ class PDFParser:
             for i, pdf_filename in enumerate(pdf_filenames):
                 print(i, pdf_filename, end=' ')
                 if pdf_filename[:-4] in pdfs:
-                    print('skipped')
+                    if pdfs.get(pdf_filename[:-4]):
+                        print('skipped')
+                    else:
+                        pdfs[pdf_filename[:-4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
+                        print('replaced')
                 else:
                     try:
                         pdfs[pdf_filename[:-4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
@@ -80,22 +84,26 @@ class PDFParser:
             table_extraction_flag = False
             pdf = pdfplumber.open(pdf_path)
             page_tables = pdf.pages[page_num]
-            tables = page_tables.find_tables()
+            try:
+                tables = page_tables.find_tables()
+            except IndexError:
+                pass
 
             page_elements = [(element.y1, element) for element in page._objs]
             page_elements.sort(key=lambda x: -x[0])
 
             lower_side, upper_side = 0, 0
 
-            first_element = page_elements[0][1]
-            if isinstance(first_element, LTTextContainer):
-                line_text, format_for_line = self._extract_text(first_element)
-                for form in format_for_line:
-                    if isinstance(form, str) and 'bold' in form.lower():
-                        if any(intro_str in line_text.lower() for intro_str in self.intro_strs):
-                            has_intro = True
-                        if any(origins_str in line_text.lower() for origins_str in self.origins_strs):
-                            return ''.join(row for page in pages for row in page).replace('\0', '')
+            for i in range(2):
+                first_element = page_elements[i][1]
+                if isinstance(first_element, LTTextContainer):
+                    line_text, format_for_line = self._extract_text(first_element)
+                    for form in format_for_line:
+                        if isinstance(form, str) and 'bold' in form.lower():
+                            if any(intro_str in line_text.lower() for intro_str in self.intro_strs):
+                                has_intro = True
+                            if any(origins_str in line_text.lower() for origins_str in self.origins_strs):
+                                return ''.join(row for page in pages for row in page).replace('\0', '')
             if not has_intro:
                 continue
 

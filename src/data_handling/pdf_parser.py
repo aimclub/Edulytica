@@ -17,7 +17,7 @@ class PDFParser:
         self.intro_strs = 'введение', 'introduction'
         self.origins_strs = 'источник', 'литератур'
         self.lines_to_title_check = 10
-        self.csv_filename = './pdfs_data.csv'
+        self.csv_filename = 'pdfs_data.csv'
         self.encoding = 'utf-8'
 
     def parse_files(self, pdfs_directory: str = '.', csv_filename: str = None, clear_csv: bool = False):
@@ -30,37 +30,37 @@ class PDFParser:
         """
 
         try:
-            csv_filename = csv_filename or self.csv_filename
-            os.chdir(pdfs_directory)
+            if csv_filename is None:
+                csv_filename = self.csv_filename
             try:
                 if clear_csv:
                     self.clear_csv(csv_filename)
-                with open(f'../{csv_filename}', 'r', newline='', encoding=self.encoding) as csvfile:
+                with open(csv_filename, 'r', newline='', encoding=self.encoding) as csvfile:
                     pdf_reader = csv.reader(csvfile)
                     pdfs = dict(pdf_reader)
             except FileNotFoundError:
                 pdfs = {}
 
-            pdf_filenames = sorted(filter(lambda x: x[-4:] == '.pdf', os.listdir()), reverse=True)
+            pdf_filenames = sorted(filter(lambda x: x[-4:] == '.pdf', os.listdir(pdfs_directory)), reverse=True)
             for i, pdf_filename in enumerate(pdf_filenames):
                 print(i, pdf_filename, end=' ')
                 if pdf_filename[:-4] in pdfs:
                     print('skipped')
                 else:
                     try:
-                        pdfs[pdf_filename[:-4]] = self.parse_file(pdf_filename)
+                        pdfs[pdf_filename[:-4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
                         print('done')
                     except pdfminer.pdfparser.PDFSyntaxError:
                         print('pdf can not be opened')
-        except Exception as e:
-            print(e)
         finally:
-            os.chdir('..')
             with open(csv_filename, 'w', newline='', encoding='utf-8') as csv_file:
                 writer = csv.writer(csv_file)
-                for pdf_filename, data in pdfs.items():
-                    writer.writerow((pdf_filename, data))
-            print('\ndata saved')
+                try:
+                    for pdf_filename, data in pdfs.items():
+                        writer.writerow((pdf_filename, data))
+                    print('\ndata saved')
+                except UnboundLocalError:
+                    print('pdfs data is empty')
 
     def parse_file(self, pdf_path: str) -> str:
         """
@@ -71,30 +71,8 @@ class PDFParser:
         """
 
         pages = []
-
-        start_page, stop_page = 0, None
-        for page_num, page in enumerate(extract_pages(pdf_path)):
-            page_elements = [(element.y1, element) for element in page._objs]
-            page_elements.sort(key=lambda x: -x[0])
-
-            for i in range(min(self.lines_to_title_check, len(page_elements))):
-                page_title = page_elements[i][1]
-                if not isinstance(page_title, LTTextContainer):
-                    continue
-                if not start_page and not any(
-                        intro_str in page_title.get_text().lower() for intro_str in self.intro_strs):
-                    continue
-                if not start_page:
-                    start_page = page_num
-                if any(origins_str in page_title.get_text().strip().lower() for origins_str in self.origins_strs):
-                    stop_page = page_num
-                    break
-            if start_page and stop_page:
-                break
-        else:
-            stop_page = page_num
-
-        for page_num, page in enumerate(list(extract_pages(pdf_path))[start_page:stop_page]):
+        has_intro = False
+        for page_num, page in enumerate(list(extract_pages(pdf_path))):
             text_from_tables = []
             page_content = []
             table_num = 0
@@ -108,6 +86,19 @@ class PDFParser:
             page_elements.sort(key=lambda x: -x[0])
 
             lower_side, upper_side = 0, 0
+
+            first_element = page_elements[0][1]
+            if isinstance(first_element, LTTextContainer):
+                line_text, format_for_line = self._extract_text(first_element)
+                for form in format_for_line:
+                    if isinstance(form, str) and 'bold' in form.lower():
+                        if any(intro_str in line_text.lower() for intro_str in self.intro_strs):
+                            has_intro = True
+                        if any(origins_str in line_text.lower() for origins_str in self.origins_strs):
+                            return ''.join(row for page in pages for row in page).replace('\0', '')
+            if not has_intro:
+                continue
+
             for i, component in enumerate(page_elements):
                 element = component[1]
 
@@ -185,7 +176,7 @@ class PDFParser:
             cleansed_row = [
                 item.replace('\n', '') if item is not None and '\n' in item else 'None' if item is None else item for
                 item in row]
-            table_string += f"|{'|'.join(cleansed_row)}|\n"
+            table_string += f" {' '.join(cleansed_row)} \n"
         return table_string[:-1]
 
     @staticmethod

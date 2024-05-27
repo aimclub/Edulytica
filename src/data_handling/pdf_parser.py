@@ -104,6 +104,8 @@ class PDFParser:
                                 has_intro = True
                             if any(origins_str in line_text.lower() for origins_str in self.origins_strs):
                                 return ''.join(row for page in pages for row in page).replace('\0', '')
+                if page_num >= 10:
+                    return 'none'
             if not has_intro:
                 continue
 
@@ -134,6 +136,9 @@ class PDFParser:
             pages.append(page_content)
 
         return ''.join(row for page in pages for row in page).replace('\0', '')
+
+    def parse_table_of_contents(self, pdf_path: str) -> list[str]:
+        pass
 
     @staticmethod
     def _extract_text(element: LTTextContainer) -> (str, tuple):

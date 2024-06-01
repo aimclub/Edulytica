@@ -1,16 +1,22 @@
 import unittest
+import tempfile
+import os
 
 from src.rag.utils.parsing import FileParser
 
 
 class TestFileParser(unittest.TestCase):
     def setUp(self):
-        self.pdf_path = 'files/test.pdf'
-        self.docx_path = 'files/test.docx'
-        self.odt_path = 'files/test.odt'
-        self.invalid_path = 'files/test.txt'
+        self.temp_dir = tempfile.TemporaryDirectory()
+        self.pdf_path = os.path.join(self.temp_dir.name, 'test.pdf')
+        self.docx_path = os.path.join(self.temp_dir.name, 'test.docx')
+        self.odt_path = os.path.join(self.temp_dir.name, 'test.odt')
+        self.invalid_path = os.path.join(self.temp_dir.name, 'test.txt')
 
         self.create_test_documents()
+
+    def tearDown(self):
+        self.temp_dir.cleanup()
 
     def create_test_documents(self):
         self.create_test_pdf(self.pdf_path)

@@ -14,18 +14,20 @@ class TextProcessingUtils:
         :return: The preprocessed text.
         """
 
-        # Удаление лишних пробелов и системных символов
+        # Remove extra whitespaces and system characters
         text = re.sub(r'\s+', ' ', text.strip())
 
-        # Удаление номеров страниц (если они простые)
+        # Remove page numbers (if they are simple)
         text = re.sub(r'\s+\d+\s+', ' ', text)
 
-        # Исправление гипенов и объединение разорванных слов
+        # Fix hyphens and join broken words
         text = re.sub(r'(\w+)-\s+(\w+)', lambda match: f"{match.group(1)}{match.group(2)}", text)
 
-        # Удаление табличных данных, если они распознаются как простые строки
-        # Удаление примеров со скобками, могут встречаться вокруг данных таблиц
+        # Remove table-like data
         text = re.sub(r'\[\s*\w+\s*\|\s*\w+\s*\]', ' ', text)
+
+        # Remove extra spaces again after removing table-like data
+        text = re.sub(r'\s+', ' ', text.strip())
 
         return text
 

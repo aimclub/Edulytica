@@ -1,5 +1,6 @@
 import json
 from string import ascii_lowercase, digits
+from typing import Tuple, List
 
 from pymystem3.mystem import Mystem
 
@@ -56,7 +57,7 @@ class DataManager:
 
         return persons
 
-    def _get_person_bio(self, person_json: dict) -> tuple[str, str]:
+    def _get_person_bio(self, person_json: dict) -> Tuple[str, str]:
         """
         Method that gets the persons' cleaned bio and education data
 
@@ -168,7 +169,7 @@ class DataManager:
         persons = dict(zip(persons_isu_ids, result))
         return persons
 
-    def _factorize_persons(self, persons: list[str]) -> list[list[str]]:
+    def _factorize_persons(self, persons: list[str]) -> List[list[str]]:
         """
         Method for decomposing the persons list into several lists of strings of the size parameter
 

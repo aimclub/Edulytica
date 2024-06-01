@@ -1,4 +1,4 @@
-name: Python-Documents-Modifier Workflow
+name: Edu-Analysis-Framework Workflow
 
 on: [push, pull_request]
 
@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ 3.8, 3.9, '3.10' ]
+        python-version: [ 3.9, '3.10' ]
 
     steps:
     - uses: actions/checkout@v2
@@ -22,10 +22,7 @@ jobs:
         pip install pytest-cov
     - name: Install project dependencies
       run: |
-        if [ -f ${{ github.head_ref }}/requirements.txt ];
-        then
-          pip install -r ${{ github.head_ref }}/requirements.txt
-        fi
+        python -m pip install -r requirements.txt
     - name: Run unittests
       run: |
         pytest --cov=src -s tests

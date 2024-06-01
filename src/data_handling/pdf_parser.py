@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+from typing import List
 
 import pdfminer.pdfparser
 import pdfplumber
@@ -137,7 +138,7 @@ class PDFParser:
 
         return ''.join(row for page in pages for row in page).replace('\0', '')
 
-    def parse_table_of_contents(self, pdf_path: str) -> list[str]:
+    def parse_table_of_contents(self, pdf_path: str) -> List[str]:
         pass
 
     @staticmethod

@@ -20,6 +20,7 @@ class PDFParser:
         self.lines_to_title_check = 10
         self.csv_filename = 'pdfs_data.csv'
         self.encoding = 'utf-8'
+        self.file_format = '.pdf'
 
     def parse_files(self, pdfs_directory: str = '.', csv_filename: str = None, clear_csv: bool = False):
         """Parse all pdfs in directory and save to csv file
@@ -42,7 +43,7 @@ class PDFParser:
             except FileNotFoundError:
                 pdfs = {}
 
-            pdf_filenames = sorted(filter(lambda x: x[-4:] == '.pdf', os.listdir(pdfs_directory)), reverse=True)
+            pdf_filenames = sorted(filter(lambda x: x[-4:] == self.file_format, os.listdir(pdfs_directory)))
             for i, pdf_filename in enumerate(pdf_filenames):
                 print(i, pdf_filename, end=' ')
                 if pdf_filename[:-4] in pdfs:

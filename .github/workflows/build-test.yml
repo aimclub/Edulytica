@@ -30,6 +30,10 @@ jobs:
         then
           pip install -r ${{ github.head_ref }}/requirements.txt
         fi
+
+    - name: Check installed packages
+      run: pip list
+
     - name: Run unittests
       run: |
         pytest --cov=src -s tests

@@ -20,6 +20,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install pytest
         pip install pytest-cov
+
+    - name: Display requirements.txt
+      run: cat requirements.txt
+
     - name: Install project dependencies
       run: |
         if [ -f ${{ github.head_ref }}/requirements.txt ];

@@ -169,7 +169,7 @@ class DataManager:
         persons = dict(zip(persons_isu_ids, result))
         return persons
 
-    def _factorize_persons(self, persons: list[str]) -> List[list[str]]:
+    def _factorize_persons(self, persons: List[str]) -> List[List[str]]:
         """
         Method for decomposing the persons list into several lists of strings of the size parameter
 

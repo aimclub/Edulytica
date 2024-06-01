@@ -4,3 +4,4 @@ beautifulsoup4==4.12.3
 python-dotenv==1.0.1
 pdfplumber==0.11.0
 pdfminer.six==20231228
+pymystem3==0.2.0

@@ -20,8 +20,7 @@ class PDFParserTest(unittest.TestCase):
             self.pdf_parser.parse_files(f'{self.tests_folder}directorynotexists')
         self.assertFalse(os.path.exists(f'{self.tests_folder}testresult.csv'))
         self.assertIsNone(self.pdf_parser.parse_files(f'{self.tests_folder}', 'testresult.csv'))
-        print(os.listdir(f'{self.tests_folder}'))
-        self.assertTrue(os.path.exists(f'{self.tests_folder}testresult.csv'))
+        self.assertTrue(os.path.exists(f'testresult.csv'))
 
     def tearDown(self):
         if os.path.exists(f'{self.tests_folder}testresult.csv'):

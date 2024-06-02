@@ -1,6 +1,7 @@
 import asyncio
 import json
 import os
+import typing
 from random import random
 from time import sleep
 from typing import List
@@ -364,7 +365,7 @@ class ParserISU:
             return {}
 
     @staticmethod
-    def _extract_data_from_soup(data: Tag) -> dict | None:
+    def _extract_data_from_soup(data: Tag) -> typing.Union[dict, None]:
         """
         Static method to extract person's data from html string
 

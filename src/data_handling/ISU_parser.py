@@ -1,8 +1,10 @@
 import asyncio
 import json
 import os
+import typing
 from random import random
 from time import sleep
+from typing import List
 
 import aiohttp
 import requests
@@ -180,7 +182,7 @@ class ParserISU:
                 'projects': self._parse_projects(soup),
                 'events': self._parse_events(soup)}
 
-    def _parse_publications(self, soup: BSoup) -> list[dict] or None:
+    def _parse_publications(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's publications
 
@@ -201,7 +203,7 @@ class ParserISU:
                                  'title': row[2][row[2].rfind('</a>') + 5:]})
         return publications
 
-    def _parse_rids(self, soup: BSoup) -> list[dict] or None:
+    def _parse_rids(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's rids
 
@@ -216,14 +218,15 @@ class ParserISU:
         rids = []
         for row in data['data']:
             year_index = row[1].find('>') + 1
+            year_str = row[1][year_index:year_index + 4]
             rids.append({
-                'year': int(row[1][year_index:year_index + 4]),
+                'year': int(year_str) if year_str.isdigit() else None,
                 'type': row[2].strip(),
                 'title': row[3].strip(),
-                'authors': self._parse_authors(row[5])})
+                'authors': self._parse_authors(row[5]) if len(row) >= 6 else []})
         return rids
 
-    def _parse_projects(self, soup: BSoup) -> list[dict] or None:
+    def _parse_projects(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's projects
 
@@ -239,18 +242,18 @@ class ParserISU:
         for row in data['data']:
             department_id = row[4][row[4].find('[') + 1:row[4].find(']')]
             projects.append({
-                'theme_id': int(row[1]),
+                'theme_id': int(row[1]) if row[1].isdigit() else None,
                 'type': row[2].strip(),
                 'title': row[3].strip(),
                 'department_id': int(row[4][row[4].find('[') + 1:row[4].find(']')] if department_id else 0),
-                'date_start': row[5].strip(),
-                'date_end': row[6].strip(),
-                'key_words': tuple(el.strip() for el in row[7].split(',')),
-                'role': row[9].strip(),
-                'customer': row[10].strip()})
+                'date_start': row[5].strip() if len(row) >= 6 else None,
+                'date_end': row[6].strip() if len(row) >= 7 else None,
+                'key_words': tuple(el.strip() for el in row[7].split(',')) if len(row) >= 8 else None,
+                'role': row[9].strip() if len(row) >= 10 else None,
+                'customer': row[10].strip() if len(row) >= 11 else None})
         return projects
 
-    def _parse_events(self, soup: BSoup) -> list[dict] or None:
+    def _parse_events(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's events
 
@@ -271,7 +274,7 @@ class ParserISU:
                 'year': int(row[2]) if row[2] else '',
                 'type': row[3].strip(),
                 'rank': row[4].strip(),
-                'role': row[5].strip()})
+                'role': row[5].strip() if len(row) >= 6 else None})
             if ' - ' in row[1]:
                 events[-1]['date_start'] = row[1][row[1].find('>') + 1:row[1].find(' - ')].strip()
                 events[-1]['date_end'] = row[1][row[1].find(' - ') + 3:row[1].rfind('<')].strip()
@@ -280,7 +283,7 @@ class ParserISU:
                                                                     row[1].find('>') + 1:row[1].rfind('<')].strip()
         return events
 
-    def _parse_bio(self, soup: BSoup) -> list[dict] or None:
+    def _parse_bio(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's current education
 
@@ -343,7 +346,7 @@ class ParserISU:
         try:
             return json.loads(
                 str(soup.find('span', attrs={'data-mustache-template': f'person-{key}'}).contents[0]))['positions']
-        except (TypeError, AttributeError):
+        except (TypeError, AttributeError, json.decoder.JSONDecodeError):
             return []
 
     @staticmethod
@@ -358,11 +361,11 @@ class ParserISU:
         try:
             return json.loads(
                 str(soup.find('span', attrs={'data-mustache-template': 'person-edu'}).contents[0]))['education'][0]
-        except (TypeError, AttributeError):
+        except (TypeError, AttributeError, json.decoder.JSONDecodeError):
             return {}
 
     @staticmethod
-    def _extract_data_from_soup(data: Tag) -> dict | None:
+    def _extract_data_from_soup(data: Tag) -> typing.Union[dict, None]:
         """
         Static method to extract person's data from html string
 

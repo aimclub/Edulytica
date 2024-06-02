@@ -3,6 +3,7 @@ import json
 import os
 from random import random
 from time import sleep
+from typing import List
 
 import aiohttp
 import requests
@@ -180,7 +181,7 @@ class ParserISU:
                 'projects': self._parse_projects(soup),
                 'events': self._parse_events(soup)}
 
-    def _parse_publications(self, soup: BSoup) -> list[dict] or None:
+    def _parse_publications(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's publications
 
@@ -201,7 +202,7 @@ class ParserISU:
                                  'title': row[2][row[2].rfind('</a>') + 5:]})
         return publications
 
-    def _parse_rids(self, soup: BSoup) -> list[dict] or None:
+    def _parse_rids(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's rids
 
@@ -224,7 +225,7 @@ class ParserISU:
                 'authors': self._parse_authors(row[5]) if len(row) >= 6 else []})
         return rids
 
-    def _parse_projects(self, soup: BSoup) -> list[dict] or None:
+    def _parse_projects(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's projects
 
@@ -251,7 +252,7 @@ class ParserISU:
                 'customer': row[10].strip() if len(row) >= 11 else None})
         return projects
 
-    def _parse_events(self, soup: BSoup) -> list[dict] or None:
+    def _parse_events(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's events
 
@@ -281,7 +282,7 @@ class ParserISU:
                                                                     row[1].find('>') + 1:row[1].rfind('<')].strip()
         return events
 
-    def _parse_bio(self, soup: BSoup) -> list[dict] or None:
+    def _parse_bio(self, soup: BSoup) -> List[dict] or None:
         """
         Requires person's html page text and return list of dictionaries with person's current education
 

@@ -1,0 +1,51 @@
+{
+"params": ["aim and scope of the journal", "submission guidelines", "review policy", "frequency of publication", "research ethics guidelines", "copyright", "master's dissertation", "doctoral thesis"],
+"elements": [
+    {
+        "element": "paper",
+        "description": "Typically consists of three parts: an introduction, a text, and references"
+    },
+    {
+        "element": "title",
+        "description": "Short and informative"
+    },
+    {
+        "element": "abstract",
+        "description": "A brief summary of the paper"
+    },
+    {
+        "element": "keywords",
+        "description": "Words that represent the main content of the paper"
+    },
+    {
+        "element": "introduction",
+        "description": "Contains an overview, rationale, problem statement, research questions, significance of the study, limitation of the study, structure of the study, methods and terminology definitions"
+    },
+    {
+        "element": "literature review",
+        "description": "Serves to contextualize the research"
+    },
+    {
+        "element": "materials and methods",
+        "description": "Describes the experimental setup and protocols used"
+    },
+    {
+        "element": "results and discussion",
+        "description": "Presents the data obtained and the interpretation and implications of such findings"
+    },
+    {
+        "element": "conclusions",
+        "description": "Summarizes the study and its implications"
+    }
+],
+"gost_params": {
+    "aim and scope of the journal": "Defines the journal's subject matter and the types of papers it accepts",
+    "submission guidelines": "Specifies the expected formatting and style for submitted papers",
+    "review policy": "Outlines the process of peer review",
+    "frequency of publication": "Indicates how often the journal is published",
+    "research ethics guidelines": "Details expected ethical considerations and practices",
+    "copyright": "Clarifies ownership of intellectual property rights",
+    "master's dissertation": "Demonstrates knowledge of the published literature on the topic, ability to use published work and source materials, understanding of appropriate techniques, etc.",
+    "doctoral thesis": "Includes all elements of a master's thesis plus distinct contributions to knowledge, discovery of new facts or interpretations of findings"
+}
+}

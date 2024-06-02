@@ -1,0 +1,15 @@
+{
+"params": ["font_size", "font_type", "line_spacing", "paper_color", "website_link"],
+"elements": [
+{"element": "Scope of application", "description": "Brief description of GOST and where it is applied"},
+{"element": "Requirements for structural elements of the report", "description": "A dictionary containing all structural elements of the report and their requirements"},
+{"element": "Design rules", "description": "All rules for the design of various tools like fonts, sizes, indents, colors, styles, numbering, etc."}
+],
+"gost_params": {
+"font_size": {"element": "Design rules", "meaning": "Minimum font size should be 12 pt"},
+"font_type": {"element": "Design rules", "meaning": "Recommended font type is Times New Roman"},
+"line_spacing": {"element": "Design rules", "meaning": "Recommended line spacing is 1.5"},
+"paper_color": {"element": "Design rules", "meaning": "Paper color should be white"},
+"website_link": {"element": "Requirements for structural elements of the report", "meaning": "Include a website link to https://www.elsevier.com/solutions/scopus/content for up-to-date content numbers"}
+}
+}

@@ -1,0 +1,30 @@
+{
+  "params": ["document", "author", "affiliation", "source type", "year", "language", "PDF format", "Reference Managers", "email alerts", "RSS", "HTML feeds", "Universal Discovery services", "ScienceDirect", "Mendeley", "SciVal", "Reaxys", "Engineering Village", "Citation Overview/Tracker", "Analyze Search Results", "h-index", "Author Evaluator", "Compare Journals", "SNIP", "SJR", "IPP", "Articles Metrics module", "CSAB", "peer-reviewed titles", "scopus", "information needs", "research community", "ISSN", "ISBN", "Active trade journals", "Active book series", "Active journals", "Inactive journals, book series, trade journals", "Publication categories"],
+  
+  "elements": [
+     {"element": "Search", "description": "Search by document, author or affiliation, or use Advanced Search. Refine results by source type, year, language, author, affiliation and more. Link to full-text articles and other library resources."},
+     {"element": "Discover", "description": "Find related documents by shared references, authors and/or keywords. Identify and match an organization with its research output using Affiliation Identifier."},
+     {"element": "Analyze", "description": "Track citations over time for a set of authors or documents with Citation Overview/Tracker. Assess trends in search results with Analyze Search Results. View h-index for specific authors."},
+     {"element": "CSAB", "description": "The Content Selection & Advisory Board (CSAB) evaluate and determine which peer-reviewed titles are accepted into Scopus. The CSAB maintains and follows a transparent and robust selection policy."},
+     {"element": "Non-content aspects", "description": "Non-content aspects of Scopus (e.g., interface, search and other functionality) are not included within the scope of this document."},
+     {"element": "Coverage of source", "description": "The source types covered in Scopus are either serial publications that have an ISSN or non-serial publications that have an ISBN like one-off book publications or one-off conferences. These different source types ensure coverage, discoverability, profiles and impact measurement for research in all subject fields."}
+   ],
+    
+  "gost_params": [
+    {"element": "Search", "param": "document", "meaning": "The type of content being searched, e.g. journals, books, etc."},
+    {"element": "Search", "param": "author", "meaning": "The author of the research being searched."},
+    {"element": "Search", "param": "affiliation", "meaning": "The institution or organization affiliated with the author of the work being searched."},
+    {"element": "Search", "param": "source type", "meaning": "The type of source being searched, e.g. books, journals, etc."},
+    {"element": "Search", "param": "year", "meaning": "The year when the research was published."},
+    {"element": "Search", "param": "language", "meaning": "The language of the publication."},
+    {"element": "Discover", "param": "references", "meaning": "Identify related documents through shared references within them."},
+    {"element": "Analyze", "param": "Citation Overview/Tracker", "meaning": "Tool for tracking citations over time for a set of authors or documents."},
+    {"element": "Analyze", "param": "Analyze Search Results", "meaning": "Tool for assessing trends in search results."},
+    {"element": "Analyze", "param": "h-index", "meaning": "A metric that measures a researcher's productivity and impact."},
+    {"element": "CSAB", "param": "peer-reviewed titles", "meaning": "The peer-reviewed titles are evaluated and determined by the CSAB for inclusion in Scopus."},
+    {"element": "Coverage of source", "param": "ISSN", "meaning": "International Standard Serial Number - uniquely identifies publications."},
+    {"element": "Coverage of source", "param": "ISBN", "meaning": "International Standard Book Number - uniquely identifies books."},
+    {"element": "Coverage of source", "param": "Active trade journals", "meaning": "These are professionally focused journals currently being published."},
+    {"element": "Coverage of source", "param": "Inactive journals, book series, trade journals", "meaning": "These are sources that are no longer being published."}
+  ]
+}

@@ -1,0 +1,31 @@
+{
+    "params": ["font size", "font type", "paper color", "paper format", "line spacing", "page"],
+    "elements": [
+        {
+            "element": "text",
+            "description": "refers to the body of the report, utilized for the primary report content"
+        },
+        {
+            "element": "paper size",
+            "description": "refers to the format of the paper used for printing the report"
+        }
+     ],
+    "gost_params": [
+        {
+            "element": "text",
+            "parameters": {
+                "font size": "12 pt",
+                "font type": "Times New Roman"
+            }
+        },
+        {
+            "element": "paper size",
+            "parameters": {
+                "color": "white",
+                "format": "A4",
+                "line spacing": 1.5,
+                "page": "1"
+            }
+        }
+    ]
+}

@@ -1,0 +1,95 @@
+{
+  "params": [
+    "PubMed ID",
+    "Funding data",
+    "Open access",
+    "Scopus title list",
+    "Scopus title evaluation",
+    "Criteria for title selection",
+    "Title re-evaluation",
+    "Content Selection & Advisory Board Subject Chairs"
+  ],
+  "elements": [
+    {
+      "element": "PubMed ID",
+      "description": "Unique identifier for MEDLINE documents, searchable via Advanced Search and included in the export of records."
+    },
+    {
+      "element": "Funding data",
+      "description": "Information about funding bodies and grant numbers. Information is available from the acknowledgement section of a document and only if the funding body is included in the FundRef ontology."
+    },
+    {
+      "element": "Open access",
+      "description": "A status applied to journals where all peer-reviewed scholarly articles are available online without any restrictions."
+    },
+    {
+      "element": "Scopus title list",
+      "description": "A list of Scopus Journals which includes over 34,000 titles in total, including over 21,500 active titles and over 12,000 inactive titles."
+    },
+    {
+      "element": "Scopus title evaluation",
+      "description": "The process of ensuring that Scopus remains the most relevant resource for all research by continually reviewing new titles for inclusion."
+    },
+    {
+      "element": "Criteria for title selection",
+      "description": "The set of requirements a title must meet to be considered for review, which includes peer-reviewed content, regular publication, relevance and readability for an international audience, and a publication ethics statement."
+    },
+    {
+      "element": "Title re-evaluation",
+      "description": "The process of re-evaluating low-performing journal based on a set of metrics and benchmarks to maintain high content quality. It is an annual rolling process."
+    },
+    {
+      "element": "Content Selection & Advisory Board Subject Chairs",
+      "description": "The board responsible for the evaluation and selection of the titles included in Scopus."
+    }
+  ],
+  "gost_params": {
+    "PubMed ID": {
+      "Searchability": "Advanced Search",
+      "Exportability": "Included in the export of records"
+    },
+    "Funding data": {
+      "Availability": "Acknowledgement section",
+      "Inclusion": "FundRef ontology"
+    },
+    "Open access": {
+      "Restrictions": "None",
+      "Availability": "All peer-reviewed scholarly articles"
+    },
+    "Scopus title list": {
+      "Number of active titles": 21500,
+      "Number of inactive titles": 12000,
+      "Total number of titles": 34000
+    },
+    "Scopus title evaluation": {
+      "Review": "CSAB",
+      "Sources of new title suggestions": [
+        "Librarians",
+        "Publishers",
+        "Journal editors"
+      ],
+      "Process": "Continuous basis"
+    },
+    "Criteria for title selection": {
+      "Peer-reviewed content": "Required",
+      "Regular publication": "Required",
+      "Relevance": "International audience",
+      "Publication ethics statement": "Required"
+    },
+    "Title re-evaluation": {
+      "Frequency": "Annual",
+      "Improvement period": "One-year",
+      "Benchmarks": {
+        "Self-citations": 200,
+        "Citations": 50,
+        "Impact Per Publication": 50,
+        "Article output": 50,
+        "Abstract usage": 50,
+        "Full text links": 50
+      }
+    },
+    "Content Selection & Advisory Board Subject Chairs": {
+      "Responsibility": "Evaluation and selection of titles"
+    }
+  }
+}

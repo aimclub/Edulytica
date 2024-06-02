@@ -1,0 +1,61 @@
+{
+"params": ["font", "spacing", "colors", "list", "numbers", "titles", "links", "indents", "graphics", "tables", "footnotes", "formulas"],
+"elements": [
+{"element": "introduction", "description": "Includes general information about Scopus"},
+{"element": "source_types", "description": "Covers different types of sources in Scopus"},
+{"element": "metadata", "description": "Information about the coverage of metadata in Scopus"},
+{"element": "content_sources", "description": "Details about the coverage of sources in Scopus"},
+{"element": "content_processing", "description": "Information on the processing of Scopus content"}
+],
+"gost_params": {
+"font": {
+"size": "12 pt",
+"type": "Times New Roman"
+},
+"spacing": {
+"line_spacing": "1.5"
+},
+"colors": {
+"main_color": "black",
+"accent_color": "blue"
+},
+"titles": {
+"font_size": "14 pt",
+"font_style": "bold"
+},
+"list": {
+"bullet_points": "•"
+},
+"numbers": {
+"font_size": "12 pt",
+"format": "numeric"
+},
+"links": {
+"font_color": "blue",
+"underline": "true"
+},
+"indents": {
+"paragraph": "12 pt",
+"block_quote": "24 pt"
+},
+"graphics": {
+"resolution": "300 dpi",
+"formats": ["jpg", "png"]
+},
+"tables": {
+"borders": "1 pt",
+"header_row": {
+"background_color": "light grey",
+"font_color": "black"
+}
+},
+"footnotes": {
+"font_size": "10 pt",
+"symbol": "*"
+},
+"formulas": {
+"font_size": "12 pt",
+"alignment": "center"
+}
+}
+}

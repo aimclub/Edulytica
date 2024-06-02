@@ -1,0 +1,201 @@
+{
+    "params": [
+        "font size",
+        "font type",
+        "spacing",
+        "paper size",
+        "line spacing"
+    ],
+    "elements": [
+        {
+            "element": "title",
+            "description": "Title of the report"
+        },
+        {
+            "element": "author",
+            "description": "Name(s) of the author(s) of the report"
+        },
+        {
+            "element": "header",
+            "description": "Header of the report"
+        },
+        {
+            "element": "footer",
+            "description": "Footer of the report"
+        },
+        {
+            "element": "table",
+            "description": "Tables included in the report"
+        },
+        {
+            "element": "figure",
+            "description": "Figures included in the report"
+        },
+        {
+            "element": "footnote",
+            "description": "Footnotes in the report"
+        },
+        {
+            "element": "formula",
+            "description": "Formulas and mathematical expressions in the report"
+        },
+        {
+            "element": "link",
+            "description": "Hyperlinks or URLs in the report"
+        }
+    ],
+    "gost_params": {
+        "Font size": {
+            "title": "12 pt",
+            "abstract": "12 pt",
+            "introduction": "12 pt",
+            "materials and methods": "12 pt"
+        },
+        "Font type": {
+            "recommended": {
+                "title": "Times New Roman",
+                "abstract": "Times New Roman",
+                "introduction": "Times New Roman",
+                "materials and methods": "Times New Roman"
+            }
+        },
+        "Line spacing": {
+            "title": "1.5",
+            "abstract": "1.5",
+            "introduction": "1.5",
+            "materials and methods": "1.5"
+        },
+        "Page size": "A4",
+        "Word limits": {
+            "Dissertations": {
+                "min": 20000,
+                "max": 80000
+            },
+            "Journal papers": {
+                "min": 4000,
+                "max": 9000
+            }
+        },
+        "Abstract word count": {
+            "min": 100,
+            "max": 250
+        },
+        "Title": {
+            "good_title": {
+                "definition": "The fewest possible words that adequately describe the contents of the paper",
+                "considerations": [
+                    "What have I found that will attract attention?",
+                    "What is new, different, and interesting about my findings?",
+                    "What are the 3–5 keywords that highlight what makes my research and my findings unique?"
+                ],
+                "relation": "Denotes a relationship between the title and findings",
+                "finalization": "After the research is completed"
+            }
+        },
+        "Abstract": {
+            "definition": "A single paragraph of between 100-250 words that contains a very brief summary of each of your paper's main sections",
+            "preparation": "Write a working abstract at an early stage, which will provide a framework for the rest of the article",
+            "length": {
+                "min": 100,
+                "max": 250
+            },
+            "format": "Single paragraph",
+            "authors": "Authors should not mention their names in the body of the paper for blind review purpose. Personal information can be given in the cover letter."
+        },
+        "Introduction": {
+            "purpose": "Explain why the study is important",
+            "writing_style": "Much of the introduction should be written in the present tense",
+            "guidelines": [
+                "Present the nature and scope of the problem investigated",
+                "Review pertinent literature",
+                "State the method of investigation with reasons for the choice",
+                "State principal results of other studies",
+                "State principal conclusion reached by other studies"
+            ]
+        },
+        "Materials and methods": {
+            "section_names": [
+                "Methods",
+                "Materials and Methods",
+                "Method Description and Validation"
+            ],
+            "tense": "Past tense",
+            "purpose": "Describe and defend the experimental design, provide enough detail for replication"
+        },
+        "spacial_requirements": {
+            "font size": "12 pt",
+            "font type": "Times New Roman",
+            "spacing": "1.5",
+            "line spacing": "1.15",
+            "color": "white",
+            "format": "A4"
+        },
+        "thesis_and_dissertation_structure": {
+            "three_parts": [
+                "introduction",
+                "text",
+                "references"
+            ],
+            "introductory_chapter_content": [
+                "overview",
+                "rationale",
+                "statement of the problem",
+                "research questions",
+                "significance of the study",
+                "limitation of the study",
+                "structure of the study",
+                "methods and terminology definitions"
+            ]
+        },
+        "literature_review_purpose": "contextualizing the student's research, broadening the research perspective, connecting the project with previous work",
+        "research_meth_design": {
+            "steps": [
+                "highlight results answering research questions",
+                "outline secondary results",
+                "give supporting information",
+                "mention contradicting results and explain anomalies"
+            ]
+        },
+        "discussion_components": [
+            "present principles, relationships, and generalizations from results",
+            "point out exceptions or lack of correlation",
+            "show agreement or contrast with previously published work",
+            "discuss theoretical implications and practical applications",
+            "state conclusions clearly",
+            "summarize evidence for each conclusion"
+        ],
+        "font size": {
+            "literature review": "at least 12 pt",
+            "abstract": "at least 12 pt"
+        },
+        "font type": {
+            "literature review": "recommended font type - Times New Roman"
+        },
+        "spacing": {
+            "literature review": "one and a half spacing",
+            "line spacing": 1.5
+        },
+        "alignment": {
+            "literature review": "written critically demonstrating strengths and weaknesses of other studies"
+        },
+        "citation style": {
+            "literature review": "critical evaluation rather than presenting factual information"
+        },
+        "tables and figures design": {
+            "font size": "10 pt",
+            "font type": "Arial",
+            "line thickness": "0.5 pt",
+            "colors": "black and white",
+            "numbering style": "Arabic numerals"
+        },
+        "text": {
+            "font size": "12 pt",
+            "font type": "Times New Roman"
+        },
+        "paper_size": {
+            "color": "white",
+            "format": "A4",
+            "page": "1"
+        }
+    }
+}

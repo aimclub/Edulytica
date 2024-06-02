@@ -1,0 +1,71 @@
+{
+"params": [
+"research_questions", 
+"study_significance", 
+"literature_review", 
+"methodology", 
+"results_presentation", 
+"discussion", 
+"final_conclusions"
+],
+"elements": [
+{
+"element": "Research Questions",
+"description": "Questions that the study aims to answer"
+},
+{
+"element": "Study Significance",
+"description": "Explanation of why the study is important"
+},
+{
+"element": "Literature Review",
+"description": "Critical analysis of related studies"
+},
+{
+"element": "Methodology",
+"description": "Details of research design and data collection methods"
+},
+{
+"element": "Results Presentation",
+"description": "Display of study findings, highlighting significant data"
+},
+{
+"element": "Discussion",
+"description": "Interpretation of the study results and their integration with existing research"
+},
+{
+"element": "Final conclusions",
+"description": "End remarks of the study, specifying its implications for the academic field"
+}
+],
+"gost_params": {
+"research_questions": {
+"importance": "Sets the direction and scope of the study"
+},
+"study_significance": {
+"relation_to_existing_research": "Show how the study contributes to the extant literature"
+},
+"literature_review": {
+"required_depth": "Detailing studies closely related to the project"
+},
+"methodology": {
+"elements": {
+"research_design": "Types of research carried out",
+"instrumentation": "Ways of data collection"
+}
+},
+"results_presentation": {
+"requirements": "Data should be ordered logically to guide the reader"
+},
+"discussion": {
+"objectives": [
+"Integration of study results with existing theory",
+"Acknowledgment of strengths and limitations",
+"Future research prospects"
+]
+},
+"final_conclusions": {
+"emphasis": "Overall research achievement"
+}
+}
+}

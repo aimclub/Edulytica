@@ -1,0 +1,37 @@
+{
+"params": ["font size", "font type", "spacing", "line spacing", "color", "format"],
+"elements": [
+    { "element": "research methodology", "description": "Section where the researcher describes the methods used in the study" },
+    { "element": "results section", "description": "Section where the outcomes of the experiments are presented" },
+    { "element": "discussion section", "description": "Section where the researcher interprets the results and discusses their implications" },
+    { "element": "thesis", "description": "Academic paper reporting research findings for an advanced academic degree" },
+    { "element": "dissertation", "description": "Comprehensive document describing research for an academic degree" },
+    { "element": "literature review", "description": "Review of existing research related to the topic of study" }
+],
+"gost_params": {
+    "spacial_requirements": {
+        "font size": "12 pt",
+        "font type": "Times New Roman",
+        "spacing": "1.5",
+        "line spacing": "1.15",
+        "color": "white",
+        "format": "A4"
+    },
+    "thesis_and_dissertation_structure": {
+        "three_parts": ["introduction", "text", "references"],
+        "introductory_chapter_content": ["overview", "rationale", "statement of the problem", "research questions", "significance of the study", "limitation of the study", "structure of the study", "methods and terminology definitions"]
+    },
+    "literature_review_purpose": "contextualizing the student's research, broadening the research perspective, connecting the project with previous work",
+    "research_meth_design": {
+        "steps": ["highlight results answering research questions", "outline secondary results", "give supporting information", "mention contradicting results and explain anomalies"]
+    },
+    "discussion_components": [
+        "present principles, relationships, and generalizations from results",
+        "point out exceptions or lack of correlation",
+        "show agreement or contrast with previously published work",
+        "discuss theoretical implications and practical applications",
+        "state conclusions clearly",
+        "summarize evidence for each conclusion"
+    ]
+}
+}

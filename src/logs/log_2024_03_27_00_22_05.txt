@@ -1,0 +1,44 @@
+{
+"params": ["font size", "font type", "line spacing", "indentation", "colors", "styles", "sizes", "numbering", "spacing", "alignment"],
+"elements": [
+{"element": "Scopus Overview", "description": "Overview of Scopus content coverage and features"},
+{"element": "Content Selection & Advisory Board", "description": "Information about the Content Selection & Advisory Board of Scopus"},
+{"element": "Purpose and Scope", "description": "Detailed scope of the content coverage guide"},
+{"element": "Coverage of Source Types", "description": "Details on coverage of different source types in Scopus"},
+{"element": "Serial Source Types", "description": "Description of different serial source types indexed in Scopus"}
+],
+"gost_params": {
+"font size": "12 pt",
+"font type": "Times New Roman",
+"line spacing": 1.5,
+"indentation": "0.5 inches",
+"colors": {
+"headers": "blue",
+"text": "black",
+"links": "blue",
+"footnotes": "gray"
+},
+"styles": {
+"bold": "font-weight: bold",
+"italics": "font-style: italic",
+"underline": "text-decoration: underline"
+},
+"sizes": {
+"headers": "14 pt",
+"text": "12 pt",
+"footnotes": "10 pt"
+},
+"numbering": {
+"ordered lists": "decimal",
+"unordered lists": "disc"
+},
+"spacing": {
+"before": "6 pt",
+"after": "6 pt"
+},
+"alignment": {
+"headers": "center",
+"text": "justified"
+}
+}
+}

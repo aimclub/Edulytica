@@ -1,0 +1,157 @@
+{
+    "params": [
+        "scope_of_application",
+        "structural_elements_requirements",
+        "design_rules"
+    ],
+    "elements": [
+        {
+            "element": "gost_scopus",
+            "description": "Scopus content coverage and corresponding policies"
+        }
+    ],
+    "gost_params": {
+        "Article-in-Press (AiP)": {
+            "Definition": "Accepted article made available online before official publication"
+        },
+        "Book": {
+            "Definition": "A monograph or entire book",
+            "Characteristics": "Book type is assigned to the whole. For books with individual chapters, each chapter, along with a general item summarizing the book, is also indexed with the source type Book"
+        },
+        "Chapter": {
+            "Definition": "A book chapter",
+            "Characteristics": "Complete chapter in a book or book series volume where the item is identified as a chapter by a heading or section indicator"
+        },
+        "Conference paper": {
+            "Definition": "Original article reporting data presented at a conference or symposium",
+            "Characteristics": "Conference papers are of any length reporting data from a conference, with the exception of conference abstracts. Conference papers may range in length and content from full papers and published conference summaries to short items as short as one page in length"
+        },
+        "Editorial": {
+            "Definition": "Summary of several articles or editorial opinions or news",
+            "Characteristics": "Editorials are identified as editorial, introduction, leading article, preface or foreword, and are usually listed at the beginning of the table of contents"
+        },
+        "Erratum": {
+            "Definition": "Report of an error, correction or retraction of a previously published paper",
+            "Characteristics": "Errata are short items citing errors in, corrections to, or retractions of a previously published article in the same journal to which a citation is provided"
+        },
+        "Letter": {
+            "Definition": "Letter to or correspondence with the editor",
+            "Characteristics": "Letters are individual letters or replies. Each individual letter or reply is processed as a single item"
+        },
+        "Note": {
+            "Definition": "Note, discussion or commentary",
+            "Characteristics": "Notes are short items that are not readily suited to other item types. They may or may not share characteristics of other item types, such as author, affiliation and references. Discussions and commentaries that follow an article are defined as notes and considered to be items in their own right, include questions and answers, as well as comments on other articles. In trade journals, notes are generally shorter than half a page in length"
+        },
+        "Review": {
+            "Definition": "Significant review of original research, also includes conference papers",
+            "Characteristics": "Reviews typically have an extensive bibliography. Educational items that review specific issues within the literature are also considered to be reviews. As non-original articles, reviews lack the typical sections of original articles such as materials & methods and results"
+        },
+        "Short survey": {
+            "Definition": "Short or mini-review of original research",
+            "Characteristics": "Short surveys are similar to reviews, but usually are shorter, not more than a few pages, and with a less extensive bibliography"
+        },
+        "pubmed id": {
+            "identifier_type": "unique",
+            "accessibility": [
+                "Advanced Search",
+                "record page",
+                "export of records"
+            ]
+        },
+        "funding data": {
+            "components": [
+                "sponsor name",
+                "acronym",
+                "grant number"
+            ],
+            "accessibility": "acknowledgement section"
+        },
+        "open access": {
+            "definition": "journals in which all peer-reviewed scholarly articles are online available without any restrictions",
+            "number_of_OA_journal_titles": 4200
+        },
+        "scopus title list": {
+            "total_titles": 34000,
+            "active_titles": 21500,
+            "inactive_titles": 12000,
+            "book_titles": 116000
+        },
+        "scopus title evaluation": {
+            "review_process": "transparent",
+            "eligibility_criteria": [
+                "peer-reviewed content",
+                "published on a regular basis",
+                "relevant and readable for an international audience",
+                "have a publication ethics and publication malpractice statement"
+            ]
+        },
+        "title re-evaluation": {
+            "benchmark_metric_sets": {
+                "Self-citations": "200% higher compared to peer journals",
+                "Citations": "50% of the number received by peer journals",
+                "Impact Per Publication": "50% or less of the average IPP score compared to peer journals",
+                "Article output": "50% or less of the number produced by peer journals",
+                "Abstract usage": "50% or less used compared to peer journals",
+                "Full text links": "50% or less used compared to peer journals"
+            },
+            "annual curation": "The quality of all titles in the Scopus database is curated annually."
+        },
+        "content selection & advisory board subject chairs": {
+            "responsibilities": [
+                "evaluate and add new titles",
+                "curating data already covered in Scopus"
+            ]
+        },
+        "subject chairs": {
+            "ownership": "Each subject chair owns clear ownership per title in their respective area.",
+            "evaluation": "Subject chairs are involved in the final vote to accept or reject a new journal title.",
+            "additional reviewers": "Subject chairs can choose to involve additional reviewers with the respective subject expertise and/or the language skills."
+        },
+        "title evaluation": {
+            "final decision": "The final decision of title inclusion in Scopus is made by subject chairs."
+        },
+        "step": {
+            "benefits": "STEP offers several benefits including feedback on title acceptance or rejection via a consistent process of communication and a shorter decision-making cycle."
+        },
+        "publication language": {
+            "non-English titles": "Approximately 21% of titles in Scopus are published in languages other than English."
+        },
+        "geographical coverage": {
+            "global coverage": "Scopus is designed to best serve researchers’ needs by covering titles from all geographical regions, with more than half of Scopus content originating from outside North America."
+        },
+        "subject area coverage": {
+            "subject clusters": "Titles in Scopus are classified under four broad subject clusters further divided into 27 major subject areas and 300+ minor subject areas.",
+            "Subject areas": {
+                "Life sciences": 15,
+                "Social sciences": 32,
+                "Physical sciences": 24,
+                "Health sciences": 29
+            }
+        },
+        "gost_scopus": {
+            "scope_of_application": "Scopus coverage has grown to almost 3,500 humanities titles and includes all serial publication types, such as journals, book series and conference series. It is used for bibliographic search, discoverability, and evaluation tools.",
+            "structural_elements_requirements": {
+                "titles_originaly_included_in_scopus_back_to_1996": "99% complete",
+                "articles_with_abstracts": {
+                    "from_1823": "73%",
+                    "after_1995": "84%"
+                },
+                "coverage_of_medline": "Scopus covers all 5,000 MEDLINE titles from 1966 and also includes OLDMEDLINE content published between 1949 and 1965",
+                "content_delivery_agreements_with_publishers": "Scopus content is obtained from over 5,000 publishers worldwide",
+                "articles-in-press": "“Articles-in-Press” are pre-published versions of accepted articles"
+            },
+            "design_rules": {
+                "text": {
+                    "font_size": "12 pt",
+                    "font_type": "Times New Roman"
+                },
+                "paper_size": {
+                    "color": "white",
+                    "format": "A4",
+                    "line_spacing": 1.5,
+                    "page": "1"
+                }
+            }
+        }
+    }
+}

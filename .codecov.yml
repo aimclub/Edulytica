@@ -14,7 +14,6 @@ comment:                  # this is a top-level key
   hide_project_coverage: false # [true :: only show coverage on the git diff]
 
 ignore:
-  - "src/data_handling"
   - "src/cli.py"
   - "src/giga.py"
   - "src/main.py"

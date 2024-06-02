@@ -15,3 +15,7 @@ comment:                  # this is a top-level key
 
 ignore:
   - "src/data_handling"
+  - "src/cli.py"
+  - "src/giga.py"
+  - "src/main.py"
+  - "src/rag"

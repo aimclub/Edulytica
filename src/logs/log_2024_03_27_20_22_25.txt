@@ -1,0 +1,70 @@
+{
+"params": [],
+"elements": [
+{"element": "Scope of application", "description": "Description of where GOST is applied"},
+{"element": "Requirements for structural elements of the report", "description": "List of requirements for each structural element"},
+{"element": "Design rules", "description": "Rules for the design of various tools like fonts, sizes, colors, etc."}
+],
+"gost_params": {
+"Scope of application": {
+"application_area": "Research publications, journals, conference papers"
+},
+"Requirements for structural elements of the report": {
+"Title": ["Clear and descriptive", "Bold and centered"],
+"Abstract": ["Concise summary of the content", "100-250 words"],
+"Introduction": ["Purpose of the study", "Research questions/hypotheses"],
+"Methodology": ["Detailed description of research methods", "Include participants, procedures, instruments"],
+"Results": ["Presentation of findings", "Tables and figures for data representation"],
+"Discussion": ["Interpretation of results", "Comparison with existing literature"],
+"Conclusion": ["Summary of key points", "Implications of the study"],
+"References": ["Properly cited sources", "Correct formatting style"]
+},
+"Design rules": {
+"General": {
+"Font": {
+"size": "12 pt",
+"type": "Times New Roman"
+},
+"Spacing": {
+"line spacing": "1.5"
+}
+},
+"Tables": {
+"Font": {
+"size": "10 pt"
+},
+"Border": {
+"thickness": "0.5 pt"
+},
+"Header": {
+"background color": "light gray",
+"text color": "black"
+}
+},
+"Figures": {
+"Caption": {
+"font size": "10 pt",
+"alignment": "center"
+},
+"Border": {
+"thickness": "1 pt",
+"style": "solid"
+}},
+"Footnotes": {
+"Font": {
+"size": "10 pt",
+"style": "Italic"
+}},
+"Formulas": {
+"Font": {
+"size": "11 pt",
+"type": "Arial"
+}
+},
+"Links": {
+"Color": "Blue",
+"Underline": "true"
+}
+}
+}
+}

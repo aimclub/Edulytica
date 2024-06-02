@@ -1,0 +1,491 @@
+{
+    "params": [
+        "font size",
+        "font type",
+        "line spacing",
+        "color",
+        "format",
+        "background color"
+    ],
+    "elements": [
+        {
+            "element": "scope of application",
+            "description": "Description of GOST and its application"
+        },
+        {
+            "element": "requirements for structural elements of the report",
+            "description": "Dictionary containing all structural elements of the report with requirements"
+        },
+        {
+            "element": "design rules",
+            "description": "Rules for the design of various tools like fonts, sizes, colors, styles, etc."
+        }
+    ],
+    "gost_params": {
+        "Scope of application": "Guidelines for using and understanding the Scopus Content Coverage Guide",
+        "Requirements for structural elements of the report": {
+            "Introduction": [
+                "Overview of Scopus",
+                "Titles covered",
+                "Purpose"
+            ],
+            "Coverage of source types": [
+                "Serial source types",
+                "Non-serial sources",
+                "Other sources"
+            ],
+            "Coverage of metadata": [
+                "Document types",
+                "Abstracts",
+                "Keywords and index terms",
+                "Cited references",
+                "Affiliation data",
+                "Author profiles",
+                "ORCID integration",
+                "Other metadata"
+            ],
+            "Coverage of sources": [
+                "Scopus title list",
+                "Scopus title evaluation",
+                "Global coverage",
+                "Subject area coverage",
+                "Complete coverage",
+                "MEDLINE coverage"
+            ],
+            "Processing of Scopus content": [
+                "Details on how Scopus content is processed"
+            ]
+        },
+        "Design rules": {
+            "text": {
+                "font size": "12 pt",
+                "font type": "Times New Roman",
+                "spacing": "1.5 line spacing"
+            },
+            "titles": {
+                "font size": "14 pt",
+                "font type": "Arial",
+                "color": "black"
+            },
+            "headers": {
+                "font size": "10 pt",
+                "font type": "Arial",
+                "color": "black",
+                "style": "bold"
+            },
+            "footnotes": {
+                "font size": "9 pt",
+                "font type": "Arial",
+                "color": "grey"
+            },
+            "tables": {
+                "font size": "10 pt",
+                "font type": "Arial",
+                "color": "black",
+                "border": "1px solid black"
+            },
+            "figures": {
+                "font size": "10 pt",
+                "font type": "Arial",
+                "color": "black",
+                "caption": "italic"
+            }
+        },
+        "font": {
+            "size": "12 pt",
+            "type": "Times New Roman"
+        },
+        "line spacing": 1.5,
+        "paper size": {
+            "format": "A4",
+            "color": "white"
+        },
+        "structural_elements_requirements": {
+            "Headers": [
+                "Bold font",
+                "Font size: 14 pt"
+            ],
+            "Subheaders": [
+                "Italic font",
+                "Font size: 12 pt"
+            ],
+            "Text Body": [
+                "Font size: 12 pt",
+                "Single spacing"
+            ],
+            "Tables": [
+                "Font size: 10 pt",
+                "Gridlines for better readability"
+            ],
+            "Figures": [
+                "High resolution for clarity"
+            ],
+            "Footnotes": [
+                "Font size: 10 pt",
+                "Indented and single-spaced"
+            ],
+            "Formulas": [
+                "Consistent style throughout the document"
+            ],
+            "Links": [
+                "Blue color for hyperlinks"
+            ],
+            "Citations": [
+                "Numbered in square brackets",
+                "Font size: 11 pt"
+            ],
+            "References": [
+                "Font size: 11 pt",
+                "APA style format"
+            ]
+        },
+        "design_rules": {
+            "Text": {
+                "font": "Times New Roman",
+                "font size": "12 pt",
+                "style": "Regular"
+            },
+            "Headers": {
+                "font": "Times New Roman",
+                "font size": "14 pt",
+                "style": "Bold"
+            },
+            "Subheaders": {
+                "font": "Times New Roman",
+                "font size": "12 pt",
+                "style": "Italic"
+            },
+            "Tables": {
+                "font": "Arial",
+                "font size": "10 pt",
+                "gridlines": true
+            },
+            "Figures": {
+                "resolution": "High"
+            },
+            "Footnotes": {
+                "font": "Times New Roman",
+                "font size": "10 pt",
+                "indentation": true,
+                "spacing": "Single"
+            },
+            "Formulas": {
+                "style": "Consistent"
+            },
+            "Links": {
+                "color": "Blue"
+            },
+            "Citations": {
+                "numbering": "Square brackets",
+                "font size": "11 pt"
+            },
+            "References": {
+                "font size": "11 pt",
+                "style": "APA"
+            }
+        },
+        "scope of application": {
+            "application_area": "GOST is widely used for content coverage in Scopus"
+        },
+        "requirements for structural elements of the report": {
+            "Title": [
+                "Clear and descriptive",
+                "Bold and centered"
+            ],
+            "Abstract": [
+                "Concise summary of the content",
+                "100-250 words"
+            ],
+            "Introduction": [
+                "Purpose of the study",
+                "Research questions/hypotheses"
+            ],
+            "Methodology": [
+                "Detailed description of research methods",
+                "Include participants, procedures, instruments"
+            ],
+            "Results": [
+                "Presentation of findings",
+                "Tables and figures for data representation"
+            ],
+            "Discussion": [
+                "Interpretation of results",
+                "Comparison with existing literature"
+            ],
+            "Conclusion": [
+                "Summary of key points",
+                "Implications of the study"
+            ],
+            "References": [
+                "Properly cited sources",
+                "Correct formatting style"
+            ],
+            "cover_page": [
+                "Title of the report",
+                "Author's name",
+                "Date of submission"
+            ],
+            "table_of_contents": [
+                "List of all sections and subsections with page numbers"
+            ],
+            "abstract": [
+                "Concise summary of the report"
+            ],
+            "introduction": [
+                "Background information",
+                "Purpose of the report",
+                "Scope of work"
+            ],
+            "methodology": [
+                "Description of research methods",
+                "Data collection techniques"
+            ],
+            "results": [
+                "Presentation of findings",
+                "Statistical analysis"
+            ],
+            "discussion": [
+                "Interpretation of results",
+                "Comparison with existing literature"
+            ],
+            "conclusion": [
+                "Summary of key findings",
+                "Recommendations"
+            ],
+            "references": [
+                "Citations in a standard format",
+                "Listed alphabetically"
+            ]
+        },
+        "design rules": {
+            "General": {
+                "Font": {
+                    "size": "12 pt",
+                    "type": "Times New Roman"
+                },
+                "Spacing": {
+                    "line spacing": "1.5"
+                }
+            },
+            "Tables": {
+                "Font": {
+                    "size": "10 pt"
+                },
+                "Border": {
+                    "thickness": "0.5 pt"
+                },
+                "Header": {
+                    "background color": "light gray",
+                    "text color": "black"
+                }
+            },
+            "Figures": {
+                "Caption": {
+                    "font size": "10 pt",
+                    "alignment": "center"
+                },
+                "Border": {
+                    "thickness": "1 pt",
+                    "style": "solid"
+                }
+            },
+            "Footnotes": {
+                "Font": {
+                    "size": "10 pt",
+                    "style": "Italic"
+                }
+            },
+            "Formulas": {
+                "Font": {
+                    "size": "11 pt",
+                    "type": "Arial"
+                }
+            },
+            "Links": {
+                "Color": "Blue",
+                "Underline": "true"
+            },
+            "fonts": {
+                "body_text": {
+                    "font_family": "Arial",
+                    "font_size": "11pt"
+                },
+                "headings": {
+                    "font_family": "Times New Roman",
+                    "font_size": "14pt"
+                }
+            },
+            "colors": {
+                "background": {
+                    "color": "white"
+                },
+                "text": {
+                    "color": "black"
+                }
+            },
+            "spacing": {
+                "line_spacing": "1.5"
+            },
+            "table_design": {
+                "border_thickness": "1px",
+                "cell_padding": "5px"
+            },
+            "figures": {
+                "caption_style": "Italic",
+                "image_resolution": "300dpi"
+            },
+            "links": {
+                "text_color": "blue",
+                "hover_effect": "underline"
+            }
+        },
+        "abstract": {
+            "font": "at least 12 pt",
+            "spacing": "one and a half",
+            "indent": "0.5 inches"
+        },
+        "title": {
+            "font": "bold",
+            "size": "14 pt",
+            "color": "black"
+        },
+        "headers": {
+            "font": "bold",
+            "size": "12 pt",
+            "spacing": "1.15"
+        },
+        "figures": {
+            "font": "Arial",
+            "size": "10 pt",
+            "caption": {
+                "font": "italics"
+            }
+        },
+        "tables": {
+            "font": "10 pt",
+            "border size": "0.5 pt",
+            "cell padding": "2 mm",
+            "color": "black",
+            "striped": "true"
+        },
+        "footnotes": {
+            "font": "10 pt",
+            "spacing": "single"
+        },
+        "formulas": {
+            "font": "Times New Roman",
+            "size": "12 pt",
+            "spacing": "1.5",
+            "numbering": "right aligned"
+        },
+        "links": {
+            "color": "blue",
+            "underline": "true"
+        },
+        "metadata": {
+            "PubMed ID": "Unique identifier for MEDLINE documents",
+            "Funding data": [
+                "Sponsor name",
+                "Acronym",
+                "Grant number"
+            ]
+        },
+        "funding data": {
+            "acknowledgement section": "Must mention funding for data to be captured",
+            "funding body inclusion": "Included in FundRef ontology with over 11,000 funding bodies listed"
+        },
+        "open access": {
+            "journals": {
+                "full open access": "4,200 journal titles are full open access in Scopus",
+                "registration sources": [
+                    "Directory of Open Access Journals",
+                    "Directory of Open Access Scholarly Resources"
+                ],
+                "registration level": "Gold OA or Subsidized OA at registration sources",
+                "coverage level": "On journal level only"
+            },
+            "indicators": {
+                "open access indicator": "Available in Scopus to identify open access journals easily"
+            }
+        },
+        "sources": {
+            "titles": {
+                "total": ">34,000 titles including active and inactive journals, and >116,000 books in Scopus",
+                "access": "Title lists available externally from Scopus info site",
+                "updates": "Updated 2-3 times per year"
+            },
+            "browse": {
+                "reflect": "Does not accurately reflect all content in Scopus",
+                "reasons": [
+                    "Stand-alone books and reports",
+                    "Pre-1996 discontinued titles",
+                    "Post-1995 titles with <25 articles"
+                ]
+            }
+        },
+        "title evaluation": {
+            "suggestions": [
+                "Approximately 3,000 title suggestions per year"
+            ],
+            "review categories": [
+                "Peer-reviewed content",
+                "Regular publication basis",
+                "International relevance",
+                "Ethics statement"
+            ],
+            "review criteria": "Quantitative and qualitative measures including journal policy, content, citedness, regularity, online availability"
+        },
+        "title re-evaluation": {
+            "metrics": {
+                "self-citations": "Journal has self-citation rate ≥200%",
+                "citatiions": "Journal received citations ≤50%",
+                "Impact Per Publication": "Journal has IPP score ≤50%",
+                "article output": "Journal produced articles ≤50%",
+                "abstract usage": "Journal abstracts are used ≤50%",
+                "full text links": "Journal full text links used ≤50%"
+            },
+            "process": [
+                "Pre-warning for not meeting benchmarks",
+                "One-year period for improvement",
+                "Re-evaluation by CSAB member",
+                "Possible discontinuation in Scopus"
+            ]
+        },
+        "text": {
+            "font_size": "12 pt",
+            "font_type": "Times New Roman",
+            "line_spacing": 1.5,
+            "indentation": "0.5 inches"
+        },
+        "colors": {
+            "main_text_color": "black",
+            "heading_color": "blue",
+            "table_color": "gray",
+            "figure_color": "black",
+            "link_color": "blue"
+        },
+        "table_design": {
+            "border_thickness": "1 pt",
+            "cell_padding": "5 px",
+            "content_alignment": "center"
+        },
+        "figure_design": {
+            "image_resolution": "300 dpi",
+            "figure_numbering": "continuous"
+        },
+        "footnote_design": {
+            "font_size": "10 pt",
+            "line_spacing": 1,
+            "indentation": "0.3 inches",
+            "symbol": "asterisk"
+        },
+        "formula_design": {
+            "font_type": "Cambria Math",
+            "font_size": "10 pt"
+        },
+        "link_design": {
+            "link_style": "underlined",
+            "link_hover_color": "red"
+        }
+    }
+}

@@ -1,0 +1,29 @@
+{
+"params": [
+"format",
+"editorial_roles",
+"title",
+"language_skills",
+"Content Coverage Policy",
+"Scopus Title Evaluation Platform",
+"title_re-evaluation",
+"abstracts"
+],
+"elements": [
+{ "short_name": "subject chairs", "description": "senior researchers experienced in editorial roles, who review all titles within a specific subject area" },
+{ "short_name": "STEP", "description": "a web-based editorial system that streamlines the entire title evaluation process" },
+{ "short_name": "re-evaluation", "description": "the process of curating the journal quality of all titles in the database on an annual basis" },
+{ "short_name": "Global coverage", "description": "Titles from all geographical regions are covered, including non-English titles, as long as English abstracts can be provided with the articles" },
+{ "short_name": "Subject area coverage", "description": "titles in Scopus are classified under four broad subject clusters which are further divided into 27 major subject areas and 300+ minor subject areas." }
+],
+"gost_params": {
+"format": {"must be": "web-based"},
+"editorial_roles": {"must be": "senior researchers experienced in editorial roles responsible for reviewing all the titles within a specific subject area"},
+"title": {"must be": "reviewed and accepted/rejected by subject chairs based on Content Coverage Policy"},
+"language_skills": {"must be": "enough to read and evaluate journals publishing in languages other than English"},
+"Content Coverage Policy": {"must be": "used to accept/reject a title for inclusion in Scopus"},
+"Scopus Title Evaluation Platform": {"benefits include": ["feedback on why their title was accepted or rejected", "shorter decision-making cycle"]},
+"title_re-evaluation": {"happens": "annually"},
+"abstracts": {"must be provided": "in English"}
+}
+}

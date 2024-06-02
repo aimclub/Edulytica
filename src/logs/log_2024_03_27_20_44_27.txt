@@ -1,0 +1,24 @@
+{
+"params": ["font size", "font type", "line spacing", "paper color", "paper format", "page", "color", "format", "line thickness", "list indentation", "table design", "figure design", "footnote design", "formula design", "link design"],
+"elements": [
+{"element": "Search", "description": "Search by document, author or affiliation, with options for Advanced Search"},
+{"element": "Refine", "description": "Refine search results by various criteria like source type, year, language, and more"},
+{"element": "Link", "description": "Link to full-text articles and other resources in the library"},
+{"element": "Export", "description": "Export data to Reference Managers such as Mendeley, RefWorks, and EndNote"},
+{"element": "Stay up to date", "description": "Stay updated with email alerts, RSS feeds, and HTML feeds"},
+{"element": "CSAB", "description": "Content Selection & Advisory Board for content coverage policy"},
+{"element": "CSAB function", "description": "The primary function of CSAB is to evaluate and determine accepted peer-reviewed titles in Scopus"},
+{"element": "Purpose", "description": "Purpose of the document is to provide an overview of content coverage in Scopus"},
+{"element": "Source types coverage", "description": "Scopus covers serial publications like journals, book series, and conference series, and non-serial publications like one-off book publications or conferences"}
+],
+"gost_params": {
+"text": {"font size": "12 pt", "font type": "Times New Roman"},
+"line spacing": 1.5,
+"paper": {"color": "white", "format": "A4", "page": 1},
+"table design": {"line thickness": "0.5 mm", "list indentation": "0.5 cm"},
+"figure design": {"line thickness": "0.8 mm"},
+"footnote design": {"font size": "10 pt", "font type": "Arial"},
+"formula design": {"font size": "14 pt", "color": "black"},
+"link design": {"color": "blue", "style": "underlined"}
+}
+}

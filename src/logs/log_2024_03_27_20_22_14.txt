@@ -1,0 +1,37 @@
+{
+"params": ["font size", "font type", "line spacing", "paper size", "color"],
+"elements": [
+{"element": "Scope of application", "description": "Brief description of GOST, where it is applied"},
+{"element": "Requirements for structural elements of the report", "description": "A dictionary containing all structural elements of the report as keys and a list of requirements for each element"},
+{"element": "Design rules", "description": "All rules for the design of various tools (fonts, sizes, indents, colors, styles, numbering, etc.) should be written down in this paragraph. Nesting is allowed in this paragraph. that is, you need to separately consider the design for tables, figures, footnotes, formulas, links, and so on"}
+],
+"gost_params": {
+"font": {"size": "12 pt", "type": "Times New Roman"},
+"line spacing": 1.5,
+"paper size": {"format": "A4", "color": "white"},
+"structural_elements_requirements": {
+"Headers": ["Bold font", "Font size: 14 pt"],
+"Subheaders": ["Italic font", "Font size: 12 pt"],
+"Text Body": ["Font size: 12 pt", "Single spacing"],
+"Tables": ["Font size: 10 pt", "Gridlines for better readability"],
+"Figures": ["High resolution for clarity"],
+"Footnotes": ["Font size: 10 pt", "Indented and single-spaced"],
+"Formulas": ["Consistent style throughout the document"],
+"Links": ["Blue color for hyperlinks"],
+"Citations": ["Numbered in square brackets", "Font size: 11 pt"],
+"References": ["Font size: 11 pt", "APA style format"]
+},
+"design_rules": {
+"Text": {"font": "Times New Roman", "font size": "12 pt", "style": "Regular"},
+"Headers": {"font": "Times New Roman", "font size": "14 pt", "style": "Bold"},
+"Subheaders": {"font": "Times New Roman", "font size": "12 pt", "style": "Italic"},
+"Tables": {"font": "Arial", "font size": "10 pt", "gridlines": true},
+"Figures": {"resolution": "High"},
+"Footnotes": {"font": "Times New Roman", "font size": "10 pt", "indentation": true, "spacing": "Single"},
+"Formulas": {"style": "Consistent"},
+"Links": {"color": "Blue"},
+"Citations": {"numbering": "Square brackets", "font size": "11 pt"},
+"References": {"font size": "11 pt", "style": "APA"}
+}
+}
+}

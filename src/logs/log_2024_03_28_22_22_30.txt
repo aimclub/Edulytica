@@ -1,0 +1,29 @@
+{
+  "params": ["Chemical sciences", "Biological sciences", "Medical & health sciences", "Physical sciences", "Mathematical sciences", "Earth sciences", "Agriculture, veterinary, environment", "Psychology", "Law", "Philosophy", "Economics", "Human society", "Journalism, library", "Education", "The arts", "Management", "Engineering", "Language", "History", "Politics and policy", "Architecture", "Computing, information science"],
+  "elements": [
+    {"element": "Books", "description": "percentage applied to each academic field"},
+    {"element": "Journal articles", "description": "percentage applied to each academic field"},
+    {"element": "Conference papers", "description": "percentage applied to each academic field"},
+    {"element": "Scopus indexes", "description": "serial publications that have been assigned an ISSN"},
+    {"element": "Journals", "description": "make up the bulk of the content in Scopus, can have various physical formats, serial publications with ISSN except specific ones can be suggested for review and covered in Scopus"},
+    {"element": "Trade journals", "description": "serial publications covering a specific industry, trade or business, magazine type of periodicals with articles on topical subjects, news items and advertisements, seldom refereed and do not always have an editorial board"},
+    {"element": "Book series", "description": "a serial publication that has an overall series title, an ISSN, and in which every volume and/or issue in the series is also a book with an ISBN, usually published irregularly"},
+    {"element": "Conference material", "description": "enters Scopus in two different ways: as a special issue of a regular journal, and as a dedicated conference proceeding, can be published as serial or non-serial and may contain either the full articles or only the abstracts"},
+    {"element": "Non-serial sources", "description": "a publication with an ISBN unless it is a report, part of a book series, proceeding or patent"},
+    {"element": "Other sources", "description": "secondary documents and patents available in Scopus"},
+    {"element": "Document types", "description": "Scopus coverage focuses on primary document types from serial publications"}
+  ],
+  "gost_params": {
+    "Books": ["Chemical sciences", "Biological sciences", "Medical & health sciences", "Physical sciences", "Mathematical sciences", "Earth sciences", "Agriculture, veterinary, environment", "Psychology", "Law", "Philosophy", "Economics", "Human society", "Journalism, library", "Education", "The arts", "Management", "Engineering", "Language", "History", "Politics and policy", "Architecture", "Computing, information science"],
+    "Journal articles": ["Chemical sciences", "Biological sciences", "Medical & health sciences", "Physical sciences", "Mathematical sciences", "Earth sciences", "Agriculture, veterinary, environment", "Psychology", "Law", "Philosophy", "Economics", "Human society", "Journalism, library", "Education", "The arts", "Management", "Engineering", "Language", "History", "Politics and policy", "Architecture", "Computing, information science"],
+    "Conference papers": ["Chemical sciences", "Biological sciences", "Medical & health sciences", "Physical sciences", "Mathematical sciences", "Earth sciences", "Agriculture, veterinary, environment", "Psychology", "Law", "Philosophy", "Economics", "Human society", "Journalism, library", "Education", "The arts", "Management", "Engineering", "Language", "History", "Politics and policy", "Architecture", "Computing, information science"],
+    "Scopus indexes": {"serial_publications_with_ISSN": true},
+    "Journals": {"physical_formats": ["print", "electronic"], "serial_publications_with_ISSN": true},
+    "Trade journals": {"intended_audience": "specific industry, trade or business", "format": "magazine type"},
+    "Book series": {"has_series_title": true, "has_ISSN": true, "has_ISBN_for_each_volume_or_issue": true, "publication_frequency": "irregular"},
+    "Conference material": {"entry_methods": ["special issue of a regular journal", "dedicated conference proceeding"], "publishing_formats": ["serial", "non-serial"], "contains": ["full articles", "abstracts"]},
+    "Non-serial sources": {"has_ISBN": true, "not_a_report": true, "not_part_of_a_book_series": true, "not_a_proceeding": true, "not_a_patent": true},
+    "Other sources": {"secondary_documents": true, "patents": true},
+    "Document types": {"primary_document_types_from_serial_publications": true}
+  }
+}

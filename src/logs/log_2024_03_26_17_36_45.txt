@@ -1,0 +1,23 @@
+{
+"params": ["font_size", "line_spacing", "paper_format", "font_color", "font_style", "font_size_sub", "margin_left", "margin_right", "margin_top", "margin_bottom", "indent_paragraph", "line_thickness", "illustration_standard", "table_placement"],
+"elements": [
+{"element": "scope of application", "description": "Description of where GOST is applied"},
+{"element": "requirements for structural elements of the report", "description": "Structural elements of the report with their respective requirements"},
+{"element": "design rules", "description": "Rules for the design of various tools like fonts, sizes, colors, styles, etc."}
+],
+"gost_params": {
+"font_size": "at least 12 pt",
+"line_spacing": 1.5,
+"paper_format": "A4",
+"font_color": "black",
+"font_style": "recommended Times New Roman",
+"indent_paragraph": "1.25 cm",
+"margin_left": "30 mm",
+"margin_right": "15 mm",
+"margin_top": "20 mm",
+"margin_bottom": "20 mm",
+"line_thickness": "standard",
+"illustration_standard": "compliant with ESKD standards",
+"table_placement": "immediately after the text where they are first mentioned or on the next page"
+}
+}

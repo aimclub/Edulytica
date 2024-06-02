@@ -1,0 +1,59 @@
+{
+"params": ["PubMed ID", "Funding data", "Open access", "Scopus title list", "Scopus title evaluation", "Title re-evaluation"],
+"elements": [
+  {
+    "element": "PubMed ID",
+    "description": "The unique identifier for MEDLINE documents, searchable via Advanced Search. Appears on the record page and in the export of records."
+  },
+  {
+    "element": "Funding data",
+    "description": "Details available from the acknowledgement section on the record page for content. Includes sponsor name, acronym, and grant number."
+  },
+  {
+    "element": "Open access",
+    "description": "Refers to journals where all peer-reviewed scholarly articles are online without restrictions. Journals are recognized as open access only if they are registered as Gold OA or Subsidized OA at DOAJ or ROAD."
+  },
+  {
+    "element": "Scopus title list",
+    "description": "Contains over 34,000 titles including more than 21,500 active and 12,000 inactive titles. Complete lists are available externally from the Scopus info site."
+  },
+  {
+    "element": "Scopus title evaluation",
+    "description": "Scopus continually reviews new titles for inclusion using transparent selection criteria. New title suggestions may come from librarians, publishers and journal editors."
+  },
+  {
+    "element": "Title re-evaluation",
+    "description": "Scopus re-evaluates low-performing journals based on a set of metrics and benchmarks. The re-evaluation process is a rolling annual process."
+  }
+],
+"gost_params": {
+    "PubMed ID": {
+      "identifier": "Unique",
+      "searchable": true,
+      "visible_on": ["record_page", "export_of_records"]
+    },
+    "Funding data": {
+      "source": "Acknowledgement section of the article",
+      "includes": ["Sponsor name", "Acronym", "Grant number"],
+      "requirement": "funding body must be included in FundRef ontology"
+    },
+    "Open access": {
+      "requirement": "Journal must be registered as Gold OA or Subsidized OA at DOAJ or ROAD",
+      "not_on_article_level": true
+    },
+    "Scopus title list": {
+      "total_titles": 34000,
+      "active_titles": 21500,
+      "inactive_titles": 12000,
+      "source": "Scopus info site",
+      "update_frequency": "2-3 times per year"
+    },
+    "Scopus title evaluation": {
+      "source_of_suggestions": ["librarians", "publishers", "journal editors"]
+    },
+    "Title re-evaluation": {
+      "process": "Annual rolling",
+      "metrics_and_benchmarks_used": ["Self-citations", "Citations", "Impact Per Publication", "Article output", "Abstract usage", "Full text links"]
+    }
+  }
+}

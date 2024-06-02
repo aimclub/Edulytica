@@ -1,0 +1,43 @@
+{
+"params": ["subject chairs", "title evaluation", "title re-evaluation", "Scopus Title Evaluation Platform (STEP)", "publication language", "geographical coverage", "subject area coverage"],
+"elements": [
+  {"element": "subject chair", "description": "Senior researchers responsible for reviewing all titles within a specific subject area."},
+  {"element": "title evaluation", "description": "Process in which the Content Selection & Advisory Board reviews new journal titles for inclusion in Scopus."},
+  {"element": "title re-evaluation", "description": "Annual curation of the journal quality of all titles in the database."},
+  {"element": "STEP", "description": "Web-based editorial system streamlining the entire title evaluation process."},
+  {"element": "publication language", "description": "Language in which the titles are published. Titles in non-English languages can be included as long as English abstracts can be provided."},
+  {"element": "geographical coverage", "description": "Coverage of titles from all geographical regions."},
+  {"element": "subject area coverage", "description": "Classification of titles under four broad subject clusters further divided into 27 major subject areas and 300+ minor subject areas."}
+],
+"gost_params": {
+  "subject chairs": {
+    "ownership": "Each subject chair owns clear ownership per title in their respective area.",
+    "evaluation": "Subject chairs are involved in the final vote to accept or reject a new journal title.",
+    "additional reviewers": "Subject chairs can choose to involve additional reviewers with the respective subject expertise and/or the language skills."
+  },
+  "title evaluation": {
+    "final decision": "The final decision of title inclusion in Scopus is made by subject chairs."
+  },
+  "title re-evaluation": {
+    "annual curation": "The quality of all titles in the Scopus database is curated annually."
+  },
+  "STEP": {
+    "benefits": "STEP offers several benefits including feedback on title acceptance or rejection via a consistent process of communication and a shorter decision-making cycle."
+  },
+  "publication language": {
+    "non-English titles": "Approximately 21% of titles in Scopus are published in languages other than English."
+  },
+  "geographical coverage": {
+    "global coverage": "Scopus is designed to best serve researchers’ needs by covering titles from all geographical regions, with more than half of Scopus content originating from outside North America."
+  },
+  "subject area coverage": {
+    "subject clusters": "Titles in Scopus are classified under four broad subject clusters further divided into 27 major subject areas and 300+ minor subject areas.",
+    "Subject areas": {
+      "Life sciences": 15,
+      "Social sciences": 32,
+      "Physical sciences": 24,
+      "Health sciences": 29
+    }
+  }
+}
+}

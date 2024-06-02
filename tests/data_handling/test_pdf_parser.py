@@ -17,15 +17,16 @@ class PDFParserTest(unittest.TestCase):
 
     def test_parser_files(self):
         with self.assertRaises(FileNotFoundError):
-            self.pdf_parser.parse_files(f'{self.tests_folder}directorynotexists')
+            self.pdf_parser.parse_files(f'{self.tests_folder}directorynotexists', 'testresult_noexists.csv')
         self.assertFalse(os.path.exists(f'{self.tests_folder}testresult.csv'))
         self.assertIsNone(self.pdf_parser.parse_files(f'{self.tests_folder}', 'testresult.csv'))
         self.assertTrue(os.path.exists(f'testresult.csv'))
 
     def tearDown(self):
-        if os.path.exists(f'{self.tests_folder}testresult.csv'):
-            print('deleted')
-            os.remove(f'{self.tests_folder}testresult.csv')
+        if os.path.exists(f'testresult.csv'):
+            os.remove(f'testresult.csv')
+        if os.path.exists(f'testresult_noexists.csv'):
+            os.remove(f'testresult_noexists.csv')
 
 
 if __name__ == '__main__':

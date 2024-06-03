@@ -5,7 +5,7 @@ coverage:
         target: 80%
         threshold: 1%
 
-comment:                  # this is a top-level key
+comment: # this is a top-level key
   layout: " diff, flags, files"
   behavior: default
   require_changes: false  # if true: only post the comment if coverage changes
@@ -17,4 +17,5 @@ ignore:
   - "src/cli.py"
   - "src/giga.py"
   - "src/main.py"
-  - "src/rag"
+  - "src/rag/llm"
+  - "src/rag/semantic_search"

@@ -1,4 +1,4 @@
-name: Edu-Analysis-Framework Workflow
+name: Edulytica Workflow
 
 on: [push, pull_request]
 
@@ -30,4 +30,4 @@ jobs:
       uses: codecov/codecov-action@v4.0.1
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        slug: LISA-ITMO/Edu-Analysis-Framework
+        slug: LISA-ITMO/Edulytica

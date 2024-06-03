@@ -82,21 +82,11 @@ def change_password(request: auth_schemas.changepassword,
 
 @auth_router.get('/refresh')
 async def refresh_token(data: Annotated[dict, Depends(get_current_active_user_refresh)], db: Session = Depends(get_session)):
-    # try:
-    # Authorize.jwt_refresh_token_required()
     token = data['refresh_token']
     access_token = create_access_token(data['user'].id)
     checker = uuid.uuid4()
     refresh = create_refresh_token(subject=data['user'].id, checker=checker)
-    refresh_token = await TokenCrud.update(session=db, record_id=token.id, refresh_token=refresh, checker=checker,
-                                           status=True)
-    # except Exception as e:
-    #     error = e.__class__.__name__
-    #     if error == 'MissingTokenError':
-    #         raise HTTPException(
-    #             status_code=status.HTTP_400_BAD_REQUEST, detail='Please provide refresh token')
-    #     raise HTTPException(
-    #         status_code=status.HTTP_400_BAD_REQUEST, detail=error)
+    await TokenCrud.update(session=db, record_id=token.id, refresh_token=refresh, checker=checker, status=True)
 
     return {
         "access_token": access_token,

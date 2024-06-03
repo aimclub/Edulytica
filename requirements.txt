@@ -9,3 +9,13 @@ psycopg2
 pydantic~=2.7.1
 python-dotenv~=1.0.1
 starlette~=0.37.2
+git+https://github.com/huggingface/transformers.git
+bitsandbytes
+git+https://github.com/huggingface/peft.git
+git+https://github.com/huggingface/accelerate.git
+trl
+xformers
+wandb
+datasets
+einops
+sentencepiece

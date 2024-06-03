@@ -1,11 +1,8 @@
 import asyncio
 import unittest
-from unittest.mock import patch, mock_open, MagicMock, AsyncMock
-from io import StringIO
+from unittest.mock import patch, MagicMock, AsyncMock
 import requests
-import aiohttp
 from bs4 import BeautifulSoup as BSoup
-import json
 from src.data_handling.ISU_parser import ParserISU
 
 

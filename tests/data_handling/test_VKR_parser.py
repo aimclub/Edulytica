@@ -1,9 +1,6 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
-from io import StringIO
-import requests
 
-# Убедитесь, что путь к модулю 'src.data_handling.VKR_parser' правильный
 from src.data_handling.VKR_parser import ParserVKR
 
 

@@ -1,5 +1,5 @@
 import unittest
-from Edulytica.src.data_handling.data_manager import DataManager
+from src.data_handling.data_manager import DataManager
 
 
 class DataManagerTest(unittest.TestCase):

@@ -4,7 +4,7 @@ from io import StringIO
 import requests
 
 # Убедитесь, что путь к модулю 'src.data_handling.VKR_parser' правильный
-from Edulytica.src.data_handling.VKR_parser import ParserVKR
+from src.data_handling.VKR_parser import ParserVKR
 
 
 class TestParserVKR(unittest.TestCase):

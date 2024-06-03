@@ -36,6 +36,7 @@ litellm==1.39.6
 lxml==5.2.2
 MarkupSafe==2.1.5
 multidict==6.0.5
+nltk==3.8.1
 numpy==1.26.4
 oauthlib==3.2.2
 odfpy==1.4.1

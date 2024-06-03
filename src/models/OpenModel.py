@@ -17,6 +17,7 @@ with open(f"config/roles/{getenv('ROLE')}.txt", 'r', encoding='UTF-8') as file:
 
 
 class OpenModel:
+    """ structures the file in json """
     def __init__(self):
         self.logging = False
         self.model = getenv('MODEL')

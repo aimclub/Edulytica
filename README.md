@@ -21,7 +21,7 @@ The data you receive can be used for a variety of purposes. Within the framework
 ```in dev```
 
 ## Docs
-```in dev```
+The documentation is available at [the link](https://lisa-itmo.github.io/Edulytica/index.html)
 
 ## Contributing
 ```in dev```

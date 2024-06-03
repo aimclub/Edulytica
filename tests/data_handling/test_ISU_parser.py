@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import patch, MagicMock, AsyncMock
 import requests
 from bs4 import BeautifulSoup as BSoup
-from src.data_handling.ISU_parser import ParserISU
+from Edulytica.src.data_handling.ISU_parser import ParserISU
 
 
 class TestParserISU(unittest.TestCase):
@@ -11,7 +11,7 @@ class TestParserISU(unittest.TestCase):
     def setUp(self):
         self.parser = ParserISU('fake_cookie', 'fake_sso')
 
-    @patch('src.data_handling.ISU_parser.requests.get')
+    @patch('Edulytica.src.data_handling.ISU_parser.requests.get')
     def test_check_connection_success(self, mock_get):
         mock_response = MagicMock()
         mock_response.ok = True
@@ -21,7 +21,7 @@ class TestParserISU(unittest.TestCase):
         result = self.parser._check_connection()
         self.assertEqual(result, None)
 
-    @patch('src.data_handling.ISU_parser.requests.get')
+    @patch('Edulytica.src.data_handling.ISU_parser.requests.get')
     def test_check_connection_failure(self, mock_get):
         mock_response = MagicMock()
         mock_response.ok = False
@@ -31,7 +31,7 @@ class TestParserISU(unittest.TestCase):
         result = self.parser._check_connection()
         self.assertEqual(result, self.parser.session_exception_message)
 
-    @patch('src.data_handling.ISU_parser.requests.get')
+    @patch('Edulytica.src.data_handling.ISU_parser.requests.get')
     def test_check_connection_ip_failure(self, mock_get):
         mock_get.side_effect = requests.exceptions.ConnectionError
 
@@ -98,13 +98,13 @@ class TestParserISU(unittest.TestCase):
         self.assertIsInstance(result, list)
         self.assertEqual(len(result), 2)
 
-    @patch('src.data_handling.ISU_parser.ParserISU._fetch_url', new_callable=AsyncMock)
+    @patch('Edulytica.src.data_handling.ISU_parser.ParserISU._fetch_url', new_callable=AsyncMock)
     def test_parse_website(self, mock_fetch_url):
         mock_fetch_url.return_value = 'mocked_response'
         result = asyncio.run(self.parser._parse_website(123))
         self.assertEqual(result, (123, 'mocked_response'))
 
-    @patch('src.data_handling.ISU_parser.ParserISU._async_parse_users_data', new_callable=AsyncMock)
+    @patch('Edulytica.src.data_handling.ISU_parser.ParserISU._async_parse_users_data', new_callable=AsyncMock)
     def test_parse_users_data(self, mock_async_parse_users_data):
         self.parser.parse_users_data(0)
         mock_async_parse_users_data.assert_called_once_with(0)

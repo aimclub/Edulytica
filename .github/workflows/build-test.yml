@@ -22,7 +22,7 @@ jobs:
           pip install pytest-cov
       - name: Clear pytest cache
         run: |
-          pytest --clear-cache
+          pytest --cache-clear
       - name: Install project dependencies
         run: |
           python -m pip install -r requirements.txt

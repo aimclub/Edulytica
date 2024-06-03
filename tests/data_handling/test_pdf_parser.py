@@ -1,10 +1,11 @@
 import unittest
 import os
 
+from Edulytica.src.data_handling.pdf_parser import PDFParser
+
 
 class PDFParserTest(unittest.TestCase):
     def setUp(self):
-        from src.data_handling.pdf_parser import PDFParser
         self.tests_folder = os.path.abspath('./tests/data_handling/') + '/'
         self.test_dir = 'test_dir/'
         self.test_persons_file = f'{self.tests_folder}{self.test_dir}test.pdf'

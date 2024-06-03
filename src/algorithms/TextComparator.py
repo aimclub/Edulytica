@@ -2,6 +2,9 @@
 import string
 
 # importing external libraries
+import nltk
+
+nltk.download('stopwords')
 from nltk.corpus import stopwords
 
 # getting stopwords
@@ -49,4 +52,5 @@ class TextComparator:
             if word not in words_of_text_after_changing:
                 count_of_deleted_words += 1
 
-        return round(((count_of_added_words + count_of_deleted_words) / (len(words_of_text_after_changing) + len(words_of_text_before_changing))) * 100, 2)
+        return round(((count_of_added_words + count_of_deleted_words) / (
+                len(words_of_text_after_changing) + len(words_of_text_before_changing))) * 100, 2)

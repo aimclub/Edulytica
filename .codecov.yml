@@ -19,3 +19,7 @@ ignore:
   - "src/main.py"
   - "src/rag/llm"
   - "src/rag/semantic_search"
+  - "src/rag/const.py"
+  - "src/rag/main.py"
+  - "src/helpers"
+  - "src/models"

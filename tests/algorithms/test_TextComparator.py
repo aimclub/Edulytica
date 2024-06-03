@@ -1,6 +1,6 @@
 import unittest
 
-from src.algorithms.TextComparator import TextComparator
+from Edulytica.src.algorithms.TextComparator import TextComparator
 
 
 class TestTextComparator(unittest.TestCase):

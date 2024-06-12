@@ -28,25 +28,31 @@ class CrudFactory:
         self.get_schema = get_schema
 
     @classmethod
-    async def get_by_id(cls, session: SessionLocal, record_id: int) -> Schema | None:
+    def get_by_id(cls, session: SessionLocal, record_id: int) -> Schema | None:
         res = session.execute(select(cls.base_model).where(cls.base_model.id == record_id))
         obj = res.scalar_one()
         return cls.get_schema.model_validate(obj) if obj else None
 
     @classmethod
-    async def get_all(cls, session: SessionLocal, offset: int = 0, limit: int = 100) -> list[Schema]:
-        res = await session.execute(select(cls.base_model).offset(offset).limit(limit))
+    def get_all(cls, session: SessionLocal, offset: int = 0, limit: int = 100) -> list[Schema]:
+        res = session.execute(select(cls.base_model).offset(offset).limit(limit))
         objects = res.scalars().all()
         return [cls.get_schema.model_validate(obj) for obj in objects]
 
     @classmethod
-    async def get_filtered_by_params(cls, session: SessionLocal, **kwargs) -> list[Schema]:
+    def get_filtered_by_params(cls, session: SessionLocal, **kwargs) -> list[Schema]:
         res = session.execute(select(cls.base_model).filter_by(**kwargs))
         objects = res.scalars().all()
         return [cls.get_schema.model_validate(obj) for obj in objects]
 
     @classmethod
-    async def create(cls, session: SessionLocal, **kwargs) -> Schema:
+    def get_filtered(cls, session: SessionLocal, filter) -> list[Schema]:
+        res = session.execute(select(cls.base_model).filter(filter))
+        objects = res.scalars().all()
+        return [cls.get_schema.model_validate(obj) for obj in objects]
+
+    @classmethod
+    def create(cls, session: SessionLocal, **kwargs) -> Schema:
         instance = cls.base_model(**kwargs)
         session.add(instance)
         session.commit()
@@ -54,16 +60,16 @@ class CrudFactory:
         return cls.get_schema.model_validate(instance)
 
     @classmethod
-    async def update(cls, session: SessionLocal, record_id: int, **kwargs) -> Schema:
+    def update(cls, session: SessionLocal, record_id: int, **kwargs) -> Schema:
         clean_kwargs = {key: value for key, value in kwargs.items() if value is not None}
         session.execute(update(cls.base_model).where(cls.base_model.id == record_id).values(**clean_kwargs))
         session.commit()
-        return await cls.get_by_id(session, record_id)
+        return  cls.get_by_id(session, record_id)
 
     @classmethod
-    async def delete(cls, session: SessionLocal, record_id: int):
-        await session.execute(delete(cls.base_model).where(cls.base_model.id == record_id))
-        await session.commit()
+    def delete(cls, session: SessionLocal, record_id: int):
+        session.execute(delete(cls.base_model).where(cls.base_model.id == record_id))
+        session.commit()
 
 
 def BaseCrudFactory(

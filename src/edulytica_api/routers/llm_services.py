@@ -1,15 +1,14 @@
-from src.edulytica_api.llms.summarise.summarise_llm import LLM, Conversation
+# from src.edulytica_api.llms.summarise.summarise_llm import LLM, Conversation
 from src.edulytica_api.models.auth import User
 from src.edulytica_api.models.files import *
 from fastapi import APIRouter, Depends
 from src.edulytica_api.database import SessionLocal
-from src.edulytica_api.routers.auth_bearer import get_current_active_user
+from src.edulytica_api.routers.auth_bearer import access_token_auth
 from src.edulytica_api.routers.decorators import token_required
 from src.edulytica_api.schemas import llm_schema
 from typing import Annotated
 from sqlalchemy.orm import Session
 import json
-
 
 def get_session():
     session = SessionLocal()
@@ -17,7 +16,6 @@ def get_session():
         yield session
     finally:
         session.close()
-
 
 DEFAULT_MESSAGE_TEMPLATE = "<|start_header_id|>{role}<|end_header_id|>{content}<|eot_id|>"
 DEFAULT_RESPONSE_TEMPLATE = "<|begin_of_text|>"
@@ -44,6 +42,7 @@ EXTRACT_DEFAULT_SYSTEM_PROMPT = '''Ты ассистент. Твоя задач�
 Задачи: не выявлены.
 Приступай к выполнению задачи, внимательно следуя этим инструкциям.'''
 
+
 PURPOSE_DEFAULT_SYSTEM_PROMPT = '''Ты - ассистент преподавателя, который оценивает научную работу. Как и в любой работе, в тексте есть цели и задачи работы. Цель обычно одна, а задач - несколько. Твоя задача просмотреть и проанализировать весь текст работы и оценить соответствие текста поставленной цели и задачам. Тебе нужно проверить, соответствует ли текст поставленной цели и задачам. Если цель или задачи отсутствуют - так и напиши, что задачи не найдены. Также удели внимание источникам информации. Проанализируй их, на сколько они актуальны и применены в этой работе. \
 \
 Для этого следуй данному плану:\
@@ -63,87 +62,83 @@ PURPOSE_DEFAULT_SYSTEM_PROMPT = '''Ты - ассистент преподава�
   8. В последнем пункте отчета попробуй сделать численную оценку в процентах на соответствие цели и задачам и объясни, почему оценка именно такая.\
   9. Заметь, что в тексте написаны цель и задачи. Тебе нужно найти цель и задачи, затем прочитать и проанализировать весь текст и, после этого, сравнить текст на соответствие цели и задачам, которые присутствуют в тексте!'''
 
-purpose_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/saiga_llama3_8b-qdora-4bit_purpose')
-summarize_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/qdora')
+# purpose_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/saiga_llama3_8b-qdora-4bit_purpose')
+# summarize_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/qdora')
 
 llm_router = APIRouter(prefix="/llm")
 
 
 @llm_router.post("/purpose")
-def get_purpose(data: llm_schema.PurposeData, current_user: Annotated[User, Depends(get_current_active_user)],
-                db: Session = Depends(get_session)):
+def get_purpose(data:llm_schema.PurposeData, current_user: Annotated[User, Depends(access_token_auth)],
+                    db: Session = Depends(get_session)):
+
     def chunk_text(text, chunk_size, overlap):
         if chunk_size <= 0 or overlap < 0 or overlap >= chunk_size:
             raise ValueError("Некорректные параметры: размер чанка должен быть положительным числом, "
                              "нахлёст должен быть неотрицательным числом и меньше размера чанка.")
-
+    
         chunks = []
         start = 0
         text_length = len(text)
-
+    
         while start < text_length:
             end = start + chunk_size
             chunk = text[start:end]
             chunks.append(chunk)
             start += chunk_size - overlap
-
+    
             if start >= text_length:
                 break
-
+    
         return chunks
-
-    intro = data.intro
-    main_text = data.text
-    extract_conversation = Conversation(message_template=DEFAULT_MESSAGE_TEMPLATE,
-                                        response_template=DEFAULT_RESPONSE_TEMPLATE,
-                                        system_prompt=EXTRACT_DEFAULT_SYSTEM_PROMPT)
-    extract_conversation.add_user_message(intro)
-    prompt = extract_conversation.get_prompt(purpose_llm.tokenizer)
-    output = purpose_llm.generate(prompt)
-    extract_data = output
-    # return output
-
-    for inpt in main_text:
-        inpt = ' '.join(inpt)
-        chunks = chunk_text(inpt, 8000, 0)
-        output = ''
-        for i in range(len(chunks)):
-            chunk = chunks[i]
-
-            if i == len(chunks) - 1:
-                chunk = chunk + 'ПОСЛЕДНИЙ ЧАНК'
-            purpose_conversation = Conversation(message_template=DEFAULT_MESSAGE_TEMPLATE,
-                                                response_template=DEFAULT_RESPONSE_TEMPLATE,
-                                                system_prompt=PURPOSE_DEFAULT_SYSTEM_PROMPT)
-            purpose_conversation.add_user_message(chunk)
-        prompt = purpose_conversation.get_prompt(purpose_llm.tokenizer)
-        result_data = []
-
-        output = purpose_llm.generate(prompt)
-        result_data.append(output)
-
-    res = {'goal': extract_data, 'result': result_data}
-
-    return json.dumps(res)
+    pass
+    # intro = data.intro
+    # main_text = data.text
+    # extract_conversation = Conversation(message_template = DEFAULT_MESSAGE_TEMPLATE, response_template = DEFAULT_RESPONSE_TEMPLATE, system_prompt = EXTRACT_DEFAULT_SYSTEM_PROMPT)
+    # extract_conversation.add_user_message(intro)
+    # prompt = extract_conversation.get_prompt(purpose_llm.tokenizer)
+    # output = purpose_llm.generate(prompt)
+    # extract_data = output
+    #
+    # for inpt in main_text:
+    #     inpt = ' '.join(inpt)
+    #     chunks = chunk_text(inpt, 8000, 0)
+    #     output = ''
+    #     for i in range(len(chunks)):
+    #         chunk = chunks[i]
+    #
+    #         if i == len(chunks) - 1:
+    #           chunk = chunk + 'ПОСЛЕДНИЙ ЧАНК'
+    #         purpose_conversation = Conversation(message_template = DEFAULT_MESSAGE_TEMPLATE, response_template = DEFAULT_RESPONSE_TEMPLATE, system_prompt = PURPOSE_DEFAULT_SYSTEM_PROMPT)
+    #         purpose_conversation.add_user_message(chunk)
+    #     prompt = purpose_conversation.get_prompt(purpose_llm.tokenizer)
+    #     result_data = []
+    #
+    #     output = purpose_llm.generate(prompt)
+    #     result_data.append(output)
+    #
+    # res = {'goal': extract_data, 'result': result_data}
+    #
+    # return json.dumps(res)
+    
 
 
 @llm_router.post("/accordance")
-def get_accordance():
+def  get_accordance():
     pass
 
 
 @llm_router.post("/summary")
-def get_summary(data: llm_schema.SummarizeData, current_user: Annotated[User, Depends(get_current_active_user)],
-                db: Session = Depends(get_session)):
-    text = data.text
-    result_data = []
-    for inpt in text:
-        summarize_conversation = Conversation(message_template=DEFAULT_MESSAGE_TEMPLATE,
-                                              response_template=DEFAULT_RESPONSE_TEMPLATE,
-                                              system_prompt=SUMMARIZE_DEFAULT_SYSTEM_PROMPT)
-        summarize_conversation.add_user_message(inpt)
-        prompt = summarize_conversation.get_prompt(summarize_llm.tokenizer)
-        output = summarize_llm.generate(prompt)
-        result_data.append([output])
-    res = {'result': result_data}
-    return json.dumps(res)
+def get_summary(data:llm_schema.SummarizeData, current_user: Annotated[User, Depends(access_token_auth)],
+                    db: Session = Depends(get_session)):
+    # text = data.text
+    # result_data = []
+    # for inpt in text:
+    #     summarize_conversation = Conversation(message_template = DEFAULT_MESSAGE_TEMPLATE, response_template = DEFAULT_RESPONSE_TEMPLATE, system_prompt = SUMMARIZE_DEFAULT_SYSTEM_PROMPT)
+    #     summarize_conversation.add_user_message(inpt)
+    #     prompt = summarize_conversation.get_prompt(summarize_llm.tokenizer)
+    #     output = summarize_llm.generate(prompt)
+    #     result_data.append([output])
+    # res = {'result': result_data}
+    # return json.dumps(res)
+    pass

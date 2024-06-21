@@ -1,0 +1,1358 @@
+Scopus
+Content Coverage Guide
+
+
+Updated January 2016
+    Contents
+     1. Introduction                                                        3
+        1.1 Scopus – an overview                                            3
+        1.2 Content Selection & Advisory Board                              5
+        1.3 Purpose and scope                                               5
+
+     2. Coverage of source types                                            6
+        2.1 Serial source types                                             7
+        2.2 Non-serial sources                                              8
+        2.3 Other sources                                                   8
+
+     3. Coverage of metadata                                                9
+        3.1 Document types                                                  9
+        3.2 Abstracts                                                      11
+        3.3 Keywords and index terms                                       12
+        3.4 Cited references                                               12
+        3.5 Affiliation data                                               13
+        3.6 Author profiles                                                13
+        3.7 ORCID integration                                              13
+        3.8 Other metadata                                                 14
+
+     4. Coverage of sources (dating back to 1970)                          15
+        4.1 Scopus title list                                              15
+        4.2 Scopus title evaluation                                        16
+        4.3 Global coverage                                                20
+        4.4 Subject area coverage                                          21
+        4.5 Complete coverage                                              22
+        4.6 MEDLINE coverage                                               23
+
+     5. Processing of Scopus content                                       24
+
+
+
+
+2                                                   Scopus | Content Coverage Guide
+ 1. Introduction
+     1.1 Scopus – an overview
+
+     Scopus launched in November 2004. It is the largest abstract and citation database of peer-reviewed literature, featuring
+     smart tools to track, analyze and visualize research. With over 21,500 titles from more than 5,000 international publishers,
+     Scopus delivers the most comprehensive overview of the world’s research output in the fields of science, technology,
+     medicine, social science and arts and humanities.
+
+
+     Publishers indexed in Scopus
+
+
+
+
+     Scopus at a glance, updated January 2016:
+
+     • Over 21,500 titles (see section 4.1):
+            • Over 21,500 peer-reviewed journals (including 4,200 full open access journals)
+            • 360 trade publications
+            • Over 530 book series
+            • Over 7.2 million conference papers from over 83,000 worldwide events
+            • “Articles-in-Press” from over 5,000 journals (see section 5)
+            • More than 116,000 books with 120,000 expected by early 2016 and 10,000 added each year thereafter
+
+     • Over 60 million records (see section 3.1):
+            • 38+ million records with references back to 1996 of which 84% include references
+            • 22+ million records pre-1996 which go back as far as 1823
+
+     • Patents:
+            • More than 27 million patent records from five patent offices (see section 2.3)
+
+     For additional information and updates, please refer to: http://www.elsevier.com/solutions/scopus/content
+     and follow the Scopus blog: http://blog.scopus.com/.
+
+
+
+elsevier.com/scopus                                                                                                                 3
+    Scopus content growth
+
+
+            70,000,000
+
+
+
+
+            60,000,000
+
+
+
+
+            50,000,000
+
+
+
+
+            40,000,000
+
+
+
+
+            30,000,000
+                                                                                                                                                                                                                                                                                                              Total number of pre-1996 items
+                                                                                                                                                                                                                                                                                                              Total number of post-1995 items
+            20,000,000                                                                                                                                                                                                                                                                                        Number of items in Scopus
+
+
+
+            10,000,000
+
+
+
+
+                    0
+                         Jul. 2008
+
+                                     Dec. 2008
+
+                                                 May. 2009
+
+                                                             Jul. 2009
+
+                                                                         Nov. 2009
+
+                                                                                     Mar.2010
+
+                                                                                                Jul. 2010
+
+                                                                                                            Nov. 2010
+
+                                                                                                                        Mar.2011
+
+                                                                                                                                   Jul. 2011
+
+                                                                                                                                               Nov. 2011
+
+                                                                                                                                                           Mar.2012
+
+                                                                                                                                                                      Jul. 2012
+
+                                                                                                                                                                                  Nov. 2012
+
+                                                                                                                                                                                              Mar.2013
+
+                                                                                                                                                                                                         Jul. 2013
+
+                                                                                                                                                                                                                     Nov. 2013
+
+                                                                                                                                                                                                                                 Mar.2014
+
+                                                                                                                                                                                                                                            Jul. 2014
+
+                                                                                                                                                                                                                                                        Nov. 2014
+
+                                                                                                                                                                                                                                                                    Mar.2015
+
+                                                                                                                                                                                                                                                                               Jul. 2015
+
+                                                                                                                                                                                                                                                                                           Nov. 2015
+
+
+
+
+    Scopus supports researchers and librarians in three key areas:
+
+    Search                                                                                                                         Discover                                                                                                                                                            Analyze
+    • Search by document, author or                                                                                               • Find related documents by shared                                                                                                                                • Track citations over time for a set
+       affiliation, or use Advanced Search                                                                                           references, authors and/or keywords                                                                                                                                   of authors or documents with
+    • Refine results by source type, year,                                                                                        • Identify and match an organization                                                                                                                                  Citation Overview/Tracker
+       language, author, affiliation and more                                                                                        with its research output using
+                                                                                                                                     Affiliation Identifier                                                                                                                                            • Assess trends in search results with
+    • Link to full-text articles and other
+                                                                                                                                                                                                                                                                                                           Analyze Search Results
+       library resources                                                                                                           • Identify collaborators or subject
+                                                                                                                                     experts with Author Identifier                                                                                                                                    • View h-index for specific authors
+    • Use the QUOSA Document
+       Download Manager to bulk retrieve                                                                                           • Clarify your identity through
+                                                                                                                                                                                                                                                                                                       • Analyze an author’s publishing output
+       results in PDF format                                                                                                         integration with ORCID
+                                                                                                                                                                                                                                                                                                           with Author Evaluator
+    • Export data to Reference Managers                                                                                           • Benefit from indexing with Universal
+       such as Mendeley, RefWorks                                                                                                     Discovery services: EBSCOHost,                                                                                                                                   • Gain insight into journal performance
+       and EndNote                                                                                                                    Primo and Summon                                                                                                                                                     with Compare Journals and
+    • Stay up to date with email alerts,                                                                                          • Take advantage of interoperability                                                                                                                                  alternative journal metrics SNIP,
+       RSS and HTML feeds                                                                                                            with ScienceDirect, Mendeley, SciVal,                                                                                                                                 SJR and IPP
+                                                                                                                                     Reaxys and Engineering Village
+                                                                                                                                                                                                                                                                                                       • Benchmark articles and decide
+                                                                                                                                                                                                                                                                                                           what to read with the Articles
+                                                                                                                                                                                                                                                                                                           Metrics module
+
+
+
+
+4                                                                                                                                                                                                                                                                                                          Scopus | Content Coverage Guide
+     1.2 Content Selection & Advisory Board
+
+     The Content Selection & Advisory Board (CSAB) was established in 2005 to promote an open and transparent content
+     coverage policy. The Board consisted of a large independent group of established subject matter experts from around the
+     world. The CSAB as we know it today was formed in 2009 and is now made up of 15 independent, international scientists,
+     researchers and journal editors from all scientific disciplines and geographical areas. To see a roster of the CSAB members:
+     http://www.elsevier.com/solutions/scopus/content/scopus-content-selection-and-advisory-board.
+
+     The CSAB’s primary function is to evaluate and determine which peer-reviewed titles are accepted into Scopus, and which
+     are excluded. To ensure both the broadest coverage and highest quality content is included, the CSAB maintains and follows
+     a transparent and robust selection policy. This policy is reviewed on a regular basis (see section 4.2).
+
+     Additionally, the CSAB is integral in determining content strategy by:
+
+     • Recommending long-term content approaches to ensure that Scopus remains focused on the research community’s
+        information needs
+
+     • Keeping the Scopus team abreast of trends and developments in the research community, such as new standards,
+        protocols or software with which to integrate
+
+
+
+
+     1.3 Purpose and scope
+
+     This document is designed to provide readers with a complete overview of all aspects of content coverage in Scopus.
+
+     Non-content aspects of Scopus (e.g., interface, search and other functionality) are not included within the scope of
+     this document.
+
+
+
+
+elsevier.com/scopus                                                                                                                 5
+    2. Coverage of source types
+     The source types covered in Scopus are either serial        Percentage of Scopus serial publications
+     publications that have an ISSN (International Standard
+     Serial Number) such as journals, book series and some
+     conference series or non-serial publications that have an                  1% 1.5%
+     ISBN (International Standard Book Number) like one-off
+     book publications or one-off conferences. To ensure that
+     coverage, discoverability, profiles and impact measurement
+     for research in all subject fields is accounted for, Scopus
+                                                                                                       Active trade journals
+     covers different source types.                                      35.5%
+                                                                                                              Active book series
+                                                                                                 61.9%
+     In the table below, the figures in the columns highlight                                                 Active journals
+
+     the significance of each content type per discipline. This                                               Inactive journals,
+                                                                                                              book series,
+     analysis underpins a highly targeted approach for coverage                                               trade journals
+
+     of various source types for different fields.
+
+
+
+
+                                                                                 Publication categories
+
+
+         Field                                                 Books                 Journal articles        Conference papers
+         Chemical sciences                                        0.2                     95.7                           1.9
+         Biological sciences                                      0.3                     90.7                           2.7
+         Medical & health sciences                                0.3                     90.5                           2.9
+         Physical sciences                                        0.1                     90.0                           7.3
+         Mathematical sciences                                    0.7                     83.8                          11.2
+         Earth sciences                                           0.9                     82.2                           9.2
+         Agriculture, veterinary, environment                     0.4                     79.0                          14.7
+         Psychology                                               1.5                     76.2                           4.9
+         Law                                                      4.1                     71.9                          1.69
+         Philosophy                                                6                      64.8                           5.4
+         Economics                                                2.9                     64.5                            8
+         Human society                                            3.5                      63                            5.6
+         Journalism, library                                      3.4                     57.2                          24.2
+         Education                                                2.5                     54.5                          23.6
+         The arts                                                 4.4                     54.5                          20.3
+         Management                                               1.3                     52.9                           34
+         Engineering                                              0.4                      52                           45.1
+         Language                                                 6.5                     51.8                           7.6
+         History                                                  11.6                    50.6                           3.8
+         Politics and policy                                      5.8                     46.1                          10.8
+         Architecture                                              3                      35.6                          43.6
+         Computing, information science                           0.4                     32.8                          62.3
+
+
+
+
+6                                                                                                 Scopus | Content Coverage Guide
+     2.1 Serial source types
+
+     Scopus indexes serial publications (journals, trade journals, book series and conference materials) that have been assigned
+     an ISSN. The exception is conference papers, which enter Scopus through different methods than do serial publications with
+     ISSNs (see section “Conference Material”).
+
+     Journals
+     Journals make up the bulk of the content in Scopus and can have various physical formats (e.g., print, electronic). Titles are
+     selected according to our content coverage policy (for more information see section 4.2). Any serial publication with an ISSN,
+     excluding trade journals, book series, certain proceedings, newsletters, secondary sources or patent publications, can be
+     suggested for review and covered in Scopus.
+
+     Trade journals
+     Trade journals are serial publications covering and intended to reach a specific industry, trade or type of business. These
+     publications are usually are a magazine type of periodical with articles on topical subjects, news items and advertisements that
+     appeal to those in the field. Trade journals are seldom refereed and do not always have an editorial board. Abstracts are usually
+     short or nonexistent and few or no references are given. Usually an ISSN is available.
+
+     Trade journals are included in Scopus because users and librarians consider selected articles to be scientifically relevant.
+     Only articles or reviews of scientific relevance are included in Scopus. The minimum requirements for trade journal items to
+     be captured are: (1) minimum of one page, (2) minimum of one mentioned author (for more information about the regular
+     document type policy, see section 3.1)
+
+     Book series
+     A book series is a serial publication that has an overall series title, an ISSN, and in which every volume and/or issue in the series
+     is also a book with an ISBN. Usually, but not always, each book has a book title separate from the series title and a different editor
+     or editors. Typically, each book is a monographic publication. Book series are usually published irregularly.
+
+     Conference material
+     Conference material enters Scopus in two different ways: (1) as a special issue of a regular journal, (2) as a dedicated
+     conference proceeding.
+
+     Proceedings can be published as serial or non-serial, and may contain either the full articles of the papers presented or only
+     the abstracts. The source title usually includes words like proceeding(s), meeting(s), conference(s), symposium/symposia,
+     seminar(s) or workshop(s) (or their synonyms in other languages like Tagungsberichte, etc.), although some journals also include
+     proceeding(s) in the title.
+
+     Scopus covers conferences that publish full-text papers, i.e., document type conference papers (see section 3.1), whereas
+     conferences that publish only abstracts (meeting abstracts) are not considered for coverage.
+
+     Over 10% of the Scopus database is comprised of conference papers (over 7.2 million) of which 2 million are published in journals,
+     book series and other sources. The remaining 5 million are published in conference proceedings.
+
+     Conference coverage in Scopus is focused primarily on those subject areas where conference papers represent a substantial
+     portion of published research, e.g., engineering, computer science and some areas of physics.
+
+     A Conference Expansion Project completed in 2014 involved indexing over 1,000 conference titles, more than 6,000 conference
+     events and over 400,000 conference papers, principally in engineering and computer science. The project indexed conferences
+     from the big engineering publishers such as INSPIRES, ASEE and ASME.
+
+     In the Scopus title list (see section 4.1) there are over 26,612 conferences listed in the “Conf. Proceedings” tabs, 21,235 in
+     the “Conf. Proceedings post-1995” tab and 5,377 in the “Conf. Proceedings pre-1996” tab. These are conference proceedings
+     from which the meeting name was captured as part of the record data, but were not published as part of a serial publication
+     with an ISSN.
+
+
+
+elsevier.com/scopus                                                                                                                           7
+    2.2 Non-serial sources
+
+    A non-serial source is a publication with an ISBN unless it is a report, part of a book series, proceeding (non-serial) or patent.
+    It can have different physical formats (e.g., print, electronic) and is usually a monograph or composed work.
+
+    Since August 2013, book coverage has expanded. Along with the existing book series, book content now includes monographs,
+    edited volumes, major reference works and graduate level textbooks. Over 113,000 titles were added to Scopus in 2015, with a
+    target of 120,000 titles expected to be reached by early 2016. Additionally, 10,000 titles will be added each year thereafter.
+    This expansion significantly increases the breadth and depth of coverage for book-oriented disciplines in the social sciences
+    and humanities.
+
+    Books are indexed on both a book and a chapter level. Book selection policy is publisher-based, meaning publishers are
+    reviewed based on the relevancy and quality of their complete books list. Once a publisher is accepted, all books from that
+    publisher that fit the scope of the project are indexed in Scopus. To see a list of the publishers included, please refer to the
+    book title list: http://www.elsevier.com/solutions/scopus/content).
+
+
+
+
+    2.3 Other sources
+
+    Secondary documents
+
+    In Scopus, approximately 90 million records are non-core, or secondary documents. These are records that have been cited in
+    Scopus core records, but are not themselves indexed in Scopus. The most highly cited of these non-core items are often books
+    and older journal articles.
+
+
+    Patents
+
+    There are over 27 million patent records derived from five patent offices available in Scopus:
+
+    1. World Intellectual Property Organization (WIPO)
+    2. European Patent Office (EPO)
+    3. US Patent Office (USPTO)
+    4. Japanese Patent Office (JPO)
+    5. UK Intellectual Property Office (IPO.GOV.UK)
+
+
+
+
+8                                                                                                  Scopus | Content Coverage Guide
+ 3. Coverage of metadata
+     3.1 Document types
+
+     Scopus coverage focuses on primary document types from serial publications. Primary means that the author is identical to
+     the researcher in charge of the presented findings. Scopus does not include secondary document types, where the author is
+     not identical to the person behind the presented research, such as obituaries and book reviews (see section 2.2).
+
+     Scopus currently has over 60 million core records:
+
+     • Over 38 million records back to 1996 of which 84% include references
+
+     • Over 22 million records pre-1996 which go back as far as 1823 (abstracts included where available,
+        but references are not included)
+
+     • Approximately 3 million new records are added each year (5,500/day)
+
+     As of December 2015, Scopus has added over 93 million pre-1996 cited references to over 5 million articles. This has been
+     achieved in two ways: (1) by adding pre-1996 cited references to existing articles, and (2) by adding article back files, including
+     their cited references, from the archives of 36 major publishers going back to 1970. These major publishers include: Springer,
+     Wiley Blackwell, IEEE, American Physical Science and Elsevier. By the end of 2016, approximately 12 million articles will have
+     gone through this process, adding an estimated 240 million pre-1996 cited references.
+
+
+
+     Percentage of pre-1996 items compared to post-1995 items
+
+
+
+
+                          37%
+                     Percentage
+                     of pre-1996
+                         items                   63%
+                                             Percentage
+                                            of post-1995
+                                                items
+
+
+
+
+elsevier.com/scopus                                                                                                                        9
+     Document types covered in Scopus
+
+
+     Document type            Definition
+
+     Article                  Original research or opinion.
+
+     	Characteristics: Articles in peer-reviewed journals are usually several pages in length, most often
+       subdivided into sections: abstract, introduction, materials & methods, results, conclusions,
+       discussion and references. However, case reports, technical and research notes and short
+       communications are also considered to be articles and may be as short as one page in length.
+       Articles in trade journals are typically shorter than in peer-reviewed journals, and may also be as
+       brief as one page in length.
+
+     Article-in-Press (AiP)   Accepted article made available online before official publication (see section 7).
+
+     Book                     A whole monograph or entire book.
+
+     	Characteristics: Book type is assigned to the whole. Additionally, for books with individual chapters,
+       each chapter, along with a general item summarizing the book, is also indexed with the source
+       type Book.
+
+     Chapter                  A book chapter.
+
+                               haracteristics: Complete chapter in a book or book series volume where the item is identified as a
+                              C
+                              chapter by a heading or section indicator.
+
+     Conference paper         Original article reporting data presented at a conference or symposium.
+
+     	Characteristics: Conference papers are of any length reporting data from a conference, with the
+       exception of conference abstracts. Conference papers may range in length and content from full
+       papers and published conference summaries to short items as short as one page in length (also see
+       section 2.1).
+
+     Editorial                Summary of several articles or provides editorial opinions or news.
+
+                               haracteristics: Editorials are typically identified as editorial, introduction, leading article, preface or
+                              C
+                              foreword, and are usually listed at the beginning of the table of contents.
+
+     Erratum                  Report of an error, correction or retraction of a previously published paper.
+
+     	Characteristics: Errata are short items citing errors in, corrections to, or retractions of a previously
+       published article in the same journal to which a citation is provided.
+
+     Letter                   Letter to or correspondence with the editor.
+
+     	Characteristics: Letters are individual letters or replies. Each individual letter or reply is processed
+       as a single item.
+
+     Note                     Note, discussion or commentary.
+
+     	Characteristics: Notes are short items that are not readily suited to other item types. They may
+       or may not share characteristics of other item types, such as author, affiliation and references.
+       Discussions and commentaries that follow an article are defined as notes and considered to be items
+       in their own right. Notes also include questions and answers, as well as comments on other (often
+       translated) articles. In trade journals, notes are generally shorter than half a page in length.
+
+
+
+
+10                                                                                                   Scopus | Content Coverage Guide
+     Document type              Definition
+
+     Review                     Significant review of original research, also includes conference papers.
+
+     	Characteristics: Reviews typically have an extensive bibliography. Educational items
+       that review specific issues within the literature are also considered to be reviews.
+       As non-original articles, reviews lack the most typical sections of original articles such
+       as materials & methods and results.
+
+     Short survey               Short or mini-review of original research.
+
+     	Characteristics: Short surveys are similar to reviews, but usually are shorter (not more than
+       a few pages) and with a less extensive bibliography.
+
+
+     The Scopus editorial team is responsible for the classification of records. This document type policy is not valid for trade
+     journals (see section 2.1).
+
+
+
+
+     Document types not covered in Scopus
+
+
+     Document type              Definition
+
+     Book reviews	The Scopus policy to not include books extends to book reviews. The reason for this is that
+                   they do not represent primary literature and the publishers in whose journals they appear
+                   often regard them as full-text. As a full-text article, Scopus would only be able to display
+                   the title of the book review, which is often identical to the actual book, causing confusion
+                   to Scopus users. Lastly, book reviews are not often cited in research literature. As an
+                   example of this, the average citation per item for the “Journal of Academic Librarianship”
+                   drops by 50% (2.13 to 1.12) when book reviews are included.
+
+     Conference meeting         See section 2.1
+     abstracts
+
+
+
+
+     3.2 Abstracts
+
+     Over 44 million records in Scopus contain an abstract in order to provide users with as much information as possible
+     about the research presented in the database. Where available from the publisher, some records go back as far as 1823.
+     The increased availability of abstracts in Scopus helps to ensure that users find all relevant results for their search across
+     title, abstract and keywords.
+
+
+
+
+elsevier.com/scopus                                                                                                                   11
+     3.3 Keywords and index terms
+
+     Scopus manually adds index terms for 80% of the titles included in Scopus. These index terms are derived from thesauri
+     that Elsevier owns or licenses and are added to improve search recall. A team of professional indexers assigns index terms
+     to records according to the following controlled vocabularies:
+
+     • Ei Thesaurus (engineering, technology, physical sciences)
+
+     • Emtree medical terms (life sciences, health sciences)
+
+     • MeSH (life sciences, health sciences)
+
+     • GEOBASE Subject Index (geology, geography, earth and environmental sciences)
+
+     • FLX terms, WTA terms (fluid sciences, textile sciences)
+
+     • Regional Index (geology, geography, earth and environmental sciences)
+
+     • Species Index (biology, life sciences)
+
+     There is no limit to the number of index terms that Scopus can add to records. However, in the case of Emtree and MeSH
+     terms (both terms are added to records where available), only the index terms that have a direct relation with the topic of
+     the article are displayed and made searchable on Scopus in order to avoid retrieving irrelevant results.
+
+     For Emtree, the index terms with a direct relation are the Major Focus and the mentioned index terms. For MeSH,
+     the index terms with a direct relation are Major Topics and Minor Topics. For the Ei Thesaurus, the controlled terms,
+     uncontrolled terms and main headings are displayed and searchable in Scopus. All index terms are displayed for the other
+     subject indices.
+
+     For example, adverse drug reaction terms are only relevant when users are searching for articles in the context of adverse
+     drug reactions, a feature which is only possible with the support of a thesaurus (not available in Scopus). For the same
+     reason, for example, Ei treatment terms are not included in Scopus.
+
+     The Scopus capturing department assigns Chemical Abstract Service (CAS) numbers as part of the normal Emtree Drugs/
+     Chemicals/Thesaurus indexing. Emtree has ca. 35,000 CAS numbers, which by no means is comparable with Chemical
+     Databases. CAS assignment process is purely focusing on titles that are also covered by Embase. For example, searching
+     for CASREGNUMBER(1*) in Scopus will retrieve 8.6 million items.
+
+
+
+
+     3.4 Cited references
+
+     Cited references in Scopus go back to 1970. Scopus announced the launch of the Scopus Cited References Expansion
+     project in March 2014. Over the course of the project, Scopus has been adding cited references for pre-1996 content,
+     going back to 1970. As of December 2015, Scopus has added over 93 million pre-1996 cited references to nearly 5 million
+     articles. It is estimated that approximately 12 million articles will have undergone this process by the end of 2016, possibly
+     adding approximately 240 million pre-1996 cited references.
+
+     The Cited References Expansion project’s two main benefits are:
+
+     1. Users can measure impact, perform historical trend analyses and conduct more accurate evaluations of authors who
+         have published prior to 1996.
+
+     2. It provides more accurate and higher h-index rankings for those senior researchers – many of whom who subsequently
+         have become key influencers and decision makers – who published most prolifically before the mid-1990s.
+
+     Follow the progress of the Cited References Expansion project on the Scopus blog: http://blog.scopus.com/.
+
+
+
+
+12                                                                                                 Scopus | Content Coverage Guide
+     3.5 Affiliation data
+
+     It is possible to search Scopus based on affiliation data. The Scopus Affiliation Identifier automatically identifies and matches
+     an organization with all of its research output. This tool is particularly relevant for deans, faculty heads and librarians in the
+     academic market; researchers, project leaders and those involved in competitive intelligence in the corporate market; and
+     funding bodies in the government market.
+
+     A task that once may have taken days to complete can now be done in a matter of minutes using a combination of sophisticated
+     algorithms and a comprehensive knowledge base to disambiguate name variants and automatically identify and match most
+     relevant records.
+
+
+
+
+     3.6 Author profiles
+
+     It is possible to search Scopus based on author data. The Scopus Author Identifier automatically identifies and matches an
+     author with all of his/her research output. This tool is particularly relevant for analyzing citation metrics for authors, as well as
+     specific articles by an author. The data can also be used to find authors or reviewers to collaborate with or for hiring purposes.
+
+     The Scopus Author Identifier assigns each author in Scopus a unique number and groups together all of the documents written
+     by that author. To determine which author names should be grouped together under a single identifier number, the Scopus
+     Author Identifier uses an algorithm that matches author names based on their affiliation, address, subject area, source title,
+     dates of publication citations and co-authors.
+
+     An author can request corrections to their author details directly from their profile page using the Scopus Author Feedback
+     Wizard. The Wizard guides the author through the steps of finding the correct profile(s) in Scopus and checking the
+     publications it contains. Authors receive email notification when their requested changes are visible in Scopus. Profile changes
+     are implemented within five working days.
+
+
+
+
+     3.7 ORCID integration
+
+     ORCID (Open Researcher and Contributor Identifier) is a nonprofit organization dedicated to solving the name ambiguity
+     problem in scholarly research by assigning a unique identifier to each author. From their Scopus Author Profile, authors can
+     import their list of publications in Scopus and their Scopus Author Identifier into ORCID. Once an author connects their ORCID
+     record with their Scopus profile, a link to their ORCID record will appear on their profile page. Scopus and ORCID share and
+     sync their data on a monthly basis. Learn more about ORCID at orcid.org.
+
+
+
+
+elsevier.com/scopus                                                                                                                          13
+     3.8 Other metadata
+
+     PubMed ID
+
+     The unique identifier for MEDLINE documents, PubMed ID, is searchable via Advanced Search. When available, it appears
+     on the record page (Abstracts & References page), as well as in the export of records.
+
+     Funding data
+
+     Since June 2013, grant numbers are available from the acknowledgement section on the relevant record page for content
+     going forward.
+
+     These records include:
+
+     • Sponsor name
+
+     • Acronym
+
+     • Grant number
+
+     Funding information is captured if it is mentioned in the acknowledgement section of the article and if the funding body
+     is included in the FundRef ontology: http://www.crossref.org/fundref/. At the start of capturing funding data (June 2013),
+     around 5,000 funding bodies were included. Currently, the number of funding bodies has increased to over 11,000. The
+     FundRef ontology is not complete yet and not all relevant funding bodies are covered at this time.
+
+     Open access
+
+     More than 4,200 journal titles are full open access (OA) journals. OA refers to journals in which all peer-reviewed scholarly
+     articles are online available without any restrictions.
+
+     In Scopus, journals are registered as being OA journals only if they are registered as Gold OA or Subsidized OA at one or
+     both of the following sources:
+
+     • Directory of Open Access Journals: https://doaj.org/
+
+     • Directory of Open Access Scholarly Resources: http://road.issn.org/
+
+     Please note that in Scopus, open access is only registered on journal level and not on article level.
+
+     For the full OA journal list, please download the Scopus Title list here: http://www.elsevier.com/solutions/scopus/content.
+     In this list you can filter on OA status to see the full journal list.
+
+     Scopus includes an open access indicator for journals indexed in Scopus. The indicator allows users to easily identify open
+     access journals within Scopus via the Browse Sources link. This link provides an alphabetical list of all journals, book series,
+     trade publications and conference proceedings available in Scopus.
+
+
+
+
+14                                                                                                  Scopus | Content Coverage Guide
+ 4. Coverage of sources (dating back to 1970)
+     4.1 Scopus title list
+
+     The Scopus Journals title list contains over 34,000 titles in total, including over 21,500 active titles and over 12,000 inactive
+     titles (mostly predecessors of the active titles). The Scopus Books title list contains more than 116,000 books.
+
+     Complete lists of titles (for both journals and books) in Scopus are available externally from the Scopus info site at:
+     https://www.elsevier.com/solutions/scopus/content.
+
+     The lists are identical to the list available on Scopus.com in the Browse Sources section.
+
+     The title lists and the sources section are updated 2-3 times per year and include only journals and books with substantial
+     coverage on Scopus.com at the time of the update. Titles that are newly added to Scopus will be visible in the title list and the
+     source section only as of the next update after the first content appears on Scopus. To check whether the content of recently
+     added title is already available on Scopus, perform an advanced search on Scopus.com using the search code <srctitle> and
+     entering the name of the title.
+
+     For more information about the Scopus subject areas, see section 4.4.
+
+
+     Which titles are included in the title list and source browse?
+
+     Neither the title list nor the titles included in the source browse on Scopus accurately reflect all the content in Scopus. In fact,
+     the Scopus database contains records of 42,000 unique titles, which are all available via the Scopus basic search functionality.
+     There are 8,000 titles, however, which are not included in either the title list or the source browse because these titles are:
+
+     • Stand-alone books and reports (i.e., books and reports that are not part of a book series). One-off book publications are
+        listed in a separate book title list. Download the list from our info site: http://www.elsevier.com/solutions/scopus/content
+
+     • Pre-1996 discontinued (i.e., non-active) titles. Pre-1996 titles having child-parent relationships, however, are included
+        (independent of the number of articles)
+
+     • Post-1995 titles with less than 25 articles, unless these appear to be newly started publications from the previous year and
+        the current year. Post-1995 titles having child-parent relationships, however, are always included (independent of the number
+        of articles)
+
+
+
+
+elsevier.com/scopus                                                                                                                         15
+     4.2 Scopus title evaluation
+
+     It is estimated that there are between 80,000 and 300,000 scientific serial publications in existence worldwide. In order to
+     ensure that Scopus remains the most relevant resource for all research in the sciences, technology, medicine, social sciences
+     and arts and humanities fields, the CSAB continually reviews new titles for inclusion, using transparent selection criteria (see
+     https://www.elsevier.com/solutions/scopus/content/content-policy-and-selection). New title suggestions may come from
+     librarians, publishers and journal editors and can be submitted using the Title Suggestion form on the Scopus info site:
+     http://suggestor.step.scopus.com/suggestTitle.cfm.
+
+     Scopus receives approximately 3,000 serial title suggestions on an annual basis. The number of suggested titles can vary
+     significantly per subject area from only a few titles (e.g., in chemistry) to several hundred (e.g., in social sciences).
+
+
+     Number of titles suggested for Scopus coverage per month
+
+
+
+
+              Not for review        For review
+
+
+
+     Number of titles reviewed for Scopus coverage and acceptance rate of reviewed titles per month
+
+
+
+
+              Acceptance rate       Number of titles reviewed
+
+
+
+
+16                                                                                                 Scopus | Content Coverage Guide
+     Criteria for title selection
+
+     Titles should meet the following main eligibility criteria to be considered for review:
+
+     • Consist of peer-reviewed content
+
+     • Be published on a regular basis (have an ISSN number that has been registered with the International ISSN Centre)
+
+     • Be relevant and readable for an international audience (e.g., have references in Roman script and English language abstracts
+        and titles)
+
+     • Have a publication ethics and publication malpractice statement
+
+     CSAB subject matter experts review titles using both quantitative and qualitative measures, and the selection is partly based
+     on sample documents from the title. The criteria that will be used in the review process are grouped in five main categories:
+     journal policy, content, citedness, regularity and online availability. These criteria can be found on the Scopus info site:
+     http://www.elsevier.com/solutions/scopus/content/content-policy-and-selection.
+
+     The Scopus Title Evaluation Platform (STEP) (see below) enables the CSAB members to evaluate and add new titles on a
+     continuous basis and to establish reliable turnaround.
+
+
+
+        Category                    Criteria
+
+
+
+        Journal policy              Convincing editorial policy
+                                    Diversity in geographical distribution of editors
+                                    Diversity in geographical distribution of authors
+                                    Type of peer-review
+                                    Cited references in Roman script
+                                    English language abstracts
+
+        Content                     Academic contribution to the field
+                                    Clarity of abstracts
+                                    Conformity with the journal’s stated aims and scope
+                                    Readability of articles
+
+        Journal standing            Citedness of journal articles in Scopus
+                                    Editor standing
+
+        Regularity                  No delay in the publication schedule
+
+        Online availability         Online content available
+                                    English language journal homepage
+                                    Quality of journal homepage
+
+
+
+
+elsevier.com/scopus                                                                                                                    17
+     Title re-evaluation
+
+     Curation of the data already covered in Scopus is no less important than the selection of content. Many journals benefit from
+     the increased visibility and accessibility of their content through the global reach and use of Scopus, and we have observed
+     this through an increase in output, citation and usage. However, there are also journals that alter their editorial policies and
+     publishing standards and underperform over time.
+
+     As an incentive for journals to maintain their high content quality, Scopus re-evaluates low-performing journals based on a set
+     of metrics and benchmarks and in comparison to peer journals in their subject fields. The set metrics and benchmarks are:
+
+
+
+        Metric                       Benchmark           Explanation
+
+
+
+        Self-citations               200%	The journal has a self-citation rate two times higher, or more, when
+                                           compared to peer journals in its subject field.
+
+        Citations                    50%	The journal received half the number of citations, when compared to peer
+                                          journals in its subject field.
+
+        Impact Per Publication       50%	The journal has an IPP score half or less than the average IPP score, when
+                                          compared to peer journals in its subject field.
+
+        Article output               50%	The journal produced half, or less, the number of articles, when
+                                          compared to peer journals in its subject field.
+
+        Abstract usage               50%	The journal’s abstract are used half as much, or less, when compared to
+                                          peer journals in its subject field.
+
+        Full text links              50%	The journal’s full text links are used half as much, or less, when compared
+                                          to peer journals in its subject field.
+
+
+
+     Journals will receive a pre-warning if they do not meet the set benchmarks and will receive a one-year period to improve at
+     least one metric. If the journal, after this one-year period, has not improved any metric, the journal will be re-evaluated by a
+     CSAB member based on the transparent title evaluation criteria (see above) with the possible consequence of the journal being
+     discontinued in Scopus. The re-evaluation process is an annual rolling process.
+
+
+
+
+18                                                                                                Scopus | Content Coverage Guide
+     Content Selection & Advisory Board Subject Chairs
+
+     The Content Selection & Advisory Board comprises 15 subject chairs who are senior researchers, experienced in editorial
+     roles, and are responsible for reviewing all the titles within a specific subject area. The subject chairs have the clear ownership
+     per title in their respective area, and are ultimately responsible for the final vote as to whether a new journal title is included in
+     Scopus. Subject chairs can choose to:
+
+     • Either reject/accept the submitted title based on his/her own judgment according to the Content Coverage Policy (see
+        section 4.2: Scopus title evaluation ), or
+
+     • Involve additional reviewers, who have the respective subject expertise and/or the language skills required to read and
+        evaluate journals publishing in other languages than English
+
+
+     Scopus Title Evaluation Platform
+
+     The Scopus Title Evaluation Platform (STEP) is a web-based editorial system, streamlining the entire title evaluation process
+     from submission until the final decision, including the feedback to the suggestor and publisher/ editor of newly suggested
+     titles. STEP offers several benefits, including:
+
+     • Those suggesting new titles receive feedback on why their title was accepted or rejected via a consistent process
+        of communication
+
+     • Shorter decision-making cycle
+
+
+     When are new titles selected by the Content Selection & Advisory Board added to Scopus?
+
+     Once a title is accepted for inclusion in Scopus, the Elsevier Bibliographic Databases Operations department will contact
+     the publisher in order to set up the content feed. After the content feed has been set up, it will take up to a few weeks before
+     the title will be added to Scopus.
+
+     As per the above section on title re-evaluation, Scopus will, on an annual basis, curate the journal quality of all titles in
+     the database.
+
+
+
+
+elsevier.com/scopus                                                                                                                           19
+     4.3 Global coverage
+
+
+     Scopus coverage is global by design to best serve researchers’ needs and ensure that relevant scientific information is not
+     omitted from the database. Titles from all geographical regions are covered, including non-English titles as long as English
+     abstracts can be provided with the articles. In fact, approximately 21% of titles in Scopus are published in languages other
+     than English, adding up to 40 local languages (or published in both English and another language). In addition, more than
+     half of Scopus content originates from outside North America representing various countries Europe, Latin America and the
+     Asia Pacific regions.
+
+     For a breakdown of titles per country, determined by the location of the publisher, you can download and sort the titles list
+     by country and by publisher from: http://www.elsevier.com/solutions/scopus/content.
+
+
+     Number of titles in Scopus (active) vs. Web of Science geographical region (February 2014)
+
+
+
+
+              10,000
+               9,000
+               8,000
+               7,000                                                                                                                Scopus
+               6,000
+               5,000                                                                                                                Web of Science
+               4,000
+               3,000
+               2,000
+               1,000
+                   0
+                            e
+
+
+
+
+                                             ca
+
+
+
+
+                                                           ica
+
+
+
+
+                                                                         pe
+
+
+
+
+                                                                                           ca
+
+
+
+
+                                                                                                         nd
+                                  l)
+
+
+
+
+                                                                               S)
+
+
+
+
+                                                                                                                      ic
+                         op
+                               ae
+
+
+
+
+                                                                             CI
+                                            eri
+
+
+
+
+                                                                                         eri
+
+
+
+
+                                                                                                                  cif
+                                                                       ro
+
+
+
+
+                                                                                                        ala
+                                                         Afr
+                             Isr
+                       ur
+
+
+
+
+                                                                            a&
+                                                                      Eu
+
+
+
+
+                                                                                                                Pa
+                                        Am
+
+
+
+
+                                                                                       Am
+                            cl.
+
+
+
+
+                                                                                                       Ze
+                       nE
+
+
+
+
+                                                                         ssi
+                                                        st,
+                         (in
+
+
+
+
+                                                                                                               ia
+                                                                  rn
+                                                                       Ru
+                                                      Ea
+
+
+
+
+                                                                                                     w
+                                       rth
+
+
+
+
+                                                                                      th
+                   ter
+
+
+
+
+                                                                                                              As
+                                                                 ste
+
+
+
+
+                                                                                                   Ne
+                                                                      cl.
+
+
+
+
+                                                                                    ou
+                                                   le
+                                       No
+                  es
+
+
+
+
+                                                                   (in
+                                                                 Ea
+                                                  idd
+
+
+
+
+                                                                                  dS
+
+
+
+
+                                                                                                  nd
+                W
+
+
+
+
+                                                                                                aa
+                                                                                 an
+                                                  M
+
+
+
+
+                                                                                             ali
+                                                                             ral
+
+
+
+
+                                                                                            str
+                                                                            nt
+
+
+
+
+                                                                                           Au
+                                                                         Ce
+
+
+
+
+     Number of journal titles by broad subject area. Note: Journal titles may belong to more than one subject area.
+
+
+
+
+20                                                                                                                         Scopus | Content Coverage Guide
+     4.4 Subject area coverage
+
+
+     Scopus publications per subject area
+
+
+
+
+                                        15%
+
+                  32%                                                      Life sciences
+                                                                           Social sciences
+                                                                           Physical sciences
+                                                  24%
+                                                                           Health sciences
+
+
+
+                                29%
+
+
+
+
+     Scopus offers the broadest, most integrated coverage of peer-reviewed literature and quality web sources across
+     the sciences, technology, medicine (STM), as well as social sciences and arts & humanities (A&H).
+
+     Titles in Scopus are classified under four broad subject clusters (life sciences, physical sciences, health sciences
+     and social sciences & humanities), which are further divided into 27 major subject areas and 300+ minor subject
+     areas. Titles may belong to more than one subject area. Download the title list on the Scopus info site:
+     https://www.elsevier.com/solutions/scopus/content.
+
+
+
+        Social sciences               Health sciences                 Physical sciences               Life sciences
+        9,810                         12,912                          11,725                          6,318
+
+        Psychology                    100% MEDLINE                    Chemistry                       Neuroscience
+        Economics                     Nursing                         Physics                         Pharmacology
+        Business                      Dentistry                       Engineering                     Biology
+        A&H
+
+
+
+
+                                                  More than 21,500 titles in Scopus
+
+                                              Titles can be in more than one subject area
+
+
+
+
+elsevier.com/scopus                                                                                                         21
+     Arts & humanities
+
+     As of 2008, Scopus covered around 2,000 humanities titles. In 2009, to increase the number of humanities titles in the
+     database, project MUSE (a not-for-profit full-text platform of many arts & humanities journals with international relevance
+     from primarily US-based university presses) and the initial European Reference Index for the Humanities (ERIH) list were used
+     to identify additional relevant titles. In 2011, a similar project was executed in which the coverage of the revised ERIH list,
+     the Social Science Citation Index, the Arts & Humanities Citation Index, the titles list of Evaluation Agency for Research and
+     Evaluation, France (AERES), and the humanities journal indexes Cairns and Francis were used. These journals were reviewed
+     and added, together with the humanities titles selected for Scopus coverage via the Scopus Title Evaluation Process (STEP).
+
+     Scopus coverage has now grown to almost 3,500 humanities titles (4,200 when including humanities-related titles) and
+     includes all serial publication types, such as journals, book series and conference series. Since 2014, more than 116,000 book
+     titles have been added to Scopus. As more than 55% of the added book titles represent the arts & humanities and social
+     sciences, this significantly expands the coverage for these areas. When combined with the strength of Scopus in bibliographic
+     search, discoverability and evaluation tools, expanded coverage allows users to better measure the impact and scholarly
+     achievement of the humanities in a more quantitative way.
+
+     At the moment, arts & humanities titles are part of the social sciences subject cluster in Scopus. Users can exclude or limit to
+     arts & humanities results from their search results by using the refine results overview. For more information about subject
+     areas in Scopus see section 6.
+
+     Please refer to the info site for more details about arts & humanities coverage, including a list of titles: http://www.elsevier.
+     com/solutions/scopus/content. You can also read more about the books expansion here: http://blog.scopus.com/posts/scopus-
+     content-update-75000-book-titles-and-counting.
+
+
+
+     4.5 Complete coverage
+
+     Scopus was launched in late November 2004. At that time, Scopus contained 14,200 journals. There have been approximately
+     7,500 new titles added to Scopus since 2004. As per industry standards, Scopus does not backfill content for newly added
+     journals, but rather begins coverage with the most recent journal issue in the year that it is accepted for inclusion in Scopus.
+     However, if back file content for newly added journals is provided, Scopus may decide to cover the back files as well.
+
+     Upon the launch of Scopus, the decision was made to add cited references going back to 1996. In 2014, Scopus announced
+     the launch of the Cited Reference Expansion project to include cited references in its database going back to 1970. By the
+     end of 2016, a total of 240 million cited references will be added to approximately 12 million articles, coming from 36 major
+     publishers and dating back to 1970. The project is expected to be completed by the end of 2016, with the majority of the
+     project already completed in 2015.
+
+     Learn more on the Scopus blog: http://blog.scopus.com/posts/breaking-the-1996-barrier-scopus-adds-nearly-4-million-pre-
+     1996-articles-and-more-than-83.
+
+
+
+
+22                                                                                                Scopus | Content Coverage Guide
+     Records pre- and post-1996
+
+     Scopus is 99% complete for titles originally included in Scopus back to 1996 (see beginning of section 4.5).
+
+     • 73% of all the articles in Scopus have an abstract going back as far as 1823
+
+     • 84% of all records after 1995 have abstracts
+
+     In response to market research and interviews with customers, Scopus has added back files (pre-1996) for journals from a
+     variety of publishers back to volume 1, issue 1 where available (see above section).
+
+
+
+     4.6 MEDLINE coverage
+
+     MEDLINE is a database that can be hosted (via the free platform PubMed) by third parties, such as Ovid, Web of
+     Knowledge, Embase or Scopus.
+
+     PubMed’s main component is MEDLINE, but it also contains other data. Scopus covers all 5,000 MEDLINE titles
+     from 1966 and, as of 2010, also includes OLDMEDLINE content published between 1949 and 1965. For the majority
+     of MEDLINE titles, Scopus has agreements with the publishers directly and receives the content from them. For the
+     remaining journals (approximately 700) MEDLINE supplies Scopus directly and these titles are referred to as “MEDLINE
+     sourced” in Scopus (previously MEDLINE unique). The advantages of covering MEDLINE in Scopus is that the MEDLINE
+     records are fully integrated with the Scopus citation network and Scopus author profiles.
+
+
+
+
+elsevier.com/scopus                                                                                                             23
+ 5. Processing of Scopus content
+     Obtaining content
+
+     Scopus content is obtained from over 5,000 publishers worldwide. Scopus has content delivery agreements in place with each
+     publisher and receives content in both print and electronic formats. Currently, 85% of material is received electronically and/
+     or sourced from the journal websites.
+
+     For over 85% of the journals in Scopus, the data from publishers gets delivered via e-Feeds (XML or PDF deliveries) or
+     downloads from journal websites. This ensures the fastest possible processing and indexing. On average, fully-indexed article
+     data will appear in Scopus within 2-3 weeks of publication on the publisher’s website. A diminishing number of publishers
+     still supply their journal issues in paper format. Processing and indexing of such data usually takes 4-5 weeks, including
+     distribution and delivery from publishers’ warehouses.
+
+
+
+     Articles-in-Press (AiP)
+
+     “Articles-in-Press” (AiP) are pre-published versions of accepted articles. AiP do not contain cited references and are
+     de-duplicated once the final version is published and made available in Scopus. Publishers usually use a File Transfer Protocol
+     (FTP) service to deliver the pre-published version to Scopus once it has appeared on their website. Once received, Scopus
+     usually makes it available online within four days. The average time it takes before an AiP becomes a published article in a
+     specific issue, however, can vary from weeks to months depending on how often the journal is published (e.g., bi-weekly
+     vs. quarterly).
+
+     AiP for nearly 5,000 journals are provided by the following publishers:
+
+     • Cambridge University Press
+
+     • Elsevier
+
+     • Springer
+
+     • Karger Medical and Scientific Publishers
+
+     • Nature Publishing Group (NPG)
+
+     • The Institute of Electrical and Electronics Engineers (IEEE)
+
+     • BioMed Central (BMC)
+
+     • Lippincott, Williams & Wilkins (LWW)
+
+     • Thieme
+
+     • American Association for the Advancement of Science (Science)
+
+     • BMJ Publishing Group
+
+     • World Scientific
+
+     • Wiley Blackwell
+
+     • American Psychological Association (APA)
+
+     • Taylor & Francis
+
+     • Primary Care Respiratory Society UK (PCRJ)
+
+
+
+
+24                                                                                               Scopus | Content Coverage Guide
+     Alerts can be set up in order to receive notification once an AiP is published as an article. Two alerts are needed:
+
+     1. DOCTYPE(AR) [article]
+
+     2. DOCTYPE(IP) [in press]
+
+
+
+     In order to search for published articles only (and not include AiP), the user must add the following criterion to their
+     advanced search: AND NOT DOCTYPE(IP).
+
+     Another database with coverage of AiP is MEDLINE on PubMed. However, this “early view” layer is not part of the
+     MEDLINE feed to 3rd party vendors, so Scopus does not receive AiP from MEDLINE. For more information about
+     MEDLINE coverage see section 4.6.
+
+
+
+
+ Conclusion
+     This guide is updated annually and is designed to provide a complete overview of the content coverage in Scopus
+     and corresponding policies. As Scopus is updated daily, the numbers presented in this guide may differ from
+     current numbers. To find up-to-date content numbers, please refer to the content page of our info site:
+     https://www.elsevier.com/solutions/scopus/content. The numbers presented on the info site are updated
+     regularly throughout the year.
+
+
+
+
+elsevier.com/scopus                                                                                                             25
+ Notes
+
+
+
+
+26       Scopus | Content Coverage Guide
+elsevier.com/scopus   27
+For more information about Scopus,
+please visit: elsevier.com/scopus                           02.16
+
+
+
+
+                                     Copyright ©2016
+                                     Elsevier B.V.
+                                     All rights reserved.
+

@@ -1,0 +1,27 @@
+{
+"params": ["scope_of_application", "requirements_for_report_elements", "design_rules"],
+"elements": [
+  {"element": "font_size", "description": "The size of the text font"},
+  {"element": "font_type", "description": "The type face of the text"},
+  {"element": "paper_size", "description": "The size of the paper for the report"},
+  {"element": "color", "description": "The color of the paper"},
+  {"element": "format", "description": "The layout format of the paper"},
+  {"element": "line_spacing", "description": "The spacing between lines in the report"},
+  {"element": "page", "description": "Single or double sided printed page"}
+],
+"gost_params": {
+  "font_size": {
+    "requirement": {"must be equal to or greater than": 12},
+    "unit": "pt"
+  },
+  "font_type": {
+    "recommendation": "Times New Roman"
+  },
+  "paper_size": {
+    "color": "white",
+    "format": "A4",
+    "line_spacing": 1.5,
+    "page": {"must be": "1"}
+  }
+}
+}

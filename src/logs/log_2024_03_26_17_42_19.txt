@@ -1,0 +1,21 @@
+{
+"params": ["font size", "font type", "line spacing", "color", "format"],
+"elements": [
+{"element": "non-serial source", "description": "Publication with an ISBN that is not a report, part of a book series, proceeding (non-serial) or patent."},
+{"element": "book coverage expansion", "description": "Since August 2013, book coverage has expanded to include monographs, edited volumes, major reference works, and graduate level textbooks."},
+{"element": "book indexing", "description": "Books are indexed on both book and chapter levels. The selection policy is publisher-based, where all books from an accepted publisher fitting the project scope are indexed."},
+{"element": "metadata coverage", "description": "Scopus focuses on primary document types from serial publications and excludes secondary document types like obituaries and book reviews."},
+{"element": "document types", "description": "Scopus covers various document types including articles, article-in-press, books, chapters, conference papers, editorials, errata, letters, notes, reviews, short surveys."},
+{"element": "abstracts coverage", "description": "Over 44 million records in Scopus contain abstracts."},
+{"element": "index terms", "description": "Scopus adds index terms derived from various thesauri owned or licensed by Elsevier, improving search recall."},
+{"element": "cited references", "description": "Cited references in Scopus go back to 1970 with over 93 million pre-1996 cited references added as of December 2015."},
+{"element": "patent records", "description": "Over 27 million patent records from five patent offices are available in Scopus: WIPO, EPO, USPTO, JPO, and IPO.GOV.UK."}
+],
+"gost_params": {
+"font size": "12 pt",
+"font type": "Times New Roman",
+"line spacing": 1.5,
+"color": "white",
+"format": "A4"
+}
+}

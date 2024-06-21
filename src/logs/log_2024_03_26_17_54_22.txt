@@ -1,0 +1,49 @@
+{
+"params": ["font size", "font type", "line spacing", "color", "indentation", "numbering", "table design", "figure design", "footnote design", "formula design", "link design"],
+"elements": [
+    {"element": "abstract", "description": "Summary of the document's content"},
+    {"element": "keywords", "description": "Specific terms used to index and search for the document"},
+    {"element": "cited references", "description": "References mentioned in the document"},
+    {"element": "affiliation data", "description": "Information about the author's institution or organization"},
+    {"element": "author profiles", "description": "Details about the authors of the document"},
+    {"element": "ORCID integration", "description": "Integration of ORCID unique identifiers for authors"},
+    {"element": "metadata", "description": "Data about the document beyond the main content"},
+    {"element": "journal articles", "description": "Articles published in journals"},
+    {"element": "conference papers", "description": "Papers presented at conferences"},
+    {"element": "trade journals", "description": "Journals targeting specific industries or trades"},
+    {"element": "book series", "description": "Serial publications with specific series titles and ISBNs"}
+],
+"gost_params": {
+    "font size": "12 pt",
+    "font type": "Times New Roman",
+    "line spacing": 1.5,
+    "color": "black",
+    "indentation": "0.5 inches",
+    "numbering": "decimal",
+    "table design": {
+        "font size": "10 pt",
+        "border thickness": "0.5 pt",
+        "header background color": "light gray",
+        "odd row color": "white",
+        "even row color": "light gray"
+    },
+    "figure design": {
+        "font size": "10 pt",
+        "border thickness": "1 pt",
+        "caption style": "italic",
+        "label style": "bold"
+    },
+    "footnote design": {
+        "font size": "10 pt",
+        "symbol style": "superscript"
+    },
+    "formula design": {
+        "font size": "12 pt",
+        "line thickness": "1 pt"
+    },
+    "link design": {
+        "color": "blue",
+        "underline": true
+    }
+}
+}

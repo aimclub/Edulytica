@@ -1,0 +1,18 @@
+{
+"params": ["font size", "font type", "paper size", "color", "format", "line spacing", "page"],
+"elements": [
+  { "element": "Fonts", "description": "Sets a specific typeface for text and determines the size of characters" },
+  { "element": "Page size", "description": "Determines the size of the sheet on which the document is printed" },
+  { "element": "Color", "description": "Determines the color of elements and the document background" },
+  { "element": "Format", "description": "Determines the presentation of structured data" },
+  { "element": "Spacing", "description": "Determines the space between lines of text or elements" },
+  { "element": "Page side", "description": "Determines which side of the paper the document is printed on" }
+],
+"gost_params": {
+  "Fonts": { "font_size": "min 12 pt", "font_type": "Times New Roman" },
+  "Page size": { "paper_size": "A4", "color": "white" },
+  "Format": { "format": "printed" },
+  "Spacing": { "line_spacing": 1.5 },
+  "Page side": { "page": "one sided" }
+}
+}

@@ -1,0 +1,209 @@
+{
+    "params": [
+        "Humanities coverage",
+        "Complete coverage",
+        "Records pre- and post-1996",
+        "MEDLINE coverage",
+        "Processing of Scopus content",
+        "Articles-in-Press (AiP)",
+        "Obtaining content"
+    ],
+    "elements": [
+        {
+            "element": "humanities coverage",
+            "description": "Almost 3,500 titles for humanities (4,200 when including humanities-related titles) and contains all serial publication types. More than 116,000 book titles have been added to Scopus since 2014. Information about arts & humanities can be found in section 6"
+        },
+        {
+            "element": "complete coverage",
+            "description": "Scopus was launched in late November 2004 with 14,200 journals. There have been around 7,500 new titles added to Scopus since then. Cited references were added back to 1996 and the project of full coverage back to 1970 was completed by the end of 2016"
+        },
+        {
+            "element": "records pre- and post-1996",
+            "description": "Scopus is 99% complete for titles originally included in Scopus back to 1996. Abstracts are present in 73% of all the articles in Scopus going back as far as 1823 and 84% of records after 1995 have abstracts"
+        },
+        {
+            "element": "MEDLINE coverage",
+            "description": "Scopus covers all 5,000 MEDLINE titles from 1966 and OLDMEDLINE content published between 1949 and 1965. MEDLINE records are fully integrated with the Scopus citation network and Scopus author profiles"
+        },
+        {
+            "element": "processing of Scopus content",
+            "description": "Scopus receives content in both print and electronic formats, currently 85% is received electronically and/or sourced from the journal websites. On an average, fully-indexed article data appears in Scopus within 2-3 weeks of publication on the publisher’s website"
+        },
+        {
+            "element": "obtaining content",
+            "description": "Scopus content is obtained from over 5,000 publishers worldwide and for over 85% of the journals in Scopus, the data from publishers gets delivered via e-Feeds or downloads from journal websites"
+        },
+        {
+            "element": "Articles-in-Press (AiP)",
+            "description": "Pre-published versions of accepted articles. They do not contain cited references and are de-duplicated once the final version is published. Publishers use an FTP service to deliver the pre-published version to Scopus once it has appeared on their website and Scopus makes it available online within four days"
+        }
+    ],
+    "gost_params": {
+        "Books": {
+            "params": [
+                {
+                    "name": "contents",
+                    "description": "Topics or subject areas covered in the book. Expects list of topic titles.",
+                    "format": "array of strings",
+                    "unit": "N/A"
+                }
+            ],
+            "requirements": {
+                "content_categorization": "The book content must be properly categorized following the given parameters for GOST elements."
+            }
+        },
+        "Journal articles": {
+            "params": [
+                {
+                    "name": "contents",
+                    "description": "Topics or subject areas covered in the journal article. Expects list of topic titles.",
+                    "format": "array of strings",
+                    "unit": "N/A"
+                }
+            ],
+            "requirements": {
+                "content_categorization": "The journal article content must be properly categorized following the given parameters for GOST elements."
+            }
+        },
+        "Conference papers": {
+            "params": [
+                {
+                    "name": "contents",
+                    "description": "Topics or subject areas covered in the conference paper. Expects list of topic titles.",
+                    "format": "array of strings",
+                    "unit": "N/A"
+                }
+            ],
+            "requirements": {
+                "content_categorization": "The conference paper content must be properly categorized following the given parameters for GOST elements."
+            }
+        },
+        "abstract": {
+            "length": "Brief",
+            "sequence": 1
+        },
+        "introduction": {
+            "sequence": 2
+        },
+        "materials & methods": {
+            "sequence": 3
+        },
+        "results": {
+            "sequence": 4
+        },
+        "conclusions": {
+            "sequence": 5
+        },
+        "discussion": {
+            "sequence": 6
+        },
+        "references": {
+            "sequence": 7
+        },
+        "note": {
+            "length": "half a page"
+        },
+        "short survey": {
+            "length": "few pages"
+        },
+        "pubmed id": {
+            "Searchability": "Advanced Search",
+            "Exportability": "Included in the export of records"
+        },
+        "funding data": {
+            "Availability": "Acknowledgement section",
+            "Inclusion": "FundRef ontology"
+        },
+        "open access": {
+            "Restrictions": "None",
+            "Availability": "All peer-reviewed scholarly articles"
+        },
+        "scopus title list": {
+            "Number of active titles": 21500,
+            "Number of inactive titles": 12000,
+            "Total number of titles": 34000
+        },
+        "scopus title evaluation": {
+            "Review": "CSAB",
+            "Sources of new title suggestions": [
+                "Librarians",
+                "Publishers",
+                "Journal editors"
+            ],
+            "Process": "Continuous basis"
+        },
+        "criteria for title selection": {
+            "Peer-reviewed content": "Required",
+            "Regular publication": "Required",
+            "Relevance": "International audience",
+            "Publication ethics statement": "Required"
+        },
+        "title re-evaluation": {
+            "Frequency": "Annual",
+            "Improvement period": "One-year",
+            "Benchmarks": {
+                "Self-citations": 200,
+                "Citations": 50,
+                "Impact Per Publication": 50,
+                "Article output": 50,
+                "Abstract usage": 50,
+                "Full text links": 50
+            }
+        },
+        "content selection & advisory board subject chairs": {
+            "Responsibility": "Evaluation and selection of titles"
+        },
+        "subject chairs": {
+            "subject_chairs_count": 15,
+            "duties": [
+                "title_review",
+                "final_vote",
+                "title_rejection_or_acceptance",
+                "involve_additional_reviewers"
+            ]
+        },
+        "scopus title evaluation platform (step)": {
+            "title_eval_process": [
+                "submission",
+                "final_decision",
+                "feedback"
+            ],
+            "benefits": [
+                "feedback_for_new_titles",
+                "short_decision_making_cycle"
+            ],
+            "decision_making_cycle_length": "short"
+        },
+        "content selection & advisory board": {
+            "new_title_inclusion_process": [
+                "title_acceptance",
+                "contact_publisher",
+                "setup_content_feed",
+                "title_addition_to_Scopus"
+            ]
+        },
+        "content feed": {
+            "content_feed_setup_time": "few weeks"
+        },
+        "scopus global coverage": {
+            "non_english_titles_percentage": 21,
+            "local_languages_count": 40
+        },
+        "title classification": {
+            "total_scopus_titles": "21500",
+            "subject_areas_count": [
+                "life_sciences",
+                "physical_sciences",
+                "health_sciences",
+                "social_sciences_humanities"
+            ]
+        },
+        "humanities coverage": "number of titles, serial publication types, book titles added",
+        "complete coverage": "launched date, number of journals at the launch, number of journals added since then, backfile content",
+        "records pre- and post-1996": "percentage complete for titles back to 1996, presence of abstracts",
+        "medline coverage": "number of titles covered, integration with Scopus network and profiles",
+        "processing of scopus content": "formats of receiving data, electronic data processing time",
+        "obtaining content": "number of publishers, methods of delivery",
+        "articles-in-press (aip)": "description, delivery method, availability time"
+    }
+}

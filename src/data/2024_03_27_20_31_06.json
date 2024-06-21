@@ -1,0 +1,227 @@
+{
+    "params": [
+        "title",
+        "publication_type",
+        "coverage",
+        "content_addition",
+        "publisher",
+        "abstracts_availability",
+        "MEDLINE_coverage",
+        "content_processing",
+        "articles_in_press",
+        "content_sources"
+    ],
+    "elements": [
+        {
+            "element": "Scope of application",
+            "description": "Scopus coverage is applicable to humanities titles and includes all serial publication types, like journals, book series, and conference series. As of 2014, over 116,000 book titles have been added to Scopus. Arts and humanities titles are part of the social sciences subject cluster in Scopus."
+        },
+        {
+            "element": "Requirements for structural elements of the report",
+            "description": {
+                "title": "The title must clearly represent the content.",
+                "publication_type": [
+                    "Journals",
+                    "Book series",
+                    "Conference series"
+                ],
+                "coverage": "Scopus was launched in 2004, containing 14,200 journals with approximately 7,500 new titles added since 2004. It covers references going back to 1996 and, from 2014, references going back to 1970.",
+                "content_addition": "Content for newly added journals starts from the most recent journal issue in the acceptance year. Back file content may be covered if provided.",
+                "publisher": "Content obtained from over 5000 publishers worldwide, with 85% received electronically or sourced from journal websites.",
+                "abstracts_availability": "73% of all articles in Scopus have an abstract going back to 1823; 84% of all records after 1995 have abstracts."
+            }
+        },
+        {
+            "element": "Design rules",
+            "description": {
+                "general": {
+                    "font": "Times New Roman",
+                    "font_size": "12 pt",
+                    "line_spacing": "1.5",
+                    "page_numbers": "True"
+                },
+                "tables": {
+                    "place": "Close to reference point",
+                    "numbering": "Arabic numerals",
+                    "title": "Above the table",
+                    "source": "Below the table"
+                },
+                "figures": {
+                    "place": "Close to reference point",
+                    "numbering": "Arabic numerals",
+                    "description": "Below the figure",
+                    "source": "Below the figure"
+                },
+                "footnotes": {
+                    "style": "Chicago (notes and bibliography)"
+                },
+                "formulas": {
+                    "style": "Italic",
+                    "numbering": "Parentheses, right aligned"
+                },
+                "links": {
+                    "style": "APA"
+                }
+            }
+        }
+    ],
+    "gost_params": {
+        "Fonts": {
+            "font_size": "min 12 pt",
+            "font_type": "Times New Roman"
+        },
+        "Page size": {
+            "paper_size": "A4",
+            "color": "white"
+        },
+        "Format": {
+            "format": "printed"
+        },
+        "Spacing": {
+            "line_spacing": 1.5
+        },
+        "Page side": {
+            "page": "one sided"
+        },
+        "article": {
+            "Length": "Several pages or as short as one page"
+        },
+        "article-in-press": {
+            "Publication stage": "Accepted but not officially published"
+        },
+        "book": {
+            "Whole work": "Yes"
+        },
+        "chapter": {
+            "Part of another work": "Yes"
+        },
+        "conference paper": {
+            "Presented at a conference or symposium": "Yes"
+        },
+        "editorial": {
+            "Summary": "Yes",
+            "Opinions or News": "Yes"
+        },
+        "erratum": {
+            "Error report": "Yes",
+            "Correction": "Yes",
+            "Retraction": "Yes"
+        },
+        "letter": {
+            "Correspondence with editor": "Yes"
+        },
+        "note": {
+            "Discussion": "Yes",
+            "Commentary": "Yes"
+        },
+        "review": {
+            "Review of original research": "Yes"
+        },
+        "short survey": {
+            "Short review of original research": "Yes"
+        },
+        "pubmed id": {
+            "applicable_elements": [
+                "PubMed ID"
+            ],
+            "value": "Unique Identifier"
+        },
+        "funding data": {
+            "applicable_elements": [
+                "Funding data"
+            ],
+            "value": {
+                "sponsor_name": "String",
+                "acronym": "String",
+                "grant_number": "String"
+            }
+        },
+        "open access": {
+            "applicable_elements": [
+                "Open access"
+            ],
+            "value": "Boolean"
+        },
+        "scopus title list": {
+            "applicable_elements": [
+                "Scopus title list"
+            ],
+            "value": {
+                "total_titles": 34000,
+                "active_titles": 21500,
+                "inactive_titles": 12000
+            }
+        },
+        "scopus title evaluation": {
+            "applicable_elements": [
+                "Scopus title evaluation"
+            ],
+            "value": "Process"
+        },
+        "scopus title re-evaluation": {
+            "applicable_elements": [
+                "Scopus title re-evaluation"
+            ],
+            "value": {
+                "self_citations": {
+                    "type": "Percentage",
+                    "benchmark": 200
+                },
+                "citations": {
+                    "type": "Percentage",
+                    "benchmark": 50
+                },
+                "impact_per_publication": {
+                    "type": "Percentage",
+                    "benchmark": 50
+                },
+                "article_output": {
+                    "type": "Percentage",
+                    "benchmark": 50
+                },
+                "abstract_usage": {
+                    "type": "Percentage",
+                    "benchmark": 50
+                },
+                "full_text_links": {
+                    "type": "Percentage",
+                    "benchmark": 50
+                }
+            }
+        },
+        "format": {
+            "must be": "web-based"
+        },
+        "editorial_roles": {
+            "must be": "senior researchers experienced in editorial roles responsible for reviewing all the titles within a specific subject area"
+        },
+        "title": "The title must clearly represent the content.",
+        "language_skills": {
+            "must be": "enough to read and evaluate journals publishing in languages other than English"
+        },
+        "content coverage policy": {
+            "must be": "used to accept/reject a title for inclusion in Scopus"
+        },
+        "scopus title evaluation platform": {
+            "benefits include": [
+                "feedback on why their title was accepted or rejected",
+                "shorter decision-making cycle"
+            ]
+        },
+        "title_re-evaluation": {
+            "happens": "annually"
+        },
+        "abstracts": {
+            "must be provided": "in English"
+        },
+        "publication_type": "Publication type must be either Journals, Book series or Conference series.",
+        "coverage": "Scopus covers from the day it was launched. References are covered going back to 1970.",
+        "content_addition": "Starts with the most recent issue in the acceptance year. May cover back files if provided.",
+        "publisher": "Content is sourced from publishers. 85% of content is sourced electronically or from journal websites.",
+        "abstracts_availability": "Abstracts are available for 73% of articles going back to 1823 and for 84% of records after 1995.",
+        "medline_coverage": "Covers all 5,000 MEDLINE titles from 1966 and includes OLDMEDLINE content published between 1949 and 1965.",
+        "content_processing": "Fastest processing and indexing for content received via e-Feeds or downloads from journal websites. Usually takes 2-3 weeks. Content supplied in paper format takes 4-5 weeks.",
+        "articles_in_press": "Articles-in-Press are pre-published versions of accepted articles.",
+        "content_sources": "Content is received from over 5,000 publishers worldwide, with the majority being electronically received or sourced from journal websites."
+    }
+}

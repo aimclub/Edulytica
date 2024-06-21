@@ -1,0 +1,63 @@
+{
+    "params": [
+        "subject_chairs_count",
+        "title_eval_process",
+        "decision_making_cycle",
+        "content_feed_setup_time",
+        "non_english_titles_percentage",
+        "local_languages_count",
+        "total_scopus_titles",
+        "subject_areas_count"
+    ],
+    "elements": [
+        {
+            "element": "Subject Chairs",
+            "description": "Senior researchers responsible for reviewing specific subject area titles."
+        },
+        {
+            "element": "Scopus Title Evaluation Platform (STEP)",
+            "description": "Web-based editorial system for title evaluation."
+        },
+        {
+            "element": "Content Selection & Advisory Board",
+            "description": "Group responsible for new title inclusion."
+        },
+        {
+            "element": "Content Feed",
+            "description": "Process to include new title data in Scopus."
+        },
+        {
+            "element": "Scopus Global Coverage",
+            "description": "Inclusion of non-English titles with English abstracts."
+        },
+        {
+            "element": "Title Classification",
+            "description": "Classification of titles into subject areas."
+        }
+    ],
+    "gost_params": {
+        "Subject Chairs": {
+            "subject_chairs_count": 15,
+            "duties": ["title_review", "final_vote", "title_rejection_or_acceptance", "involve_additional_reviewers"]
+        },
+        "Scopus Title Evaluation Platform (STEP)": {
+            "title_eval_process": ["submission", "final_decision", "feedback"],
+            "benefits": ["feedback_for_new_titles", "short_decision_making_cycle"],
+            "decision_making_cycle_length": "short"
+        },
+        "Content Selection & Advisory Board": {
+            "new_title_inclusion_process": ["title_acceptance", "contact_publisher", "setup_content_feed", "title_addition_to_Scopus"]
+        },
+        "Content Feed": {
+            "content_feed_setup_time": "few weeks"
+        },
+        "Scopus Global Coverage": {
+            "non_english_titles_percentage": 21,
+            "local_languages_count": 40
+        },
+        "Title Classification": {
+            "total_scopus_titles": "21500",
+            "subject_areas_count": ["life_sciences", "physical_sciences", "health_sciences", "social_sciences_humanities"]
+        }
+    }
+}

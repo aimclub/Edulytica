@@ -1,0 +1,19 @@
+{
+"params": ["font size", "font type", "spacing", "paper size", "line spacing"],
+"elements": [
+{"element": "title", "description": "Title of the report"},
+{"element": "author", "description": "Name(s) of the author(s) of the report"},
+{"element": "header", "description": "Header of the report"},
+{"element": "footer", "description": "Footer of the report"},
+{"element": "table", "description": "Tables included in the report"},
+{"element": "figure", "description": "Figures included in the report"},
+{"element": "footnote", "description": "Footnotes in the report"},
+{"element": "formula", "description": "Formulas and mathematical expressions in the report"},
+{"element": "link", "description": "Hyperlinks or URLs in the report"}
+],
+"gost_params": {
+"text": {"font size": "12 pt", "font type": "Times New Roman"},
+"spacing": {"line spacing": 1.5},
+"paper_size": {"color": "white", "format": "A4", "page": "1"}
+}
+}

@@ -1,0 +1,29 @@
+{
+"params": ["font size", "font type", "spacing", "indentation", "colors", "styles", "numbering"],
+"elements": [
+{"element": "GOST", "description": "Guideline for citation styles and bibliography formatting"},
+{"element": "Requirements", "description": "Structural elements and design specifications for reports"},
+{"element": "Design rules", "description": "Rules for fonts, sizes, indents, colors, styles, numbering, etc."}
+],
+"gost_params": {
+"font size": "All text - at least 12 pt; Tables and figures - minimum 10 pt",
+"font type": "Recommended font - Times New Roman",
+"spacing": "Line spacing should be one and a half",
+"indentation": "Paragraph first line indentation - 1.27 cm",
+"colors": {
+  "text": "Black",
+  "titles": "Dark blue",
+  "links": "Blue"
+},
+"styles": {
+  "headings": "Bold",
+  "subheadings": "Italic",
+  "bold_text": "Use for emphasis only, avoid excessive use",
+  "italic_text": "Use for titles of books, journals, websites, etc."
+},
+"numbering": {
+  "headings": "1, 1.1, 1.1.1",
+  "subheadings": "1.1, 1.1.1, (a), (i)"
+}
+}
+}

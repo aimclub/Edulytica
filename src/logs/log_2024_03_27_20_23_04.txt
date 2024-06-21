@@ -1,0 +1,48 @@
+{
+"params": ["font_size", "font_type", "line_spacing", "indentation", "colors", "table_design", "figure_design", "footnote_design", "formula_design", "link_design"],
+"elements": [
+{"element": "Subject Chairs", "description": "Senior researchers responsible for reviewing titles within a specific subject area"},
+{"element": "Scopus Title Evaluation Platform", "description": "Web-based system streamlining the title evaluation process"},
+{"element": "Global Coverage", "description": "Scopus covers titles from all geographical regions"},
+{"element": "Subject Area Coverage", "description": "Scopus classifies titles into broad subject clusters and further divides them into major and minor subject areas"},
+{"element": "Arts & Humanities in Scopus", "description": "Efforts to increase the coverage of humanities titles in Scopus"}
+],
+"gost_params": {
+"text": {
+"font_size": "12 pt",
+"font_type": "Times New Roman",
+"line_spacing": 1.5,
+"indentation": "0.5 inches"
+},
+"colors": {
+"main_text_color": "black",
+"heading_color": "blue",
+"table_color": "gray",
+"figure_color": "black",
+"link_color": "blue"
+},
+"table_design": {
+"border_thickness": "1 pt",
+"cell_padding": "5 px",
+"content_alignment": "center"
+},
+"figure_design": {
+"image_resolution": "300 dpi",
+"figure_numbering": "continuous"
+},
+"footnote_design": {
+"font_size": "10 pt",
+"line_spacing": 1,
+"indentation": "0.3 inches",
+"symbol": "asterisk"
+},
+"formula_design": {
+"font_type": "Cambria Math",
+"font_size": "10 pt"
+},
+"link_design": {
+"link_style": "underlined",
+"link_hover_color": "red"
+}
+}
+}

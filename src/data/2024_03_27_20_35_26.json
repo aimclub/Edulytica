@@ -1,0 +1,333 @@
+{
+    "params": [
+        "serial_publication_types",
+        "print",
+        "electronic_formats",
+        "feed",
+        "e-feeds",
+        "xml",
+        "pdf",
+        "paper_format",
+        "pre-published",
+        "final_version",
+        "scopus_citation_network",
+        "scopus_author_profiles",
+        "AiP"
+    ],
+    "elements": [
+        {
+            "element": "humanities_titles",
+            "description": "This refers to all the humanities focused content in Scopus, including journals, book series and conferences series"
+        },
+        {
+            "element": "arts_humanities_results",
+            "description": "Arts & humanities are part of the social sciences subject cluster in Scopus"
+        },
+        {
+            "element": "cited_references",
+            "description": "These are references used in an article, included in Scopus from 1970"
+        },
+        {
+            "element": "abstracts",
+            "description": "A brief summary of a research article or thesis, available in Scopus going back as far as 1823"
+        },
+        {
+            "element": "medline_coverage",
+            "description": "Scopus covers all 5,000 MEDLINE titles from 1966 and includes content from 1949 to 1965. Scopus has direct agreements with the publishers of MEDLINE titles."
+        },
+        {
+            "element": "articles_in_press",
+            "description": "Pre-published versions of accepted articles, without cited references. These are made available within four days of reception on Scopus."
+        }
+    ],
+    "gost_params": {
+        "Scopus": {
+            "overview": "launched in November 2004 and delivers the most comprehensive overview of the world’s research output in the fields of science, technology, medicine, social science and arts and humanities.",
+            "publishers": "More than 5,000 are indexed.",
+            "titles": "Over 21,500 that includes over 21,500 peer-reviewed journals (including 4,200 full open access journals).",
+            "trade publications": "360 are indexed in Scopus.",
+            "book series": "More than 530 are available.",
+            "conference papers": "Over 7.2 million conference papers from over 83,000 worldwide events.",
+            "Articles-in-Press": "Available from more than 5,000 journals.",
+            "Books": "More than 116,000 books expected to grow by 10,000 each year.",
+            "Records": "More than 60 million records.",
+            "Patents": "Scopus has more than 27 million patent records from five patent offices."
+        },
+        "Introduction": {
+            "content": "Scopus – an overview, Content Selection & Advisory Board, Purpose and scope."
+        },
+        "Coverage of source types": {
+            "content": "Serial source types, Non-serial sources, Other sources."
+        },
+        "Coverage of metadata": {
+            "content": "Document types, Abstracts, Keywords and index terms, Cited references, Affiliation data, Author profiles, ORCID integration, Other metadata."
+        },
+        "Coverage of sources": {
+            "content": "Coverage dating back to 1970, Scopus title list, Scopus title evaluation, Global coverage, Subject area coverage, Complete coverage, MEDLINE coverage."
+        },
+        "Processing of Scopus content": {
+            "content": "no content specified."
+        },
+        "search": {
+            "params": [
+                "document",
+                "author",
+                "affiliation",
+                "source type",
+                "year",
+                "language"
+            ],
+            "meaning": "Tools and parameters to perform search operations."
+        },
+        "discover": {
+            "params": [
+                "related documents",
+                "references",
+                "keywords",
+                "Affiliation Identifier",
+                "Author Identifier"
+            ],
+            "meaning": "Tools and parameters to find related documents and identify collaborators or subject experts."
+        },
+        "analyze": {
+            "params": [
+                "Citation Overview/Tracker",
+                "Analyze Search Results",
+                "h-index",
+                "Author Evaluator"
+            ],
+            "meaning": "Tools and parameters to track citations, assess trends in search results, view h-index, and analyze an author's publishing output."
+        },
+        "content selection & advisory board (csab)": {
+            "params": [
+                "CSAB",
+                "peer-reviewed titles",
+                "selection policy",
+                "content strategy"
+            ],
+            "meaning": "Details about the board that determines the content of Scopus."
+        },
+        "serial publications": {
+            "params": [
+                "ISSN",
+                "journals",
+                "book series",
+                "conference series"
+            ],
+            "meaning": "Details about the types of serial publications accepted in Scopus."
+        },
+        "non-serial publications": {
+            "params": [
+                "ISBN",
+                "one-off book publications",
+                "one-off conferences"
+            ],
+            "meaning": "Details about the types of non-serial publications accepted in Scopus."
+        },
+        "journal": {
+            "publication_type": "Serial",
+            "ISSN_requirement": "Yes",
+            "physical_formats": [
+                "Print",
+                "Electronic"
+            ]
+        },
+        "trade journals": {
+            "publication_type": "Serial",
+            "ISSN_requirement": "Yes",
+            "industry_focus": "Yes"
+        },
+        "book series": {
+            "publication_type": "Serial",
+            "ISSN_requirement": "Yes",
+            "ISBN_requirement": "Yes",
+            "physical_formats": [
+                "Print",
+                "Electronic"
+            ]
+        },
+        "conference material": {
+            "publication_type": "Special issue of a regular journal or dedicated conference proceeding",
+            "ISSN_requirement": "Maybe, depends on the method of entry"
+        },
+        "non-serial sources": {
+            "publication_type": "Non-serial",
+            "ISBN_requirement": "Yes",
+            "exclusion_criteria": [
+                "report",
+                "part of a book series",
+                "proceeding (non-serial)",
+                "patent"
+            ]
+        },
+        "secondary documents": {
+            "publication_type": "Non-core",
+            "origin": "Cited in Scopus core records but not indexed in Scopus"
+        },
+        "patents": {
+            "publication_type": "Patent records",
+            "origin": "Derived from various patent offices"
+        },
+        "article": {
+            "length": [
+                "several pages"
+            ],
+            "section_division": [
+                "abstract",
+                "introduction",
+                "materials & methods",
+                "results",
+                "conclusions",
+                "discussion",
+                "references"
+            ]
+        },
+        "article-in-press": {
+            "online_availability": [
+                true
+            ],
+            "published_status": [
+                "pre-official publication"
+            ]
+        },
+        "book": {
+            "length": [
+                "whole monograph"
+            ],
+            "section_division": [
+                "individual chapters"
+            ]
+        },
+        "chapter": {
+            "location": [
+                "book or book series volume"
+            ]
+        },
+        "conference_paper": {
+            "origin": [
+                "conference",
+                "symposium"
+            ],
+            "data_reporting": [
+                true
+            ]
+        },
+        "editorial": {
+            "content": [
+                "summary of several articles",
+                "editorial opinions",
+                "news"
+            ]
+        },
+        "erratum": {
+            "purpose": [
+                "error report",
+                "correction",
+                "retraction"
+            ],
+            "original_paper_reference": [
+                true
+            ]
+        },
+        "letter": {
+            "recipients": [
+                "editor"
+            ]
+        },
+        "note": {
+            "content": [
+                "note",
+                "discussion",
+                "commentary"
+            ]
+        },
+        "review": {
+            "content": [
+                "original research review"
+            ],
+            "includes": [
+                "conference papers"
+            ],
+            "bibliography": [
+                "extensive"
+            ]
+        },
+        "short_survey": {
+            "content": [
+                "short review of original research"
+            ],
+            "length": [
+                "not more than a few pages"
+            ],
+            "bibliography": [
+                "less extensive"
+            ]
+        },
+        "pubmed id": "Associated with MEDLINE documents",
+        "funding data": "Inclusion based on mention in acknowledgement section and affiliation with FundRef ontology",
+        "open access": "Registration of journals as OA only if they are registered as Gold OA or Subsidized OA",
+        "coverage of sources": "Updated 2-3 times per year and includes only titles with substantial coverage",
+        "scopus title evaluation": "Titles are evaluated based on journal policy, content, citedness, regularity and online availability",
+        "title re-evaluation": "Metrics include self-citations, citations, Impact Per Publication, article output, abstract usage, and full text links",
+        "subject chair responsibility": {
+            "options": [
+                "reject/accept the submitted title based on judgment",
+                "involve additional reviewers with requisite subject expertise"
+            ],
+            "finalVote": true
+        },
+        "scopus title evaluation platform": {
+            "feedback": "provided for suggested new titles",
+            "decision-making cycle": "short"
+        },
+        "new title inclusion to scopus": {
+            "title acceptance": "communicated by Elsevier Bibliographic Databases Operations department",
+            "title addition timeframe": "up to few weeks"
+        },
+        "global coverage of scopus": {
+            "geographical regions covered": "all",
+            "non-English title coverage": "yes, if English abstracts can be provided",
+            "percentage of non-English titles": 21,
+            "total local languages": 40
+        },
+        "subject area coverage": {
+            "subject clusters": [
+                "life sciences",
+                "physical sciences",
+                "health sciences",
+                "social sciences & humanities"
+            ],
+            "major subject areas": 27,
+            "minor subject areas": "over 300"
+        },
+        "arts & humanities coverage": {
+            "initiatives": [
+                "project MUSE",
+                "ERIH list",
+                "Social Science Citation Index",
+                "Arts & Humanities Citation Index",
+                "AERES",
+                "humanities journal indexes Cairns and Francis"
+            ],
+            "number of humanities titles": 2000
+        },
+        "serial_publication_types": {
+            "humanities_titles": "refers to all serial publication types, such as journals, book series and conference series"
+        },
+        "arts_humanities_results": {
+            "Refine results overview": "option to exclude or limit search results based on arts & humanities"
+        },
+        "cited_references": {
+            "Complete coverage": "now extend back to 1970. By the end of 2016, a total of 240 million cited references will be added to approximately 12 million articles"
+        },
+        "abstracts": {
+            "Records_pre_and_post_1996": "73% of all the articles in Scopus have an abstract going back as far as 1823, while 84% of all records after 1995 have abstracts"
+        },
+        "medline_coverage": {
+            "MEDLINE coverage": "Scopus covers all 5,000 MEDLINE titles from 1966 and includes content published between 1949 and 1965. For the majority of MEDLINE titles, Scopus has agreements with the publishers directly"
+        },
+        "articles_in_press": {
+            "Articles-in-Press (AiP)": "Pre-published versions of accepted articles. AiP do not contain cited references and are de-duplicated once the final version is published and made available in Scopus."
+        }
+    }
+}

@@ -1,0 +1,26 @@
+{
+"params": ["Font size", "Font type", "Spacing", "Alignment", "Citation style", "Tables and Figures design"],
+"elements": [
+{"element": "literature review", "description": "Focusing on major findings of reported studies and discussing in depth reports related to student's project"},
+{"element": "methodology section", "description": "Discussing research design, data collection methods, and analytical procedures"},
+{"element": "results section", "description": "Selecting and ordering data logically for reader understanding"},
+{"element": "discussion section", "description": "Integrating study results with existing theory and research"},
+{"element": "abstract", "description": "A condensed summary informing readers of study purpose and findings"},
+{"element": "thesis and dissertations structure", "description": "Organizing sections from introduction to conclusions"},
+{"element": "review of dissertation and thesis", "description": "Academic institution's rules for judging quality and examination process"}
+],
+"gost_params": {
+"Font size": {"literature review": "at least 12 pt", "abstract": "at least 12 pt"},
+"Font type": {"literature review": "recommended font type - Times New Roman"},
+"Spacing": {"literature review": "one and a half spacing"},
+"Alignment": {"literature review": "written critically demonstrating strengths and weaknesses of other studies"},
+"Citation style": {"literature review": "critical evaluation rather than presenting factual information"},
+"Tables and Figures design": {
+"font size": "10 pt",
+"font type": "Arial",
+"line thickness": "0.5 pt",
+"colors": "black and white",
+"numbering style": "Arabic numerals"
+}
+}
+}

@@ -1,0 +1,40 @@
+{
+"params": ["scopus_title_list", "funding_data", "open_access", "title_evaluation", "title_re-evaluation"],
+"elements": [
+{"element": "PubMed ID", "description": "Unique identifier for MEDLINE documents, searchable via Advanced Search"},
+{"element": "Funding data", "description": "Includes sponsor name, acronym, and grant number from the acknowledgement section"},
+{"element": "Open access", "description": "Refers to full open access journals where all peer-reviewed scholarly articles are online available without restrictions"},
+{"element": "Title evaluation", "description": "Process of reviewing new titles for inclusion based on transparent criteria"},
+{"element": "Title re-evaluation", "description": "Evaluation of low-performing journals based on metrics and benchmarks"}
+],
+"gost_params": {
+"scopus_title_list": {
+"Scopus Journals title list": "Contains over 34,000 titles in total, including over 21,500 active titles and over 12,000 inactive titles. Scopus Books title list contains more than 116,000 books"
+},
+"funding_data": {
+"Sponsor name": "Mentioned in the acknowledgement section of the article",
+"Acronym": "Available from the acknowledgement section on the relevant record page",
+"Grant number": "Available from the acknowledgement section on the relevant record page, if mentioned and funding body is included in FundRef ontology"
+},
+"open_access": {
+"Journals registration": "Registered as Gold OA or Subsidized OA at Directory of Open Access Journals or Directory of Open Access Scholarly Resources",
+"Note": "Open access is registered on journal level and not on article level"
+},
+"title_evaluation": {
+"Number of titles suggested": "Approximately 3,000 serial title suggestions annually",
+"Sources of suggestions": "Librarians, publishers, and journal editors can submit title suggestions through the Title Suggestion form on the Scopus info site",
+"Eligibility criteria": ["Peer-reviewed content", "Regular publication with an ISSN number", "Relevant and readable for an international audience", "Publication ethics and malpractice statement"]
+},
+"title_re-evaluation": {
+"Metrics and benchmarks": {
+"Self-citations": "200% higher self-citation rate compared to peer journals",
+"Citations": "50% less citations compared to peer journals",
+"Impact Per Publication": "IPP score half or less than average IPP score of peer journals",
+"Article output": "Half or less number of articles compared to peer journals",
+"Abstract usage": "Abstracts used half or less compared to peer journals",
+"Full text links": "Full text links used half or less compared to peer journals"
+},
+"Procedure": ["Journals receive pre-warning if not meeting benchmarks", "One-year period given for improvement", "Re-evaluation based on set criteria by CSAB member, potential discontinuation in Scopus"]
+}
+}
+}

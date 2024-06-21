@@ -1,0 +1,192 @@
+{
+    "params": [
+        "research_questions",
+        "study_significance",
+        "literature_review",
+        "methodology",
+        "results_presentation",
+        "discussion",
+        "final_conclusions"
+    ],
+    "elements": [
+        {
+            "element": "Research Questions",
+            "description": "Questions that the study aims to answer"
+        },
+        {
+            "element": "Study Significance",
+            "description": "Explanation of why the study is important"
+        },
+        {
+            "element": "Literature Review",
+            "description": "Critical analysis of related studies"
+        },
+        {
+            "element": "Methodology",
+            "description": "Details of research design and data collection methods"
+        },
+        {
+            "element": "Results Presentation",
+            "description": "Display of study findings, highlighting significant data"
+        },
+        {
+            "element": "Discussion",
+            "description": "Interpretation of the study results and their integration with existing research"
+        },
+        {
+            "element": "Final conclusions",
+            "description": "End remarks of the study, specifying its implications for the academic field"
+        }
+    ],
+    "gost_params": {
+        "title": {
+            "length_limit": "Should be brief",
+            "format": "Reflect the contents of research",
+            "language": "English"
+        },
+        "abstract": {
+            "word_limit": 250,
+            "format": "Single paragraph",
+            "contents": "Summary of each main section",
+            "language": "English"
+        },
+        "introduction": {
+            "tense": "Present",
+            "format": "Brief description of problem, literature review, and method",
+            "language": "English"
+        },
+        "body": {
+            "tense": "Past for most parts",
+            "format": "Details of methods used, discussions, and results",
+            "language": "English"
+        },
+        "conclusion": {
+            "length_limit": "Should be brief",
+            "format": "Summary of the study and its findings",
+            "language": "English"
+        },
+        "font_size": {
+            "element": "Typography",
+            "meaning": "Minimum size of the font for the manuscript is 12 pt"
+        },
+        "font_type": {
+            "element": "Typography",
+            "meaning": "Recommended type of font for the manuscript is Times New Roman"
+        },
+        "paper_color": {
+            "element": "Paper",
+            "meaning": "Color of the paper should be white"
+        },
+        "paper_format": {
+            "element": "Paper",
+            "meaning": "Format of the paper should be A4"
+        },
+        "line_spacing": {
+            "element": "Typography",
+            "meaning": "Line spacing should be 1.5"
+        },
+        "page": {
+            "element": "Paper",
+            "meaning": "Report should be completed on one side of sheet only"
+        },
+        "research_questions": {
+            "element": "Research Methods",
+            "meaning": "Questions about the topic, hypothesis, variables, data collection and analysis methods",
+            "importance": "Sets the direction and scope of the study"
+        },
+        "data_collection_protocol": {
+            "element": "Research Methods",
+            "meaning": "The standardized procedures used to collect data"
+        },
+        "data_analysis_methods": {
+            "element": "Research Methods",
+            "meaning": "Statistical procedures, software or mathematical equations used to analyze the collected data"
+        },
+        "data_significance_criteria": {
+            "element": "Research Methods",
+            "meaning": "The probability threshold used to determine significance of the results"
+        },
+        "methods_comparison": {
+            "element": "Research Methods",
+            "meaning": "Comparison of the current research methods with previously reported methods"
+        },
+        "results_description": {
+            "element": "Results and Discussion",
+            "meaning": "The overall description of the experimental results and the data"
+        },
+        "contradicting_results": {
+            "element": "Results and Discussion",
+            "meaning": "Mention of any results that contradict the hypotheses and explanation of why they are anomalous"
+        },
+        "principles_relationships_generalizations": {
+            "element": "Results and Discussion",
+            "meaning": "Presentation of principles, relationships and generalizations shown by the research results"
+        },
+        "exceptions": {
+            "element": "Results and Discussion",
+            "meaning": "Pointing out any exceptions or any lack of correlation and defining unsettled points"
+        },
+        "comparison_with_published_work": {
+            "element": "Results and Discussion",
+            "meaning": "Discussion on how the research results and interpretations agree or contrast with previously published work"
+        },
+        "theoretical_implications": {
+            "element": "Results and Discussion",
+            "meaning": "Theoretical implications of the research work"
+        },
+        "practical_applications": {
+            "element": "Results and Discussion",
+            "meaning": "Possible practical applications of the research work"
+        },
+        "conclusions": {
+            "element": "Conclusion",
+            "meaning": "The final thoughts, findings or conclusions derived from the research"
+        },
+        "supporting_evidence": {
+            "element": "Conclusion",
+            "meaning": "Summarizing the evidence for each conclusion"
+        },
+        "review_types": {
+            "element": "Manuscript Review",
+            "meaning": "Types of reviews a research manuscript can undergo - single-blind or double-blind review"
+        },
+        "journal_information": {
+            "element": "Journal Submission",
+            "meaning": "Detailed information about the journal, its aim and scope, submission guidelines, review policy, frequency of publication and other pertinent details"
+        },
+        "research_paper_structure": {
+            "element": "Research Paper",
+            "meaning": "The structure of a research paper typically includes abstract, keywords, introduction, literature review, methods, results and discussion, and conclusions"
+        },
+        "thesis_structure": {
+            "element": "Theses and Dissertations",
+            "meaning": "The structure of a thesis or dissertation includes abstract, introduction, methods, results, discussion, and conclusions"
+        },
+        "study_significance": {
+            "relation_to_existing_research": "Show how the study contributes to the extant literature"
+        },
+        "literature_review": {
+            "required_depth": "Detailing studies closely related to the project"
+        },
+        "methodology": {
+            "elements": {
+                "research_design": "Types of research carried out",
+                "instrumentation": "Ways of data collection"
+            }
+        },
+        "results_presentation": {
+            "requirements": "Data should be ordered logically to guide the reader"
+        },
+        "discussion": {
+            "objectives": [
+                "Integration of study results with existing theory",
+                "Acknowledgment of strengths and limitations",
+                "Future research prospects"
+            ]
+        },
+        "final_conclusions": {
+            "emphasis": "Overall research achievement"
+        }
+    },
+    "error": "The input does not provide necessary information related to GOST, its structural elements, or design rules"
+}

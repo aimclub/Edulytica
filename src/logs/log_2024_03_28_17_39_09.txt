@@ -1,0 +1,63 @@
+{
+"params": ["field", "books", "journal_articles", "conference_papers"],
+"elements": [
+  {
+    "element": "serial_source_types",
+    "description": "GOST indexes serial publications that have been assigned an ISSN. Types include journals, trade journals, book series and conference materials."
+  },
+  {
+    "element": "journals",
+    "description": "These make up the bulk of the content in GOST. Any serial publication with an ISSN can be suggested for review and covered in GOST."
+  },
+  {
+    "element": "trade_journals",
+    "description": "These are serial publications covering a specific industry, trade or type of business."
+  },
+  {
+    "element": "book_series",
+    "description": "A book series is a serial publication with an overall series title, and every volume and/or issue also has a book with an ISBN."
+  },
+  {
+    "element": "conference_material",
+    "description": "Conference material enters GOST in two different ways, either as a special issue of a regular journal or as a dedicated conference proceeding."
+  },
+  {
+    "element": "non-serial_sources",
+    "description": "A non-serial source is a publication with an ISBN unless it is part of a book series, proceeding or patent. It's usually a monograph or composed work."
+  },
+  {
+    "element": "other_sources",
+    "description": "Secondary documents and Patents are also considered as other sources in GOST."
+  }
+],
+"gost_params": [
+  {
+    "field": "serial_source_types",
+    "description": "This field contains information about the type of serial source, i.e., whether it's a journal, trade journal, book series, or conference material."
+  },
+  {
+    "field": "journals",
+    "description": "The 'journals' field includes information about the type and format of the journal, whether it's print or electronic."
+  },
+  {
+    "field": "trade_journals",
+    "description": "The 'trade_journals' field provides information on the specific industry, trade or type of business the journal is covering."
+  },
+  {
+    "field": "book_series",
+    "description": "The 'book_series' field contains information about the series title, ISBN of the volume and/or issue, and whether each book has a separate title and editor."
+  },
+  {
+    "field": "conference_material",
+    "description": "The 'conference_material' field includes information on how the material enters GOST, whether it's as a special issue of a regular journal or as a dedicated conference proceeding."
+  },
+  {
+    "field": "non-serial_sources",
+    "description": "The 'non-serial_sources' field provides information about a publication's ISBN and its physical format, i.e., whether it's print or electronic."
+  },
+  {
+    "field": "other_sources",
+    "description": "The 'other_sources' field includes information on secondary documents and patents, including the number of patent records from different patent offices."
+  }
+]
+}

@@ -1,0 +1,42 @@
+{
+    "requirements": {
+        "font": {
+            "family": "Times New Roman",
+            "size": "12 pt",
+            "color": "black",
+            "bold": "only for headings",
+            "italic": {
+                "usage": "for object designation, Latin terms, highlighting text, certain terms, formulas, theorems",
+                "must_match": "font size and type"
+            }
+        },
+        "alignment": "justified",
+        "line_spacing": {
+            "main_text": "one and a half",
+            "exceptions": [
+                "title",
+                "positions in the list of performers",
+                "captions of figures and tables"
+            ]
+        },
+        "paragraph_indent": "1.25 cm",
+        "text_spacing": "0 cm",
+        "field_sizes": {
+            "left": "3.0 cm",
+            "right": "1.5 cm",
+            "top": "2.0 cm",
+            "bottom": "2.0 cm"
+        },
+        "page_numbers": {
+            "format": "Arabic numerals",
+            "placement": "bottom center",
+            "title_page": "excluded from numbering",
+            "appendices": "consecutively numbered"
+        },
+        "lists_formatting": {
+            "element_prefix": "dash or lowercase letters for references",
+            "simple_lists": "comma separated",
+            "complex_lists": "semicolon separated"
+        }
+    }
+}

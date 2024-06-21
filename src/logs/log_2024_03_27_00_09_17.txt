@@ -1,0 +1,44 @@
+{
+"params": ["fonts", "sizes", "colors", "styles", "spacing", "indentation", "numbering"],
+"elements": [
+{"element": "non-serial sources", "description": "Publications with an ISBN but not a report, book series, proceeding, or patent"},
+{"element": "other sources", "description": "Secondary documents and patents"},
+{"element": "document types", "description": "Classification of document types indexed in Scopus"},
+{"element": "abstracts", "description": "Information about the abstracts in Scopus"},
+{"element": "keywords and index terms", "description": "Index terms added for 80% of titles in Scopus"},
+{"element": "cited references", "description": "Cited references in Scopus going back to 1970"}
+],
+"gost_params": {
+"fonts": {
+"text": "Times New Roman",
+"tables": "Calibri"
+},
+"sizes": {
+"text": "12 pt",
+"headers": "14 pt"
+},
+"colors": {
+"primary": "Black",
+"secondary": "Gray"
+},
+"styles": {
+"bold": "font-weight: bold",
+"italic": "font-style: italic",
+"underline": "text-decoration: underline"
+},
+"spacing": {
+"line": "1.5",
+"paragraph": "6 pt"
+},
+"indentation": {
+"text": "0.5 inches",
+"bullet_points": "0.25 inches"
+},
+"numbering": {
+"figures": "Figure X: Description",
+"tables": "Table X: Description",
+"formulas": "Formula X: Description",
+"footnotes": "Footnote X: Description"
+}
+}
+}

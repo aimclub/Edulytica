@@ -1,7 +1,6 @@
 from typing import Annotated
 
 from fastapi import HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
@@ -10,9 +9,11 @@ from starlette import status
 from src.edulytica_api.crud.user_crud import UserCrud
 from src.edulytica_api.database import get_session
 from src.edulytica_api.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
-from src.edulytica_api.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
+from src.edulytica_api.auth.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
+    OAuth2PasswordBearerWithCookie
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 credentials_exception = HTTPException(
@@ -40,7 +41,7 @@ class AuthDataGetterFromToken():
                 return {"user": user,
                         "payload": payload,
                         "token": token}
-        except JWTError:
+        except JWTError as e:
             raise credentials_exception
 
     @staticmethod

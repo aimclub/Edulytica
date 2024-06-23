@@ -1,9 +1,10 @@
-[![python](https://badgen.net/badge/python/3.9|3.10|3.11/blue?icon=python)](https://www.python.org/)
 ![ITMO](https://raw.githubusercontent.com/aimclub/open-source-ops/43bb283758b43d75ec1df0a6bb4ae3eb20066323/badges/ITMO_badge_rus.svg)
+[![python](https://badgen.net/badge/python/3.10|3.11/blue?icon=python)](https://www.python.org/)
 [![codecov](https://codecov.io/gh/LISA-ITMO/Edulytica/graph/badge.svg?token=L1I8M0KDS6)](https://codecov.io/gh/LISA-ITMO/Edulytica)
+![build](https://github.com/LISA-ITMO/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
 
 # Edulytica
-![logo](.github/workflows/sources/logo2.png)
+![logo](./.github/workflows/sources/logo2.png)
 ## Description
 The purpose of the study is to automate the analysis of scientific and educational documents in the context of 
 research works using LLM (Large language model, large language models) to reduce the time and intellectual costs of 
@@ -17,7 +18,7 @@ document and revealing whether the stated goals and objectives of the work have 
 - An algorithm for identifying changes in the text for analyzing AI text generation;
 - Fast APP is an application for interacting with trained models;
 - Code for highlighting goals and objectives using LLM;
-- Added settings for CHhatGPT and GigaChat models. The functionality of splitting text into blocks has been implemented. A Yandex bot has been implemented to highlight the rules. Work with the database has been configured for the experiment of identifying requirements from regulatory documents using LLM.
+- Added settings for ChatGPT and GigaChat models. The functionality of splitting text into blocks has been implemented. A Yandex bot has been implemented to highlight the rules. Work with the database has been configured for the experiment of identifying requirements from regulatory documents using LLM.
 
 ## Requirements
 ```

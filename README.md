@@ -5,7 +5,7 @@
 
 # Edulytica
 <p align="center">
-  <img src="./.github/workflows/sources/logo2.png" title="logo">
+  <img src="./src/images/logo2.png" title="logo">
 </p>
 
 ## Description

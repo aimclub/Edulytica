@@ -4,7 +4,10 @@
 ![build](https://github.com/LISA-ITMO/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
 
 # Edulytica
-![logo](./.github/workflows/sources/logo2.png)
+<p align="center">
+  <img src="./.github/workflows/sources/logo2.png" title="logo">
+</p>
+
 ## Description
 The purpose of the study is to automate the analysis of scientific and educational documents in the context of 
 research works using LLM (Large language model, large language models) to reduce the time and intellectual costs of 

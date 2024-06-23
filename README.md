@@ -4,7 +4,7 @@
 ![build](https://github.com/LISA-ITMO/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
 
 # Edulytica
-![logo](./src/images/logo2.png)
+![logo](/src/images/logo2.png)
 
 ## Description
 The purpose of the study is to automate the analysis of scientific and educational documents in the context of 

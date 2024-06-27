@@ -1,5 +1,5 @@
 from src.edulytica_api.crud.factory import CrudFactory, BaseCrudFactory
-from src.edulytica_api.models.auth import Token
+from src.edulytica_api.models.models import Token
 from src.edulytica_api.schemas.auth import TokenUpdate, TokenCreate, TokenGet
 
 

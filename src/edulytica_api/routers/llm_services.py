@@ -1,12 +1,24 @@
 # from src.edulytica_api.llms.llm_model import LLM, Conversation
-from src.edulytica_api.models.auth import User
-from fastapi import APIRouter, Depends, UploadFile
+import os
+import uuid
+from pathlib import Path
+import datetime
+from starlette import status
+from starlette.responses import FileResponse
+from src.edulytica_api.parser.Parser import get_structural_paragraphs
+from src.edulytica_api.celery.tasks import get_llm_purpose_result, get_llm_summary_result
+from src.edulytica_api.crud.result_files_crud import ResultFilesCrud
+from src.edulytica_api.crud.tickets_crud import TicketsCrud
+from src.edulytica_api.models.models import User
+from fastapi import APIRouter, Depends, UploadFile, HTTPException
 from src.edulytica_api.database import SessionLocal
 from src.edulytica_api.auth.auth_bearer import access_token_auth
 from src.edulytica_api.schemas import llm_schema
 from typing import Annotated
 from sqlalchemy.orm import Session
 import json
+
+from src.edulytica_api.schemas.llm_schema import TicketGetResponse
 
 
 def get_session():
@@ -17,131 +29,86 @@ def get_session():
         session.close()
 
 
-DEFAULT_MESSAGE_TEMPLATE = "<|start_header_id|>{role}<|end_header_id|>{content}<|eot_id|>"
-DEFAULT_RESPONSE_TEMPLATE = "<|begin_of_text|>"
-SUMMARIZE_DEFAULT_SYSTEM_PROMPT = '''Ты опытный преподаватель университета, твоя задача делать суммаризацию научных текстов.
-                           Суммаризируй часть научной работы, сохрани основные пункты, главные факты, термины и выводы.
-                           Твой ответ должен быть кратким, содержать от 10 до 15 предложений.
-                           Не добавляй в ответ ничего от себя, опирайся только на исходный текст.
-                           Вот научный текст для суммаризации:'''
-
-EXTRACT_DEFAULT_SYSTEM_PROMPT = '''Ты ассистент. Твоя задача - анализировать предоставленный текст и выявлять из него конкретные цели и задачи. Цели представляют собой конечные результаты, которых стремится достичь автор текста, а задачи - это конкретные действия или шаги, которые необходимо выполнить для достижения этих целей. Обрати внимание на следующие правила:
-Не придумывай цели и задачи, которых нет в тексте: Тебе запрещено добавлять собственные интерпретации или домыслы. Твои выводы должны строго основываться на информации, представленной в тексте.
-Отчет о невозможности выявления целей или задач: Если в тексте не удается определить ни цели, ни задачи, ты должен явно указать это в своем отчете. Напиши, что цели или задачи не были выявлены.
-Разделение целей и задач: В тексте могут присутствовать только цели, только задачи, или и то, и другое. Важно различать эти категории и правильно их классифицировать.
-Процесс выявления целей и задач должен быть систематичным и логичным. Прежде чем писать отчет, внимательно прочитай текст несколько раз, чтобы полностью понять его содержание и контекст. Используй ключевые слова и фразы, которые могут указывать на намерения или план действий.
-Примеры: Цель: "Увеличить прибыль компании на 20% в следующем году." Задача: "Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала."
-Пример структурированного отчета: 
-Цели:
-Увеличить прибыль компании на 20% в следующем году. 
-Задачи:
-Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала.
-Провести обучение сотрудников новым методам продаж.
-Отчет при отсутствии целей или задач:
-Цели: не выявлены. 
-Задачи: не выявлены.
-Приступай к выполнению задачи, внимательно следуя этим инструкциям.'''
-
-PURPOSE_DEFAULT_SYSTEM_PROMPT = '''Ты - ассистент преподавателя, который оценивает научную работу. Как и в любой работе, в тексте есть цели и задачи работы. Цель обычно одна, а задач - несколько. Твоя задача просмотреть и проанализировать весь текст работы и оценить соответствие текста поставленной цели и задачам. Тебе нужно проверить, соответствует ли текст поставленной цели и задачам. Если цель или задачи отсутствуют - так и напиши, что задачи не найдены. Также удели внимание источникам информации. Проанализируй их, на сколько они актуальны и применены в этой работе. \
-\
-Для этого следуй данному плану:\
-    1. Сначала тебе будет дан текст работы ('all_text' или 'Текст работы'), где будет вся работа (весь текст для анализа), затем будут будут указаны цель и задачи ('goals' или 'Цели работы'), возможно методы исследования и гипотезы,  - определи эти части и проанализируй их;\
-    2. Прочитай и проанализируй цель и задачи ('goals' или Цели работы), запомни их;\
-    3. Прочитай и проанализируй весь текст ('all_text' или 'Текст работы'), запомни его;\
-    4. Проанализируй соответствие цели и задач, а также гипотезы и методы исследования (при наличии) ('goals' или Цели работы), тексту работы ('all_text' или 'Текст работы');\
-    5. Оцени соответствие текста поставленной цели и задачам. Делай оценку конкретной и объективной, с примерами (подробнее про это будет в правилах ниже);\
-    6. Сделай подробный отчет.\
-\
-Обрати внимание на следующие правила: \
-  1. Не придумывай цели и задачи, которых нет в тексте: Тебе запрещено добавлять собственные интерпретации или домыслы. Твои выводы должны строго основываться на информации, представленной в тексте (all_text и goals).\
-  2. Если увидишь, что в тексте есть информация, которая не содержится в цели и задачах, выдели ее в отчете, как некорректные данные.\
-  3. Поскольку задачи и цель могут формулироваться разными вариантами, учти небольшую погрешность в отклонениях.\
-  4. Процесс определения соответствия текста цели и задачам должен быть систематичным и логичным. Прежде чем писать отчет, внимательно прочитай текст несколько раз, чтобы полностью понять его содержание и контекст. Используй ключевые слова и фразы, которые могут указывать на намерения или план действий.\
-  5. Текст будет разбиваться по чанкам, поэтому анализировать нужно только после последнего чанка.\
-  6. Последний чанк будет иметь строку: 'ПОСЛЕДНИЙ ЧАНК'.\
-  7. Оценив текст на соответствие поставленной цели и задачам, укажи в отчете подробно, что сделано правильно, а что нет. В этой задаче постарайся как похвалить автора, так и дать какие-то рекомендации по исправлениям, если они требуются.\
-  8. В последнем пункте отчета попробуй сделать численную оценку в процентах на соответствие цели и задачам и объясни, почему оценка именно такая.\
-  9. Заметь, что в тексте написаны цель и задачи. Тебе нужно найти цель и задачи, затем прочитать и проанализировать весь текст и, после этого, сравнить текст на соответствие цели и задачам, которые присутствуют в тексте.\
-  10. Важно! Не допускай повторений. Каждое из требований ты должен выполнить один раз. Например, не делай больше 1 раза численную оценку в процентах, это нужно сделать только 1 раз в конце отчета. Тоже самое и с другими пунктами, повторений быть не должно! Твой ответ должен быть последовательным и структурированным, а также логически выстроенным.'''
-
-# purpose_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/saiga_llama3_8b-qdora-4bit_purpose')
-# summarize_llm = LLM('IlyaGusev/saiga_llama3_8b', 'slavamarcin/qdora')
-
 llm_router = APIRouter(prefix="/llm")
-
+ROOT_DIR = Path(__file__).resolve().parents[1]
 
 @llm_router.post("/purpose")
-def get_purpose(file: UploadFile, current_user: Annotated[User, Depends(access_token_auth)],
-                db: Session = Depends(get_session)):
-    def chunk_text(text, chunk_size, overlap):
-        if chunk_size <= 0 or overlap < 0 or overlap >= chunk_size:
-            raise ValueError("Некорректные параметры: размер чанка должен быть положительным числом, "
-                             "нахлёст должен быть неотрицательным числом и меньше размера чанка.")
+def get_purpose(file: UploadFile, auth_data: Annotated[dict, Depends(access_token_auth)],
+                session: Session = Depends(get_session)):
 
-        chunks = []
-        start = 0
-        text_length = len(text)
+    user = auth_data['user']
+    data = get_structural_paragraphs(file.file)
+    intro = " ".join(data['table_of_content'][0]['text'])
+    main_text = " ".join(data['other_text'])
+    ticket = TicketsCrud.create(session=session, ticket_type='Достижимость', user_id=user.id, status_id=0)
 
-        while start < text_length:
-            end = start + chunk_size
-            chunk = text[start:end]
-            chunks.append(chunk)
-            start += chunk_size - overlap
-
-            if start >= text_length:
-                break
-
-        return chunks
-
-    # def prepare_answer(all_text, goals):
-    #     PROMPT_TEMPLATE = "Текст работы:\n{all_text}\n\nЦели работы:\n{goals}\n\n"
-    #     combined_text = PROMPT_TEMPLATE.format(all_text=all_text, goals=goals)
-    #     print(combined_text)
-    #     chunks = chunk_text(combined_text, 8000, 0)
-    #     purpose_conversation = Conversation()
-    #     for i, chunk in enumerate(chunks):
-    #         if i == len(chunks) - 1:
-    #             chunk += 'ПОСЛЕДНИЙ ЧАНК'
-    #
-    #         purpose_conversation.add_user_message(chunk)
-    #     prompt = purpose_conversation.get_prompt(purpose_llm.tokenizer)
-    #
-    #     return purpose_llm.generate(prompt)
-    #
-    # from src.edulytica_api.parser.Parser import get_structural_paragraphs
-    # data = get_structural_paragraphs(file.file)
-    # intro = " ".join(data['table_of_content'][0]['text'])
-    # main_text = " ".join(data['other_text'])
-    # extract_conversation = Conversation(message_template=DEFAULT_MESSAGE_TEMPLATE,
-    #                                     response_template=DEFAULT_RESPONSE_TEMPLATE,
-    #                                     system_prompt=EXTRACT_DEFAULT_SYSTEM_PROMPT)
-    # extract_conversation.add_user_message(intro)
-    # prompt = extract_conversation.get_prompt(purpose_llm.tokenizer)
-    # output = purpose_llm.generate(prompt)
-    # goals = output
-    # result_data = prepare_answer(main_text, goals)
-    #
-    # res = {'goal': goals, 'result': result_data}
-    #
-    # return json.dumps(res)
-
-
-@llm_router.post("/accordance")
-def get_accordance():
-    pass
+    task = get_llm_purpose_result.delay(intro=intro, main_text=main_text, user_id=user.id, ticket_id=ticket.id)
+    return json.dumps(task.id)
 
 
 @llm_router.post("/summary")
-def get_summary(data: llm_schema.SummarizeData, current_user: Annotated[User, Depends(access_token_auth)],
-                db: Session = Depends(get_session)):
-    # text = data.text
-    # result_data = []
-    # for inpt in text:
-    #     summarize_conversation = Conversation(message_template = DEFAULT_MESSAGE_TEMPLATE, response_template = DEFAULT_RESPONSE_TEMPLATE, system_prompt = SUMMARIZE_DEFAULT_SYSTEM_PROMPT)
-    #     summarize_conversation.add_user_message(inpt)
-    #     prompt = summarize_conversation.get_prompt(summarize_llm.tokenizer)
-    #     output = summarize_llm.generate(prompt)
-    #     result_data.append([output])
-    # res = {'result': result_data}
-    # return json.dumps(res)
-    pass
+def get_summary(file: UploadFile, auth_data: Annotated[dict, Depends(access_token_auth)],
+                session: Session = Depends(get_session)):
+    user = auth_data['user']
+    data = get_structural_paragraphs(file.file)
+    text_list = []
+    for content in data['table_of_content']:
+        text_list.append(" ".join(content['text']))
+    ticket = TicketsCrud.create(session=session, ticket_type='Суммаризация', user_id=user.id, status_id=0)
+    task = get_llm_summary_result.delay(main_text=text_list, user_id=user.id, ticket_id=ticket.id)
+    return json.dumps(task.id)
+
+
+@llm_router.get("/results")
+def get_results(auth_data: Annotated[dict, Depends(access_token_auth)],
+                session: Session = Depends(get_session)):
+    user = auth_data['user']
+    return TicketsCrud.get_filtered_by_params(session=session, user_id=user.id)
+
+
+@llm_router.post("/result")
+def get_result(ticket_resp: TicketGetResponse, auth_data: Annotated[dict, Depends(access_token_auth)],
+               session: Session = Depends(get_session)):
+    user = auth_data['user']
+    try:
+        ticket = TicketsCrud.get_by_id(session=session, record_id=ticket_resp.id)
+        if ticket is not None:
+            data = {'status': 'In progress'}
+            if len(ticket.result_files) > 0:
+                result_file = ticket.result_files[0]
+                f = open(os.path.join(ROOT_DIR, result_file.file), encoding='utf-8')
+                data = json.load(f)
+                data['status'] = 'Ready'
+            if ticket.user_id == user.id:
+                return {'ticket': ticket, 'result_data': data}
+            return HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Not Permission"
+            )
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='BAD_REQUEST'
+        )
+    except Exception as e:
+        print(e)
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='BAD_REQUEST'
+        )
+@llm_router.get("/file/{file_id}", response_class=FileResponse)
+def get_file(file_id: uuid.UUID, auth_data: Annotated[dict, Depends(access_token_auth)],
+               session: Session = Depends(get_session)):
+    try:
+        file = ResultFilesCrud.get_by_id(session=session, record_id=file_id)
+        if file.user_id == auth_data['user'].id:
+            return file.file
+        else:
+            return HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail='BAD_REQUEST'
+            )
+    except:
+        return HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='BAD_REQUEST'
+        )

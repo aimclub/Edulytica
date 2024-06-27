@@ -15,7 +15,7 @@ from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
 
 from src.edulytica_api.auth.helpers.validators import password_validate
-from src.edulytica_api.models.auth import User
+from src.edulytica_api.models.models import User
 from src.edulytica_api.auth.auth_bearer import refresh_token_auth, \
     access_token_auth
 from src.edulytica_api.auth.helpers.utils import create_access_token, create_refresh_token, verify_password, \
@@ -75,7 +75,7 @@ def change_password(request: auth_schemas.changepassword,
 
 
 @auth_router.get('/refresh')
-async def refresh_token(response: Response,auth_data: Annotated[dict, Depends(refresh_token_auth)],
+async def refresh_token(response: Response, auth_data: Annotated[dict, Depends(refresh_token_auth)],
                         session: Session = Depends(get_session)):
     payload = auth_data['payload']
     user = auth_data['user']

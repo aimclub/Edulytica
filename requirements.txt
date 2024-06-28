@@ -35,6 +35,7 @@ langsmith==0.1.67
 litellm==1.39.6
 lxml==5.2.2
 MarkupSafe==2.1.5
+matplotlib==3.9.0
 multidict==6.0.5
 nltk==3.8.1
 numpy==1.26.4
@@ -43,6 +44,7 @@ odfpy==1.4.1
 openai==1.30.5
 orjson==3.10.3
 packaging==23.2
+pandas==2.2.2
 pillow==10.3.0
 pyasn1==0.6.0
 pydantic==2.7.2
@@ -61,6 +63,7 @@ requests==2.31.0
 rsa==4.9
 scikit-learn==1.5.0
 scipy==1.13.1
+sklearn==0.0.post12
 sniffio==1.3.1
 SQLAlchemy==2.0.30
 tenacity==8.3.0

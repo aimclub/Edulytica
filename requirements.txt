@@ -27,11 +27,12 @@ Jinja2==3.1.4
 joblib==1.4.2
 jsonpatch==1.33
 jsonpointer==2.4
-langchain==0.2.1
-langchain-core==0.2.3
+langchain==0.2.6
+langchain-core==0.2.10
 langchain-openai==0.1.8
+langchain_community==0.2.6
 langchain-text-splitters==0.2.0
-langsmith==0.1.67
+langsmith==0.1.82
 litellm==1.39.6
 lxml==5.2.2
 MarkupSafe==2.1.5
@@ -45,6 +46,8 @@ openai==1.30.5
 orjson==3.10.3
 packaging==23.2
 pandas==2.2.2
+peft==0.10.0
+protobuf==5.27.2
 pillow==10.3.0
 pyasn1==0.6.0
 pydantic==2.7.2
@@ -71,6 +74,9 @@ tiktoken==0.7.0
 tokenizers==0.19.1
 tqdm==4.66.4
 typing_extensions==4.12.1
+torch==2.2.2
+transformers==4.40.1
+termcolor==2.4.0
 urllib3==2.2.1
 yarl==1.9.4
 zipp==3.19.1

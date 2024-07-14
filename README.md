@@ -4,7 +4,7 @@
 ![build](https://github.com/LISA-ITMO/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
 
 # Edulytica
-![logo](src/images/logo2.png)
+![logo](src/images/logo.png)
 
 ## Description
 The purpose of the study is to automate the analysis of scientific and educational documents in the context of 
@@ -13,9 +13,6 @@ teachers. The result is two LLMs, trained on specially collected data, capable o
 document and revealing whether the stated goals and objectives of the work have been achieved.
 
 ## Features
-- Data parser from ISU;
-- Data processor from telegram channels;
-- Data parser from WRC;
 - An algorithm for identifying changes in the text for analyzing AI text generation;
 - Fast APP is an application for interacting with trained models;
 - Code for highlighting goals and objectives using LLM;

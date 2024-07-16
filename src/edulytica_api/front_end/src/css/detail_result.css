@@ -1,0 +1,275 @@
+.loader {
+    width: 20px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid;
+    border-color: white #1111;
+    animation: l1 1s infinite;
+  }
+  @keyframes l1 {to{transform: rotate(.5turn)}}
+
+.typeTask {
+    width: 40px;
+    aspect-ratio: 1;
+    background: white;
+    animation: l2 1s infinite;
+  }
+  @keyframes l2 {
+    0%   {transform: perspective(150px) rotateX(  0deg)}
+    100% {transform: perspective(150px) rotateX(180deg)}
+  }
+
+
+.loaderStatus{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.loaderTask{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.result_div{
+    background-color: #181818;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; 
+    height: 100%;   
+    margin: 0 auto;
+    overflow: hidden;
+
+}
+
+
+.textGap{
+    margin-top: 20%;
+}
+.mainSection{
+    display: flex;
+    justify-content: center;
+    gap: 5%;
+    height: 100%;  
+    margin-right: 4%;
+    overflow: hidden;
+
+}
+.mainSectionLabel{
+    font-weight: 400;
+    color: white;
+    font-size: 24px;
+    font-family: "Montserrat", sans-serif;
+
+
+}
+
+.mainSectionLabel_wrapper{
+    font-family: "Montserrat", sans-serif;
+    font-weight: 700;  
+    color: white;
+    font-size: 34px;
+    position: relative;
+
+}
+.mainSectionLabel_wrapper::after{
+    position: absolute;
+    content:' ';
+    display:block;
+    border:1px solid white;
+    top: 70px;
+    left: -60px;
+    /* width: 200%; */
+
+}
+
+
+.information {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 20%;
+    margin-left: 10%;
+
+}
+
+.information_text__wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+    text-align: start;
+
+}
+
+/* readonly value={results_data && results_data.result_data.goal}*/
+
+
+
+
+.downloadBtn {
+
+	padding: 15px 100px 15px 100px;
+	outline: none;
+	border: 1px solid #fff;
+	border-radius: 0px;
+	font-size: 14px;
+	font-weight: 400;
+	text-decoration: none;
+	color: white;
+    background-color: #333030;
+    font-family: "Montserrat", sans-serif;
+	box-shadow: 0 4px 6px rgb(65 132 144 / 10%), 0 1px 3px rgb(0 0 0 / 8%);
+	cursor: pointer;
+
+	transition: box-shadow 0.2s;
+}
+.downloadBtn:focus-visible {
+	border: 1px solid #4c51f9;
+	outline: none;
+}
+.downloadBtn:hover {
+	transition: all 0.2s;
+	background-color: #444;
+
+	box-shadow: 0 7px 14px rgb(65 132 144 / 10%), 0 3px 6px rgb(0 0 0 / 8%);
+}
+.downloadBtn:active {
+	background-color: #504e4e;
+    transition: all 0.3s;
+
+    outline: none;
+}
+
+article{
+    margin-top: 1%;
+    display: flex;
+    gap: 10%;
+    align-items: center;
+}
+
+article textarea{
+    background-color: #363636;
+    outline: none;
+    color: white;
+    padding-top: 10px;
+    padding-left: 10px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+    padding-right: 10px;
+    min-height: 30%;
+    height: 100%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    font-size: 16px;
+    resize: none;
+    width: 45%;
+    outline: none;
+    max-height: 60%;
+    
+
+
+}
+
+ul li{
+    list-style: none;
+}
+
+main {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+@media (max-width: 1150px) {
+    .mainSectionLabel_wrapper::after{
+
+        top: 70px;
+        left: -60px;
+        width: 150%;
+    
+    }
+    
+  }
+
+  @media (max-width: 900px) {
+    .loader{
+        width: 10px;
+    }
+    .typeTask{
+        width: 30px;
+    }
+    .mainSectionLabel{
+        font-weight: 400;
+        color: white;
+        font-size: 20px;
+        font-family: "Montserrat", sans-serif;
+    
+    
+    }
+    
+    .mainSectionLabel_wrapper{
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;  
+        color: white;
+        font-size: 30px;
+        position: relative;
+    
+    }
+    
+  }
+
+  @media (max-width: 750px) {
+    article{
+        margin-left: 10%;
+        margin-right: 10%;
+        height: 200px;
+    }
+
+    .textGap{
+        margin-top: 10%;
+        margin-bottom: 5%;
+    }
+
+    body{
+        overflow: visible;
+    }
+    
+    .mainSection{
+        display: inline-block;
+        margin-bottom: 5%;
+
+    }
+
+    .information{
+        margin-left: 0%;
+        align-items: start;
+    }
+
+    .loader{
+        width: 10px;
+    }
+    .typeTask{
+        width: 30px;
+    }
+    .mainSectionLabel{
+        font-weight: 400;
+        color: white;
+        font-size: 20px;
+        font-family: "Montserrat", sans-serif;
+    
+    
+    }
+    
+    .mainSectionLabel_wrapper{
+        font-family: "Montserrat", sans-serif;
+        font-weight: 700;  
+        color: white;
+        font-size: 30px;
+        position: relative;
+    
+    }
+    
+  }

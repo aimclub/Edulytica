@@ -1,0 +1,6 @@
+export PYTHONPATH="${PYTHONPATH}:~/PyProject/Edulytica/src"
+source ~/PyProject/Edulytica/api_venv/bin/activate
+python3 src/edulytica_api/app.py
+celery -A src.edulytica_api.celery.tasks worker --loglevel=info -E -P gevent
+npm start
+celery -A src.edulytica_api.celery.tasks flower

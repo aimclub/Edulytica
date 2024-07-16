@@ -42,7 +42,7 @@ class TestParserVKR(unittest.TestCase):
         self.assertTrue(mock_requests_get.called)
         self.assertEqual(mock_requests_get.call_count, 1)
 
-    @patch('Edulytica.src.data_handling.VKR_parser.requests.get')
+    @patch('Edulytica.src.data_handling.VKRParser.requests.get')
     @patch('Edulytica.src.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
     def test_parse_vkrs_with_errors(self, mock_open_file, mock_requests_get):
         # Настройка mock объектов

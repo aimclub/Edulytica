@@ -9,7 +9,6 @@ const Header = () => {
     const { token } = useAuth();
 
     useEffect(() => {
-        // Update the document title using the browser API
         setActive(window.location.pathname)
     });
 

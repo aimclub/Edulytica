@@ -13,7 +13,6 @@ const LLMForm = (props) => {
     instance.post(url, data)
       .then(response => {
         console.log(response.data)
-        // navigate("/", { replace: true });
       })
       .catch(error => console.error(error));
   }

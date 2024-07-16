@@ -33,9 +33,6 @@ const LoginForm = (props) => {
           >
             <p><input className="loginInput" type="text" name="username" required="" placeholder="Логин" /></p>
             <p><input className="loginInput"  type="password" name="password" required="" placeholder="Пароль" /></p>
-            {/* <p className="remember_me">
-            <label><input type="checkbox" name="remember_me"/>Запомнить меня</label>
-          </p> */}
             <p className="submit"><input type="button" name="commit" value="Войти" onClick={btn_click} /></p>
           </form>
         </div>

@@ -11,12 +11,10 @@ const DetailResult = (props) => {
   const location = useLocation()
   const { ticket_id } = location.state
   const [results_data, setResults] = useState();
-  const [urlFile, seturlFile] = useState();
   useEffect(() => {
     instance.post(props.url, { 'id': ticket_id })
       .then(response => {
         setResults(response.data)
-        seturlFile('http://localhost:8000/llm/file/' + response.data.ticket.result_files[0].id)
       })
   }, [])
 
@@ -41,7 +39,6 @@ const DetailResult = (props) => {
               </div>
               <li><div className="mainSectionLabel">{results_data && results_data.ticket.status.status}</div></li>
               <div className="loaderTask">
-
                 <div className="typeTask"></div>
                 <label className="mainSectionLabel_wrapper" for="type">Тип задачи:</label>
               </div>

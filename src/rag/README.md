@@ -1,7 +1,7 @@
 # RAG
 
 ---
-Package for an experiment with semantic search, kNN and the mBERT model are used (the result is bad). 
+Package for an experiment with semantic search, kNN and the mBERT model are used. 
 RecursiveCharacterTextSplitter from langchain is used for chunking. In the file main.py there is text processing and
 a request to LLM via litellm (currently OpenAI).
 

@@ -1,4 +1,4 @@
-name: docs_pages_workflow
+name: Edulytica_Code_Documentation Workflow
 
 on:
   push:

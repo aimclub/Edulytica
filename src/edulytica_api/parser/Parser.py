@@ -42,7 +42,7 @@ class Parser:
                     paragraphs.append(para)
         return self._parse_paragraphs(paragraphs)
 
-    def parse_paragraphs_from_anchor(self, anchor_id: str,
+    def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id,
                                      list_view: bool = True):
         """
         Parses text, that attached to a chapter by anchor_id
@@ -53,12 +53,13 @@ class Parser:
         check = False
         text = []
         for p in root.iter(f"{{{schemas.w}}}p"):
-            if p.findall(f'{{{schemas.w}}}bookmarkStart') and check:
+            if p.findall(f'{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{next_anchor_id}"]') and check:
                 return text if list_view else '\n'.join(text)
             if check:
                 text.append(self._parse_text_from_anchor(p))
             if p.findall(f'{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{anchor_id}"]'):
                 check = True
+        return text if list_view else '\n'.join(text)
 
     def _parse_text_from_anchor(self, paragraph: Element):
         return ''.join([i for i in paragraph.itertext()])
@@ -146,26 +147,47 @@ def get_structural_paragraphs(file):
         :param elements: list of elements
         :param p: parser
         """
-        if elements is None:
-            return
-
-        def convert_element_to_dict(elem: Elem, p: Parser):
+        def convert_element_to_dict(elem: Elem, p: Parser, next_elem=None):
+            next_anchor_id = None
+            if elem.sub_elements is not None:
+                next_anchor_id = elem.sub_elements[0].anchor_id
+            else:
+                if next_elem is not None:
+                    next_anchor_id = next_elem.anchor_id
             elem_dict = {
                 "num": elem.num,
                 "title": elem.text,
-                'text': p.parse_paragraphs_from_anchor(elem.anchor_id)
+                'text': p.parse_paragraphs_from_anchor(elem.anchor_id, next_anchor_id)
             }
+            temp = []
             if elem.sub_elements:
-                elem_dict["sub_elements"] = [convert_element_to_dict(sub_elem, p) for sub_elem in elem.sub_elements]
+                for i, sub_elem in enumerate(elem.sub_elements):
+                    if i < len(elem.sub_elements) - 1:
+                        temp.append(convert_element_to_dict(sub_elem, p, elem.sub_elements[i + 1]))
+                    else:
+                        temp.append(convert_element_to_dict(sub_elem, p))
+            elem_dict["sub_elements"] = temp
             return elem_dict
 
-        return [convert_element_to_dict(elem, p) for elem in elements]
+        if elements is None:
+            return
+        temp = []
+        for i, elem in enumerate(elements):
+            if i<len(elements)-1:
+                temp.append(convert_element_to_dict(elem, p, elements[i+1]))
+            else:
+                temp.append(convert_element_to_dict(elem, p))
+        return temp
+
+
 
     try:
-        p = Parser(path=file)
-        s, pot = p.parse()
-        n = {'potentially_damage': pot, 'table_of_content': struct_to_dict(s, p),
-             'other_text': p.get_other_text()}
-        return n
+        import io
+        with io.BytesIO(file.read()) as f:
+            p = Parser(path=f)
+            s, pot = p.parse()
+            n = {'potentially_damage': pot, 'table_of_content': struct_to_dict(s, p),
+                 'other_text': p.get_other_text()}
+            return n
     except Exception as _e:
-        print(_e)
+        raise _e

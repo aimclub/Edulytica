@@ -2,10 +2,9 @@ from typing import Type, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import update, select, delete
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.declarative import declarative_base
 
-from src.edulytica_api.database import SessionLocal, get_session
+from src.edulytica_api.database import SessionLocal
 
 Schema = TypeVar("Schema", bound=BaseModel, covariant=True)
 Model = TypeVar("Model", bound=declarative_base())

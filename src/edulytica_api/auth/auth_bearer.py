@@ -12,7 +12,6 @@ from src.edulytica_api.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SE
 from src.edulytica_api.auth.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
     OAuth2PasswordBearerWithCookie
 
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="login")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -28,7 +27,7 @@ token_type_exception = HTTPException(
 )
 
 
-class AuthDataGetterFromToken():
+class AuthDataGetterFromToken:
     def __init__(self, token_type, secret_key):
         self.token_type = token_type
         self.secret_key = secret_key

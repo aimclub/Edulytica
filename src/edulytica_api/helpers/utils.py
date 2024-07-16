@@ -1,13 +1,10 @@
-import os
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import Union, Any
-
-from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
 
 from src.edulytica_api.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, \
-    REFRESH_TOKEN_EXPIRE_MINUTES, JWT_REFRESH_SECRET_KEY
+    JWT_REFRESH_SECRET_KEY
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

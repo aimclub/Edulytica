@@ -1,9 +1,9 @@
-broker_url = 'pyamqp://slavamarcin:473413@192.168.100.11:5672'
-# broker_url = 'redis://192.168.100.11:6379'
-result_backend = 'redis://192.168.100.11:6379'
+
+broker_url = 'redis://'
+result_backend = 'redis://'
 task_serializer = 'json'
 result_serializer = 'json'
 accept_content = ['json']
 timezone = 'Europe/Oslo'
-enable_utc = True
-broker_connection_retry_on_startup = True
+broker_connection_retry_on_startup = False
+celery_broker_heartbeat = 0

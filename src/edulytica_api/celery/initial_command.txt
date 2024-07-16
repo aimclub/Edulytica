@@ -1,5 +1,0 @@
-To run Celery app:
-celery -A src.edulytica_api.celery.tasks worker --loglevel=info -E -P gevent
-
-To run Flower:
-celery -A src.edulytica_api.celery.tasks flower

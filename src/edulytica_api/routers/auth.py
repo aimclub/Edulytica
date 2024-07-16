@@ -1,19 +1,14 @@
 import uuid
 from typing import Annotated
-
-from fastapi import Request
-
 from fastapi import APIRouter
 from fastapi import Response
 from fastapi.security import OAuth2PasswordRequestForm
-
 from src.edulytica_api.crud.token_crud import TokenCrud
 from src.edulytica_api.crud.user_crud import UserCrud
 from src.edulytica_api.database import get_session
 import src.edulytica_api.schemas.auth as auth_schemas
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status
-
 from src.edulytica_api.auth.helpers.validators import password_validate
 from src.edulytica_api.models.models import User
 from src.edulytica_api.auth.auth_bearer import refresh_token_auth, \

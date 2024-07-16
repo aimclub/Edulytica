@@ -2,14 +2,13 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.edulytica_api.database import SessionLocal, engine
+from src.edulytica_api.database import engine
 from src.edulytica_api.models import models
 from src.edulytica_api.routers.llm_services import *
 from src.edulytica_api.routers.auth import *
 from src.edulytica_api.routers.norm_services import normocontrol_router
 
 load_dotenv()
-# Migration
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 origins = [

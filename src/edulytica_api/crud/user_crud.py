@@ -1,4 +1,4 @@
-from src.edulytica_api.crud.factory import CrudFactory, BaseCrudFactory
+from src.edulytica_api.crud.factory import BaseCrudFactory
 from src.edulytica_api.models.models import User
 from src.edulytica_api.schemas.auth import UserUpdate, UserCreate, UserGet
 

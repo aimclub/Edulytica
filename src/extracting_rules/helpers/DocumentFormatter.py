@@ -7,6 +7,10 @@ import json
 load_dotenv('config/formatter.env')
 
 class DocumentFormatter:
+    """
+    An auxiliary class containing methods for formatting json objects and splitting documents into chunks
+    """
+
     @staticmethod
     def split(doc):
         """ split documents by chunks """

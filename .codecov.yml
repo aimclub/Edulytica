@@ -18,5 +18,5 @@ ignore:
   - "src/rag/semantic_search"
   - "src/rag/const.py"
   - "src/rag/extract.py"
-  - "src/extracting_goals"
+  - "src/extracting_rules"
   - "examples"

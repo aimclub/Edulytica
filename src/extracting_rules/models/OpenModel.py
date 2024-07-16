@@ -1,59 +1,58 @@
-
-from helpers.DocumentFormatter import DocumentFormatter
-# from langchain.chains.summarize import load_summarize_chain
-from langchain.schema import HumanMessage, SystemMessage
-from langchain.chat_models.gigachat import GigaChat
-# from langchain.prompts import load_prompt
+from typing import List, Dict
+from openai import OpenAI
 from dotenv import load_dotenv
 from os import getenv
 import json
+from helpers.DocumentFormatter import DocumentFormatter
 from datetime import datetime
 from termcolor import colored
 
-# load enviroment variables
-load_dotenv('config/giga.env')
+# Load model's role
+load_dotenv('config/open.env')
 
 with open(f"config/roles/{getenv('ROLE')}.txt", 'r', encoding='UTF-8') as file:
     role = file.read()
 
-class GigaModel:    
+class OpenModel:
+    """
+    A class that provides access to the ChatGPT model
+    """
+
     def __init__(self):
-        # configuration for the chatbot model
-        self.credentials = getenv('AUTH_TOKEN')
-        self.verify_ssl_certs = getenv('VERITY_SSL_CERTS')
+        self.logging = False
         self.model = getenv('MODEL')
-        self.role = role
-        
-        # define a role
-        self.messages = [
-            SystemMessage(content=role)
-        ]
-        
-        # create an instance of our model
-        self.chat = GigaChat(
-            credentials='MTcyMGY5YzUtNTE5Yy00YzI1LWJjMTUtYjNmY2ZhNDVmZTE4OjA3MDczMWY0LTRiNmEtNGM2Zi04MmEwLTU2ZTVlNTkzMDgzOA==', 
-            verify_ssl_certs=False
+        self.token = getenv('AUTH_TOKEN')
+        self.temperature = float(getenv('TEMPERATURE'))
+        self.max_tokens = int(getenv('MAX_TOKENS'))
+        self.top_p = float(getenv('TOP_P'))
+
+        self.client = OpenAI(api_key=self.token)
+
+        self.messages = []
+
+        # set role
+        self.messages.append({
+            'role': 'system',
+            'content': role
+        })
+
+    def send(self, content: str) -> str:
+        """ sending  a message to the model and getting response """
+        message = {'role': 'user', 'content': content}
+
+        response = self.client.chat.completions.create(
+            model=self.model,
+            messages=self.messages + [message],
+            temperature=self.temperature
         )
-    
-    
-    # def summarize_file(self, file):
-    #     documents = DocumentFormatter.split(file)
-        
-    #     map_prompt = load_prompt('lc://prompts/summarize/map_reduce/map.yaml')
-    #     combine_prompt = load_prompt('lc://prompts/summarize/map_reduce/combine.yaml')
-        
-    #     chain = load_summarize_chain(
-    #         self.chat,
-    #         chain_type="map_reduce",
-    #         map_prompt=map_prompt,
-    #         combine_prompt=combine_prompt,
-    #         verbose=False  
-    #     )
-        
-    #     result = chain.invoke({ "input_documents": documents })
-        
-    #     return result['output_text'].replace('. ', '.\n')
-    
+
+        response_content = response.choices[0].message.content
+
+        if self.logging:
+            OpenModel._log(response_content)
+
+        return response_content
+
     def send_file(self, path: str):
         """ structures the file in json """
         chunks = DocumentFormatter.split(path)
@@ -70,17 +69,17 @@ class GigaModel:
                 try: 
                     resp_json = json.loads(resp) # validate JSON
                     responses.append(resp_json)
-                    GigaModel._log(resp)
+                    OpenModel._log(resp)
                     correctJSON = True
                     print(colored(f"[{i+1} File] Success", 'light_green'))
                 except:
                     correctJSON = False
                     count_bags += 1
-                    GigaModel._log(resp, err=True)
+                    OpenModel._log(resp, err=True)
                     print(colored(f"[{i+1} File] Corrupted JSON", 'red'))
                 if count_bags > 10:
                     break
-    
+
         # save results
         current_datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
@@ -96,13 +95,3 @@ class GigaModel:
         
         with open(f"logs/{'err/' if err else ''}log_{current_datetime}.txt", 'w', encoding='UTF-8') as log:
             log.write(content)
-
-
-    
-    def send(self, content):
-        """ Send message to model and display result """
-        self.messages.append(HumanMessage(content, max_tokens=32000))
-        response = self.chat(self.messages)
-        self.messages.append(response)
-        return response.content
-

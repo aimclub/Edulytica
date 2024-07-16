@@ -92,11 +92,3 @@ class ParserVKR:
         """
 
         return requests.get(url, headers={'User-Agent': self.user_agent}, timeout=10)
-
-
-if __name__ == '__main__':
-    start_id = 723
-    end_id = 15552
-
-    parser = ParserVKR(start_id, end_id)
-    parser.parse_vkrs()

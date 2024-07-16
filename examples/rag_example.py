@@ -1,24 +1,26 @@
 import os
 from dotenv import load_dotenv
-from utils.parsing import FileParser
-from utils.preprocessing import TextProcessingUtils
-from semantic_search.semantic_search import SemanticSearcher
-from llm.llm import LanguageModelClient
-from const import PROMPT_TEMPLATE
+from src.rag.utils.FileParser import FileParser
+from src.rag.utils.TextProcessingUtils import TextProcessingUtils
+from src.rag.semantic_search.SemanticSearcher import SemanticSearcher
+from src.rag.llm.LanguageModelClient import LanguageModelClient
+from src.rag.const import PROMPT_TEMPLATE
 
 
-def main():
+def ragExample():
     """
-    Main entry point of the application.
     Orchestrates the process of parsing text from a file, processing it,
     performing semantic search based on a user query, and generating a response.
+
+    First, we load the API key for the model from .env, parse the document, perform preprocessing,
+    perform a semantic search, send the result to LLM and wait for an answer to the user's question.
     """
 
     load_dotenv()
 
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
-    file_path = '../documents/doc.pdf'
+    file_path = '../src/documents/doc.pdf'
     file_parser = FileParser(file_path)
     text_content = file_parser.parse()
 
@@ -42,4 +44,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    ragExample()

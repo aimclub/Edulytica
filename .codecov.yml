@@ -19,4 +19,4 @@ ignore:
   - "src/rag/const.py"
   - "src/rag/extract.py"
   - "src/extracting_goals"
-  - "src/rag/main.py"
+  - "examples"

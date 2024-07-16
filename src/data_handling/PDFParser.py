@@ -204,8 +204,3 @@ class PDFParser:
         """
 
         open(csv_filename, 'w', encoding='utf-8').close()
-
-
-if __name__ == '__main__':
-    pdf_parser = PDFParser()
-    pdf_parser.parse_files('../../../VKRsData')

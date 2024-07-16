@@ -14,12 +14,9 @@ comment: # this is a top-level key
   hide_project_coverage: false # [true :: only show coverage on the git diff]
 
 ignore:
-  - "src/cli.py"
-  - "src/giga.py"
-  - "src/main.py"
   - "src/rag/llm"
   - "src/rag/semantic_search"
   - "src/rag/const.py"
-  - "src/rag/main.py"
-  - "src/helpers"
-  - "src/models"
+  - "src/rag/extract.py"
+  - "src/extracting_rules"
+  - "examples"

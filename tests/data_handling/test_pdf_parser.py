@@ -1,7 +1,7 @@
 import unittest
 import os
 
-from Edulytica.src.data_handling.pdf_parser import PDFParser
+from Edulytica.src.data_handling.PDFParser import PDFParser
 
 
 class PDFParserTest(unittest.TestCase):

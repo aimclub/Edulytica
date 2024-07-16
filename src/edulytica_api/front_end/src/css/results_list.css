@@ -1,0 +1,57 @@
+.list1a {
+    margin: 20px 0 0;
+    padding:0;
+    list-style: none;
+    counter-reset: li;
+}
+.list1a li {
+    border: 2px solid #337AB7;
+    background: #EBF3FA;
+    position: relative;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: 16px 10px;
+}
+.list1a li:hover {
+    z-index: 1;
+}
+.list1a li:before {
+    border: 2px solid #337AB7;
+    position: absolute;
+    top: -14px;
+    padding: 2px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #337AB7;
+    background: #F7FAFD;
+    counter-increment: li;
+    content: counter(li);
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+}
+.list1a li:hover:before {
+    background: #337AB7;
+    color: #FFF;
+    -webkit-transform: translate(-12px, 0);
+    -ms-transform: translate(-12px, 0);
+    -o-transform: translate(-12px, 0);
+    transform: translate(-12px, 0);
+}
+.list1a li:after {
+    content: "";
+    position: absolute;
+    -webkit-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+    -webkit-transition-property: width;
+    transition-property: width;
+    z-index: -1;
+    background: #FFF;
+    height: 100%;
+    left: 0;
+    top: 0;
+    width: 0;
+}
+.list1a li:hover:after {
+    width: 100%;
+}

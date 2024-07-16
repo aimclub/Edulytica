@@ -2,7 +2,7 @@ import unittest
 import tempfile
 import os
 
-from src.rag.utils.FileParser import FileParser
+from Edulytica.src.rag.utils.FileParser import FileParser
 
 
 class TestFileParser(unittest.TestCase):

@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
 
-from src.data_handling.VKRParser import ParserVKR
+from Edulytica.src.data_handling.VKRParser import ParserVKR
 
 
 class TestParserVKR(unittest.TestCase):

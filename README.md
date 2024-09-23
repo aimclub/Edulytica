@@ -97,4 +97,5 @@ Our contacts:
 [Bogdanov Maxim](https://github.com/exPriceD)\
 [Dvornikov Artem](https://github.com/DvornikovArtem)\
 [Laptev Egor](https://github.com/EgorLaptev)\
-[Sinyukov Lev](https://github.com/MrL013)
+[Sinyukov Lev](https://github.com/MrL013)\
+[Marakulin Andrew](https://github.com/MrMegnis)

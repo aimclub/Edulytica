@@ -44,11 +44,11 @@ class AuthDataGetterFromToken:
             raise credentials_exception
 
     @staticmethod
-    def user_check(payload, session: Session):
+    async def user_check(payload, session: Session):
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-        user = UserCrud.get_by_id(session=session, record_id=user_id)
+        user = UserCrud.get_by_id(session=session, record_id=user_id)  # Тут await нужен
         if user is None:
             raise credentials_exception
         if user.disabled:

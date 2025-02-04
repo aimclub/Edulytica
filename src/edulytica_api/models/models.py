@@ -4,6 +4,7 @@ import datetime
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import Mapped, relationship, mapped_column, DeclarativeBase
+from src.edulytica_api.utils.moscow_datetime import datetime_now_moscow
 
 
 class Base(AsyncAttrs, DeclarativeBase):
@@ -18,13 +19,13 @@ class User(Base, AsyncAttrs):
     email = Column(String(100), unique=True, nullable=False)
     password = Column(String(100), nullable=False)
     disabled = Column(Boolean, nullable=False, default=False)
-    created_at = Column(TIMESTAMP(timezone=True),
-                        nullable=False, server_default=text("now()"))
-    updated_at = Column(TIMESTAMP(timezone=True),
-                        nullable=False, server_default=text("now()"))
 
     result_files: Mapped[List["ResultFiles"]] = relationship(back_populates="user")
     ticket: Mapped[List["Tickets"]] = relationship(back_populates="user")
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow,
+                                                 onupdate=datetime_now_moscow)
 
 
 class Token(Base, AsyncAttrs):
@@ -34,7 +35,8 @@ class Token(Base, AsyncAttrs):
     refresh_token = Column(String(450), nullable=False)
     checker = Column(UUID, nullable=False)
     status = Column(Boolean)
-    created_date = Column(DateTime, default=datetime.datetime.now)
+
+    created_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class FileStatus(Base, AsyncAttrs):
@@ -48,7 +50,7 @@ class Files(Base, AsyncAttrs):
     __tablename__ = "files"
     id = Column(Integer, primary_key=True, index=True)
     file = Column(String)
-    data_create = Column(DateTime, default=datetime.datetime.now)
+    data_create = Column(DateTime(timezone=True), default=datetime_now_moscow)
     status_id: Mapped[int] = mapped_column(ForeignKey("file_statuses.id"))
     status: Mapped["FileStatus"] = relationship(back_populates="files")
 
@@ -58,7 +60,7 @@ class ResultFiles(Base, AsyncAttrs):
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4, index=True)
     file = Column(String)
-    data_create = Column(DateTime, default=datetime.datetime.now)
+    data_create = Column(DateTime(timezone=True), default=datetime_now_moscow)
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="result_files")
     ticket_id: Mapped[UUID] = mapped_column(ForeignKey("tickets.id"))
@@ -70,7 +72,7 @@ class Tickets(Base, AsyncAttrs):
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4, index=True)
     ticket_type = Column(String)
-    created_date = Column(DateTime, default=datetime.datetime.now)
+    created_date = Column(DateTime(timezone=True), default=datetime_now_moscow)
     result_files: Mapped[List["ResultFiles"]] = relationship(back_populates="ticket")
     user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship(back_populates="ticket")

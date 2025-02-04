@@ -3,9 +3,8 @@ from typing import Annotated
 from fastapi import HTTPException, Depends
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-
 from src.edulytica_api.crud.user_crud import UserCrud
 from src.edulytica_api.database import get_session
 from src.edulytica_api.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
@@ -32,11 +31,11 @@ class AuthDataGetterFromToken:
         self.token_type = token_type
         self.secret_key = secret_key
 
-    def __call__(self, token: Annotated[str, Depends(oauth2_scheme)], session: Session = Depends(get_session)):
+    async def __call__(self, token: Annotated[str, Depends(oauth2_scheme)], session: AsyncSession = Depends(get_session)):
         try:
             payload = jwt.decode(token, self.secret_key, algorithms=[ALGORITHM])
             if self.token_type_validate(payload, self.token_type):
-                user = self.user_check(payload=payload, session=session)
+                user = await self.user_check(payload=payload, session=session)
                 return {"user": user,
                         "payload": payload,
                         "token": token}
@@ -44,11 +43,11 @@ class AuthDataGetterFromToken:
             raise credentials_exception
 
     @staticmethod
-    async def user_check(payload, session: Session):
+    async def user_check(payload, session: AsyncSession):
         user_id: str = payload.get("sub")
         if user_id is None:
             raise credentials_exception
-        user = UserCrud.get_by_id(session=session, record_id=user_id)  # Тут await нужен
+        user = await UserCrud.get_by_id(session=session, record_id=user_id)
         if user is None:
             raise credentials_exception
         if user.disabled:

@@ -14,12 +14,13 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
 from src.edulytica_api.schemas.llm_schema import TicketGetResponse
+from src.edulytica_api.utils.logger import api_logs
 
 llm_router = APIRouter(prefix="/llm")
 ROOT_DIR = Path(__file__).resolve().parents[1]
 
 
-@llm_router.post("/purpose")
+@api_logs(llm_router.post("/purpose"))
 async def get_purpose(
     file: UploadFile,
     auth_data: Annotated[dict, Depends(access_token_auth)],
@@ -37,7 +38,7 @@ async def get_purpose(
     return json.dumps(task.id)
 
 
-@llm_router.post("/summary")
+@api_logs(llm_router.post("/summary"))
 async def get_summary(
     file: UploadFile,
     auth_data: Annotated[dict, Depends(access_token_auth)],
@@ -67,7 +68,7 @@ async def get_summary(
     return json.dumps(task.id)
 
 
-@llm_router.get("/results")
+@api_logs(llm_router.get("/results"))
 async def get_results(
     auth_data: Annotated[dict, Depends(access_token_auth)],
     session: AsyncSession = Depends(get_session)
@@ -77,7 +78,7 @@ async def get_results(
     return tickets
 
 
-@llm_router.post("/result")
+@api_logs(llm_router.post("/result"))
 async def get_result(
     ticket_resp: TicketGetResponse,
     auth_data: Annotated[dict, Depends(access_token_auth)],
@@ -113,7 +114,7 @@ async def get_result(
 
 
 
-@llm_router.get("/file/{file_id}", response_class=FileResponse)
+@api_logs(llm_router.get("/file/{file_id}", response_class=FileResponse))
 async def get_file(
     file_id: uuid.UUID,
     auth_data: Annotated[dict, Depends(access_token_auth)],

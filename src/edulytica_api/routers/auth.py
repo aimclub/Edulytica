@@ -15,11 +15,13 @@ from src.edulytica_api.auth.auth_bearer import refresh_token_auth, access_token_
 from src.edulytica_api.auth.helpers.utils import create_access_token, create_refresh_token, verify_password, \
     get_hashed_password, get_expiry
 from src.edulytica_api.settings import REFRESH_TOKEN_EXPIRE_MINUTES
+from src.edulytica_api.utils.logger import api_logs
+
 
 auth_router = APIRouter()
 
 
-@auth_router.post('/login')
+@api_logs(auth_router.post('/login'))
 async def login(
     response: Response,
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
@@ -47,7 +49,7 @@ async def login(
     return auth_schemas.TokenData(access_token=access_token, refresh_token=refresh_token)
 
 
-@auth_router.post("/register")
+@api_logs(auth_router.post("/register"))
 async def register_user(
         user: auth_schemas.UserCreate,
         session: AsyncSession = Depends(get_session)
@@ -65,7 +67,7 @@ async def register_user(
     return {"message": "user created successfully"}
 
 
-@auth_router.post('/change-password')
+@api_logs(auth_router.post('/change-password'))
 async def change_password(
     request: auth_schemas.changepassword,
     auth_data: Annotated[dict, Depends(access_token_auth)],
@@ -83,7 +85,7 @@ async def change_password(
     return {"message": "Password changed successfully"}
 
 
-@auth_router.get('/refresh')
+@api_logs(auth_router.get('/refresh'))
 async def refresh_token(
     response: Response,
     auth_data: Annotated[dict, Depends(refresh_token_auth)],
@@ -124,7 +126,7 @@ async def refresh_token(
     return auth_schemas.TokenData(access_token=access_token, refresh_token=refresh_token)
 
 
-@auth_router.get('/logout')
+@api_logs(auth_router.get('/logout'))
 async def logout(
     response: Response,
     auth_data: Annotated[dict, Depends(refresh_token_auth)],

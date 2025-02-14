@@ -114,3 +114,15 @@ class DocumentReport(Base, AsyncAttrs):
     ticket: Mapped["Ticket"] = relationship('Ticket', back_populates='reports', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+
+
+class Token(Base, AsyncAttrs):
+    __tablename__ = 'tokens'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    refresh_token: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='tokens', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)

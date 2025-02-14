@@ -39,6 +39,7 @@ MANIFEST
 *.manifest
 *.spec
 
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -173,3 +174,4 @@ cython_debug/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/src/edulytica_api/front_end/node_modules/

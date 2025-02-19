@@ -61,8 +61,6 @@ class Ticket(Base, AsyncAttrs):
     user: Mapped["User"] = relationship('User', back_populates='tickets', lazy='selectin')
     document_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('documents.id'), nullable=False)
     document: Mapped["Document"] = relationship('Document', back_populates='tickets', lazy='selectin')
-    model_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('models.id'), nullable=False)
-    model: Mapped["Model"] = relationship('Model', back_populates='tickets', lazy='selectin')
     ticket_status_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('ticket_statuses.id'), nullable=False)
     ticket_status: Mapped["TicketStatus"] = relationship('TicketStatus', lazy='selectin')
 
@@ -76,18 +74,6 @@ class TicketStatus(Base, AsyncAttrs):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
-
-
-class Model(Base, AsyncAttrs):
-    __tablename__ = 'models'
-
-    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name: Mapped[str] = mapped_column(String(100), unique=True, nullable=False)
-    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-
-    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='model', lazy='selectin')
-
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class Comment(Base, AsyncAttrs):

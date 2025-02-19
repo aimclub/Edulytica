@@ -11,3 +11,25 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5443:5432"
+
+  edulytica_api:
+    container_name: "EdulyticaAPI"
+    build:
+      context: ./src/edulytica_api
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/edulytica_api:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - edulytica_db
+
+  edulytica_frontend:
+    container_name: "EdulyticaFrontend"
+    build:
+      context: ./src/edulytica_api/front_end
+      dockerfile: Dockerfile
+    volumes:
+      - ./src/edulytica_api/front_end:/app
+    ports:
+      - "3000:3000"

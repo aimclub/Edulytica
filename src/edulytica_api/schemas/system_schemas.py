@@ -18,8 +18,8 @@ class _UserUpdate(_UserCreate):
 
 class _UserGet(_UserUpdate):
     disabled: bool
-    result_files: List["_ResultFilesCrop"] = []
-    ticket: List["_TicketsCrop"] = []
+    # result_files: List["_ResultFilesCrop"] = []
+    # ticket: List["_TicketsCrop"] = []
 
     created_at: datetime
     updated_at: datetime
@@ -57,8 +57,8 @@ class _ResultFilesUpdate(_ResultFilesCreate):
 class _ResultFilesGet(_ResultFilesUpdate):
     data_create: datetime
 
-    user: _UserCrop
-    ticket: _TicketsCrop
+    # user: _UserCrop
+    # ticket: _TicketsCrop
 
 
 class _TicketsCreate(BaseModel):
@@ -76,6 +76,6 @@ class _TicketsUpdate(_TicketsCreate):
 class _TicketsGet(_TicketsUpdate):
     created_date: datetime
 
-    result_files: List[_ResultFilesCrop] = []
-    user: _UserCrop
-    status: _TicketStatusesCrop
+    # result_files: List[_ResultFilesCrop] = []
+    # user: _UserCrop
+    # status: _TicketStatusesCrop

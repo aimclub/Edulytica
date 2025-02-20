@@ -176,3 +176,4 @@ cython_debug/
 /dataSources.local.xml
 /src/edulytica_api/front_end/node_modules/
 /src/edulytica_api/models/init_models.py
+task.txt

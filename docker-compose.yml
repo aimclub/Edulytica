@@ -3,7 +3,7 @@ version: "3.9"
 services:
   edulytica_db:
     container_name: "EdulyticaDatabase"
-    image: postgres:14.1-alpine
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -15,8 +15,8 @@ services:
   edulytica_api:
     container_name: "EdulyticaAPI"
     build:
-      context: ./src/edulytica_api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./src/edulytica_api/Dockerfile
     volumes:
       - ./src/edulytica_api:/app
     ports:

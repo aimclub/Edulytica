@@ -32,6 +32,7 @@ class User(Base, AsyncAttrs):
 
     documents: Mapped[List["Document"]] = relationship('Document', back_populates='user', lazy='selectin')
     tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='user', lazy='selectin')
+    custom_events: Mapped[List["CustomEvent"]] = relationship('CustomEvent', back_populates='user', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow, onupdate=datetime_now_moscow)
@@ -110,5 +111,28 @@ class Token(Base, AsyncAttrs):
 
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='tokens', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+
+
+class Event(Base, AsyncAttrs):
+    __tablename__ = 'events'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Optional[str] = mapped_column(Text, nullable=True)
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+
+
+class CustomEvent(Base, AsyncAttrs):
+    __tablename__ = 'custom_events'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Optional[str] = mapped_column(Text, nullable=True)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='custom_events', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)

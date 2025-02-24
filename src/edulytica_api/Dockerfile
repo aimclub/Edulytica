@@ -1,10 +1,17 @@
 FROM python:3.11-slim
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-COPY . .
+RUN apt-get update && apt-get install -y gcc libpq-dev postgresql-client
 
-EXPOSE 8000
+WORKDIR /app
+ENV PYTHONPATH=/app
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+COPY . ./src/
+
+#COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+#RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+#ENTRYPOINT ["docker-entrypoint.sh"]
 
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

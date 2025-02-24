@@ -3,7 +3,7 @@ version: "3.9"
 services:
   edulytica_db:
     container_name: "EdulyticaDatabase"
-    image: postgres:14.1-alpine
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}

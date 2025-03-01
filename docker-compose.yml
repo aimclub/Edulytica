@@ -18,7 +18,7 @@ services:
       context: .
       dockerfile: ./src/edulytica_api/Dockerfile
     volumes:
-      - ./src/edulytica_api:/app
+      - ./src:/app/src
     ports:
       - "8000:8000"
     depends_on:
@@ -29,7 +29,7 @@ services:
     build:
       context: ./src/edulytica_api/front_end
       dockerfile: Dockerfile
-    volumes:
-      - ./src/edulytica_api/front_end:/app
+#    volumes:
+#      - ./src/edulytica_api/front_end:/app
     ports:
       - "3000:3000"

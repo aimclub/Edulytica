@@ -1,6 +1,8 @@
 import asyncio
+import os
 from logging.config import fileConfig
 from alembic import context
+from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncConnection
 
 from src.edulytica_api.models.models import Base
@@ -9,7 +11,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-DATABASE_URL = f"postgresql+asyncpg://edulytica:edulyticapassword@edulytica_db:5432/edulytica"
+load_dotenv()
+DATABASE_URL = f'postgresql+asyncpg://{os.environ.get("POSTGRES_USER")}:{os.environ.get("POSTGRES_PASSWORD")}@{os.environ.get("POSTGRES_IP")}:{os.environ.get("POSTGRES_PORT")}/{os.environ.get("POSTGRES_DB")}'
 
 target_metadata = Base.metadata
 

@@ -9,8 +9,6 @@ __pycache__/
 .vscode
 **/__pycache__
 **/test*
-migration
-alembic.ini
 test_folder
 
 # Distribution / packaging

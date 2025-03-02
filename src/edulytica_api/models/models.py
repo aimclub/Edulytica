@@ -1,6 +1,21 @@
+"""
+This module defines the SQLAlchemy ORM models for the FastAPI application.
+It includes models for users, authentication tokens, file management, and ticketing system.
+
+Classes:
+    Base: The base class for all ORM models.
+    User: Represents a user in the system.
+    Token: Stores refresh tokens for authentication.
+    FileStatus: Represents the status of files.
+    Files: Stores file-related data.
+    ResultFiles: Stores processed files related to tickets and users.
+    Tickets: Represents support or processing tickets.
+    TicketStatuses: Represents different statuses of tickets.
+"""
+
 import uuid
-from sqlalchemy import DateTime, Boolean, UUID, text, TIMESTAMP, Column, String, Integer, ForeignKey
 import datetime
+from sqlalchemy import DateTime, Boolean, UUID, Column, String, Integer, ForeignKey
 from typing import List
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import Mapped, relationship, mapped_column, DeclarativeBase

@@ -1,3 +1,21 @@
+"""
+This module defines the updated SQLAlchemy ORM models for the FastAPI application.
+These models include user management, document storage, ticketing system, events, and authentication tokens.
+
+Classes:
+    Base: The base class for all ORM models.
+    UserRole: Represents roles assigned to users.
+    User: Represents system users.
+    Document: Represents user-uploaded documents.
+    Ticket: Represents tickets related to document processing.
+    TicketStatus: Represents different statuses for tickets.
+    Comment: Represents user comments on tickets.
+    DocumentReport: Represents reports generated from document processing.
+    Token: Stores authentication tokens for user sessions.
+    Event: Represents predefined events in the system.
+    CustomEvent: Represents user-defined custom events.
+"""
+
 import uuid
 from typing import List, Optional
 from sqlalchemy import String, DateTime, Boolean, Text, ForeignKey

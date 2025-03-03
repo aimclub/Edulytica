@@ -9,6 +9,7 @@ __pycache__/
 .vscode
 **/__pycache__
 **/test*
+test_folder
 
 # Distribution / packaging
 .Python
@@ -35,6 +36,7 @@ MANIFEST
 #  before PyInstaller builds the exe, so as to inject date/other infos into it.
 *.manifest
 *.spec
+
 
 # Installer logs
 pip-log.txt
@@ -170,3 +172,6 @@ cython_debug/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+/src/edulytica_api/front_end/node_modules/
+/src/edulytica_api/models/init_models.py
+task.txt

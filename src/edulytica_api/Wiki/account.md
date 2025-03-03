@@ -1,25 +1,51 @@
-# /account
+# `/account`
 
-## /edit_profile (POST)
-* access_token: str (HEAD)
+---
 
+---
 
-* name: Optional[str]
-* surname: Optional[str]
-* organization: Optional[str]
-
-## /change_password (POST)
-* access_token: str (HEAD)
+## `/edit_profile` (POST)
+* **access_token**: str *(HEADER)*
 
 
-* old_password: str
-* new_password1: str
-* new_password2: str
+* **name**: Optional[str]
+* **surname**: Optional[str]
+* **organization**: Optional[str]
 
-200 {detail: "Ok"}
-400 {detail: "Old password incorrect / New passwords not equal"}
+Return:
+1. 200 Ok
 
-## /ticket_history (GET)
-* access_token: str (HEAD)
+    {detail: "Profile has been edited"}
+2. 400 BadRequest
 
-200 {detail: "Ok": tickets: [TicketModel]}
+    {detail: "None of the arguments were specified"}
+
+---
+
+## `/change_password` (POST)
+* **access_token**: str *(HEADER)*
+
+
+* **old_password**: str
+* **new_password1**: str
+* **new_password2**: str
+
+Return:
+1. 200 Ok
+
+    {detail: "Password has been changed"}
+2. 400 BadRequest
+
+    {detail: "Old password incorrect"}
+
+    {detail: "New passwords not equal"}
+
+---
+
+## `/ticket_history` (GET)
+* **access_token**: str *(HEADER)*
+
+Return:
+1. 200 Ok
+
+    {detail: "Ticket history found", tickets: List[TicketModel]}

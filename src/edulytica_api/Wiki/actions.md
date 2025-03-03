@@ -1,68 +1,124 @@
-# /actions
+# `/actions`
 
-## /new_ticket (POST)
-* access_token: str (HEAD)
+---
 
+---
 
-* file: UploadFile
-* event_id: uuid
-
-return:
-200 {detail: "Ok", ticket_id: uuid}
-
-## /get_event_id (GET)
-* access_token: str (HEAD)
+## `/new_ticket` (POST)
+* **access_token**: str *(HEADER)*
 
 
-* event_name: str
+* **file**: UploadFile
+* **event_id**: uuid
 
-return:
-200 {detail: "Ok", event_id: uuid}
-400 {detail: "Event doesn't exist"}
+Return:
+1. 200 Ok
 
-## /get_ticket (GET)
-* access_token: str (HEAD)
+    {detail: "Ticket has been created", ticket_id: uuid}
+2. 400 BadRequest
 
+    {detail: "Invalid file uploaded"}
 
-* ticket_id: uuid
+    {detail: "Incorrect event id"}
 
-return:
-200 {detail: "Ok", ticket: TicketModel}
-400 {detail: "Ticket doesn't exist"}
+---
 
-## /get_ticket_file (GET)
-* access_token: str (HEAD)
-
-
-* ticket_id: uuid
-
-return:
-200 {detail: "Ok", file: UploadFile}
-400 {detail: "Ticket doesn't exist"}
-
-## /get_ticket_summary (GET)
-* access_token: str (HEAD)
+## `/get_event_id` (GET)
+* **access_token**: str *(HEADER)*
 
 
-* ticket_id: uuid
-return:
-200 {detail: "Ok", summary: UploadFile}
-400 {detail: "Ticket doesn't exist"}
+* **event_name**: str
 
-## /get_ticket_result (GET)
-* access_token: str (HEAD)
+Return:
+1. 200 Ok
 
+    {detail: "Event was found", event_id: uuid}
+2. 400 BadRequest
 
-* ticket_id: uuid
-return:
-200 {detail: "Ok", result_file: UploadFile}
-400 {detail: "Ticket doesn't exist"}
+    {detail: "Event doesn't exist"}
 
-## /ticket_share (POST)
-* access_token: str (HEAD)
+---
+
+## `/get_ticket` (GET)
+* **access_token**: str *(HEADER)*
 
 
-* ticket_id: uuid
-return:
-200 {detail: "Status has been changed"}
-400 {detail: "You aren't ticket owner"}
+* **ticket_id**: uuid
+
+Return:
+1. 200 Ok
+
+    {detail: "Ticket was found", ticket: TicketModel}
+2. 400 BadRequest
+
+    {detail: "Ticket doesn't exist"}
+
+---
+
+## `/get_ticket_file` (GET)
+* **access_token**: str *(HEADER)*
+
+
+* **ticket_id**: uuid
+
+Return:
+1. 200 Ok
+
+    {detail: "File was found", file: UploadFile}
+2. 400 BadRequest
+
+    {detail: "Ticket doesn't exist"}
+
+---
+
+## `/get_ticket_summary` (GET)
+* **access_token**: str *(HEADER)*
+
+
+* **ticket_id**: uuid
+
+Return:
+1. 200 Ok
+
+    {detail: "Ticket summary found", summary: UploadFile}
+2. 400 BadRequest
+
+    {detail: "Ticket doesn't exist"}
+
+    {detail: "Ticket summary not found"}
+
+---
+
+## `/get_ticket_result` (GET)
+* **access_token**: str *(HEADER)*
+
+
+* **ticket_id**: uuid
+
+Return:
+1. 200 Ok
+
+    {detail: "Ticket result was found", result_file: UploadFile}
+2. 400 BadRequest
+
+    {detail: "Ticket doesn't exist"}
+
+    {detail: "Ticket result not found"}
+
+---
+
+## `/ticket_share` (POST)
+* **access_token**: str *(HEADER)*
+
+
+* **ticket_id**: uuid
+
+Return:
+1. 200 Ok
+
+    {detail: "Status has been changed"}
+2. 400 BadRequest
+
+    {detail: "You aren't ticket owner"}
+
+    {detail: "Ticket doesn't exist"}

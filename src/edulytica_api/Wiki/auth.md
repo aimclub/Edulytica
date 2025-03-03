@@ -1,39 +1,82 @@
-# /auth
+# `/auth`
 
 ---
 
-## /registration (POST)
-* login: str
-* email: str
-* password1: str
-* password2: str
+---
 
-## /check_code (POST)
-* code: str
+## `/registration` (POST)
+* **login**: str
+* **email**: str
+* **password1**: str
+* **password2**: str
 
-return:
-200 {detail: "Code is correct", access_token: str} + HTTPOnly Cookie (Refresh Token)
-400 {detail: "Wrong code"}
+Return:
+1. 200 Ok
 
-## /login (POST)
-* login: str
-* password: str
+    {detail: "Code has been sent"}
+2. 400 BadRequest
 
-return:
-200 {detail: "Ok", access_token: str} + HTTPOnly Cookie (Refresh Token)
-401 {detail: "Unauthorized"}
+    {detail: "Passwords are not equal"}
+    
+    {detail: "User with such email already exists"}
 
-## /get_access (GET)
-* refresh_token: str (HEAD)
+---
 
-return:
-200 {detail: "Ok", access_token: str} + HTTPOnly Cookie (Refresh Token)
-400 {detail: ""}
+## `/check_code` (POST)
+* **code**: str
 
-## /logout (GET)
-* access_token: str (HEAD)
+Return:
+1. 200 Ok
 
-return:
-200 {detail: "Ok"} + HTTPOnly Cookie (Refresh Token)
+    {detail: "Code is correct", access_token: str}
+
+    \+ `HTTPOnly Cookie (Refresh Token)`
+2. 400 BadRequest
+
+    {detail: "Wrong code"}
+
+---
+
+## `/login` (POST)
+* **login**: str
+* **password**: str
+
+Return:
+1. 200 Ok
+
+    {detail: "Credentials are correct", access_token: str}
+
+    \+ `HTTPOnly Cookie (Refresh Token)`
+2. 401 Unauthorized
+
+    {detail: "Credentials are incorrect"}
+
+---
+
+## `/get_access` (GET)
+* **refresh_token**: str *(HEADER)*
+
+Return:
+1. 200 Ok
+
+    {detail: "Token is correct", access_token: str} 
+
+    \+ `HTTPOnly Cookie (Refresh Token)`
+2. 400 BadRequest
+
+    {detail: "Token is incorrect"}
+
+    \+ `HTTPOnly Cookie (Refresh Token)`
+---
+
+## `/logout` (GET)
+* **access_token**: str *(HEADER)*
+
+Return:
+1. 200 Ok 
+
+    {detail: "Logout successful"} 
+
+    \+ `HTTPOnly Cookie (Refresh Token)`
 
 

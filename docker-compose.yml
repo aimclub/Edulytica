@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  edulytica_db:
+    container_name: "EdulyticaDatabase"
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5443:5432"
+    networks:
+      - edulytica_network
+
+  edulytica_api:
+    container_name: "EdulyticaAPI"
+    build:
+      context: .
+      dockerfile: ./src/edulytica_api/Dockerfile
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "8000:8000"
+    depends_on:
+      - edulytica_db
+    env_file:
+      - ./.env
+    networks:
+      - edulytica_network
+
+  edulytica_frontend:
+    container_name: "EdulyticaFrontend"
+    build:
+      context: ./src/front_end
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - edulytica_network
+
+networks:
+  edulytica_network:

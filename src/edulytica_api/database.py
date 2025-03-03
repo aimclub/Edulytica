@@ -1,8 +1,11 @@
+"""
+This module sets up the asynchronous database connection using SQLAlchemy and provides session management for FastAPI.
+"""
+
 import os
 from typing import Generator
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import async_sessionmaker, AsyncSession, create_async_engine
-
 
 
 load_dotenv()
@@ -13,6 +16,12 @@ SessionLocal = async_sessionmaker(bind=engine, expire_on_commit=False, autocommi
 
 
 async def get_session() -> Generator:
+    """
+    Provides an async database session for FastAPI routes.
+
+    Yields:
+        AsyncSession: The database session instance.
+    """
     session: AsyncSession = SessionLocal()
     try:
         yield session

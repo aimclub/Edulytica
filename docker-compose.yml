@@ -33,10 +33,12 @@ services:
   edulytica_frontend:
     container_name: "EdulyticaFrontend"
     build:
-      context: ./src/edulytica_api/front_end
+      context: ./src/front_end
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+    networks:
+      - edulytica_network
 
 networks:
   edulytica_network:

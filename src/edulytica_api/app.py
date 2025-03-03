@@ -5,8 +5,7 @@ from src.edulytica_api.routers.llm_services import *
 from src.edulytica_api.routers.auth import *
 from src.edulytica_api.routers.norm_services import normocontrol_router
 
-# load_dotenv()
-# models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
 origins = [
     "http://localhost",

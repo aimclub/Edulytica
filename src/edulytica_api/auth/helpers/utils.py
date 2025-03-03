@@ -15,7 +15,6 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Request, HTTPException
 from fastapi.security.utils import get_authorization_scheme_param
 
-
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 TOKEN_TYPE_FIELD = 'token_type'
@@ -77,9 +76,12 @@ def encode_jwt(
     return jwt.encode(to_encode, private_key, algorithm=algorithm)
 
 
-def create_jwt(token_data: dict, token_type=ACCESS_TOKEN_TYPE, jwt_secret=JWT_SECRET_KEY,
-               expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES,
-               expires_delta: Optional[timedelta] = None):
+def create_jwt(
+        token_data: dict,
+        token_type: str = ACCESS_TOKEN_TYPE,
+        jwt_secret: str = JWT_SECRET_KEY,
+        expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES,
+        expires_delta: Optional[timedelta] = None):
     """
     Creates a JWT token with specified token type.
 
@@ -150,6 +152,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
     """
     Custom OAuth2PasswordBearer implementation that supports token retrieval from cookies.
     """
+
     async def __call__(self, request: Request) -> Optional[str]:
         authorization = request.headers.get("Authorization")
         if request.url.path in ['/refresh', '/logout']:

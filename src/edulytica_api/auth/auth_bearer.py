@@ -41,11 +41,15 @@ class AuthDataGetterFromToken:
         token_type (str): Expected type of the token (access or refresh).
         secret_key (str): Secret key used for decoding the token.
     """
-    def __init__(self, token_type, secret_key):
+    def __init__(self, token_type: str, secret_key: str):
         self.token_type = token_type
         self.secret_key = secret_key
 
-    async def __call__(self, token: Annotated[str, Depends(oauth2_scheme)], session: AsyncSession = Depends(get_session)):
+    async def __call__(
+            self,
+            token: Annotated[str, Depends(oauth2_scheme)],
+            session: AsyncSession = Depends(get_session)
+    ):
         """
         Validates the token and retrieves the user.
 
@@ -68,7 +72,7 @@ class AuthDataGetterFromToken:
             raise credentials_exception
 
     @staticmethod
-    async def user_check(payload, session: AsyncSession):
+    async def user_check(payload: dict, session: AsyncSession):
         """
         Retrieves the user based on the token payload.
 
@@ -93,7 +97,7 @@ class AuthDataGetterFromToken:
         return user
 
     @staticmethod
-    def token_type_validate(payload, token_type):
+    def token_type_validate(payload: dict, token_type: str):
         """
         Validates that the token type matches the expected type.
 

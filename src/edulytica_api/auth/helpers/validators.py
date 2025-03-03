@@ -7,7 +7,7 @@ from starlette import status
 from src.edulytica_api.auth.helpers.utils import verify_password
 
 
-def password_validate(password1, password2):
+def password_validate(password1: str, password2: str):
     """
     Validates a password by comparing it with a hashed password.
 

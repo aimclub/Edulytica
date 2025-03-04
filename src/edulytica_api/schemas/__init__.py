@@ -1,5 +1,6 @@
 from src.edulytica_api.schemas.system_schemas import _UserCreate, _UserUpdate, _UserGet, _TokenCreate, _TokenUpdate, \
-    _TokenGet, _TicketsCreate, _TicketsUpdate, _TicketsGet, _ResultFilesCreate, _ResultFilesUpdate, _ResultFilesGet
+    _TokenGet, _TicketsCreate, _TicketsUpdate, _TicketsGet, _ResultFilesCreate, _ResultFilesUpdate, _ResultFilesGet, \
+    _ModelCreate, _ModelUpdate, _ModelGet
 
 
 class UserModels:
@@ -43,4 +44,15 @@ class ResultFilesModels:
         pass
 
     class Get(_ResultFilesGet):
+        pass
+
+
+class ModelModels:
+    class Create(_ModelCreate):
+        pass
+
+    class Update(_ModelUpdate):
+        pass
+
+    class Get(_ModelGet):
         pass

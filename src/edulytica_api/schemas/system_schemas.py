@@ -1,4 +1,6 @@
 from datetime import datetime
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict, UUID4
 
 
@@ -68,3 +70,22 @@ class _TicketsUpdate(_TicketsCreate):
 
 class _TicketsGet(_TicketsUpdate):
     created_date: datetime
+
+
+class _ModelCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    tag: str
+    name: str
+    description: Optional[str]
+    path: str
+    user_id: Optional[UUID4]
+
+
+class _ModelUpdate(_ModelCreate):
+    id: UUID4
+
+
+class _ModelGet(_ModelUpdate):
+    created_at: datetime
+

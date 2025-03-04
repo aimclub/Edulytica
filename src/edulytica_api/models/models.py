@@ -15,8 +15,8 @@ Classes:
 
 import uuid
 import datetime
-from sqlalchemy import DateTime, Boolean, UUID, Column, String, Integer, ForeignKey
-from typing import List
+from sqlalchemy import DateTime, Boolean, UUID, Column, String, Integer, ForeignKey, Text
+from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import Mapped, relationship, mapped_column, DeclarativeBase
 from src.edulytica_api.utils.moscow_datetime import datetime_now_moscow
@@ -37,6 +37,7 @@ class User(Base, AsyncAttrs):
 
     result_files: Mapped[List["ResultFiles"]] = relationship(back_populates="user")
     ticket: Mapped[List["Tickets"]] = relationship(back_populates="user")
+    models: Mapped[List["Model"]] = relationship(back_populates="user")
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow,
@@ -93,6 +94,8 @@ class Tickets(Base, AsyncAttrs):
     user: Mapped["User"] = relationship(back_populates="ticket")
     status_id: Mapped[Integer] = mapped_column(ForeignKey("ticket_statuses.id"))
     status: Mapped["TicketStatuses"] = relationship(back_populates="ticket")
+    model_id: Mapped[UUID] = mapped_column(ForeignKey("models.id"))
+    model: Mapped["Model"] = relationship(back_populates="tickets")
 
 
 class TicketStatuses(Base, AsyncAttrs):
@@ -100,3 +103,25 @@ class TicketStatuses(Base, AsyncAttrs):
     id = Column(Integer, primary_key=True, nullable=False, index=True)
     status = Column(String)
     ticket: Mapped[List["Tickets"]] = relationship(back_populates="status")
+
+
+class Model(Base, AsyncAttrs):
+    __tablename__ = 'models'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, nullable=False,
+                                          default=uuid.uuid4)
+    tag: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    path: Mapped[str] = mapped_column(Text, nullable=False)
+
+    user_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=True)
+    user: Mapped["User"] = relationship(
+        'User', back_populates='tokens', lazy='selectin')
+
+    tickets: Mapped["Tickets"] = relationship(
+        'Ticket', back_populates='model', lazy='selectin'
+    )
+
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)

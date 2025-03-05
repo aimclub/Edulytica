@@ -50,7 +50,7 @@ services:
     environment:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma # this is the default path, change it as needed
-      - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-TRUE}
+      - ANONYMIZED_TELEMETRY=TRUE
     networks:
       - edulytica_network
 

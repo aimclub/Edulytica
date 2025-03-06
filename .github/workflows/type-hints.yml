@@ -19,6 +19,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install mypy lxml
 
-      - name: Run mypy and generate coverage report
+      - name: Run mypy with src as base
         run: |
-          mypy --html-report mypy_report/ .
+          mypy --html-report mypy_report/ src

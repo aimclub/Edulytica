@@ -8,9 +8,10 @@
 <p>Built with:</p>
 
 [![python](https://badgen.net/badge/python/3.10/blue?icon=python)](https://www.python.org/)
-![Jupyter Notebook](https://img.shields.io/badge/jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white)
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
-![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
+![Jupyter Notebook](https://img.shields.io/badge/Jupyter-%23F37626?logo=jupyter&logoColor=white&labelColor=red&color=red)
+![FastAPI](https://img.shields.io/badge/FastAPI-%23009688?logo=fastapi&logoColor=green&labelColor=006666&color=006666)
+![Docker](https://img.shields.io/badge/Docker-%232496ED?logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-%232088FF?logo=github%20actions&logoColor=white&labelColor=blue&color=blue)
 
 # Edulytica
 ![logo](src/images/logo.png)

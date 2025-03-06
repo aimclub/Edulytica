@@ -1,9 +1,16 @@
 ![ITMO](https://raw.githubusercontent.com/aimclub/open-source-ops/43bb283758b43d75ec1df0a6bb4ae3eb20066323/badges/ITMO_badge_rus.svg)
 [![license](https://badgen.net/static/license/MIT/blue)](https://badgen.net/static/license/MIT/blue)
-[![python](https://badgen.net/badge/python/3.10|3.11/blue?icon=python)](https://www.python.org/)
+[![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Faimclub%2FEdulytica&label=Visitors&labelColor=%23697689&countColor=%23263759&style=plastic)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Faimclub%2FEdulytica)
 [![codecov](https://codecov.io/gh/LISA-ITMO/Edulytica/graph/badge.svg?token=L1I8M0KDS6)](https://codecov.io/gh/LISA-ITMO/Edulytica)
-![build](https://github.com/LISA-ITMO/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
-![docs](https://github.com/LISA-ITMO/Edulytica/actions/workflows/documentation.yml/badge.svg?branch=development)
+![build](https://github.com/aimclub/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
+![docs](https://github.com/aimclub/Edulytica/actions/workflows/documentation.yml/badge.svg?branch=development)
+
+<p>Built with:</p>
+
+[![python](https://badgen.net/badge/python/3.10/blue?icon=python)](https://www.python.org/)
+![Jupyter Notebook](https://img.shields.io/badge/jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/github%20actions-%232671E5.svg?style=for-the-badge&logo=githubactions&logoColor=white)
 
 # Edulytica
 ![logo](src/images/logo.png)

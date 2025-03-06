@@ -22,8 +22,7 @@ jobs:
 
       - name: Run mypy and generate coverage report
         run: |
-          export MYPYPATH=src
-          mypy --explicit-package-bases --ignore-missing-imports --html-report mypy_report/ . | tee mypy_output.log
+          mypy --explicit-package-bases --ignore-missing-imports src
 
       - name: Upload mypy report
         uses: actions/upload-artifact@v4

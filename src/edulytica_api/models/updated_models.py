@@ -52,6 +52,7 @@ class User(Base, AsyncAttrs):
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
     role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
 
+    sent_code: Mapped["SentCode"] = relationship('SentCode', back_populates='user', lazy='selectin')
     documents: Mapped[List["Document"]] = relationship('Document', back_populates='user', lazy='selectin')
     tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='user', lazy='selectin')
     custom_events: Mapped[List["CustomEvent"]] = relationship('CustomEvent', back_populates='user', lazy='selectin')
@@ -66,6 +67,9 @@ class SentCode(Base, AsyncAttrs):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(6), nullable=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user: Mapped["User"] = relationship('User', back_populates='sent_code', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
 

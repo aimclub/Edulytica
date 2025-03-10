@@ -1,4 +1,4 @@
-name: black-action
+name: Edulytica Black Workflow
 
 on: [push, pull_request]
 
@@ -16,14 +16,13 @@ jobs:
           options: "--check --verbose"
 
       - name: Commit and push changes if black formatted code
-        if: ${{ steps.black.outputs.exit-code == 2 }}
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m "Automated black formatting fixes"
-          git push
+          git push || echo "No changes to commit"
 
       - name: Notify if no changes were made
         if: ${{ steps.black.outputs.exit-code != 2 }}
-        run: echo "No formatting changes made by black"
+        run: echo "No f

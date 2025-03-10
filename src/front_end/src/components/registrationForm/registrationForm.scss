@@ -1,0 +1,120 @@
+.inputContainerRegistrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: start;
+  max-width: 437px;
+  width: 100%;
+}
+.blockInputRegistrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: start;
+  width: 100%;
+}
+.titleInputRegistrationForm {
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  color: #fff;
+  font-family: "SF Pro Display";
+}
+.btnRegistrationForm {
+  border-radius: 8px;
+  padding: 5px 16px;
+  max-width: 437px;
+  width: 100%;
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 171%;
+  color: #000;
+  background: #fff;
+  outline: none;
+  border: none;
+  width: 100%;
+  cursor: pointer;
+  transition: 0.5s;
+}
+.btnRegistrationForm:hover {
+  background-color: rgb(235, 237, 254);
+  box-shadow: 0 4px 4px 0 #07017f;
+}
+.blockBtnRegistrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  align-items: center;
+  width: 100%;
+}
+.textBtnRegistrationForm {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 171%;
+  color: #808080;
+  cursor: pointer;
+}
+.titleRegistrationForm {
+  font-weight: 700;
+  font-family: "SF Pro Display";
+  font-size: 46px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+}
+
+.containerRegistrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: start;
+  width: 100%;
+  max-width: 437px;
+}
+.registrationForm {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: start;
+  justify-content: center;
+  background: #141414;
+  border: 1px solid #000;
+  border-radius: 30px;
+  box-shadow: 6px 10px 16px 0 rgba(1, 72, 255, 0.69),
+    4px 5px 7px 0 rgba(66, 119, 255, 0.7);
+  padding: 90px 113px 74px 113px;
+  min-width: calc(663px - 270px);
+  width: fit-content;
+}
+
+.messageContRegistrationForm {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  align-items: center;
+}
+.textMessageContRegistrationForm {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 17px;
+  letter-spacing: -0.03em;
+  color: #b4b4b4;
+}
+
+.textSwitchContRegistrationForm {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 100%;
+  color: #b4b4b4;
+}
+.switchContRegistrationForm {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+  margin-block: -6px;
+}

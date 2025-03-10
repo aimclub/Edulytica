@@ -1,0 +1,73 @@
+.titleAddFile {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 40px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+}
+.textBlockAddFile {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #b4b4b4;
+}
+.parameterBtnAddFile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #bebaba;
+  padding: 5px 12px;
+  width: fit-content;
+  border: 1.5px solid #676767;
+  border-radius: 13px;
+  cursor: pointer;
+}
+.rightparametersLineAddFile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+.parametersLineAddFile {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.svgParameterBtnAddFile {
+  padding: 7px;
+  border-radius: 100%;
+  background-color: #676767;
+  cursor: pointer;
+}
+.blockAddFile {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  gap: 63px;
+  padding: 28px 28px 20px 44px;
+  background: #303030;
+  border-radius: 36px;
+  max-width: 786px;
+  width: calc(100% - 72px);
+}
+.addFile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 37px;
+  margin-top: 154px;
+  max-width: 786px;
+  width: 100%;
+}

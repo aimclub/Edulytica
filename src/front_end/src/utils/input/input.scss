@@ -1,0 +1,23 @@
+.input {
+  background-color: rgba(48, 48, 48, 1);
+  border-radius: 10px;
+
+  width: calc(100% - 18px);
+  padding: 12.5px 0px 12.5px 18px;
+  border: none;
+  outline: none;
+  font-family: "SF Pro Display";
+}
+.input::placeholder {
+  color: B4B4B4;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: "SF Pro Display";
+  letter-spacing: -0.03em;
+}
+input:focus::placeholder {
+  color: transparent;
+}
+input:focus {
+  color: rgb(230, 230, 230);
+}

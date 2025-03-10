@@ -16,9 +16,11 @@ jobs:
           options: "--verbose --line-length 120"
         continue-on-error: true
 
-      - name: Switch to branch
+      - name: Sync with remote branch
         run: |
-          git checkout -b ${GITHUB_HEAD_REF} || echo "Already on branch ${GITHUB_HEAD_REF}"
+          git fetch origin
+          git checkout ${GITHUB_HEAD_REF}
+          git pull --rebase origin ${GITHUB_HEAD_REF}
 
       - name: Commit and push changes
         run: |

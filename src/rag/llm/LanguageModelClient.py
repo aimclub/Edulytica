@@ -31,9 +31,9 @@ class LanguageModelClient:
             max_tokens=max_tokens,
             n=1,
             temperature=temperature,
-            api_key=self.api_key
+            api_key=self.api_key,
         )
-        message = response['choices'][0]['message']['content']
+        message = response["choices"][0]["message"]["content"]
         return message
 
     # Будущие методы для других языковых моделей можно добавить сюда:

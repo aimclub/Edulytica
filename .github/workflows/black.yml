@@ -9,6 +9,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install black with jupyter support
+        run: |
+          python -m pip install --upgrade pip
+          pip install black[jupyter]
+
       - name: Run black formatter
         id: black
         uses: psf/black@stable

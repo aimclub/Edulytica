@@ -1,4 +1,4 @@
-name: Edulytica Black Workflow
+name: Edulytica Black Worklow
 
 on: [push, pull_request]
 
@@ -16,13 +16,17 @@ jobs:
           options: "--verbose --line-length 120"
         continue-on-error: true
 
+      - name: Switch to branch
+        run: |
+          git checkout -b ${GITHUB_HEAD_REF} || echo "Already on branch ${GITHUB_HEAD_REF}"
+
       - name: Commit and push changes
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add .
           git commit -m "Automated black formatting fixes" || echo "No changes to commit"
-          git push
+          git push origin ${GITHUB_HEAD_REF}
 
       - name: Notify formatting success
         run: echo "Code has been formatted and committed by black"

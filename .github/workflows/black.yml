@@ -13,7 +13,7 @@ jobs:
         id: black
         uses: psf/black@stable
         with:
-          options: "--verbose --line-length 120 --in-place"
+          options: "--verbose --line-length 120"
         continue-on-error: true
 
       - name: Commit and push changes

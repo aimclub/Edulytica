@@ -14,23 +14,19 @@ jobs:
           python -m pip install --upgrade pip
           pip install black jupyter-black
 
-      - name: Run black formatter for Python files
+      - name: Run black formatter for Python and Jupyter files
         id: black
         run: |
-          black . --verbose --line-length 120  # Форматирование всех Python файлов
-        continue-on-error: true
-
-      - name: Run jupyter-black formatter for .ipynb files
-        id: jupyter-black
-        run: |
-          jupyter-black .  # Форматирование всех .ipynb файлов
+          black . --verbose --line-length 120
         continue-on-error: true
 
       - name: Sync with remote branch
         run: |
           git fetch origin
           git checkout ${GITHUB_HEAD_REF}
+          git stash save "Temporary changes"
           git pull --rebase origin ${GITHUB_HEAD_REF}
+          git stash pop
 
       - name: Commit and push changes
         run: |

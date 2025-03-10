@@ -17,10 +17,8 @@ class SemanticSearcher:
         """
         self.openai_api_key = openai_api_key
         self.texts: List[str] = []
-        self.nn = NearestNeighbors(n_neighbors=n_neighbors, metric='cosine')
-        self.openai_embeddings = OpenAIEmbeddings(
-            openai_api_key=self.openai_api_key, model='text-embedding-3-large'
-        )
+        self.nn = NearestNeighbors(n_neighbors=n_neighbors, metric="cosine")
+        self.openai_embeddings = OpenAIEmbeddings(openai_api_key=self.openai_api_key, model="text-embedding-3-large")
         self.n_neighbors = n_neighbors
         self.fitted = False
 
@@ -38,7 +36,9 @@ class SemanticSearcher:
         self.texts = texts
         self.fitted = True
 
-    def search(self, query_text: str, return_distance: bool = True) -> Union[List[Dict[str, Union[str, float]]], List[str]]:
+    def search(
+        self, query_text: str, return_distance: bool = True
+    ) -> Union[List[Dict[str, Union[str, float]]], List[str]]:
         """
         Searches for semantically similar chunks of text based on a query string.
 
@@ -52,6 +52,6 @@ class SemanticSearcher:
         query_embedding = self.openai_embeddings.embed_documents([query_text])[0]
         distances, indices = self.nn.kneighbors([query_embedding])
         if return_distance:
-            return [{'text': self.texts[idx], 'distance': dist} for idx, dist in zip(indices[0], distances[0])]
+            return [{"text": self.texts[idx], "distance": dist} for idx, dist in zip(indices[0], distances[0])]
         else:
             return [self.texts[idx] for idx in indices[0]]

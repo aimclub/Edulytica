@@ -57,4 +57,4 @@ class TokenGet(TokenCreate):
 class TokenData(BaseModel):
     access_token: str
     refresh_token: str
-    token_type: str = 'Bearer'
+    token_type: str = "Bearer"

@@ -19,7 +19,4 @@ def password_validate(password1: str, password2: str):
         HTTPException: If the passwords do not match, an error is raised with status code 400.
     """
     if not verify_password(password1, password2):
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect email or password"
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password")

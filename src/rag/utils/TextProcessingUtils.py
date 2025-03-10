@@ -15,26 +15,24 @@ class TextProcessingUtils:
         """
 
         # Remove extra whitespaces and system characters
-        text = re.sub(r'\s+', ' ', text.strip())
+        text = re.sub(r"\s+", " ", text.strip())
 
         # Remove page numbers (if they are simple)
-        text = re.sub(r'\s+\d+\s+', ' ', text)
+        text = re.sub(r"\s+\d+\s+", " ", text)
 
         # Fix hyphens and join broken words
-        text = re.sub(r'(\w+)-\s+(\w+)', lambda match: f"{match.group(1)}{match.group(2)}", text)
+        text = re.sub(r"(\w+)-\s+(\w+)", lambda match: f"{match.group(1)}{match.group(2)}", text)
 
         # Remove table-like data
-        text = re.sub(r'\[\s*\w+\s*\|\s*\w+\s*\]', ' ', text)
+        text = re.sub(r"\[\s*\w+\s*\|\s*\w+\s*\]", " ", text)
 
         # Remove extra spaces again after removing table-like data
-        text = re.sub(r'\s+', ' ', text.strip())
+        text = re.sub(r"\s+", " ", text.strip())
 
         return text
 
     @staticmethod
-    def text_to_chunks(
-            text: str, chunk_size: int = 512, chunk_overlap: int = 256
-    ) -> List[str]:
+    def text_to_chunks(text: str, chunk_size: int = 512, chunk_overlap: int = 256) -> List[str]:
         """
         Splits text into chunks of a specified size with an overlap.
         Useful for breaking down text for machine learning processing.
@@ -72,4 +70,3 @@ class TextProcessingUtils:
                 chunks.append("")
 
         return chunks
-

@@ -18,7 +18,7 @@ jobs:
         id: black
         uses: psf/black@stable
         with:
-          options: "--verbose --line-length 120 --include '\.py$|\.ipynb$'"
+          options: "--verbose --line-length 120 --include '\\.py$|\\.ipynb$'"
         continue-on-error: true
 
       - name: Sync with remote branch

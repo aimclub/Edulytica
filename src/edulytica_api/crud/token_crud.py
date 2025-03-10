@@ -4,7 +4,6 @@ from src.edulytica_api.schemas import TokenModels
 
 
 class TokenCrud(
-
     BaseCrudFactory(
         model=Token,
         update_schema=TokenModels.Update,

@@ -1,5 +1,17 @@
-from src.edulytica_api.schemas.system_schemas import _UserCreate, _UserUpdate, _UserGet, _TokenCreate, _TokenUpdate, \
-    _TokenGet, _TicketsCreate, _TicketsUpdate, _TicketsGet, _ResultFilesCreate, _ResultFilesUpdate, _ResultFilesGet
+from src.edulytica_api.schemas.system_schemas import (
+    _UserCreate,
+    _UserUpdate,
+    _UserGet,
+    _TokenCreate,
+    _TokenUpdate,
+    _TokenGet,
+    _TicketsCreate,
+    _TicketsUpdate,
+    _TicketsGet,
+    _ResultFilesCreate,
+    _ResultFilesUpdate,
+    _ResultFilesGet,
+)
 
 
 class UserModels:

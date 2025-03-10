@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 from os import getenv
 import json
 
-load_dotenv('config/formatter.env')
+load_dotenv("config/formatter.env")
+
 
 class DocumentFormatter:
     """
@@ -13,17 +14,17 @@ class DocumentFormatter:
 
     @staticmethod
     def split(doc):
-        """ split documents by chunks """
-        loader = TextLoader(doc, encoding='utf-8')
+        """split documents by chunks"""
+        loader = TextLoader(doc, encoding="utf-8")
         documents = loader.load()
-        
+
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size = int(getenv('CHUNK_SIZE')),
-            chunk_overlap = int(getenv('CHUNK_OVERLAP')),
-            length_function = len,
-            is_separator_regex = False,
+            chunk_size=int(getenv("CHUNK_SIZE")),
+            chunk_overlap=int(getenv("CHUNK_OVERLAP")),
+            length_function=len,
+            is_separator_regex=False,
         )
-        
+
         documents = text_splitter.split_documents(documents)
 
         return documents

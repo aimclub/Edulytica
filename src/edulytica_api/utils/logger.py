@@ -56,18 +56,18 @@ def _sub_api_logs(handler):
     @wraps(handler)
     async def wrapper(*args, **kwargs):
         bound_arguments = inspect.signature(handler).bind(*args, **kwargs).arguments
-        params = {key: value for key, value in bound_arguments.items() if key not in ('session', 'auth_data')}
+        params = {key: value for key, value in bound_arguments.items() if key not in ("session", "auth_data")}
 
-        log_text = ''
-        if 'auth_data' in bound_arguments:
-            user = bound_arguments['auth_data']['user']
-            log_text += f'User: ID({user.id})\n'
+        log_text = ""
+        if "auth_data" in bound_arguments:
+            user = bound_arguments["auth_data"]["user"]
+            log_text += f"User: ID({user.id})\n"
 
-        log_text += f'Handler: {handler.__name__} | Params: {params}'
+        log_text += f"Handler: {handler.__name__} | Params: {params}"
 
         try:
-            logger.debug('----------------------------')
-            logger.debug(f'TIME: {datetime_now_moscow()}')
+            logger.debug("----------------------------")
+            logger.debug(f"TIME: {datetime_now_moscow()}")
             logger.info(log_text)
             return await handler(*args, **kwargs)
         except Exception as e:

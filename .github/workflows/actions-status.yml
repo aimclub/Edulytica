@@ -1,0 +1,60 @@
+name: Edulytica Actions status Workflow
+
+on: pull_request
+
+jobs:
+  check_previous_commit_status:
+    name: Check previous commit status
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get the last commit SHA from github-actions[bot]
+        id: last_commit
+        run: |
+          COMMIT_SHA=$(git log -n 1 --author="github-actions[bot]" --pretty=format:"%H")
+          echo "Last commit SHA: $COMMIT_SHA"
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
+
+      - name: Check if the last commit is from github-actions[bot]
+        id: check_commit
+        run: |
+          if [[ "${{ env.COMMIT_SHA }}" == "" ]]; then
+            echo "No commit from github-actions[bot] found. Proceeding to set success status..."
+            echo "SET_STATUS=true" >> $GITHUB_ENV
+          else
+            echo "Last commit is from github-actions[bot]. Proceeding with checking status..."
+            echo "SET_STATUS=false" >> $GITHUB_ENV
+          fi
+
+      - name: Get status of previous commit's workflow
+        id: previous_commit_status
+        if: ${{ env.SET_STATUS == 'false' }}
+        run: |
+          PR_ID=$(git log -n 2 --author="github-actions[bot]" --pretty=format:"%H" | tail -n 1)
+          echo "Previous commit SHA: $PR_ID"
+          
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/${PR_ID}/status")
+          
+          status=$(echo $response | jq -r '.state')
+          echo "Previous commit status: $status"
+          echo "STATUS=$status" >> $GITHUB_ENV
+
+      - name: Update commit status with check mark if status is success
+        if: ${{ env.STATUS == 'success' || env.SET_STATUS == 'true' }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"state": "success", "target_url": "https://github.com/${{ github.repository }}/actions", "description": "The previous commit passed the workflow.", "context": "black-formatting"}' \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}"
+
+      - name: Update commit status with cross mark if status is failure
+        if: ${{ env.STATUS == 'failure' && env.SET_STATUS == 'false' }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"state": "error", "target_url": "https://github.com/${{ github.repository }}/actions", "description": "The previous commit failed the workflow.", "context": "black-formatting"}' \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}"

@@ -20,7 +20,7 @@ def ragExample():
 
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
-    file_path = '../src/documents/doc.pdf'
+    file_path = "../src/documents/doc.pdf"
     file_parser = FileParser(file_path)
     text_content = file_parser.parse()
 
@@ -32,13 +32,15 @@ def ragExample():
 
     user_query = "Что может способствовать получению человеком достоверной информации о состоянии окружающей среды?"
     matches = searcher.search(user_query, return_distance=False)
-    matches = '\n\n'.join(matches)
+    matches = "\n\n".join(matches)
 
     prompt = PROMPT_TEMPLATE.format(matches=matches, user_query=user_query)
 
     llm_client = LanguageModelClient(api_key=openai_api_key)
 
-    message = llm_client.get_answers_openai(prompt=prompt, model="gpt-3.5-turbo-instruct", max_tokens=2648, temperature=0.5)
+    message = llm_client.get_answers_openai(
+        prompt=prompt, model="gpt-3.5-turbo-instruct", max_tokens=2648, temperature=0.5
+    )
 
     print(message)
 

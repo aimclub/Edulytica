@@ -9,17 +9,22 @@ from typing import Union, Any, Optional
 from jose import jwt
 from passlib.context import CryptContext
 from starlette.status import HTTP_401_UNAUTHORIZED
-from src.edulytica_api.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, \
-    JWT_REFRESH_SECRET_KEY, REFRESH_TOKEN_EXPIRE_MINUTES
+from src.edulytica_api.settings import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    ALGORITHM,
+    JWT_SECRET_KEY,
+    JWT_REFRESH_SECRET_KEY,
+    REFRESH_TOKEN_EXPIRE_MINUTES,
+)
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Request, HTTPException
 from fastapi.security.utils import get_authorization_scheme_param
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-TOKEN_TYPE_FIELD = 'token_type'
-ACCESS_TOKEN_TYPE = 'access'
-REFRESH_TOKEN_TYPE = 'refresh'
+TOKEN_TYPE_FIELD = "token_type"
+ACCESS_TOKEN_TYPE = "access"
+REFRESH_TOKEN_TYPE = "refresh"
 
 
 def get_hashed_password(password: str) -> str:
@@ -50,11 +55,11 @@ def verify_password(password: str, hashed_pass: str) -> bool:
 
 
 def encode_jwt(
-        payload: dict,
-        private_key: str = JWT_SECRET_KEY,
-        algorithm: str = ALGORITHM,
-        expires_delta: Optional[timedelta] = None,
-        expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES
+    payload: dict,
+    private_key: str = JWT_SECRET_KEY,
+    algorithm: str = ALGORITHM,
+    expires_delta: Optional[timedelta] = None,
+    expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES,
 ) -> str:
     """
     Encodes a payload into a JWT token.
@@ -77,11 +82,12 @@ def encode_jwt(
 
 
 def create_jwt(
-        token_data: dict,
-        token_type: str = ACCESS_TOKEN_TYPE,
-        jwt_secret: str = JWT_SECRET_KEY,
-        expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES,
-        expires_delta: Optional[timedelta] = None):
+    token_data: dict,
+    token_type: str = ACCESS_TOKEN_TYPE,
+    jwt_secret: str = JWT_SECRET_KEY,
+    expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES,
+    expires_delta: Optional[timedelta] = None,
+):
     """
     Creates a JWT token with specified token type.
 
@@ -97,8 +103,13 @@ def create_jwt(
     """
     jwt_payload = {TOKEN_TYPE_FIELD: token_type}
     jwt_payload.update(token_data)
-    return encode_jwt(payload=jwt_payload, private_key=jwt_secret, algorithm=ALGORITHM,
-                      expires_minutes=expires_minutes, expires_delta=expires_delta)
+    return encode_jwt(
+        payload=jwt_payload,
+        private_key=jwt_secret,
+        algorithm=ALGORITHM,
+        expires_minutes=expires_minutes,
+        expires_delta=expires_delta,
+    )
 
 
 def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
@@ -112,12 +123,18 @@ def create_access_token(subject: Union[str, Any], expires_delta: Optional[timede
     Returns:
         str: Encoded access token.
     """
-    return create_jwt(token_data={"sub": str(subject)}, token_type=ACCESS_TOKEN_TYPE, jwt_secret=JWT_SECRET_KEY,
-                      expires_delta=expires_delta, expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return create_jwt(
+        token_data={"sub": str(subject)},
+        token_type=ACCESS_TOKEN_TYPE,
+        jwt_secret=JWT_SECRET_KEY,
+        expires_delta=expires_delta,
+        expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES,
+    )
 
 
-def create_refresh_token(subject: Union[str, Any], checker: Union[str, Any],
-                         expires_delta: Optional[int] = None) -> str:
+def create_refresh_token(
+    subject: Union[str, Any], checker: Union[str, Any], expires_delta: Optional[int] = None
+) -> str:
     """
     Creates a refresh token for a given subject and checker.
 
@@ -129,9 +146,13 @@ def create_refresh_token(subject: Union[str, Any], checker: Union[str, Any],
     Returns:
         str: Encoded refresh token.
     """
-    return create_jwt(token_data={"sub": str(subject), 'checker': str(checker)}, token_type=REFRESH_TOKEN_TYPE,
-                      jwt_secret=JWT_REFRESH_SECRET_KEY, expires_delta=expires_delta,
-                      expires_minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+    return create_jwt(
+        token_data={"sub": str(subject), "checker": str(checker)},
+        token_type=REFRESH_TOKEN_TYPE,
+        jwt_secret=JWT_REFRESH_SECRET_KEY,
+        expires_delta=expires_delta,
+        expires_minutes=REFRESH_TOKEN_EXPIRE_MINUTES,
+    )
 
 
 def get_expiry(token_exp: int) -> str:
@@ -145,7 +166,7 @@ def get_expiry(token_exp: int) -> str:
         str: Expiration time formatted as GMT.
     """
     expires = time.gmtime(time.time() + token_exp * 60)
-    return time.strftime('%a, %d-%b-%Y %T GMT', expires)
+    return time.strftime("%a, %d-%b-%Y %T GMT", expires)
 
 
 class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
@@ -155,7 +176,7 @@ class OAuth2PasswordBearerWithCookie(OAuth2PasswordBearer):
 
     async def __call__(self, request: Request) -> Optional[str]:
         authorization = request.headers.get("Authorization")
-        if request.url.path in ['/refresh', '/logout']:
+        if request.url.path in ["/refresh", "/logout"]:
             authorization = request.cookies.get("refresh_token")
         scheme, param = get_authorization_scheme_param(authorization)
         if not authorization or scheme.lower() != "bearer":

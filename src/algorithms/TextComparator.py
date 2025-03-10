@@ -4,11 +4,11 @@ import string
 # importing external libraries
 import nltk
 
-nltk.download('stopwords')
+nltk.download("stopwords")
 from nltk.corpus import stopwords
 
 # getting stopwords
-stop_words = stopwords.words('russian')
+stop_words = stopwords.words("russian")
 # getting punctuation marks
 punctuation_marks = string.punctuation
 
@@ -30,7 +30,7 @@ class TextComparator:
             words_of_text = []
             for part_of_text in split_text:
                 if part_of_text not in stop_words:
-                    part_of_text_without_punctuation_marks = ''
+                    part_of_text_without_punctuation_marks = ""
                     for p in part_of_text:
                         if p not in punctuation_marks:
                             part_of_text_without_punctuation_marks += p
@@ -52,5 +52,11 @@ class TextComparator:
             if word not in words_of_text_after_changing:
                 count_of_deleted_words += 1
 
-        return round(((count_of_added_words + count_of_deleted_words) / (
-                len(words_of_text_after_changing) + len(words_of_text_before_changing))) * 100, 2)
+        return round(
+            (
+                (count_of_added_words + count_of_deleted_words)
+                / (len(words_of_text_after_changing) + len(words_of_text_before_changing))
+            )
+            * 100,
+            2,
+        )

@@ -20,13 +20,27 @@ jobs:
           black . --verbose --line-length 120
         continue-on-error: true
 
+      - name: Check for local changes
+        id: check_changes
+        run: |
+          CHANGES=$(git status --porcelain)
+          if [ -z "$CHANGES" ]; then
+            echo "No changes to stash, skipping stash operation"
+          else
+            echo "Changes detected, performing stash"
+            git stash save "Temporary changes"
+          fi
+
       - name: Sync with remote branch
         run: |
           git fetch origin
           git checkout ${GITHUB_HEAD_REF}
-          git stash save "Temporary changes"
-          git pull --rebase origin ${GITHUB_HEAD_REF}
-          git stash pop
+          if [ -z "${{ steps.check_changes.outputs.stashed }}" ]; then
+            git pull --rebase origin ${GITHUB_HEAD_REF}
+          else
+            git stash pop
+            git pull --rebase origin ${GITHUB_HEAD_REF}
+          fi
 
       - name: Commit and push changes
         run: |

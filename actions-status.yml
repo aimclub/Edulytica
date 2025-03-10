@@ -1,55 +1,60 @@
-name: Edulytica Black Workflow
+name: Edulytica Actions status Workflow
 
-on: [push, pull_request]
+on: pull_request
 
 jobs:
-  linter_name:
-    name: Run black formatter
+  check_previous_commit_status:
+    name: Check previous commit status
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install black and jupyter-black
+      - name: Get the last commit SHA from github-actions[bot]
+        id: last_commit
         run: |
-          python -m pip install --upgrade pip
-          pip install black jupyter-black
+          COMMIT_SHA=$(git log -n 1 --author="github-actions[bot]" --pretty=format:"%H")
+          echo "Last commit SHA: $COMMIT_SHA"
+          echo "COMMIT_SHA=$COMMIT_SHA" >> $GITHUB_ENV
 
-      - name: Run black formatter for Python and Jupyter files
-        id: black
+      - name: Check if the last commit is from github-actions[bot]
+        id: check_commit
         run: |
-          black . --verbose --line-length 120
-        continue-on-error: true
-
-      - name: Check for local changes
-        id: check_changes
-        run: |
-          # Проверяем, есть ли локальные изменения
-          CHANGES=$(git status --porcelain)
-          if [ -z "$CHANGES" ]; then
-            echo "No changes to stash, skipping stash operation"
+          if [[ "${{ env.COMMIT_SHA }}" == "" ]]; then
+            echo "No commit from github-actions[bot] found. Proceeding to set success status..."
+            echo "SET_STATUS=true" >> $GITHUB_ENV
           else
-            echo "Changes detected, performing stash"
-            git stash save "Temporary changes"
+            echo "Last commit is from github-actions[bot]. Proceeding with checking status..."
+            echo "SET_STATUS=false" >> $GITHUB_ENV
           fi
 
-      - name: Sync with remote branch
+      - name: Get status of previous commit's workflow
+        id: previous_commit_status
+        if: ${{ env.SET_STATUS == 'false' }}
         run: |
-          git fetch origin
-          git checkout ${GITHUB_HEAD_REF}
-          if [ -z "${{ steps.check_changes.outputs.stashed }}" ]; then
-            git pull --rebase origin ${GITHUB_HEAD_REF}
-          else
-            git stash pop
-            git pull --rebase origin ${GITHUB_HEAD_REF}
-          fi
+          PR_ID=$(git log -n 2 --author="github-actions[bot]" --pretty=format:"%H" | tail -n 1)
+          echo "Previous commit SHA: $PR_ID"
+          
+          response=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/commits/${PR_ID}/status")
+          
+          status=$(echo $response | jq -r '.state')
+          echo "Previous commit status: $status"
+          echo "STATUS=$status" >> $GITHUB_ENV
 
-      - name: Commit and push changes
+      - name: Update commit status with check mark if status is success
+        if: ${{ env.STATUS == 'success' || env.SET_STATUS == 'true' }}
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
-          git commit -m "Automated black formatting fixes" || echo "No changes to commit"
-          git push origin ${GITHUB_HEAD_REF}
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"state": "success", "target_url": "https://github.com/${{ github.repository }}/actions", "description": "The previous commit passed the workflow.", "context": "black-formatting"}' \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}"
 
-      - name: Notify formatting success
-        run: echo "Code has been formatted and committed by black"
+      - name: Update commit status with cross mark if status is failure
+        if: ${{ env.STATUS == 'failure' && env.SET_STATUS == 'false' }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"state": "error", "target_url": "https://github.com/${{ github.repository }}/actions", "description": "The previous commit failed the workflow.", "context": "black-formatting"}' \
+            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.event.pull_request.head.sha }}"

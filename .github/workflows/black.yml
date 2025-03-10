@@ -1,11 +1,29 @@
 name: black-action
+
 on: [push, pull_request]
+
 jobs:
   linter_name:
     name: Run black formatter
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: rickstaa/action-black@v1.3.3
+
+      - name: Run black formatter
+        id: black
+        uses: psf/black@stable
         with:
-          black_args: "."
+          options: "--check --verbose"
+
+      - name: Commit and push changes if black formatted code
+        if: ${{ steps.black.outputs.exit-code == 2 }}
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Automated black formatting fixes"
+          git push
+
+      - name: Notify if no changes were made
+        if: ${{ steps.black.outputs.exit-code != 2 }}
+        run: echo "No formatting changes made by black"

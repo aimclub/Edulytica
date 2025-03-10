@@ -1,4 +1,4 @@
-name: Edulytica Black Worklow
+name: Edulytica Black Workflow
 
 on: [push, pull_request]
 

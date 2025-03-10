@@ -9,16 +9,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install black with jupyter support
+      - name: Install black and jupyter-black
         run: |
           python -m pip install --upgrade pip
-          pip install black[jupyter]
+          pip install black jupyter-black
 
-      - name: Run black formatter
+      - name: Run black formatter for Python files
         id: black
-        uses: psf/black@stable
-        with:
-          options: "--verbose --line-length 120 --include '\\.py$|\\.ipynb$'"
+        run: |
+          black . --verbose --line-length 120  # Форматирование всех Python файлов
+        continue-on-error: true
+
+      - name: Run jupyter-black formatter for .ipynb files
+        id: jupyter-black
+        run: |
+          jupyter-black .  # Форматирование всех .ipynb файлов
         continue-on-error: true
 
       - name: Sync with remote branch

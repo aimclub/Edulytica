@@ -37,10 +37,10 @@ jobs:
         run: |
           git fetch origin
           git checkout ${GITHUB_HEAD_REF}
+          git pull --rebase origin ${GITHUB_HEAD_REF}
           if [ "${{ steps.check_changes.outputs.stashed }}" = "true" ]; then
             git stash pop
           fi
-          git pull --rebase origin ${GITHUB_HEAD_REF}
 
       - name: Commit and push changes
         run: |

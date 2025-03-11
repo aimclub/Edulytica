@@ -1,6 +1,6 @@
 name: Edulytica Actions status Workflow
 
-on: pull_request
+on: [push, pull_request]
 
 jobs:
   check_previous_commit_status:

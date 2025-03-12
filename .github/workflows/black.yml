@@ -17,7 +17,17 @@ jobs:
       - name: Run black formatter for Python and Jupyter files
         id: black
         run: |
-          black . --verbose --line-length 120 --exclude $(cat .blackignore | tr '\n' ',')
+          # Нормализуем символы новой строки
+          # Заменяем все символы новой строки на стандартный LF (Linux/Mac)
+          EXCLUDE_PATTERN=$(cat .blackignore | sed 's/\r//' | sed 's/\//\\\//g' | sed 's/\./\\./g' | tr '\n' '|' | sed 's/|$//')
+
+          # Выводим переменную для проверки
+          cat -A .blackignore
+          echo "\n"
+          echo "EXCLUDE_PATTERN: $EXCLUDE_PATTERN"
+
+          # Запуск black с использованием регулярного выражения для exclude
+          black . --verbose --line-length 120 --exclude "$EXCLUDE_PATTERN"
         continue-on-error: true
 
       - name: Check for local changes
@@ -46,7 +56,7 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git add .
+          git add . 
           git commit -m "Automated black formatting fixes" || echo "No changes to commit"
           git push origin ${GITHUB_HEAD_REF}
 

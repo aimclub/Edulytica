@@ -1,0 +1,54 @@
+name: Edulytica Black Workflow
+
+on: [push, pull_request]
+
+jobs:
+  linter_name:
+    name: Run black formatter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install black and jupyter-black
+        run: |
+          python -m pip install --upgrade pip
+          pip install --no-cache-dir black jupyter-black
+
+      - name: Run black formatter for Python and Jupyter files
+        id: black
+        run: |
+          black . --verbose --line-length 120 --exclude $(cat .blackignore | tr '\n' ',')
+        continue-on-error: true
+
+      - name: Check for local changes
+        id: check_changes
+        run: |
+          CHANGES=$(git status --porcelain)
+          if [ -z "$CHANGES" ]; then
+            echo "No changes to stash, skipping stash operation"
+            echo "stashed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changes detected, performing stash"
+            git stash save "Temporary changes"
+            echo "stashed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Sync with remote branch
+        run: |
+          git fetch origin
+          git checkout ${GITHUB_HEAD_REF}
+          git pull --rebase origin ${GITHUB_HEAD_REF}
+          if [ "${{ steps.check_changes.outputs.stashed }}" = "true" ]; then
+            git stash pop
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add .
+          git commit -m "Automated black formatting fixes" || echo "No changes to commit"
+          git push origin ${GITHUB_HEAD_REF}
+
+      - name: Notify formatting success
+        run: echo "Code has been formatted and committed by black"

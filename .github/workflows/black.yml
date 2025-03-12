@@ -17,16 +17,7 @@ jobs:
       - name: Run black formatter for Python and Jupyter files
         id: black
         run: |
-          # Нормализуем символы новой строки
-          # Заменяем все символы новой строки на стандартный LF (Linux/Mac)
           EXCLUDE_PATTERN=$(cat .blackignore | sed 's/\r//' | sed 's/\//\\\//g' | sed 's/\./\\./g' | tr '\n' '|' | sed 's/|$//')
-
-          # Выводим переменную для проверки
-          cat -A .blackignore
-          echo "\n"
-          echo "EXCLUDE_PATTERN: $EXCLUDE_PATTERN"
-
-          # Запуск black с использованием регулярного выражения для exclude
           black . --verbose --line-length 120 --exclude "$EXCLUDE_PATTERN"
         continue-on-error: true
 

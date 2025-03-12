@@ -4,7 +4,6 @@ from src.edulytica_api.schemas import TicketModels
 
 
 class TicketsCrud(
-
     BaseCrudFactory(
         model=Tickets,
         update_schema=TicketModels.Update,

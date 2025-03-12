@@ -9,6 +9,7 @@ class Elem:
     :param self.sub_elements: subchapters of the chapter
     :param self.anchor_id: special id of the chapter
     """
+
     def __init__(self, num: str, text: str, anchor_id: str = None):
         self.num: str = num
         self.text: str = text

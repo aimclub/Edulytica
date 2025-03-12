@@ -4,7 +4,6 @@ from src.edulytica_api.schemas import ResultFilesModels
 
 
 class ResultFilesCrud(
-
     BaseCrudFactory(
         model=ResultFiles,
         update_schema=ResultFilesModels.Update,

@@ -25,16 +25,15 @@ class CrudFactory:
         create_schema (Type[Schema]): The Pydantic schema used for creating new records.
         get_schema (Type[Schema]): The Pydantic schema used for retrieving records.
     """
+
     base_model: Model
     update_schema: Type[Schema]
     create_schema: Type[Schema]
     get_schema: Type[Schema]
 
-    def __init__(self, base_model: Model,
-                 update_schema: Type[Schema],
-                 create_schema: Type[Schema],
-                 get_schema: Type[Schema]
-                 ):
+    def __init__(
+        self, base_model: Model, update_schema: Type[Schema], create_schema: Type[Schema], get_schema: Type[Schema]
+    ):
         self.base_model = base_model
         self.update_schema = update_schema
         self.create_schema = create_schema
@@ -172,10 +171,10 @@ class CrudFactory:
 
 
 def BaseCrudFactory(
-        model: Model,
-        update_schema: type(Schema),
-        create_schema: type(Schema),
-        get_schema: type(Schema),
+    model: Model,
+    update_schema: type(Schema),
+    create_schema: type(Schema),
+    get_schema: type(Schema),
 ) -> type(CrudFactory):
     """
     Generates a custom CRUD factory class for a given model and schemas.
@@ -191,5 +190,5 @@ def BaseCrudFactory(
             "update_schema": update_schema,
             "create_schema": create_schema,
             "get_schema": get_schema,
-        }
+        },
     )

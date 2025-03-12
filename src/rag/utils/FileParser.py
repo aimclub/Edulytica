@@ -27,11 +27,11 @@ class FileParser:
         """
 
         try:
-            if self.file_extension.lower() == '.pdf':
+            if self.file_extension.lower() == ".pdf":
                 return self._parse_pdf()
-            if self.file_extension.lower() == '.docx':
+            if self.file_extension.lower() == ".docx":
                 return self._parse_docx()
-            if self.file_extension.lower() == '.odt':
+            if self.file_extension.lower() == ".odt":
                 return self._parse_odt()
             raise ValueError(f"Unsupported file type: {self.file_extension}")
         except Exception as e:
@@ -66,7 +66,7 @@ class FileParser:
 
         try:
             doc = docx.Document(self.file_path)
-            file_text = '\n'.join([para.text for para in doc.paragraphs])
+            file_text = "\n".join([para.text for para in doc.paragraphs])
             return file_text
         except Exception as e:
             print(f"Error reading DOCX: {e}")

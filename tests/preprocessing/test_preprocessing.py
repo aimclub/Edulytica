@@ -40,7 +40,7 @@ class TestTextProcessingUtils(unittest.TestCase):
         for chunk in chunks:
             self.assertLessEqual(len(chunk), chunk_size)
 
-        self.assertIn('This is a sample text.', ' '.join(chunks))
+        self.assertIn("This is a sample text.", " ".join(chunks))
 
     def test_text_to_chunks_raises_value_error_for_invalid_chunk_size(self):
         text = "This is a test text."
@@ -53,5 +53,5 @@ class TestTextProcessingUtils(unittest.TestCase):
             TextProcessingUtils.text_to_chunks(text, chunk_size=512, chunk_overlap=-1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

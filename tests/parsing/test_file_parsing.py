@@ -8,10 +8,10 @@ from Edulytica.src.rag.utils.FileParser import FileParser
 class TestFileParser(unittest.TestCase):
     def setUp(self):
         self.temp_dir = tempfile.TemporaryDirectory()
-        self.pdf_path = os.path.join(self.temp_dir.name, 'test.pdf')
-        self.docx_path = os.path.join(self.temp_dir.name, 'test.docx')
-        self.odt_path = os.path.join(self.temp_dir.name, 'test.odt')
-        self.invalid_path = os.path.join(self.temp_dir.name, 'test.txt')
+        self.pdf_path = os.path.join(self.temp_dir.name, "test.pdf")
+        self.docx_path = os.path.join(self.temp_dir.name, "test.docx")
+        self.odt_path = os.path.join(self.temp_dir.name, "test.odt")
+        self.invalid_path = os.path.join(self.temp_dir.name, "test.txt")
 
         self.create_test_documents()
 
@@ -27,6 +27,7 @@ class TestFileParser(unittest.TestCase):
     def create_test_pdf(file_path):
         from reportlab.lib.pagesizes import letter
         from reportlab.pdfgen import canvas
+
         c = canvas.Canvas(file_path, pagesize=letter)
         c.drawString(100, 750, "This is a test PDF content")
         c.save()
@@ -34,6 +35,7 @@ class TestFileParser(unittest.TestCase):
     @staticmethod
     def create_test_docx(file_path):
         import docx
+
         doc = docx.Document()
         doc.add_paragraph("This is a test DOCX content")
         doc.save(file_path)
@@ -42,6 +44,7 @@ class TestFileParser(unittest.TestCase):
     def create_test_odt(file_path):
         from odf.opendocument import OpenDocumentText
         from odf.text import P
+
         doc = OpenDocumentText()
         p = P(text="This is a test ODT content")
         doc.text.addElement(p)
@@ -68,5 +71,5 @@ class TestFileParser(unittest.TestCase):
         self.assertIsNone(result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

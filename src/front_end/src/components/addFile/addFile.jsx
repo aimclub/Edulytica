@@ -2,7 +2,7 @@ import "./addFile.scss"
 export const AddFile = () => {
   return (
     <div className="addFile">
-      <div className="titleAddFile">Начни работу над документом</div>
+      <div className="titleAddFile">Начните работу над документом</div>
       <div className="blockAddFile">
         <div className="textBlockAddFile">
           Выберите параметры работы над документом...

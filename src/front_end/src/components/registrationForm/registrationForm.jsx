@@ -109,7 +109,7 @@ export const RegistrationForm = ({
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">
-                  Повторный пароль
+                  Повторите пароль
                 </div>
                 <Input
                   type="password"

@@ -2,6 +2,15 @@ import { useState, useEffect } from "react"
 import { Input } from "../../utils/input/input"
 import "./registrationForm.scss"
 import { Link } from "react-router-dom"
+
+/**
+ * @param {object} props - Объект с пропсами компонента.
+ * @param {string} props.registrationPage - Определяет, какую страницу отображать (login или registration).
+ * @param {boolean} props.authorized - Флаг, показывающий, авторизован ли пользователь.
+ * @param {function} props.setAuthorized - Функция для изменения статуса авторизации пользователя.
+ * @returns {JSX.Element} Форма регистрации или входа.
+ */
+
 export const RegistrationForm = ({
   registrationPage,
   authorized,

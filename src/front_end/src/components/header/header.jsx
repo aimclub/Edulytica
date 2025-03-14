@@ -2,6 +2,14 @@ import { useState } from "react"
 import logo from "../../assets/images/logo.svg"
 import "./header.scss"
 import { Link } from "react-router-dom"
+/**
+ * @param {object} props - Объект с пропсами компонента
+ * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
+ * @param {function} props.setAuthorized - Функция для установки значения авторизации пользователя
+ * @param {function} props.setAccountModal - Функция для открытия/закрытия модального окна аккаунта.
+ * @param {function} props.setProfileModal - Функция для открытия/закрытия модального окна профиля.
+ * @returns {JSX.Element} верхний блок страницы, изменяющийся при авторизации
+ */
 const Header = ({
   authorized,
   setAuthorized,

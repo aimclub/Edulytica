@@ -3,6 +3,14 @@ import Header from "../../components/header/header"
 import { RegistrationForm } from "../../components/registrationForm/registrationForm"
 import "./registration.scss"
 import { Link } from "react-router-dom"
+/**
+ * @param {object} props - Объект с пропсами компонента
+ * @param {string} props.registrationPage - Определяет, какую страницу отображать в форме регистрации (login или registration)
+ * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
+ * @param {function} props.setAuthorized - Функция для установки значения авторизации пользователя
+ * @returns {JSX.Element} Страница регистрации
+ */
+
 export const Registration = ({
   registrationPage,
   authorized,

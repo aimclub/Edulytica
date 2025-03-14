@@ -1,5 +1,15 @@
 import { Link } from "react-router-dom"
 import "./profileModal.scss"
+/**
+ * @param {object} props - Объект с пропсами компонента.
+ * @param {string} props.name - Имя пользователя.
+ * @param {string} props.surname - Фамилия пользователя.
+ * @param {string} props.nick - Никнейм пользователя.
+ * @param {string} props.birthday - Дата рождения пользователя.
+ * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя.
+ * @returns {JSX.Element} Модальное окно профиля.
+ */
+
 export const ProfileModal = ({
   name,
   surname,

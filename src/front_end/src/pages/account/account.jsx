@@ -3,6 +3,16 @@ import { AddFile } from "../../components/addFile/addFile"
 import Header from "../../components/header/header"
 import { ProfileModal } from "../../components/profileModal/profileModal"
 import "./account.scss"
+/**
+ * @param {object} props - Объект с пропсами компонента
+ * @param {boolean} props.accountModal - Флаг, определяющий, отображается ли модальное окно аккаунта
+ * @param {function} props.setAccountModal - Функция для установки значения флага отображения модального окна аккаунта
+ * @param {boolean} props.profileModal - Флаг, определяющий, отображается ли модальное окно профиля
+ * @param {function} props.setProfileModal - Функция для установки значения флага отображения модального окна профиля
+ * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя
+ * @returns {JSX.Element} Страница аккаунта пользователя
+ */
+
 export const Account = ({
   accountModal,
   setAccountModal,

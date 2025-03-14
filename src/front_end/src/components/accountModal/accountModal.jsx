@@ -24,6 +24,10 @@ const arr_history_file = [
   "file16",
   "file17",
 ]
+/**
+ *
+ * @returns {JSX.Element} left modal window with user file history
+ */
 export const AccountModal = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)

@@ -1,4 +1,8 @@
 import "./addFile.scss"
+/**
+ *
+ * @returns {JSX.Element} block for attaching and working with a file
+ */
 export const AddFile = () => {
   return (
     <div className="addFile">

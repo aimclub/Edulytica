@@ -16,3 +16,4 @@ jobs:
           commands: fix-pep8
           permission: none
           issue-type: pull-request
+          event-type-suffix: ""

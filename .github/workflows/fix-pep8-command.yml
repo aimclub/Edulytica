@@ -2,7 +2,7 @@ name: fix-pep8-command
 
 on:
   repository_dispatch:
-    types: [fix-pep8-command]
+    types: [fix-pep8]
 
 jobs:
   fix-pep8:

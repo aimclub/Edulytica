@@ -5,12 +5,13 @@ These models include user management, document storage, ticketing system, events
 Classes:
     Base: The base class for all ORM models.
     UserRole: Represents roles assigned to users.
-    User: Represents system users.
-    Document: Represents user-uploaded documents.
-    Ticket: Represents tickets related to document processing.
+    User: Represents system users and their related data.
+    CheckCode: Represents codes used for verification purposes during registration or login.
+    Ticket: Represents tickets related to document processing, their statuses, events, and other metadata.
     TicketStatus: Represents different statuses for tickets.
-    Comment: Represents user comments on tickets.
-    DocumentReport: Represents reports generated from document processing.
+    Document: Represents user-uploaded documents and their association with users and tickets.
+    DocumentSummary: Represents a summary of a document processed in the system.
+    DocumentReport: Represents a report generated from document processing.
     Token: Stores authentication tokens for user sessions.
     Event: Represents predefined events in the system.
     CustomEvent: Represents user-defined custom events.
@@ -27,10 +28,20 @@ from src.edulytica_api.utils.moscow_datetime import datetime_now_moscow
 
 
 class Base(AsyncAttrs, DeclarativeBase):
+    """
+    The base class for all ORM models.
+    This class is inherited by all the database models to provide basic functionality such as
+    creating tables and associating them with the SQLAlchemy ORM.
+    """
     __mapper_args__ = {'eager_defaults': True}
 
 
 class UserRole(Base, AsyncAttrs):
+    """
+    Represents roles assigned to users.
+    This model is used to define different roles that a user can have in the system,
+    such as admin, user, etc.
+    """
     __tablename__ = 'user_roles'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -38,6 +49,12 @@ class UserRole(Base, AsyncAttrs):
 
 
 class User(Base, AsyncAttrs):
+    """
+    Represents system users and their related data.
+    This model holds information about the users, including their login credentials,
+    personal details, role assignments, and the relationships with other entities
+    like documents, tickets, and events.
+    """
     __tablename__ = 'users'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -52,7 +69,7 @@ class User(Base, AsyncAttrs):
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
     role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
 
-    sent_code: Mapped["SentCode"] = relationship('SentCode', back_populates='user', lazy='selectin')
+    check_code: Mapped["CheckCode"] = relationship('CheckCode', back_populates='user', lazy='selectin')
     documents: Mapped[List["Document"]] = relationship('Document', back_populates='user', lazy='selectin')
     tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='user', lazy='selectin')
     custom_events: Mapped[List["CustomEvent"]] = relationship('CustomEvent', back_populates='user', lazy='selectin')
@@ -63,19 +80,27 @@ class User(Base, AsyncAttrs):
                                                  onupdate=datetime_now_moscow)
 
 
-class SentCode(Base, AsyncAttrs):
-    __tablename__ = 'sent_codes'
+class CheckCode(Base, AsyncAttrs):
+    """
+    Represents codes used for verification purposes during registration or login.
+    This model stores verification codes sent to users for account verification or password reset.
+    """
+    __tablename__ = 'check_codes'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(6), nullable=False)
 
     user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user: Mapped["User"] = relationship('User', back_populates='sent_code', lazy='selectin')
+    user: Mapped["User"] = relationship('User', back_populates='check_code', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class Ticket(Base, AsyncAttrs):
+    """
+    Represents tickets related to document processing, their statuses, events, and other metadata.
+    This model links user-uploaded documents with ticket statuses, events, and processing stages.
+    """
     __tablename__ = 'tickets'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -109,6 +134,10 @@ class Ticket(Base, AsyncAttrs):
 
 
 class TicketStatus(Base, AsyncAttrs):
+    """
+    Represents different statuses for tickets.
+    This model is used to track the various stages of a ticket during its lifecycle, such as "open", "in progress", or "closed".
+    """
     __tablename__ = 'ticket_statuses'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -116,6 +145,10 @@ class TicketStatus(Base, AsyncAttrs):
 
 
 class Document(Base, AsyncAttrs):
+    """
+    Represents user-uploaded documents and their association with users and tickets.
+    This model stores information about the documents uploaded by users, including the file path and user associations.
+    """
     __tablename__ = 'documents'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -130,6 +163,10 @@ class Document(Base, AsyncAttrs):
 
 
 class DocumentSummary(Base, AsyncAttrs):
+    """
+    Represents a summary of a document processed in the system.
+    This model is used to store summaries of processed documents, typically after a document has been analyzed or reviewed.
+    """
     __tablename__ = 'document_summaries'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -141,6 +178,10 @@ class DocumentSummary(Base, AsyncAttrs):
 
 
 class DocumentReport(Base, AsyncAttrs):
+    """
+    Represents a report generated from document processing.
+    This model stores reports related to documents processed in the system, which could include analysis results or processing outcomes.
+    """
     __tablename__ = 'document_reports'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -152,6 +193,10 @@ class DocumentReport(Base, AsyncAttrs):
 
 
 class Token(Base, AsyncAttrs):
+    """
+    Stores authentication tokens for user sessions.
+    This model stores tokens used for user authentication, such as refresh tokens for maintaining user sessions.
+    """
     __tablename__ = 'tokens'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -164,6 +209,10 @@ class Token(Base, AsyncAttrs):
 
 
 class Event(Base, AsyncAttrs):
+    """
+    Represents predefined events in the system.
+    This model is used to define predefined events that can trigger tickets or other system actions.
+    """
     __tablename__ = 'events'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -176,6 +225,10 @@ class Event(Base, AsyncAttrs):
 
 
 class CustomEvent(Base, AsyncAttrs):
+    """
+    Represents user-defined custom events.
+    This model allows users to create custom events, which can be linked to tickets for tracking or processing purposes.
+    """
     __tablename__ = 'custom_events'
     __table_args__ = (
         UniqueConstraint('user_id', 'name', name='uix_custom_events_user_id_name'),

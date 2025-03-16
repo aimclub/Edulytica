@@ -47,6 +47,8 @@ class UserRole(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
 
+    users: Mapped[List["User"]] = relationship('User', back_populates='role', lazy='selectin')
+
 
 class User(Base, AsyncAttrs):
     """

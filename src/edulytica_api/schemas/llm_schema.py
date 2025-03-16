@@ -5,7 +5,7 @@ from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict
 import datetime
 
-from src.edulytica_api.models.models import ResultFiles
+from src.edulytica_api.models.models import DocumentReport
 
 
 class UploadFileData(BaseModel):

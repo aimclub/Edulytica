@@ -5,11 +5,15 @@ import os
 import uuid
 from pathlib import Path
 import datetime
-from src.edulytica_api.crud.result_files_crud import ResultFilesCrud
-from src.edulytica_api.crud.tickets_crud import TicketsCrud
+from src.edulytica_api.crud.document_report_crud import DocumentReportCrud
+from src.edulytica_api.crud.document_summary_crud import DocumentSummaryCrud
+from src.edulytica_api.crud.ticket_status_crud import TicketStatusCrud
+from src.edulytica_api.crud.tickets_crud import TicketCrud
 from src.edulytica_api.database import SessionLocal
 from src.edulytica_api.llms.llm_model import Conversation, LLM
 from celery.signals import celeryd_after_setup
+
+from src.edulytica_api.utils.default_enums import TicketStatusDefault
 
 app = Celery('tasks')
 app.config_from_object('src.edulytica_api.celery.celeryconfig')
@@ -117,7 +121,7 @@ class Task(celery.Task):
 
 
 @app.task(bind=True, base=Task)
-def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
+async def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
     def prepare_answer(all_text, goals):
         PROMPT_TEMPLATE = "Текст работы:\n{all_text}\n\nЦели работы:\n{goals}\n\n"
         combined_text = PROMPT_TEMPLATE.format(all_text=all_text, goals=goals)
@@ -149,16 +153,27 @@ def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
         file_path_bd = os.path.join('results_file', current_date, str(file_id) + '.json')
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
-        ResultFilesCrud.create(session=self.session, file=file_path_bd, user_id=user_id, ticket_id=ticket_id)
-        TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=1)
+        ticket_status = await TicketStatusCrud(
+            session=self.session, name=TicketStatusDefault.COMPLETED.value
+        )
+        dr = await DocumentReportCrud.create(session=self.session, file_path=file_path_bd)
+        await TicketCrud.update(
+            session=self.session, record_id=ticket_id,
+            document_report_id=dr.id, ticket_status_id = ticket_status.id
+        )
         return {'result': 'ok', 'intro': intro}
     except Exception as e:
-        TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=2)
+        ticket_status = await TicketStatusCrud(
+            session=self.session, name=TicketStatusDefault.FAILED.value
+        )
+        await TicketCrud.update(
+            session=self.session, record_id=ticket_id, ticket_status_id=ticket_status.id
+        )
         raise e
 
 
 @app.task(bind=True, base=Task)
-def get_llm_summary_result(self, main_text, user_id, ticket_id):
+async def get_llm_summary_result(self, main_text, user_id, ticket_id):
     def prepare_answer(all_text):
         result_data = {}
         for i, inpt in enumerate(all_text):
@@ -182,9 +197,19 @@ def get_llm_summary_result(self, main_text, user_id, ticket_id):
         result = {'result': result_data}
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
-        ResultFilesCrud.create(session=self.session, file=file_path_bd, user_id=user_id, ticket_id=ticket_id)
-        TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=1)
+        ticket_status = await TicketStatusCrud.get_filtered_by_params(
+            session=self.session, name=TicketStatusDefault.COMPLETED.value
+        )
+        dr = await DocumentSummaryCrud.create(session=self.session, file_path=file_path_bd)
+        await TicketCrud.update(
+            session=self.session, record_id=ticket_id,
+            document_summary_id=dr.id, ticket_status_id=ticket_status.id
+        )
         return {'result': 'ok'}
     except:
-        TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=2)
+        ticket_status = await TicketStatusCrud.get_filtered_by_params(
+            session=self.session, name=TicketStatusDefault.FAILED.value
+        )
+        await TicketCrud.update(
+            session=self.session, record_id=ticket_id, ticket_status_id=ticket_status.id)
         return {'result': 'error'}

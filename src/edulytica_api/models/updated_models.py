@@ -66,7 +66,7 @@ class User(Base, AsyncAttrs):
     name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     surname: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     organization: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
     role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
@@ -113,7 +113,7 @@ class Ticket(Base, AsyncAttrs):
     user: Mapped["User"] = relationship('User', back_populates='tickets', lazy='selectin')
     ticket_status_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('ticket_statuses.id'),
                                                         nullable=False)
-    ticket_status: Mapped["TicketStatus"] = relationship('TicketStatus', lazy='selectin')
+    ticket_status: Mapped["UserRole"] = relationship('TicketStatus', lazy='selectin')
     event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('events.id'), nullable=True)
     event: Mapped["Event"] = relationship('Event', back_populates='tickets', lazy='selectin')

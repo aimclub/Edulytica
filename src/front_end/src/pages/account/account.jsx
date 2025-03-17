@@ -42,6 +42,7 @@ export const Account = ({
           nick="fedorova_m"
           birthday="23.09.2006"
           setAuthorized={setAuthorized}
+          setProfileModal={setProfileModal}
         />
       )}
     </div>

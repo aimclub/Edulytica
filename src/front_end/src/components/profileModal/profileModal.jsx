@@ -16,7 +16,12 @@ export const ProfileModal = ({
   nick,
   birthday,
   setAuthorized,
+  setProfileModal,
 }) => {
+  const handleLogOut = () => {
+    setAuthorized((pr) => !pr)
+    setProfileModal(false)
+  }
   return (
     <div className="profileModal">
       <div
@@ -58,7 +63,7 @@ export const ProfileModal = ({
             paddingLeft: "13px",
             cursor: "pointer",
           }}
-          onClick={() => setAuthorized((pr) => !pr)}
+          onClick={handleLogOut}
         >
           Выйти из аккаунта
         </div>

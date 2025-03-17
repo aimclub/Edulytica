@@ -1,7 +1,7 @@
 .inputContainerRegistrationForm {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
   align-items: start;
   max-width: 437px;
   width: 100%;
@@ -15,7 +15,7 @@
 }
 .titleInputRegistrationForm {
   font-weight: 500;
-  font-size: 21px;
+  font-size: 18px;
   letter-spacing: -0.03em;
   color: #fff;
   font-family: "SF Pro Display";
@@ -85,9 +85,10 @@
   border-radius: 30px;
   box-shadow: 6px 10px 16px 0 rgba(1, 72, 255, 0.69),
     4px 5px 7px 0 rgba(66, 119, 255, 0.7);
-  padding: 90px 113px 74px 113px;
+  padding: 88px 113px 64px 113px;
   min-width: calc(663px - 270px);
   width: fit-content;
+  margin-top: -30px;
 }
 
 .messageContRegistrationForm {

@@ -1,0 +1,18 @@
+.accPage {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+.containerAddFile {
+  display: flex;
+  justify-content: start;
+  width: 100%;
+
+  align-items: start;
+}
+.addFileAccPage {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}

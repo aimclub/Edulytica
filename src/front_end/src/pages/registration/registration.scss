@@ -1,0 +1,28 @@
+.registrationPage {
+  width: 100%;
+  height: calc(100vh - 16px);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 25px;
+  overflow: hidden;
+  margin-top: -8px;
+}
+.blockLeftRegistrationPage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding-left: 50px;
+  cursor: pointer;
+  text-decoration: none;
+}
+.textLeftRegistrationPage {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 133%;
+  text-decoration: none;
+  color: #b4b4b4;
+}

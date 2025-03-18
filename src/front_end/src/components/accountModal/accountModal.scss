@@ -1,0 +1,120 @@
+.titleAccModal {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #bebaba;
+  cursor: pointer;
+}
+.titleAccModalActive {
+  color: #89aaff;
+  text-shadow: 0 3px 12px 0 #050068;
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  cursor: pointer;
+}
+.titleBlockAccModal {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 2px;
+}
+
+.inputAccModal {
+  padding-left: 29px;
+  background: #212121;
+  border: 1px solid #bebaba;
+  border-radius: 4px;
+  width: 198px;
+  padding-block: 6px 5px;
+  z-index: 1;
+  margin-left: -26px;
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+.inputAccModal:focus {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+
+.inputAccModal::placeholder {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+.inputBlockAccModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-left: 13px;
+}
+.historyBlockAccModal {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 10px;
+}
+
+.fileAccModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #bebaba;
+  margin-bottom: 8px;
+}
+.fileLineAccModal {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.containerFileAccModal {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 279px;
+  width: 100%;
+  max-height: 45vh;
+}
+.containerScrollFileAccModal {
+  overflow-y: scroll;
+  height: 100%;
+  margin-left: 15px;
+  margin-top: 25px;
+
+  &::-webkit-scrollbar {
+    width: 5px; /* Ширина скроллбара */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #bcbcbc56; /* Цвет ползунка */
+    border-radius: 4px;
+    height: 18px; /* Закругление углов */
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(123, 122, 122, 0.231); /* Цвет трека */
+  }
+}
+.accModal {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  margin-left: 50px;
+  margin-top: 54px;
+}

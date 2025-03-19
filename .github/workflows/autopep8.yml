@@ -7,11 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Generate and set EXCLUDE_PATTERN
+        run: |
+          EXCLUDE_PATTERN=$(grep -v '^\s*#' .pep8ignore | sed '/^\s*$/d' | sed 's/\r//' | sed 's/^/*/' | sed 's/$/*/' | paste -sd, -)
+          echo "EXCLUDE_PATTERN=$EXCLUDE_PATTERN" >> $GITHUB_ENV
       - name: autopep8
         id: autopep8
         uses: peter-evans/autopep8@v2
         with:
-          args: --exit-code --recursive --in-place --aggressive --aggressive .
+          args: --exit-code --recursive --in-place --aggressive --aggressive --exclude=${{ env.EXCLUDE_PATTERN }} .
       - name: Find Comment
         uses: peter-evans/find-comment@v2
         id: fc

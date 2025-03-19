@@ -1,0 +1,20 @@
+.blockHome {
+  width: 700px;
+  height: 400px;
+  background-color: rgb(68, 68, 68);
+  border-radius: 20px;
+  color: antiquewhite;
+  font-size: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "SF Pro Display";
+}
+.homePage {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 80px;
+  margin-top: -8px;
+}

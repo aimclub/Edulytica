@@ -1,0 +1,34 @@
+.infProfileModal {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 100%;
+  color: #fff;
+  width: calc(100% - 13px);
+}
+.blockInfProfileModal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: start;
+  justify-content: center;
+  padding-block: 15px 15px;
+  border-bottom: 1px solid #cbd5e1;
+  padding-left: 13px;
+  width: calc(100% - 13px);
+}
+.profileModal {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: start;
+  box-shadow: 3px 5px 4px 0 rgba(1, 1, 1, 0.36), -3px 4px 4px 0 #19181e;
+  background: #303030;
+  border: 1px solid #303030;
+  border-radius: 6px;
+  width: 327px;
+  z-index: 10;
+  position: fixed;
+  top: 79px;
+  right: 50px;
+}

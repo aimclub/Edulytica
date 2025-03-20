@@ -1,5 +1,7 @@
+import { useEffect } from "react"
 import { AccountModal } from "../../components/accountModal/accountModal"
 import { AddFile } from "../../components/addFile/addFile"
+
 import Header from "../../components/header/header"
 import { ProfileModal } from "../../components/profileModal/profileModal"
 import "./account.scss"
@@ -19,7 +21,10 @@ export const Account = ({
   profileModal,
   setProfileModal,
   setAuthorized,
+  accountSection,
+  setAccountSection,
 }) => {
+  useEffect(() => {}, [accountSection])
   return (
     <div className="accPage">
       <Header
@@ -30,10 +35,17 @@ export const Account = ({
       />
       <div className="containerAddFile">
         {" "}
-        {accountModal ? <AccountModal /> : null}
-        <div className="addFileAccPage">
-          <AddFile />
-        </div>
+        {accountModal ? (
+          <AccountModal
+            setAccountSection={setAccountSection}
+            accountSection={accountSection}
+          />
+        ) : null}
+        {accountSection === "main" ? (
+          <div className="addFileAccPage">
+            <AddFile setAccountSection={setAccountSection} />
+          </div>
+        ) : null}
       </div>
       {profileModal && (
         <ProfileModal

@@ -14,7 +14,7 @@ const App = () => {
    * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
    */
   const [accountModal, setAccountModal] = useState(true)
-
+  const [accountSection, setAccountSection] = useState("main")
   /**
    * Контролирует видимость модального окна профиля
    * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
@@ -30,6 +30,8 @@ const App = () => {
         setAccountModal={setAccountModal}
         profileModal={profileModal}
         setProfileModal={setProfileModal}
+        accountSection={accountSection}
+        setAccountSection={setAccountSection}
       />
     </BrowserRouter>
   )

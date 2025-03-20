@@ -2,17 +2,13 @@ import { useEffect, useState } from "react"
 import "./eventModal.scss"
 const arr_event = [
   "ППС1",
-  "ППС2",
+  "КМУ1",
   "ППС3",
-  "ППС4",
+  "КМУ2",
   "ППС5",
   "ППС6",
-  "ППС1",
   "ППС2",
-  "ППС3",
   "ППС4",
-  "ППС5",
-  "ППС6",
 ]
 export const EventModal = ({ setSelectedEvent, closeModal }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
@@ -30,7 +26,7 @@ export const EventModal = ({ setSelectedEvent, closeModal }) => {
     }
 
     filterData()
-  }, [searchTermEvent, filterEvent])
+  }, [searchTermEvent])
   const handleSearchChange = (event) => {
     setSearchTermEvent(event.target.value)
   }

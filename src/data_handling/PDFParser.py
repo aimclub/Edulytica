@@ -22,7 +22,11 @@ class PDFParser:
         self.encoding = 'utf-8'
         self.file_format = '.pdf'
 
-    def parse_files(self, pdfs_directory: str = '.', csv_filename: str = None, clear_csv: bool = False):
+    def parse_files(
+            self,
+            pdfs_directory: str = '.',
+            csv_filename: str = None,
+            clear_csv: bool = False):
         """Parse all pdfs in directory and save to csv file
 
         :param pdfs_directory: directory where pdfs located
@@ -43,18 +47,21 @@ class PDFParser:
             except FileNotFoundError:
                 pdfs = {}
 
-            pdf_filenames = sorted(filter(lambda x: x[-4:] == self.file_format, os.listdir(pdfs_directory)))
+            pdf_filenames = sorted(
+                filter(lambda x: x[-4:] == self.file_format, os.listdir(pdfs_directory)))
             for i, pdf_filename in enumerate(pdf_filenames):
                 print(i, pdf_filename, end=' ')
                 if pdf_filename[:-4] in pdfs:
                     if pdfs.get(pdf_filename[:-4]):
                         print('skipped')
                     else:
-                        pdfs[pdf_filename[:-4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
+                        pdfs[pdf_filename[:-
+                                          4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
                         print('replaced')
                 else:
                     try:
-                        pdfs[pdf_filename[:-4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
+                        pdfs[pdf_filename[:-
+                                          4]] = self.parse_file(f'{pdfs_directory}/{pdf_filename}')
                         print('done')
                     except pdfminer.pdfparser.PDFSyntaxError:
                         print('pdf can not be opened')
@@ -104,8 +111,11 @@ class PDFParser:
                         if isinstance(form, str) and 'bold' in form.lower():
                             if any(intro_str in line_text.lower() for intro_str in self.intro_strs):
                                 has_intro = True
-                            if any(origins_str in line_text.lower() for origins_str in self.origins_strs):
-                                return ''.join(row for page in pages for row in page).replace('\0', '')
+                            if any(origins_str in line_text.lower()
+                                   for origins_str in self.origins_strs):
+                                return ''.join(
+                                    row for page in pages for row in page).replace(
+                                    '\0', '')
                 if page_num >= 10:
                     return 'none'
             if not has_intro:
@@ -189,8 +199,9 @@ class PDFParser:
         for row_num in range(len(table)):
             row = table[row_num]
             cleansed_row = [
-                item.replace('\n', '') if item is not None and '\n' in item else 'None' if item is None else item for
-                item in row]
+                item.replace(
+                    '\n',
+                    '') if item is not None and '\n' in item else 'None' if item is None else item for item in row]
             table_string += f" {' '.join(cleansed_row)} \n"
         return table_string[:-1]
 

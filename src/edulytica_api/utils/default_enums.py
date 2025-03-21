@@ -10,4 +10,3 @@ class TicketStatusDefault(str, Enum):
     IN_PROGRESS = 'In progress'
     COMPLETED = 'Completed'
     FAILED = 'Failed'
-

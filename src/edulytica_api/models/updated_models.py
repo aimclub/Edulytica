@@ -68,18 +68,26 @@ class User(Base, AsyncAttrs):
     organization: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    role_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
+    role_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
     role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
 
-    check_code: Mapped["CheckCode"] = relationship('CheckCode', back_populates='user', lazy='selectin')
-    documents: Mapped[List["Document"]] = relationship('Document', back_populates='user', lazy='selectin')
+    check_code: Mapped["CheckCode"] = relationship(
+        'CheckCode', back_populates='user', lazy='selectin')
+    documents: Mapped[List["Document"]] = relationship(
+        'Document', back_populates='user', lazy='selectin')
     tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='user', lazy='selectin')
-    custom_events: Mapped[List["CustomEvent"]] = relationship('CustomEvent', back_populates='user', lazy='selectin')
+    custom_events: Mapped[List["CustomEvent"]] = relationship(
+        'CustomEvent', back_populates='user', lazy='selectin')
     tokens: Mapped[List["Token"]] = relationship('Token', back_populates='user', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow,
-                                                 onupdate=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(
+            timezone=True),
+        default=datetime_now_moscow,
+        onupdate=datetime_now_moscow)
 
 
 class CheckCode(Base, AsyncAttrs):
@@ -92,10 +100,12 @@ class CheckCode(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     code: Mapped[str] = mapped_column(String(6), nullable=False)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user: Mapped["User"] = relationship('User', back_populates='check_code', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class Ticket(Base, AsyncAttrs):
@@ -109,30 +119,35 @@ class Ticket(Base, AsyncAttrs):
     prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     shared: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='tickets', lazy='selectin')
-    ticket_status_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('ticket_statuses.id'),
-                                                        nullable=False)
+    ticket_status_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('ticket_statuses.id'), nullable=False)
     ticket_status: Mapped["UserRole"] = relationship('TicketStatus', lazy='selectin')
     event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('events.id'), nullable=True)
     event: Mapped["Event"] = relationship('Event', back_populates='tickets', lazy='selectin')
     custom_event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('custom_events.id'), nullable=True)
-    custom_event: Mapped["CustomEvent"] = relationship('CustomEvent', back_populates='tickets', lazy='selectin')
+    custom_event: Mapped["CustomEvent"] = relationship(
+        'CustomEvent', back_populates='tickets', lazy='selectin')
 
     document_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey('documents.id'), nullable=False, unique=True)
-    document: Mapped["Document"] = relationship('Document', back_populates='ticket', lazy='selectin')
+    document: Mapped["Document"] = relationship(
+        'Document', back_populates='ticket', lazy='selectin')
     document_summary_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('document_summaries.id'), nullable=True, unique=True)
-    document_summary: Mapped["DocumentSummary"] = relationship('DocumentSummary', back_populates='ticket',
-                                                               lazy='selectin')
+    document_summary: Mapped["DocumentSummary"] = relationship(
+        'DocumentSummary', back_populates='ticket', lazy='selectin')
     document_report_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('document_reports.id'), nullable=True, unique=True)
-    document_report: Mapped["DocumentReport"] = relationship('DocumentReport', back_populates='ticket', lazy='selectin')
+    document_report: Mapped["DocumentReport"] = relationship(
+        'DocumentReport', back_populates='ticket', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class TicketStatus(Base, AsyncAttrs):
@@ -156,12 +171,18 @@ class Document(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     file_path: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='documents', lazy='selectin')
 
-    ticket: Mapped["Ticket"] = relationship('Ticket', back_populates='document', uselist=False, lazy='selectin')
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document',
+        uselist=False,
+        lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class DocumentSummary(Base, AsyncAttrs):
@@ -174,9 +195,14 @@ class DocumentSummary(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     file_path: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    ticket: Mapped["Ticket"] = relationship('Ticket', back_populates='document_summary', uselist=False, lazy='selectin')
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document_summary',
+        uselist=False,
+        lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class DocumentReport(Base, AsyncAttrs):
@@ -189,9 +215,14 @@ class DocumentReport(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     file_path: Mapped[str] = mapped_column(String(255), nullable=False)
 
-    ticket: Mapped["Ticket"] = relationship('Ticket', back_populates='document_report', uselist=False, lazy='selectin')
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document_report',
+        uselist=False,
+        lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class Token(Base, AsyncAttrs):
@@ -204,10 +235,12 @@ class Token(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     refresh_token: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='tokens', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class Event(Base, AsyncAttrs):
@@ -221,9 +254,11 @@ class Event(Base, AsyncAttrs):
     name: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='event', lazy='selectin')
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='event', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class CustomEvent(Base, AsyncAttrs):
@@ -240,9 +275,12 @@ class CustomEvent(Base, AsyncAttrs):
     name: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
-    user_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='custom_events', lazy='selectin')
 
-    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='custom_event', lazy='selectin')
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='custom_event', lazy='selectin')
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)

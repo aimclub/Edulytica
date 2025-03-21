@@ -10,7 +10,7 @@ import sys
 from os.path import dirname as up
 sys.path.insert(0, os.path.abspath('../..'))
 for x in os.walk(up(up(__file__)) + '/src/'):
-  sys.path.insert(0, x[0])
+    sys.path.insert(0, x[0])
 sys.path.insert(0, os.path.abspath('..'))
 
 project = 'Edulytica'
@@ -26,7 +26,6 @@ todo_include_todos = True
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
-
 
 
 # -- Options for HTML output -------------------------------------------------

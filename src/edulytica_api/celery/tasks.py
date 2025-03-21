@@ -45,14 +45,14 @@ def set_model_id(sender, instance, **kwargs):
                                     Разделение целей и задач: В тексте могут присутствовать только цели, только задачи, или и то, и другое. Важно различать эти категории и правильно их классифицировать.
                                     Процесс выявления целей и задач должен быть систематичным и логичным. Прежде чем писать отчет, внимательно прочитай текст несколько раз, чтобы полностью понять его содержание и контекст. Используй ключевые слова и фразы, которые могут указывать на намерения или план действий.
                                     Примеры: Цель: "Увеличить прибыль компании на 20% в следующем году." Задача: "Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала."
-                                    Пример структурированного отчета: 
+                                    Пример структурированного отчета:
                                     Цели:
-                                    Увеличить прибыль компании на 20% в следующем году. 
+                                    Увеличить прибыль компании на 20% в следующем году.
                                     Задачи:
                                     Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала.
                                     Провести обучение сотрудников новым методам продаж.
                                     Отчет при отсутствии целей или задач:
-                                    Цели: не выявлены. 
+                                    Цели: не выявлены.
                                     Задачи: не выявлены.
                                     Приступай к выполнению задачи, внимательно следуя этим инструкциям.'''
 
@@ -159,7 +159,7 @@ async def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
         dr = await DocumentReportCrud.create(session=self.session, file_path=file_path_bd)
         await TicketCrud.update(
             session=self.session, record_id=ticket_id,
-            document_report_id=dr.id, ticket_status_id = ticket_status.id
+            document_report_id=dr.id, ticket_status_id=ticket_status.id
         )
         return {'result': 'ok', 'intro': intro}
     except Exception as e:
@@ -206,7 +206,7 @@ async def get_llm_summary_result(self, main_text, user_id, ticket_id):
             document_summary_id=dr.id, ticket_status_id=ticket_status.id
         )
         return {'result': 'ok'}
-    except:
+    except BaseException:
         ticket_status = await TicketStatusCrud.get_filtered_by_params(
             session=self.session, name=TicketStatusDefault.FAILED.value
         )

@@ -3,6 +3,7 @@ import ast
 import sys
 import os
 
+
 def main():
     report_lines = []
     total_annotated = 0
@@ -49,7 +50,8 @@ def main():
                         total_annotated += annotated_count
 
                         # Добавляем строку с информацией о функции
-                        report_lines.append(f"{filepath} | {func_name} | {annotated_count} covered, {unannotated_count} not covered")
+                        report_lines.append(
+                            f"{filepath} | {func_name} | {annotated_count} covered, {unannotated_count} not covered")
 
     # Записываем подробный отчёт в файл report_coverage.txt
     with open("report_coverage.txt", "w", encoding="utf-8") as report_file:
@@ -65,6 +67,7 @@ def main():
         sys.exit(1)
     else:
         print("Coverage meets the requirement.")
+
 
 if __name__ == "__main__":
     main()

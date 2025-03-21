@@ -56,7 +56,11 @@ def _sub_api_logs(handler):
     @wraps(handler)
     async def wrapper(*args, **kwargs):
         bound_arguments = inspect.signature(handler).bind(*args, **kwargs).arguments
-        params = {key: value for key, value in bound_arguments.items() if key not in ('session', 'auth_data')}
+        params = {
+            key: value for key,
+            value in bound_arguments.items() if key not in (
+                'session',
+                'auth_data')}
 
         log_text = ''
         if 'auth_data' in bound_arguments:

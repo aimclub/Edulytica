@@ -1,10 +1,11 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { AccountModal } from "../../components/accountModal/accountModal"
 import { AddFile } from "../../components/addFile/addFile"
 
 import Header from "../../components/header/header"
 import { ProfileModal } from "../../components/profileModal/profileModal"
 import "./account.scss"
+import { ResultFile } from "../../components/resultFile/resultFile"
 /**
  * @param {object} props - Объект с пропсами компонента
  * @param {boolean} props.accountModal - Флаг, определяющий, отображается ли модальное окно аккаунта
@@ -24,6 +25,9 @@ export const Account = ({
   accountSection,
   setAccountSection,
 }) => {
+  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
+
+  const [fileResult, setFileResult] = useState("")
   useEffect(() => {}, [accountSection])
   return (
     <div className="accPage">
@@ -39,11 +43,21 @@ export const Account = ({
           <AccountModal
             setAccountSection={setAccountSection}
             accountSection={accountSection}
+            setFileResult={setFileResult}
           />
         ) : null}
         {accountSection === "main" ? (
           <div className="addFileAccPage">
-            <AddFile setAccountSection={setAccountSection} />
+            <AddFile
+              setAccountSection={setAccountSection}
+              selectedParams={selectedParams}
+              setSelectedParams={setSelectedParams}
+              setFileResult={setFileResult}
+            />
+          </div>
+        ) : accountSection === "result" ? (
+          <div className="addFileAccPage">
+            <ResultFile fileName={fileResult} />
           </div>
         ) : null}
       </div>

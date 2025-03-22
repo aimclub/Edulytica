@@ -2,34 +2,38 @@ import { useEffect, useState } from "react"
 import "./accountModal.scss"
 import { Link } from "react-router-dom"
 const arr_history_file = [
-  "file1",
-  "file2",
-  "febilqbef",
-  "mjjk120--0102-03-2220-120122",
-  "msha",
-  "file3",
-  "file5",
-  "mashafedorovaJKSKLAMXALK_filedoc",
-  "masmnc",
-  "file_doc",
-  "file_math",
-  "file14",
-  "file2",
-  "itmo_file1",
-  "file11",
-  "file1000100101010100110",
-  "file12",
-  "file13",
-  "file14",
-  "file15",
-  "file16",
-  "file17",
+  "file1.pdf",
+  "file2.pdf",
+  "febilqbef.pdf",
+  "mjjk120--0102-03-2220-120122.pdf",
+  "msha.pdf",
+  "file3.pdf",
+  "file5.pdf",
+  "masha.pdf",
+  "masmnc.pdf",
+  "file_doc.pdf",
+  "file_math.pdf",
+  "file14.pdf",
+  "file2.pdf",
+  "itmo_file1.pdf",
+  "file11.pdf",
+  "file1000100101010100110.pdf",
+  "file12.pdf",
+  "file13.pdf",
+  "file14.pdf",
+  "file15.pdf",
+  "file16.pdf",
+  "file17.pdf",
 ]
 /**
  *
  * @returns {JSX.Element} left modal window with user file history
  */
-export const AccountModal = ({ setAccountSection, accountSection }) => {
+export const AccountModal = ({
+  setAccountSection,
+  accountSection,
+  setFileResult,
+}) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
 
@@ -47,7 +51,10 @@ export const AccountModal = ({ setAccountSection, accountSection }) => {
 
     filterData()
   }, [searchTerm, filterHistory])
-
+  const handleFileLine = (file) => {
+    setAccountSection("result")
+    setFileResult(file)
+  }
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
   }
@@ -95,7 +102,7 @@ export const AccountModal = ({ setAccountSection, accountSection }) => {
               setAccountSection("main")
             }}
             className={
-              accountSection === "main"
+              accountSection === "main" || accountSection === "result"
                 ? "titleAccModalActive"
                 : "titleAccModal"
             }
@@ -140,33 +147,38 @@ export const AccountModal = ({ setAccountSection, accountSection }) => {
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
             {filterHistory.map((file) => (
-              <div className="fileLineAccModal">
-                <div className="fileAccModal">{truncateString(file, 16)}</div>
-                <svg
-                  style={{ marginRight: "25px" }}
-                  width="12"
-                  height="12"
-                  viewBox="0 0 12 12"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
+              <Link to="/account/result" style={{ textDecoration: "none" }}>
+                <div
+                  className="fileLineAccModal"
+                  onClick={() => handleFileLine(file)}
                 >
-                  <path
-                    d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
-                    stroke="#BEBABA"
-                    stroke-width="0.5"
-                  />
-                  <path
-                    d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
-                    stroke="#BEBABA"
-                    stroke-width="0.5"
-                  />
-                  <path
-                    d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
-                    stroke="#BEBABA"
-                    stroke-width="0.5"
-                  />
-                </svg>
-              </div>
+                  <div className="fileAccModal">{truncateString(file, 16)}</div>
+                  <svg
+                    style={{ marginRight: "25px" }}
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
+                      stroke="#BEBABA"
+                      stroke-width="0.5"
+                    />
+                    <path
+                      d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
+                      stroke="#BEBABA"
+                      stroke-width="0.5"
+                    />
+                    <path
+                      d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
+                      stroke="#BEBABA"
+                      stroke-width="0.5"
+                    />
+                  </svg>
+                </div>
+              </Link>
             ))}
           </div>
         </div>

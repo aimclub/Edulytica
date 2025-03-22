@@ -1,4 +1,4 @@
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
 import { Link } from "react-router-dom"
@@ -6,14 +6,21 @@ import { Link } from "react-router-dom"
  *
  * @returns {JSX.Element} block for attaching and working with a file
  */
-export const AddFile = ({ setAccountSection }) => {
+export const AddFile = ({
+  setAccountSection,
+  selectedParams,
+  setSelectedParams,
+  setFileResult,
+}) => {
   const [eventModal, setEventModal] = useState(false)
-  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
+
   const fileInputRef = useRef(null)
   const openEventModal = () => {
     setEventModal((pr) => !pr)
   }
-
+  useEffect(() => {
+    console.log(selectedParams)
+  }, [selectedParams])
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
     if (file && file.type === "application/pdf") {
@@ -23,6 +30,7 @@ export const AddFile = ({ setAccountSection }) => {
         { type: "file", name: fileName },
         ...prev.filter((param) => param.type !== "file"),
       ])
+      setFileResult(fileName)
     } else {
       alert("Пожалуйста, выберите .pdf файл")
     }
@@ -41,6 +49,10 @@ export const AddFile = ({ setAccountSection }) => {
   }
   const handleHelpPage = () => {
     setAccountSection("help")
+  }
+  const handleAddFileSvg = () => {
+    setAccountSection("result")
+    resetParams()
   }
   return (
     <div className="addFile">
@@ -164,23 +176,27 @@ export const AddFile = ({ setAccountSection }) => {
               ) : null}
             </div>
             {selectedParams.length === 2 ? (
-              <svg
-                className="svgParameterBtnAddFile2"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13.5542 7.1775L9.00172 2.625L4.44922 7.1775M9.00172 15.375V2.7525"
-                  stroke="#303030"
-                  stroke-width="1.75"
-                  stroke-miterlimit="10"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-              </svg>
+              <Link to={"/account/result"}>
+                {" "}
+                <svg
+                  onClick={handleAddFileSvg}
+                  className="svgParameterBtnAddFile2"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M13.5542 7.1775L9.00172 2.625L4.44922 7.1775M9.00172 15.375V2.7525"
+                    stroke="#303030"
+                    stroke-width="1.75"
+                    stroke-miterlimit="10"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </Link>
             ) : (
               <svg
                 width="18"

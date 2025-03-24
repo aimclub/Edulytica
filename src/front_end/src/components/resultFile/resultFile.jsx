@@ -1,9 +1,22 @@
 import { useEffect, useRef, useState } from "react"
 import "./resultFile.scss"
 import texts from "./text.js"
+
+/**
+ * Компонент отображает результат работы над файлом,содержимое файла и позволяет переключаться между его разделами(суммаризация, рецензирование).
+ *
+ * @param {Object} props - Свойства компонента.
+ * @param {string} props.fileName - Имя файла, данные которого отображаются.
+ */
+
 export const ResultFile = ({ fileName }) => {
+  /** Состояние активного раздела */
   const [activeSectionResult, setActiveSectionResult] = useState(1)
-  const [loading, setLoading] = useState(true) // Добавляем состояние загрузки
+
+  /**  Состояние загрузки */
+  const [loading, setLoading] = useState(true)
+
+  /** Состояние, указывающее, есть ли прокрутка */
   const [isScrollable, setIsScrollable] = useState(false)
   const scrollRef = useRef(null)
 
@@ -14,7 +27,6 @@ export const ResultFile = ({ fileName }) => {
     } else {
       // Если данных нет, начинаем ждать
       const intervalId = setInterval(() => {
-        // Проверяем, появились ли данные в `texts`
         if (texts[fileName] && texts[fileName].text1) {
           // Если данные появились, устанавливаем загрузку в false и очищаем интервал
           setLoading(false)
@@ -42,6 +54,13 @@ export const ResultFile = ({ fileName }) => {
     return () => window.removeEventListener("resize", checkScrollable)
   }, [activeSectionResult])
 
+  // Функция для получения контента на основе активной секции
+  const getTextContent = () => {
+    if (!texts[fileName]) return "Данные не найдены..."
+    if (activeSectionResult === 3) return texts[fileName].text3
+    if (activeSectionResult === 2) return texts[fileName].text2
+    return texts[fileName].text1
+  }
   return loading ? (
     <div className="resultFile">
       <div className="textLoadingResultFile">Загрузка...</div>
@@ -89,14 +108,11 @@ export const ResultFile = ({ fileName }) => {
               style={{
                 paddingRight: isScrollable ? "20px" : "0",
                 marginRight: isScrollable ? "35px" : "44px",
+                minWidth: "700px",
               }}
               ref={scrollRef}
             >
-              {activeSectionResult === 3
-                ? texts[fileName].text3
-                : activeSectionResult === 2
-                ? texts[fileName].text2
-                : texts[fileName].text1}
+              {getTextContent()}
             </div>
           </div>
         </div>

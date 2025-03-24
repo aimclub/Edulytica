@@ -28,6 +28,9 @@ const arr_history_file = [
 /**
  *
  * @returns {JSX.Element} left modal window with user file history
+ * @param {function} props.setAccountSection - Функция для установки текущей секции аккаунта.
+ * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result", "info", "help").
+ * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
  */
 export const AccountModal = ({
   setAccountSection,
@@ -146,8 +149,12 @@ export const AccountModal = ({
         </div>
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
-            {filterHistory.map((file) => (
-              <Link to="/account/result" style={{ textDecoration: "none" }}>
+            {filterHistory.map((file, index) => (
+              <Link
+                to="/account/result"
+                style={{ textDecoration: "none" }}
+                key={`${file}-${index}`}
+              >
                 <div
                   className="fileLineAccModal"
                   onClick={() => handleFileLine(file)}

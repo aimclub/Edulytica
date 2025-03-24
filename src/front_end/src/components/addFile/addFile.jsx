@@ -1,11 +1,18 @@
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
 import { Link } from "react-router-dom"
+
 /**
- *
- * @returns {JSX.Element} block for attaching and working with a file
+ * Компонент для прикрепления и работы с файлом.
+ * @param {Object} props - Свойства компонента.
+ * @param {Function} props.setAccountSection - Функция для установки активного раздела аккаунта.
+ * @param {Array} props.selectedParams - Массив выбранных параметров (файл и мероприятие).
+ * @param {Function} props.setSelectedParams - Функция для обновления массива выбранных параметров.
+ * @param {Function} props.setFileResult - Функция для установки имени загруженного файла.
+ * @returns {JSX.Element} - Элемент интерфейса для работы с файлом.
  */
+
 export const AddFile = ({
   setAccountSection,
   selectedParams,
@@ -13,14 +20,21 @@ export const AddFile = ({
   setFileResult,
 }) => {
   const [eventModal, setEventModal] = useState(false)
-
   const fileInputRef = useRef(null)
+
+  /** Открывает/закрывает модальное окно выбора мероприятия */
   const openEventModal = () => {
     setEventModal((pr) => !pr)
   }
+
   useEffect(() => {
     console.log(selectedParams)
   }, [selectedParams])
+
+  /**
+   * Обрабатывает выбор файла.
+   * @param {Event} event - Событие выбора файла.
+   */
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
     if (file && file.type === "application/pdf") {
@@ -35,54 +49,67 @@ export const AddFile = ({
       alert("Пожалуйста, выберите .pdf файл")
     }
   }
+
+  /**
+   * Обрезает строку до заданной длины и добавляет многоточие, если строка длиннее.
+   */
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "..."
     }
     return str
   }
-  const resetParams = () => {
-    setSelectedParams([]) // Сброс параметров
+
+  /** Сбрасывает выбранные параметры и очищает поле загрузки файла */
+  const resetParams = useCallback(() => {
+    setSelectedParams([])
     if (fileInputRef.current) {
-      fileInputRef.current.value = null // Очищение значения инпута
+      fileInputRef.current.value = null
     }
-  }
-  const handleHelpPage = () => {
+  }, [setSelectedParams])
+
+  /** Переключает раздел аккаунта на справочную страницу */
+  const handleHelpPage = useCallback(() => {
     setAccountSection("help")
-  }
-  const handleAddFileSvg = () => {
+  }, [setAccountSection])
+
+  /** Переключает раздел аккаунта на результат и сбрасывает параметры */
+  const handleAddFileSvg = useCallback(() => {
     setAccountSection("result")
     resetParams()
-  }
+  }, [setAccountSection, resetParams])
+
+  const sortedParams = useMemo(
+    () => selectedParams.sort((a, b) => (a.type === "file" ? -1 : 1)),
+    [selectedParams]
+  )
   return (
     <div className="addFile">
       <div className="addFileTopCont">
         <div className="titleAddFile">Начните работу над документом</div>
         <div className="blockAddFile">
           <div className="textBlockAddFile">
-            {selectedParams.length > 0
-              ? selectedParams
-                  .sort((a, b) => (a.type === "file" ? -1 : 1))
-                  .map((param) => (
-                    <div className="paramBlockAddFile">
-                      <svg
-                        width="6"
-                        height="6"
-                        viewBox="0 0 7 7"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <circle
-                          cx="3"
-                          cy="3"
-                          r="3"
-                          transform="matrix(-1 0 0 1 6 0)"
-                          fill="#89AAFF"
-                        />
-                      </svg>{" "}
-                      {truncateString(param.name, 40)}
-                    </div>
-                  ))
+            {sortedParams.length > 0
+              ? sortedParams.map((param) => (
+                  <div className="paramBlockAddFile" key={param.name}>
+                    <svg
+                      width="6"
+                      height="6"
+                      viewBox="0 0 7 7"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <circle
+                        cx="3"
+                        cy="3"
+                        r="3"
+                        transform="matrix(-1 0 0 1 6 0)"
+                        fill="#89AAFF"
+                      />
+                    </svg>{" "}
+                    {truncateString(param.name, 40)}
+                  </div>
+                ))
               : "Выберите параметры работы над документом..."}
           </div>
           <div className="parametersLineAddFile">

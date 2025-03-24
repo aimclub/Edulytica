@@ -1,5 +1,5 @@
-from src.edulytica_api.crud.factory import BaseCrudFactory
-from src.edulytica_api.models.updated_models import UserRole
+from src.edulytica_api.crud.base.factory import BaseCrudFactory
+from src.edulytica_api.models import UserRole
 from src.edulytica_api.schemas import UserRoleModels
 
 

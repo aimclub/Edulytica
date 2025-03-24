@@ -93,7 +93,7 @@ class AuthDataGetterFromToken:
         user = await UserCrud.get_by_id(session=session, record_id=user_id)
         if user is None:
             raise credentials_exception
-        if user.disabled:
+        if not user.is_active:
             raise HTTPException(status_code=400, detail="Inactive user")
         return user
 

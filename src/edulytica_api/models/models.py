@@ -1,42 +1,85 @@
 """
-This module defines the SQLAlchemy ORM models for the FastAPI application.
-It includes models for users, authentication tokens, file management, and ticketing system.
+This module defines the updated SQLAlchemy ORM models for the FastAPI application.
+These models include user management, document storage, ticketing system, events, and authentication tokens.
 
 Classes:
     Base: The base class for all ORM models.
-    User: Represents a user in the system.
-    Token: Stores refresh tokens for authentication.
-    FileStatus: Represents the status of files.
-    Files: Stores file-related data.
-    ResultFiles: Stores processed files related to tickets and users.
-    Tickets: Represents support or processing tickets.
-    TicketStatuses: Represents different statuses of tickets.
+    UserRole: Represents roles assigned to users.
+    User: Represents system users and their related data.
+    CheckCode: Represents codes used for verification purposes during registration or login.
+    Ticket: Represents tickets related to document processing, their statuses, events, and other metadata.
+    TicketStatus: Represents different statuses for tickets.
+    Document: Represents user-uploaded documents and their association with users and tickets.
+    DocumentSummary: Represents a summary of a document processed in the system.
+    DocumentReport: Represents a report generated from document processing.
+    Token: Stores authentication tokens for user sessions.
+    Event: Represents predefined events in the system.
+    CustomEvent: Represents user-defined custom events.
 """
 
 import uuid
-import datetime
-from sqlalchemy import DateTime, Boolean, UUID, Column, String, Integer, ForeignKey
-from typing import List
+from typing import List, Optional
+from sqlalchemy import String, DateTime, Boolean, Text, ForeignKey, UniqueConstraint
+from sqlalchemy.dialects.postgresql import UUID
+from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncAttrs
-from sqlalchemy.orm import Mapped, relationship, mapped_column, DeclarativeBase
+from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
 from src.edulytica_api.utils.moscow_datetime import datetime_now_moscow
 
 
 class Base(AsyncAttrs, DeclarativeBase):
+    """
+    The base class for all ORM models.
+    This class is inherited by all the database models to provide basic functionality such as
+    creating tables and associating them with the SQLAlchemy ORM.
+    """
     __mapper_args__ = {'eager_defaults': True}
 
 
-class User(Base, AsyncAttrs):
-    __tablename__ = 'users'
-    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
-                default=uuid.uuid4)
-    username = Column(String(50), nullable=False)
-    email = Column(String(100), unique=True, nullable=False)
-    password = Column(String(100), nullable=False)
-    disabled = Column(Boolean, nullable=False, default=False)
+class UserRole(Base, AsyncAttrs):
+    """
+    Represents roles assigned to users.
+    This model is used to define different roles that a user can have in the system,
+    such as admin, user, etc.
+    """
+    __tablename__ = 'user_roles'
 
-    result_files: Mapped[List["DocumentReport"]] = relationship(back_populates="user")
-    ticket: Mapped[List["Tickets"]] = relationship(back_populates="user")
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+
+    users: Mapped[List["User"]] = relationship('User', back_populates='role', lazy='selectin')
+
+
+class User(Base, AsyncAttrs):
+    """
+    Represents system users and their related data.
+    This model holds information about the users, including their login credentials,
+    personal details, role assignments, and the relationships with other entities
+    like documents, tickets, and events.
+    """
+    __tablename__ = 'users'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    login: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    password_hash: Mapped[str] = mapped_column(Text, nullable=False)
+    name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    surname: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    organization: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    role_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
+    role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
+
+    check_code: Mapped["CheckCode"] = relationship(
+        'CheckCode', back_populates='user', lazy='selectin')
+    documents: Mapped[List["Document"]] = relationship(
+        'Document', back_populates='user', lazy='selectin')
+    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='user', lazy='selectin')
+    custom_events: Mapped[List["CustomEvent"]] = relationship(
+        'CustomEvent', back_populates='user', lazy='selectin')
+    tokens: Mapped[List["Token"]] = relationship('Token', back_populates='user', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime_now_moscow)
@@ -47,61 +90,198 @@ class User(Base, AsyncAttrs):
         onupdate=datetime_now_moscow)
 
 
-class Token(Base, AsyncAttrs):
-    __tablename__ = "tokens"
-    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), nullable=False)
-    refresh_token = Column(String(450), nullable=False)
-    checker = Column(UUID, nullable=False)
-    status = Column(Boolean)
+class CheckCode(Base, AsyncAttrs):
+    """
+    Represents codes used for verification purposes during registration or login.
+    This model stores verification codes sent to users for account verification or password reset.
+    """
+    __tablename__ = 'check_codes'
 
-    created_date: Mapped[datetime] = mapped_column(
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    code: Mapped[str] = mapped_column(String(6), nullable=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user: Mapped["User"] = relationship('User', back_populates='check_code', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime_now_moscow)
 
 
-class FileStatus(Base, AsyncAttrs):
-    __tablename__ = "file_statuses"
-    id = Column(Integer, primary_key=True, index=True)
-    status = Column(String)
-    files: Mapped[List["Files"]] = relationship(back_populates="status")
+class Ticket(Base, AsyncAttrs):
+    """
+    Represents tickets related to document processing, their statuses, events, and other metadata.
+    This model links user-uploaded documents with ticket statuses, events, and processing stages.
+    """
+    __tablename__ = 'tickets'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    shared: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='tickets', lazy='selectin')
+    ticket_status_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('ticket_statuses.id'), nullable=False)
+    ticket_status: Mapped["UserRole"] = relationship('TicketStatus', lazy='selectin')
+    event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('events.id'), nullable=True)
+    event: Mapped["Event"] = relationship('Event', back_populates='tickets', lazy='selectin')
+    custom_event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('custom_events.id'), nullable=True)
+    custom_event: Mapped["CustomEvent"] = relationship(
+        'CustomEvent', back_populates='tickets', lazy='selectin')
+
+    document_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('documents.id'), nullable=False, unique=True)
+    document: Mapped["Document"] = relationship(
+        'Document', back_populates='ticket', lazy='selectin')
+    document_summary_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('document_summaries.id'), nullable=True, unique=True)
+    document_summary: Mapped["DocumentSummary"] = relationship(
+        'DocumentSummary', back_populates='ticket', lazy='selectin')
+    document_report_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('document_reports.id'), nullable=True, unique=True)
+    document_report: Mapped["DocumentReport"] = relationship(
+        'DocumentReport', back_populates='ticket', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
-class Files(Base, AsyncAttrs):
-    __tablename__ = "files"
-    id = Column(Integer, primary_key=True, index=True)
-    file = Column(String)
-    data_create = Column(DateTime(timezone=True), default=datetime_now_moscow)
-    status_id: Mapped[int] = mapped_column(ForeignKey("file_statuses.id"))
-    status: Mapped["FileStatus"] = relationship(back_populates="files")
+class TicketStatus(Base, AsyncAttrs):
+    """
+    Represents different statuses for tickets.
+    This model is used to track the various stages of a ticket during its lifecycle, such as "open", "in progress", or "closed".
+    """
+    __tablename__ = 'ticket_statuses'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+
+
+class Document(Base, AsyncAttrs):
+    """
+    Represents user-uploaded documents and their association with users and tickets.
+    This model stores information about the documents uploaded by users, including the file path and user associations.
+    """
+    __tablename__ = 'documents'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    file_path: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='documents', lazy='selectin')
+
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document',
+        uselist=False,
+        lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
+
+
+class DocumentSummary(Base, AsyncAttrs):
+    """
+    Represents a summary of a document processed in the system.
+    This model is used to store summaries of processed documents, typically after a document has been analyzed or reviewed.
+    """
+    __tablename__ = 'document_summaries'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    file_path: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document_summary',
+        uselist=False,
+        lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class DocumentReport(Base, AsyncAttrs):
-    __tablename__ = "result_files"
-    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
-                default=uuid.uuid4, index=True)
-    file = Column(String)
-    data_create = Column(DateTime(timezone=True), default=datetime_now_moscow)
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="result_files")
-    ticket_id: Mapped[UUID] = mapped_column(ForeignKey("tickets.id"))
-    ticket: Mapped["Tickets"] = relationship(back_populates="result_files")
+    """
+    Represents a report generated from document processing.
+    This model stores reports related to documents processed in the system, which could include analysis results or processing outcomes.
+    """
+    __tablename__ = 'document_reports'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    file_path: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    ticket: Mapped["Ticket"] = relationship(
+        'Ticket',
+        back_populates='document_report',
+        uselist=False,
+        lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
-class Tickets(Base, AsyncAttrs):
-    __tablename__ = "tickets"
-    id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
-                default=uuid.uuid4, index=True)
-    ticket_type = Column(String)
-    created_date = Column(DateTime(timezone=True), default=datetime_now_moscow)
-    result_files: Mapped[List["DocumentReport"]] = relationship(back_populates="ticket")
-    user_id: Mapped[UUID] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship(back_populates="ticket")
-    status_id: Mapped[Integer] = mapped_column(ForeignKey("ticket_statuses.id"))
-    status: Mapped["TicketStatuses"] = relationship(back_populates="ticket")
+class Token(Base, AsyncAttrs):
+    """
+    Stores authentication tokens for user sessions.
+    This model stores tokens used for user authentication, such as refresh tokens for maintaining user sessions.
+    """
+    __tablename__ = 'tokens'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    refresh_token: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
+    checker: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), nullable=False)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='tokens', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
-class TicketStatuses(Base, AsyncAttrs):
-    __tablename__ = "ticket_statuses"
-    id = Column(Integer, primary_key=True, nullable=False, index=True)
-    status = Column(String)
-    ticket: Mapped[List["Tickets"]] = relationship(back_populates="status")
+class Event(Base, AsyncAttrs):
+    """
+    Represents predefined events in the system.
+    This model is used to define predefined events that can trigger tickets or other system actions.
+    """
+    __tablename__ = 'events'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(Text, nullable=False, unique=True, index=True)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='event', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
+
+
+class CustomEvent(Base, AsyncAttrs):
+    """
+    Represents user-defined custom events.
+    This model allows users to create custom events, which can be linked to tickets for tracking or processing purposes.
+    """
+    __tablename__ = 'custom_events'
+    __table_args__ = (
+        UniqueConstraint('user_id', 'name', name='uix_custom_events_user_id_name'),
+    )
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+
+    user_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
+    user: Mapped["User"] = relationship('User', back_populates='custom_events', lazy='selectin')
+
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='custom_event', lazy='selectin')
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)

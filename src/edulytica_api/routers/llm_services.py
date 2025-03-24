@@ -4,9 +4,7 @@ from pathlib import Path
 from starlette import status
 from starlette.responses import FileResponse
 from starlette.status import HTTP_400_BAD_REQUEST
-
 from src.edulytica_api.crud.document_crud import DocumentCrud
-from src.edulytica_api.crud.document_summary_crud import DocumentSummaryCrud
 from src.edulytica_api.crud.ticket_status_crud import TicketStatusCrud
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
 from src.edulytica_api.celery.tasks import get_llm_purpose_result, get_llm_summary_result
@@ -49,14 +47,14 @@ async def get_purpose(
         ):
             break
 
+    # Without ROOT_DIR
     file_path = os.path.join(
-        ROOT_DIR,
         'app_files',
         'document',
         f'{user.id}',
         f'{file_id}.{file_extension}')
 
-    with open(file_path, 'wb') as f:
+    with open(os.path.join(ROOT_DIR, file_path), 'wb') as f:
         f.write(await file.read())
 
     await DocumentCrud.create(
@@ -116,14 +114,14 @@ async def get_summary(
         ):
             break
 
+    # Without ROOT_DIR
     file_path = os.path.join(
-        ROOT_DIR,
         'app_files',
         'document',
         f'{user.id}',
         f'{file_id}.{file_extension}')
 
-    with open(file_path, 'wb') as f:
+    with open(os.path.join(ROOT_DIR, file_path), 'wb') as f:
         f.write(await file.read())
 
     await DocumentCrud.create(
@@ -161,14 +159,13 @@ async def get_result(
 ):
     user = auth_data['user']
     try:
-        # TODO
-        # Не должно работать, перенести на no_validate
-        ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_resp.id)
+        # get_by_id_no_validate, возможно стоит перевести на получение result_file через запрос
+        ticket = await TicketCrud.get_by_id_no_validate(session=session, record_id=ticket_resp.id)
         if ticket is not None:
             data = {'status': 'In progress'}
-            if len(ticket.result_files) > 0:
-                result_file = ticket.result_files[0]
-                file_path = os.path.join(ROOT_DIR, result_file.file)
+            if ticket.document_report is not None:
+                result_file = ticket.document_report
+                file_path = os.path.join(ROOT_DIR, result_file.file_path)
                 with open(file_path, mode='r', encoding='utf-8') as f:
                     data = json.load(f)
                     data['status'] = 'Ready'
@@ -198,8 +195,12 @@ async def get_file(
 ):
     try:
         file = await DocumentReportCrud.get_by_id(session=session, record_id=file_id)
-        if file.user_id == auth_data['user'].id:
-            return os.path.join(ROOT_DIR, file.file)
+        ticket = await TicketCrud.get_filtered_by_params(
+            session=session,
+            document_report_id=file_id
+        )
+        if ticket.user_id == auth_data['user'].id:
+            return os.path.join(ROOT_DIR, file.file_path)
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

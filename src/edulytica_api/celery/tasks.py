@@ -4,7 +4,6 @@ import json
 import os
 import uuid
 from pathlib import Path
-import datetime
 from src.edulytica_api.crud.document_report_crud import DocumentReportCrud
 from src.edulytica_api.crud.document_summary_crud import DocumentSummaryCrud
 from src.edulytica_api.crud.ticket_status_crud import TicketStatusCrud
@@ -12,7 +11,6 @@ from src.edulytica_api.crud.tickets_crud import TicketCrud
 from src.edulytica_api.database import SessionLocal
 from src.edulytica_api.llms.llm_model import Conversation, LLM
 from celery.signals import celeryd_after_setup
-
 from src.edulytica_api.utils.default_enums import TicketStatusDefault
 
 app = Celery('tasks')
@@ -146,17 +144,22 @@ async def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
         result_data = prepare_answer(main_text, goals)
 
         result = {'goal': goals, 'result': result_data}
-        file_id = uuid.uuid4()
-        current_date = datetime.date.today().isoformat()
-        os.makedirs(os.path.join(ROOT_DIR, 'results_file', current_date), exist_ok=True)
-        file_path = os.path.join(ROOT_DIR, 'results_file', current_date, str(file_id) + '.json')
-        file_path_bd = os.path.join('results_file', current_date, str(file_id) + '.json')
+        while True:
+            file_id = uuid.uuid4()
+
+            if not await DocumentReportCrud.get_by_id(
+                    session=self.session, id=file_id
+            ):
+                break
+        os.makedirs(os.path.join(ROOT_DIR, 'document_report', str(user_id)), exist_ok=True)
+        file_path = os.path.join(ROOT_DIR, 'document_report', str(user_id), str(file_id) + '.json')
+        file_path_bd = os.path.join('document_report', str(user_id), str(file_id) + '.json')
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
         ticket_status = await TicketStatusCrud(
             session=self.session, name=TicketStatusDefault.COMPLETED.value
         )
-        dr = await DocumentReportCrud.create(session=self.session, file_path=file_path_bd)
+        dr = await DocumentReportCrud.create(session=self.session, file_path=file_path_bd, id=file_id)
         await TicketCrud.update(
             session=self.session, record_id=ticket_id,
             document_report_id=dr.id, ticket_status_id=ticket_status.id
@@ -189,18 +192,23 @@ async def get_llm_summary_result(self, main_text, user_id, ticket_id):
 
     try:
         result_data = prepare_answer(main_text)
-        file_id = uuid.uuid4()
-        current_date = datetime.date.today().isoformat()
-        os.makedirs(os.path.join(ROOT_DIR, 'results_file', current_date), exist_ok=True)
-        file_path = os.path.join(ROOT_DIR, 'results_file', current_date, str(file_id) + '.json')
-        file_path_bd = os.path.join('results_file', current_date, str(file_id) + '.json')
+        while True:
+            file_id = uuid.uuid4()
+
+            if not await DocumentSummaryCrud.get_by_id(
+                    session=self.session, id=file_id
+            ):
+                break
+        os.makedirs(os.path.join(ROOT_DIR, 'document_summary', str(user_id)), exist_ok=True)
+        file_path = os.path.join(ROOT_DIR, 'document_summary', str(user_id), str(file_id) + '.json')
+        file_path_bd = os.path.join('document_summary', str(user_id), str(file_id) + '.json')
         result = {'result': result_data}
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
         ticket_status = await TicketStatusCrud.get_filtered_by_params(
             session=self.session, name=TicketStatusDefault.COMPLETED.value
         )
-        dr = await DocumentSummaryCrud.create(session=self.session, file_path=file_path_bd)
+        dr = await DocumentSummaryCrud.create(session=self.session, file_path=file_path_bd, id=file_id)
         await TicketCrud.update(
             session=self.session, record_id=ticket_id,
             document_summary_id=dr.id, ticket_status_id=ticket_status.id

@@ -1,4 +1,4 @@
-from src.edulytica_api.schemas.updated_system_schemas import (
+from src.edulytica_api.schemas.system_schemas import (
     _UserCreate,
     _UserUpdate,
     _UserGet,

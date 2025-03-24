@@ -72,7 +72,7 @@ class User(Base, AsyncAttrs):
         UUID(as_uuid=True), ForeignKey('user_roles.id'), nullable=False)
     role: Mapped["UserRole"] = relationship('UserRole', lazy='selectin')
 
-    check_code: Mapped["CheckCode"] = relationship(
+    check_codes: Mapped[List["CheckCode"]] = relationship(
         'CheckCode', back_populates='user', lazy='selectin')
     documents: Mapped[List["Document"]] = relationship(
         'Document', back_populates='user', lazy='selectin')
@@ -102,7 +102,7 @@ class CheckCode(Base, AsyncAttrs):
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user: Mapped["User"] = relationship('User', back_populates='check_code', lazy='selectin')
+    user: Mapped["User"] = relationship('User', back_populates='check_codes', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=datetime_now_moscow)

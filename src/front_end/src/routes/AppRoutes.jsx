@@ -21,6 +21,8 @@ const AppRoutes = ({
   setAccountModal,
   profileModal,
   setProfileModal,
+  accountSection,
+  setAccountSection,
 }) => {
   return (
     <Routes>
@@ -37,6 +39,36 @@ const AppRoutes = ({
             profileModal={profileModal}
             setProfileModal={setProfileModal}
             setAuthorized={setAuthorized}
+            accountSection={accountSection}
+            setAccountSection={setAccountSection}
+          />
+        }
+      />
+      <Route
+        path="/account/help"
+        element={
+          <Account
+            accountModal={accountModal}
+            setAccountModal={setAccountModal}
+            profileModal={profileModal}
+            setProfileModal={setProfileModal}
+            setAuthorized={setAuthorized}
+            accountSection={accountSection}
+            setAccountSection={setAccountSection}
+          />
+        }
+      />
+      <Route
+        path="/account/info"
+        element={
+          <Account
+            accountModal={accountModal}
+            setAccountModal={setAccountModal}
+            profileModal={profileModal}
+            setProfileModal={setProfileModal}
+            setAuthorized={setAuthorized}
+            accountSection={accountSection}
+            setAccountSection={setAccountSection}
           />
         }
       />

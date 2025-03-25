@@ -1,0 +1,115 @@
+.inputEventModal {
+  padding-left: 29px;
+  background: #303030;
+  border: 1px solid #bebaba;
+  border-radius: 4px;
+  width: 295px;
+  padding-block: 6px 5px;
+  z-index: 1;
+  margin-left: -26px;
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+.inputEventModal:focus {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+
+.inputEventModal::placeholder {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+}
+.inputBlockEventModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  margin-left: 13px;
+}
+.titleEventModal {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 125%;
+  color: #bebaba;
+}
+.textAddEventModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 167%;
+  color: #89aaff;
+  cursor: pointer;
+}
+.lineBlockEventModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #bebaba;
+  cursor: pointer;
+}
+.blockEventModalScroll {
+  overflow-y: scroll;
+  height: 100%;
+  width: calc(100% - 15px);
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+  gap: 3px;
+
+  &::-webkit-scrollbar {
+    width: 3px; /* Ширина скроллбара */
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(190, 186, 186, 1); /* Цвет ползунка */
+    border-radius: 4px;
+    height: 18px; /* Закругление углов */
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(103, 103, 103, 1); /* Цвет трека */
+  }
+}
+.blockEventModal {
+  max-height: 140px;
+  margin-left: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 3px;
+  width: 100%;
+  margin-top: 4px;
+}
+.titleBlockEventModal {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  align-items: start;
+  justify-content: center;
+}
+.eventModal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: start;
+  gap: 12px;
+  width: 327px;
+  padding: 19px 12px 17px 20px;
+  box-shadow: 0 2px 3px 0 #01164c, 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  background: #303030;
+  border: 1px solid #676767;
+  border-radius: 1px 6px 6px 6px;
+}

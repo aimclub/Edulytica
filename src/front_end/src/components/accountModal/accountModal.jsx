@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import "./accountModal.scss"
+import { Link } from "react-router-dom"
 const arr_history_file = [
   "file1",
   "file2",
@@ -28,11 +29,10 @@ const arr_history_file = [
  *
  * @returns {JSX.Element} left modal window with user file history
  */
-export const AccountModal = () => {
+export const AccountModal = ({ setAccountSection, accountSection }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
 
-  const [titleAccModalActive, setTitleAccModalActive] = useState(3)
   useEffect(() => {
     const filterData = () => {
       if (!searchTerm) {
@@ -61,38 +61,49 @@ export const AccountModal = () => {
   return (
     <div className="accModal">
       <div className="titleBlockAccModal">
-        <div
-          onClick={() => {
-            setTitleAccModalActive(1)
-          }}
-          className={
-            titleAccModalActive === 1 ? "titleAccModalActive" : "titleAccModal"
-          }
-        >
-          О нас
-        </div>
-        <div
-          onClick={() => {
-            setTitleAccModalActive(2)
-          }}
-          className={
-            titleAccModalActive === 2 ? "titleAccModalActive" : "titleAccModal"
-          }
-        >
-          Помощь
-        </div>
-        <div
-          onClick={() => {
-            setTitleAccModalActive(3)
-          }}
-          className={
-            titleAccModalActive === 3 ? "titleAccModalActive" : "titleAccModal"
-          }
-        >
-          Работа с документом
-        </div>
+        <Link to="/account/info" style={{ textDecoration: "none" }}>
+          <div
+            onClick={() => {
+              setAccountSection("info")
+            }}
+            className={
+              accountSection === "info"
+                ? "titleAccModalActive"
+                : "titleAccModal"
+            }
+          >
+            О нас
+          </div>
+        </Link>
+        <Link to="/account/help" style={{ textDecoration: "none" }}>
+          <div
+            onClick={() => {
+              setAccountSection("help")
+            }}
+            className={
+              accountSection === "help"
+                ? "titleAccModalActive"
+                : "titleAccModal"
+            }
+          >
+            Помощь
+          </div>
+        </Link>
+        <Link to="/account" style={{ textDecoration: "none" }}>
+          <div
+            onClick={() => {
+              setAccountSection("main")
+            }}
+            className={
+              accountSection === "main"
+                ? "titleAccModalActive"
+                : "titleAccModal"
+            }
+          >
+            Работа с документом
+          </div>
+        </Link>
       </div>
-
       <svg
         width="227"
         height="2"
@@ -130,7 +141,7 @@ export const AccountModal = () => {
           <div className="containerScrollFileAccModal">
             {filterHistory.map((file) => (
               <div className="fileLineAccModal">
-                <div className="fileAccModal">{truncateString(file, 20)}</div>
+                <div className="fileAccModal">{truncateString(file, 16)}</div>
                 <svg
                   style={{ marginRight: "25px" }}
                   width="12"

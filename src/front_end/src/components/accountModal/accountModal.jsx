@@ -32,11 +32,13 @@ const arr_history_file = [
  * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result", "info", "help").
  * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
  */
+
 export const AccountModal = ({
   setAccountSection,
   accountSection,
   setFileResult,
 }) => {
+
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
 
@@ -105,7 +107,9 @@ export const AccountModal = ({
               setAccountSection("main")
             }}
             className={
+
               accountSection === "main" || accountSection === "result"
+
                 ? "titleAccModalActive"
                 : "titleAccModal"
             }
@@ -149,6 +153,7 @@ export const AccountModal = ({
         </div>
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
+
             {filterHistory.map((file, index) => (
               <Link
                 to="/account/result"
@@ -158,6 +163,7 @@ export const AccountModal = ({
                 <div
                   className="fileLineAccModal"
                   onClick={() => handleFileLine(file)}
+
                 >
                   <div className="fileAccModal">{truncateString(file, 16)}</div>
                   <svg

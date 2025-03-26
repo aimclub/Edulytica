@@ -61,7 +61,6 @@ export const Account = ({
           </div>
         ) : accountSection === "result" ? (
           <div className="addFileAccPage">
-            <ResultFile fileName={fileResult} />
           </div>
         ) : null}
       </div>

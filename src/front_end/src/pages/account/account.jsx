@@ -6,6 +6,7 @@ import Header from "../../components/header/header"
 import { ProfileModal } from "../../components/profileModal/profileModal"
 import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
+import { EditingProfile } from "../../components/editingProfile/editingProfile"
 /**
  *  * Компонент страницы аккаунта пользователя.
  * @param {object} props - Объект с пропсами компонента
@@ -30,7 +31,7 @@ export const Account = ({
 }) => {
   const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
   const [fileResult, setFileResult] = useState("")
-
+  const [editingProfileModal, setEditingProfileModal] = useState(false)
   useEffect(() => {}, [accountSection])
   return (
     <div className="accPage">
@@ -72,7 +73,26 @@ export const Account = ({
           birthday="23.09.2006"
           setAuthorized={setAuthorized}
           setProfileModal={setProfileModal}
+          setEditingProfileModal={setEditingProfileModal}
         />
+      )}
+      {editingProfileModal && (
+        <div
+          className=""
+          style={{
+            width: "100vw",
+            height: "100vh ",
+            marginTop: "-8px",
+            zIndex: 20,
+            background: "rgba(30, 30, 30, 0.89)",
+            position: "fixed",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <EditingProfile setEditingProfileModal={setEditingProfileModal} />
+        </div>
       )}
     </div>
   )

@@ -17,9 +17,14 @@ export const ProfileModal = ({
   birthday,
   setAuthorized,
   setProfileModal,
+  setEditingProfileModal,
 }) => {
   const handleLogOut = () => {
     setAuthorized((pr) => !pr)
+    setProfileModal(false)
+  }
+  const openEditingProfileModal = () => {
+    setEditingProfileModal(true)
     setProfileModal(false)
   }
   return (
@@ -50,6 +55,7 @@ export const ProfileModal = ({
           paddingLeft: "13px",
           cursor: "pointer",
         }}
+        onClick={openEditingProfileModal}
       >
         Редактировать информацию
       </div>

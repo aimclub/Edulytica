@@ -32,6 +32,7 @@ const arr_history_file = [
  * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result", "info", "help").
  * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
  */
+
 export const AccountModal = ({
   setAccountSection,
   accountSection,

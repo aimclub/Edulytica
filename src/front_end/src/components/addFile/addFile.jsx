@@ -35,6 +35,7 @@ export const AddFile = ({
    * Обрабатывает выбор файла.
    * @param {Event} event - Событие выбора файла.
    */
+
   const handleFileSelect = (event) => {
     const file = event.target.files[0]
     if (file && file.type === "application/pdf") {
@@ -83,6 +84,7 @@ export const AddFile = ({
     () => selectedParams.sort((a, b) => (a.type === "file" ? -1 : 1)),
     [selectedParams]
   )
+
   return (
     <div className="addFile">
       <div className="addFileTopCont">
@@ -110,6 +112,7 @@ export const AddFile = ({
                     {truncateString(param.name, 40)}
                   </div>
                 ))
+
               : "Выберите параметры работы над документом..."}
           </div>
           <div className="parametersLineAddFile">

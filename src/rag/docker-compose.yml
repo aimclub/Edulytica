@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  rag-api:
+    build: .
+    container_name: rag-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/app
+    environment:
+      - PYTHONPATH=/app
+      - CHROMA_DB_PATH=/app/data/chroma
+    depends_on:
+      - chroma-db
+    networks:
+      - rag-network
+
+  chroma-db:
+    image: chromadb/chroma:latest
+    container_name: chroma-db
+    volumes:
+      - chroma-data:/chroma/data
+    ports:
+      - "8001:8000"
+    networks:
+      - rag-network
+    environment:
+      - ALLOW_RESET=true
+      - CHROMA_SERVER_AUTH_PROVIDER=chromadb.auth.token.TokenAuthenticationProvider
+      - CHROMA_SERVER_AUTH_CREDENTIALS_FILE=/chroma/data/auth.json
+
+networks:
+  rag-network:
+    driver: bridge
+
+volumes:
+  chroma-data:
+    driver: local 

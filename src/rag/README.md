@@ -4,6 +4,11 @@
 Package for RAG.
 
 ---
+## Table of Contents
+- [System Architecture](#system-architecture)
+- [System Components](#system-components)
+- [Data Flow](#data-flow)
+
 ## System Architecture
 
 ![RAG Sequence Diagram](docs/rag_sequnce.png)

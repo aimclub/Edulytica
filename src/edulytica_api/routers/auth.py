@@ -29,7 +29,9 @@ async def login(
 ):
     user = await UserCrud.get_filtered_by_params(session=session, username=form_data.username)
     if not user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Incorrect email or password")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Incorrect email or password")
 
     user = user[0]
     password_validate(form_data.password, user.password)
@@ -102,7 +104,9 @@ async def refresh_token(
         refresh_token=token
     )
     if len(tokens) != 1:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Exception in token validation")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Exception in token validation")
 
     token = tokens[0]
     access_token = create_access_token(user.id)
@@ -143,7 +147,9 @@ async def logout(
         refresh_token=token
     )
     if len(tokens) != 1:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Exception in token validation")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Exception in token validation")
 
     token = tokens[0]
     await TokenCrud.delete(session=session, record_id=token.id)

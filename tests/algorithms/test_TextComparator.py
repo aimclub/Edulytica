@@ -14,23 +14,59 @@ class TestTextComparator(unittest.TestCase):
         self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 1, 1)
         self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 1, 'hello')
         self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 'hello', 1)
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 1.0001, 1.0001)
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 1.0001, 'hello')
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 'hello', 1.0001)
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, True, 'hello')
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 'hello', True)
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, [1, 1], 'hello')
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, 'hello', [1, 1])
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, [1], ['hello'])
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, ['hello'], [1])
-        self.assertRaises(TypeError, text_comparator.count_percent_of_transformed_words, ['hello'], ['hello'])
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            1.0001,
+            1.0001)
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            1.0001,
+            'hello')
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            'hello',
+            1.0001)
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            True,
+            'hello')
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            'hello',
+            True)
+        self.assertRaises(
+            TypeError, text_comparator.count_percent_of_transformed_words, [
+                1, 1], 'hello')
+        self.assertRaises(
+            TypeError, text_comparator.count_percent_of_transformed_words, 'hello', [
+                1, 1])
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            [1],
+            ['hello'])
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            ['hello'],
+            [1])
+        self.assertRaises(
+            TypeError,
+            text_comparator.count_percent_of_transformed_words,
+            ['hello'],
+            ['hello'])
 
     def test_correct_answers(self):
         text_comparator = TextComparator
         self.assertEqual(text_comparator.count_percent_of_transformed_words(
             'Yesterday I walked my dog for half an hour.',
             'Thoughts are all charged in favor of the project.'),
-        100.00)
+            100.00)
         self.assertEqual(text_comparator.count_percent_of_transformed_words(
             'This guy just walks there.',
             'I wanna have this ice cream.'),

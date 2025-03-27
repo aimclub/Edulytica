@@ -41,6 +41,7 @@ class AuthDataGetterFromToken:
         token_type (str): Expected type of the token (access or refresh).
         secret_key (str): Secret key used for decoding the token.
     """
+
     def __init__(self, token_type: str, secret_key: str):
         self.token_type = token_type
         self.secret_key = secret_key
@@ -118,5 +119,7 @@ class AuthDataGetterFromToken:
 
 
 # Authentication handlers for different token types
-refresh_token_auth = AuthDataGetterFromToken(token_type=REFRESH_TOKEN_TYPE, secret_key=JWT_REFRESH_SECRET_KEY)
+refresh_token_auth = AuthDataGetterFromToken(
+    token_type=REFRESH_TOKEN_TYPE,
+    secret_key=JWT_REFRESH_SECRET_KEY)
 access_token_auth = AuthDataGetterFromToken(token_type=ACCESS_TOKEN_TYPE, secret_key=JWT_SECRET_KEY)

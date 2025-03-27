@@ -62,23 +62,32 @@ class ParserVKR:
 
                 soup = BSoup(response.text, 'html.parser')
                 try:
-                    file_url = urljoin(self.main_page_url,
-                                       soup.find('td', attrs={'headers': 't1', 'class': 'standard'}).contents[0][
-                                           'href'])
+                    file_url = urljoin(
+                        self.main_page_url,
+                        soup.find(
+                            'td',
+                            attrs={
+                                'headers': 't1',
+                                'class': 'standard'}).contents[0]['href'])
                     try:
                         print('Vkr')
                         sleep(2 + random())
-                        open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                        open(
+                            f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}',
+                            'wb').write(
                             self._make_request(file_url).content)
 
                     except FileNotFoundError:
                         mkdir(self.data_path)
-                        open(f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}', 'wb').write(
+                        open(
+                            f'{self.data_path}/{person_type}_{person_id}{file_url[file_url.rfind("."):]}',
+                            'wb').write(
                             self._make_request(file_url).content)
 
                 except AttributeError:
                     self.excluded_ids.add(person_id)
-                    open('excluded_ids.txt', 'w', encoding='utf-8').write(' '.join(map(str, self.excluded_ids)))
+                    open('excluded_ids.txt', 'w',
+                         encoding='utf-8').write(' '.join(map(str, self.excluded_ids)))
                     print('Wrong')
             else:
                 print()

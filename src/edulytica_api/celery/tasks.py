@@ -41,14 +41,14 @@ def set_model_id(sender, instance, **kwargs):
                                     Разделение целей и задач: В тексте могут присутствовать только цели, только задачи, или и то, и другое. Важно различать эти категории и правильно их классифицировать.
                                     Процесс выявления целей и задач должен быть систематичным и логичным. Прежде чем писать отчет, внимательно прочитай текст несколько раз, чтобы полностью понять его содержание и контекст. Используй ключевые слова и фразы, которые могут указывать на намерения или план действий.
                                     Примеры: Цель: "Увеличить прибыль компании на 20% в следующем году." Задача: "Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала."
-                                    Пример структурированного отчета: 
+                                    Пример структурированного отчета:
                                     Цели:
-                                    Увеличить прибыль компании на 20% в следующем году. 
+                                    Увеличить прибыль компании на 20% в следующем году.
                                     Задачи:
                                     Разработать и внедрить новую маркетинговую стратегию к концу текущего квартала.
                                     Провести обучение сотрудников новым методам продаж.
                                     Отчет при отсутствии целей или задач:
-                                    Цели: не выявлены. 
+                                    Цели: не выявлены.
                                     Задачи: не выявлены.
                                     Приступай к выполнению задачи, внимательно следуя этим инструкциям.'''
 
@@ -149,7 +149,11 @@ def get_llm_purpose_result(self, intro, main_text, user_id, ticket_id):
         file_path_bd = os.path.join('results_file', current_date, str(file_id) + '.json')
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
-        ResultFilesCrud.create(session=self.session, file=file_path_bd, user_id=user_id, ticket_id=ticket_id)
+        ResultFilesCrud.create(
+            session=self.session,
+            file=file_path_bd,
+            user_id=user_id,
+            ticket_id=ticket_id)
         TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=1)
         return {'result': 'ok', 'intro': intro}
     except Exception as e:
@@ -182,9 +186,13 @@ def get_llm_summary_result(self, main_text, user_id, ticket_id):
         result = {'result': result_data}
         with open(file_path, 'w+', encoding='utf-8') as file:
             json.dump(result, file)
-        ResultFilesCrud.create(session=self.session, file=file_path_bd, user_id=user_id, ticket_id=ticket_id)
+        ResultFilesCrud.create(
+            session=self.session,
+            file=file_path_bd,
+            user_id=user_id,
+            ticket_id=ticket_id)
         TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=1)
         return {'result': 'ok'}
-    except:
+    except BaseException:
         TicketsCrud.update(session=self.session, record_id=ticket_id, status_id=2)
         return {'result': 'error'}

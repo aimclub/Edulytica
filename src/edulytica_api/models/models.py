@@ -38,9 +38,13 @@ class User(Base, AsyncAttrs):
     result_files: Mapped[List["ResultFiles"]] = relationship(back_populates="user")
     ticket: Mapped[List["Tickets"]] = relationship(back_populates="user")
 
-    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow,
-                                                 onupdate=datetime_now_moscow)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(
+            timezone=True),
+        default=datetime_now_moscow,
+        onupdate=datetime_now_moscow)
 
 
 class Token(Base, AsyncAttrs):
@@ -51,7 +55,8 @@ class Token(Base, AsyncAttrs):
     checker = Column(UUID, nullable=False)
     status = Column(Boolean)
 
-    created_date: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=datetime_now_moscow)
+    created_date: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=datetime_now_moscow)
 
 
 class FileStatus(Base, AsyncAttrs):

@@ -32,6 +32,12 @@ export const Account = ({
   const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
   const [fileResult, setFileResult] = useState("")
   const [editingProfileModal, setEditingProfileModal] = useState(false)
+  const [infoProfile, setInfoProfile] = useState({
+    name: "...",
+    surname: "...",
+    nick: "fedorova_m",
+    birthday: "...",
+  })
   useEffect(() => {}, [accountSection])
   return (
     <div className="accPage">
@@ -67,13 +73,10 @@ export const Account = ({
       </div>
       {profileModal && (
         <ProfileModal
-          name="Мария"
-          surname="Федорова"
-          nick="fedorova_m"
-          birthday="23.09.2006"
           setAuthorized={setAuthorized}
           setProfileModal={setProfileModal}
           setEditingProfileModal={setEditingProfileModal}
+          infoProfile={infoProfile}
         />
       )}
       {editingProfileModal && (
@@ -91,7 +94,11 @@ export const Account = ({
             alignItems: "center",
           }}
         >
-          <EditingProfile setEditingProfileModal={setEditingProfileModal} />
+          <EditingProfile
+            setEditingProfileModal={setEditingProfileModal}
+            infoProfile={infoProfile}
+            setInfoProfile={setInfoProfile}
+          />
         </div>
       )}
     </div>

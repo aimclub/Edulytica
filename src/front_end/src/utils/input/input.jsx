@@ -1,9 +1,11 @@
 import "./input.scss"
-export const Input = (props) => {
+export const Input = ({ type, placeholder, name, onChange }) => {
   return (
     <input
-      type={props.type}
-      placeholder={props.placeholder}
+      type={type}
+      placeholder={placeholder}
+      name={name}
+      onChange={onChange}
       className="input"
     />
   )

@@ -57,8 +57,8 @@ class _CheckCodeGet(_CheckCodeUpdate):
 class _TicketCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    prompt: Optional[str] = None
     shared: Optional[bool] = False
+    ticket_type: Optional[str]
     user_id: UUID4
     ticket_status_id: UUID4
     event_id: Optional[UUID4] = None

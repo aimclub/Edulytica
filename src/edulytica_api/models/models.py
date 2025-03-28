@@ -116,8 +116,8 @@ class Ticket(Base, AsyncAttrs):
     __tablename__ = 'tickets'
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    prompt: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     shared: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    ticket_type: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)

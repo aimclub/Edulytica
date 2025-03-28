@@ -38,7 +38,11 @@ def ragExample():
 
     llm_client = LanguageModelClient(api_key=openai_api_key)
 
-    message = llm_client.get_answers_openai(prompt=prompt, model="gpt-3.5-turbo-instruct", max_tokens=2648, temperature=0.5)
+    message = llm_client.get_answers_openai(
+        prompt=prompt,
+        model="gpt-3.5-turbo-instruct",
+        max_tokens=2648,
+        temperature=0.5)
 
     print(message)
 

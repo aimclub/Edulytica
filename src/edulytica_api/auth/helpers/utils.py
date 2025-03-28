@@ -112,8 +112,13 @@ def create_access_token(subject: Union[str, Any], expires_delta: Optional[timede
     Returns:
         str: Encoded access token.
     """
-    return create_jwt(token_data={"sub": str(subject)}, token_type=ACCESS_TOKEN_TYPE, jwt_secret=JWT_SECRET_KEY,
-                      expires_delta=expires_delta, expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    return create_jwt(
+        token_data={
+            "sub": str(subject)},
+        token_type=ACCESS_TOKEN_TYPE,
+        jwt_secret=JWT_SECRET_KEY,
+        expires_delta=expires_delta,
+        expires_minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
 
 def create_refresh_token(subject: Union[str, Any], checker: Union[str, Any],
@@ -129,9 +134,14 @@ def create_refresh_token(subject: Union[str, Any], checker: Union[str, Any],
     Returns:
         str: Encoded refresh token.
     """
-    return create_jwt(token_data={"sub": str(subject), 'checker': str(checker)}, token_type=REFRESH_TOKEN_TYPE,
-                      jwt_secret=JWT_REFRESH_SECRET_KEY, expires_delta=expires_delta,
-                      expires_minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+    return create_jwt(
+        token_data={
+            "sub": str(subject),
+            'checker': str(checker)},
+        token_type=REFRESH_TOKEN_TYPE,
+        jwt_secret=JWT_REFRESH_SECRET_KEY,
+        expires_delta=expires_delta,
+        expires_minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
 
 
 def get_expiry(token_exp: int) -> str:

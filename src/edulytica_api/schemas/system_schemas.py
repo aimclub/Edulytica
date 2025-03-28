@@ -58,8 +58,8 @@ class _TicketCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     shared: Optional[bool] = False
-    ticket_type: Optional[str]
     user_id: UUID4
+    ticket_type_id: Optional[UUID4] = None
     ticket_status_id: UUID4
     event_id: Optional[UUID4] = None
     custom_event_id: Optional[UUID4] = None

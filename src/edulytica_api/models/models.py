@@ -8,6 +8,7 @@ Classes:
     User: Represents system users and their related data.
     CheckCode: Represents codes used for verification purposes during registration or login.
     Ticket: Represents tickets related to document processing, their statuses, events, and other metadata.
+    TicketType: Represents different types of tickets.
     TicketStatus: Represents different statuses for tickets.
     Document: Represents user-uploaded documents and their association with users and tickets.
     DocumentSummary: Represents a summary of a document processed in the system.
@@ -101,7 +102,7 @@ class CheckCode(Base, AsyncAttrs):
     code: Mapped[str] = mapped_column(String(6), nullable=False)
 
     user_id: Mapped[uuid.UUID] = mapped_column(
-        UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+        UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='check_codes', lazy='selectin')
 
     created_at: Mapped[datetime] = mapped_column(
@@ -117,17 +118,22 @@ class Ticket(Base, AsyncAttrs):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     shared: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    ticket_type: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     user_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     user: Mapped["User"] = relationship('User', back_populates='tickets', lazy='selectin')
+    ticket_type_id: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True), ForeignKey('ticket_types.id'), nullable=True)
+    ticket_type: Mapped["TicketType"] = relationship(
+        'TicketType', back_populates='tickets', lazy='selectin')
     ticket_status_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True), ForeignKey('ticket_statuses.id'), nullable=False)
-    ticket_status: Mapped["UserRole"] = relationship('TicketStatus', lazy='selectin')
+    ticket_status: Mapped["TicketStatus"] = relationship(
+        'TicketStatus', back_populates='tickets', lazy='selectin')
     event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('events.id'), nullable=True)
-    event: Mapped["Event"] = relationship('Event', back_populates='tickets', lazy='selectin')
+    event: Mapped["Event"] = relationship(
+        'Event', back_populates='tickets', lazy='selectin')
     custom_event_id: Mapped[Optional[uuid.UUID]] = mapped_column(
         UUID(as_uuid=True), ForeignKey('custom_events.id'), nullable=True)
     custom_event: Mapped["CustomEvent"] = relationship(
@@ -150,6 +156,19 @@ class Ticket(Base, AsyncAttrs):
         DateTime(timezone=True), default=datetime_now_moscow)
 
 
+class TicketType(Base, AsyncAttrs):
+    """
+    Represents different types of tickets.
+    This model is used to track the various types of a tickets.
+    """
+    __tablename__ = 'ticket_types'
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+
+    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='ticket_type', lazy='selectin')
+
+
 class TicketStatus(Base, AsyncAttrs):
     """
     Represents different statuses for tickets.
@@ -159,6 +178,8 @@ class TicketStatus(Base, AsyncAttrs):
 
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
+
+    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='ticket_status', lazy='selectin')
 
 
 class Document(Base, AsyncAttrs):

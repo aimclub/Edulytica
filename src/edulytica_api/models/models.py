@@ -166,7 +166,8 @@ class TicketType(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
 
-    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='ticket_type', lazy='selectin')
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='ticket_type', lazy='selectin')
 
 
 class TicketStatus(Base, AsyncAttrs):
@@ -179,7 +180,8 @@ class TicketStatus(Base, AsyncAttrs):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name: Mapped[str] = mapped_column(String(50), nullable=False, unique=True)
 
-    tickets: Mapped[List["Ticket"]] = relationship('Ticket', back_populates='ticket_status', lazy='selectin')
+    tickets: Mapped[List["Ticket"]] = relationship(
+        'Ticket', back_populates='ticket_status', lazy='selectin')
 
 
 class Document(Base, AsyncAttrs):

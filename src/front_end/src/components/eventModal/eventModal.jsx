@@ -10,6 +10,15 @@ const arr_event = [
   "ППС2",
   "ППС4",
 ]
+
+/**
+ * Компонент модального окна для выбора мероприятия.
+ *
+ * @param {Function} props.setSelectedEvent - Функция для установки выбранного мероприятия.
+ * @param {Function} props.closeModal - Функция для закрытия модального окна.
+ * @returns {JSX.Element} Модальное окно выбора мероприятия.
+ */
+
 export const EventModal = ({ setSelectedEvent, closeModal }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
   const [filterEvent, setFilterEvent] = useState(arr_event)

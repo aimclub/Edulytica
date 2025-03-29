@@ -73,6 +73,20 @@ const AppRoutes = ({
         }
       />
       <Route
+        path="/account/result"
+        element={
+          <Account
+            accountModal={accountModal}
+            setAccountModal={setAccountModal}
+            profileModal={profileModal}
+            setProfileModal={setProfileModal}
+            setAuthorized={setAuthorized}
+            accountSection={accountSection}
+            setAccountSection={setAccountSection}
+          />
+        }
+      />
+      <Route
         path="/registration"
         element={
           <Registration

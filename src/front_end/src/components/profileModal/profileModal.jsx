@@ -1,27 +1,27 @@
 import { Link } from "react-router-dom"
 import "./profileModal.scss"
+import { useEffect } from "react"
 /**
  * @param {object} props - Объект с пропсами компонента.
- * @param {string} props.name - Имя пользователя.
- * @param {string} props.surname - Фамилия пользователя.
- * @param {string} props.nick - Никнейм пользователя.
- * @param {string} props.birthday - Дата рождения пользователя.
  * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя.
  * @returns {JSX.Element} Модальное окно профиля.
  */
 
 export const ProfileModal = ({
-  name,
-  surname,
-  nick,
-  birthday,
   setAuthorized,
   setProfileModal,
+  setEditingProfileModal,
+  infoProfile,
 }) => {
   const handleLogOut = () => {
     setAuthorized((pr) => !pr)
     setProfileModal(false)
   }
+  const openEditingProfileModal = () => {
+    setEditingProfileModal(true)
+    setProfileModal(false)
+  }
+  useEffect(() => {}, [infoProfile])
   return (
     <div className="profileModal">
       <div
@@ -37,10 +37,14 @@ export const ProfileModal = ({
         Мой аккаунт
       </div>
       <div className="blockInfProfileModal">
-        <div className="infProfileModal">Имя: {name}</div>
-        <div className="infProfileModal">Фамилия: {surname}</div>
-        <div className="infProfileModal">Имя пользователя: {nick}</div>
-        <div className="infProfileModal">Дата рождения: {birthday}</div>
+        <div className="infProfileModal">Имя: {infoProfile.name}</div>
+        <div className="infProfileModal">Фамилия: {infoProfile.surname}</div>
+        <div className="infProfileModal">
+          Имя пользователя: {infoProfile.nick}
+        </div>
+        <div className="infProfileModal">
+          Дата рождения: {infoProfile.birthday}
+        </div>
       </div>
       <div
         className="infProfileModal"
@@ -50,6 +54,7 @@ export const ProfileModal = ({
           paddingLeft: "13px",
           cursor: "pointer",
         }}
+        onClick={openEditingProfileModal}
       >
         Редактировать информацию
       </div>

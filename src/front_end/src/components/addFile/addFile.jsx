@@ -1,7 +1,9 @@
+
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
 import { Link } from "react-router-dom"
+
 
 /**
  * Компонент для прикрепления и работы с файлом.
@@ -13,6 +15,7 @@ import { Link } from "react-router-dom"
  * @returns {JSX.Element} - Элемент интерфейса для работы с файлом.
  */
 
+
 export const AddFile = ({
   setAccountSection,
   selectedParams,
@@ -23,6 +26,7 @@ export const AddFile = ({
   const fileInputRef = useRef(null)
 
   /** Открывает/закрывает модальное окно выбора мероприятия */
+
   const openEventModal = () => {
     setEventModal((pr) => !pr)
   }
@@ -45,15 +49,19 @@ export const AddFile = ({
         { type: "file", name: fileName },
         ...prev.filter((param) => param.type !== "file"),
       ])
+
       setFileResult(fileName)
+
     } else {
       alert("Пожалуйста, выберите .pdf файл")
     }
   }
 
+
   /**
    * Обрезает строку до заданной длины и добавляет многоточие, если строка длиннее.
    */
+
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "..."
@@ -91,6 +99,7 @@ export const AddFile = ({
         <div className="titleAddFile">Начните работу над документом</div>
         <div className="blockAddFile">
           <div className="textBlockAddFile">
+
             {sortedParams.length > 0
               ? sortedParams.map((param) => (
                   <div className="paramBlockAddFile" key={param.name}>
@@ -166,6 +175,7 @@ export const AddFile = ({
                 to="/account/help"
                 onClick={handleHelpPage}
                 style={{ textDecoration: "none" }}
+
               >
                 <div className="parameterBtnAddFile">
                   <svg

@@ -1,6 +1,6 @@
-from src.edulytica_api.crud.base.factory import BaseCrudFactory
-from src.edulytica_api.models import DocumentSummary
-from src.edulytica_api.schemas import DocumentSummaryModels
+from src.database_module.crud.base.factory import BaseCrudFactory
+from src.database_module.models import DocumentSummary
+from src.database_module.schemas import DocumentSummaryModels
 
 
 class DocumentSummaryCrud(

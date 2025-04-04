@@ -25,7 +25,7 @@ from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncAttrs
 from sqlalchemy.orm import Mapped, mapped_column, relationship, DeclarativeBase
-from src.edulytica_api.utils.moscow_datetime import datetime_now_moscow
+from src.database_module.utils.moscow_datetime import datetime_now_moscow
 
 
 class Base(AsyncAttrs, DeclarativeBase):

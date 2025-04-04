@@ -4,7 +4,7 @@ This module provides a utility function for password validation in authenticatio
 
 from fastapi import HTTPException
 from starlette import status
-from src.edulytica_api.auth.helpers.utils import verify_password
+from src.auth.source.helpers.utils import verify_password
 
 
 def password_validate(password1: str, password2: str):

@@ -1,6 +1,6 @@
-from src.edulytica_api.crud.base.factory import BaseCrudFactory
-from src.edulytica_api.models import Document
-from src.edulytica_api.schemas import DocumentModels
+from src.database_module.crud.base.factory import BaseCrudFactory
+from src.database_module.models import Document
+from src.database_module.schemas import DocumentModels
 
 
 class DocumentCrud(

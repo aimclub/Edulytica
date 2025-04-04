@@ -4,16 +4,15 @@ It includes functionality for verifying tokens, extracting user information, and
 """
 
 from typing import Annotated
-
 from fastapi import HTTPException, Depends
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from src.edulytica_api.crud.user_crud import UserCrud
-from src.edulytica_api.database import get_session
-from src.edulytica_api.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
-from src.edulytica_api.auth.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
+from src.database_module.crud.user_crud import UserCrud
+from src.database_module.database import get_session
+from src.auth.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
+from src.auth.source.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
     OAuth2PasswordBearerWithCookie
 
 

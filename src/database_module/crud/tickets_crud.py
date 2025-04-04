@@ -1,6 +1,6 @@
-from src.edulytica_api.crud.base.factory import BaseCrudFactory
-from src.edulytica_api.models import Ticket
-from src.edulytica_api.schemas import TicketModels
+from src.database_module.crud.base.factory import BaseCrudFactory
+from src.database_module.models import Ticket
+from src.database_module.schemas import TicketModels
 
 
 class TicketCrud(

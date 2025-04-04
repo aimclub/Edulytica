@@ -5,7 +5,7 @@ from alembic import context
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncConnection
 
-from src.edulytica_api.models.models import Base
+from src.database_module.models import Base
 
 config = context.config
 if config.config_file_name is not None:

@@ -1,6 +1,6 @@
-from src.edulytica_api.crud.base.factory import BaseCrudFactory
-from src.edulytica_api.models import DocumentReport
-from src.edulytica_api.schemas import DocumentReportModels
+from src.database_module.crud.base.factory import BaseCrudFactory
+from src.database_module.models import DocumentReport
+from src.database_module.schemas import DocumentReportModels
 
 
 class DocumentReportCrud(

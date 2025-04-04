@@ -9,9 +9,8 @@ import uuid
 from typing import Sequence, Union
 
 from alembic import op
-import sqlalchemy as sa
 
-from src.edulytica_api.utils.default_enums import UserRoleDefault, TicketStatusDefault
+from src.database_module.utils.default_enums import UserRoleDefault, TicketStatusDefault
 
 
 # revision identifiers, used by Alembic.

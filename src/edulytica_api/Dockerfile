@@ -10,6 +10,7 @@ RUN pip install -r requirements.txt
 ENV PYTHONPATH=/app
 
 COPY . .
+COPY src/database_module /app/src/database_module
 
 COPY src/edulytica_api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

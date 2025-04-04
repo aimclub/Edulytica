@@ -3,21 +3,21 @@ from typing import Annotated
 from fastapi import APIRouter
 from fastapi import Response
 from fastapi.security import OAuth2PasswordRequestForm
-from src.edulytica_api.crud.token_crud import TokenCrud
-from src.edulytica_api.crud.user_crud import UserCrud
-from src.edulytica_api.crud.user_role_crud import UserRoleCrud
-from src.edulytica_api.database import get_session
-import src.edulytica_api.schemas.auth as auth_schemas
+from src.database_module.crud.token_crud import TokenCrud
+from src.database_module.crud.user_crud import UserCrud
+from src.database_module.crud.user_role_crud import UserRoleCrud
+from src.database_module.database import get_session
+import src.database_module.schemas.auth as auth_schemas
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends, HTTPException, status
-from src.edulytica_api.auth.helpers.validators import password_validate
-from src.edulytica_api.models import User
-from src.edulytica_api.auth.auth_bearer import refresh_token_auth, access_token_auth
-from src.edulytica_api.auth.helpers.utils import create_access_token, create_refresh_token, verify_password, \
+from src.auth.source.helpers.validators import password_validate
+from src.database_module.models import User
+from src.auth.source.auth_bearer import refresh_token_auth, access_token_auth
+from src.auth.source.helpers.utils import create_access_token, create_refresh_token, verify_password, \
     get_hashed_password, get_expiry
-from src.edulytica_api.settings import REFRESH_TOKEN_EXPIRE_MINUTES
-from src.edulytica_api.utils.default_enums import UserRoleDefault
-from src.edulytica_api.utils.logger import api_logs
+from src.auth.settings import REFRESH_TOKEN_EXPIRE_MINUTES
+from src.database_module.utils.default_enums import UserRoleDefault
+from src.database_module.utils.logger import api_logs
 
 
 auth_router = APIRouter()

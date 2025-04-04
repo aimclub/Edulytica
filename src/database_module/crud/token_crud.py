@@ -1,6 +1,6 @@
-from src.edulytica_api.crud.base.factory import BaseCrudFactory
-from src.edulytica_api.models import Token
-from src.edulytica_api.schemas import TokenModels
+from src.database_module.crud.base.factory import BaseCrudFactory
+from src.database_module.models import Token
+from src.database_module.schemas import TokenModels
 
 
 class TokenCrud(

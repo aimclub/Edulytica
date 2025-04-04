@@ -4,20 +4,19 @@ import { Link } from "react-router-dom"
 const arr_history_file = [
   "file1.pdf",
   "file2.pdf",
-  "febilqbef.pdf",
-  "mjjk120--0102-03-2220-120122.pdf",
+  "edulytica_PPS.pdf",
+  "itmo_stars.pdf",
   "msha.pdf",
   "file3.pdf",
-  "file5.pdf",
-  "masha.pdf",
-  "masmnc.pdf",
-  "file_doc.pdf",
+  "molotov_history_itmo.pdf",
+  "mas.pdf",
+  "kik_WB.pdf",
   "file_math.pdf",
   "file14.pdf",
   "file2.pdf",
-  "itmo_file1.pdf",
+  "itmo_file.pdf",
   "file11.pdf",
-  "file1000100101010100110.pdf",
+  "file100.pdf",
   "file12.pdf",
   "file13.pdf",
   "file14.pdf",
@@ -38,7 +37,6 @@ export const AccountModal = ({
   accountSection,
   setFileResult,
 }) => {
-
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
 
@@ -107,9 +105,7 @@ export const AccountModal = ({
               setAccountSection("main")
             }}
             className={
-
               accountSection === "main" || accountSection === "result"
-
                 ? "titleAccModalActive"
                 : "titleAccModal"
             }
@@ -153,7 +149,6 @@ export const AccountModal = ({
         </div>
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
-
             {filterHistory.map((file, index) => (
               <Link
                 to="/account/result"
@@ -163,7 +158,6 @@ export const AccountModal = ({
                 <div
                   className="fileLineAccModal"
                   onClick={() => handleFileLine(file)}
-
                 >
                   <div className="fileAccModal">{truncateString(file, 16)}</div>
                   <svg

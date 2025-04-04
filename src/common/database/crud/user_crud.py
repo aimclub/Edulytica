@@ -1,6 +1,6 @@
-from src.database_module.crud.base.factory import BaseCrudFactory
-from src.database_module.models import User
-from src.database_module.schemas import UserModels
+from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.models import User
+from src.common.database.schemas import UserModels
 
 
 class UserCrud(

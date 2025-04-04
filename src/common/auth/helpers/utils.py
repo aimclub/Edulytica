@@ -9,7 +9,7 @@ from typing import Union, Any, Optional
 from jose import jwt
 from passlib.context import CryptContext
 from starlette.status import HTTP_401_UNAUTHORIZED
-from src.auth.settings import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, \
+from src.common.config import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, JWT_SECRET_KEY, \
     JWT_REFRESH_SECRET_KEY, REFRESH_TOKEN_EXPIRE_MINUTES
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Request, HTTPException

@@ -1,7 +1,7 @@
 import celery
 from celery import Celery
 from pathlib import Path
-from src.database_module.database import SessionLocal
+from src.common.database.database import SessionLocal
 from src.edulytica_api.llms.llm_model import LLM
 from celery.signals import celeryd_after_setup
 

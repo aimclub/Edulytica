@@ -10,7 +10,7 @@ from typing import Sequence, Union
 
 from alembic import op
 
-from src.database_module.utils.default_enums import UserRoleDefault, TicketStatusDefault
+from src.common.utils.default_enums import UserRoleDefault, TicketStatusDefault
 
 
 # revision identifiers, used by Alembic.

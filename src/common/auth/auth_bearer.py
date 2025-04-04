@@ -9,10 +9,10 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette import status
-from src.database_module.crud.user_crud import UserCrud
-from src.database_module.database import get_session
-from src.auth.settings import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
-from src.auth.source.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
+from src.common.database.crud.user_crud import UserCrud
+from src.common.database.database import get_session
+from src.common.config import ALGORITHM, JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY
+from src.common.auth.helpers.utils import TOKEN_TYPE_FIELD, ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE, \
     OAuth2PasswordBearerWithCookie
 
 

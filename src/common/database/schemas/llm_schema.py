@@ -1,12 +1,6 @@
 import uuid
 from typing import List
-
-from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict
-
-
-class UploadFileData(BaseModel):
-    file: UploadFile
 
 
 class ResultFilesUpdate(BaseModel):

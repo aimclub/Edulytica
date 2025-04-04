@@ -4,21 +4,21 @@ from pathlib import Path
 from starlette import status
 from starlette.responses import FileResponse
 from starlette.status import HTTP_400_BAD_REQUEST
-from src.database_module.crud.document_crud import DocumentCrud
-from src.database_module.crud.ticket_status_crud import TicketStatusCrud
+from src.common.database.crud.document_crud import DocumentCrud
+from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
 from src.edulytica_api.celery.tasks import get_llm_purpose_result, get_llm_summary_result
-from src.database_module.crud.document_report_crud import DocumentReportCrud
-from src.database_module.crud.tickets_crud import TicketCrud
+from src.common.database.crud.document_report_crud import DocumentReportCrud
+from src.common.database.crud.tickets_crud import TicketCrud
 from fastapi import APIRouter, Depends, UploadFile, HTTPException
-from src.database_module.database import get_session
-from src.auth.source.auth_bearer import access_token_auth
+from src.common.database.database import get_session
+from src.common.auth.auth_bearer import access_token_auth
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
-from src.database_module.schemas.llm_schema import TicketGetResponse
-from src.database_module.utils.default_enums import TicketStatusDefault
-from src.database_module.utils.logger import api_logs
+from src.common.database.schemas.llm_schema import TicketGetResponse
+from src.common.utils.default_enums import TicketStatusDefault
+from src.common.utils.logger import api_logs
 
 llm_router = APIRouter(prefix="/llm")
 ROOT_DIR = Path(__file__).resolve().parents[1]

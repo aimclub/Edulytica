@@ -7,7 +7,7 @@ import logging
 import inspect
 from functools import wraps
 from colorlog import ColoredFormatter
-from src.database_module.utils.moscow_datetime import datetime_now_moscow
+from src.common.utils.moscow_datetime import datetime_now_moscow
 
 
 class CustomColoredFormatter(ColoredFormatter):

@@ -4,13 +4,16 @@ RUN apt-get update && apt-get install -y gcc libpq-dev postgresql-client
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY src/edulytica_api/requirements.txt .
+COPY src/common/requirements_common.txt .
+
+RUN pip install -r requirements_common.txt
 RUN pip install -r requirements.txt
 
 ENV PYTHONPATH=/app
 
 COPY . .
-COPY src/database_module /app/src/database_module
+COPY src/common /app/src/common
 
 COPY src/edulytica_api/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh

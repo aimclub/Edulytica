@@ -1,6 +1,6 @@
-from src.database_module.crud.base.factory import BaseCrudFactory
-from src.database_module.models import Document
-from src.database_module.schemas import DocumentModels
+from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.models import Document
+from src.common.database.schemas import DocumentModels
 
 
 class DocumentCrud(

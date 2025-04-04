@@ -3,7 +3,6 @@ import os
 import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
-from os.path import join
 from xml.etree.ElementTree import Element
 from .schemas import schemas
 from .Elem import Elem

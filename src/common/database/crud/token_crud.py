@@ -1,6 +1,6 @@
-from src.database_module.crud.base.factory import BaseCrudFactory
-from src.database_module.models import Token
-from src.database_module.schemas import TokenModels
+from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.models import Token
+from src.common.database.schemas import TokenModels
 
 
 class TokenCrud(

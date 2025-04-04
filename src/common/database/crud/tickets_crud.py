@@ -1,6 +1,6 @@
-from src.database_module.crud.base.factory import BaseCrudFactory
-from src.database_module.models import Ticket
-from src.database_module.schemas import TicketModels
+from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.models import Ticket
+from src.common.database.schemas import TicketModels
 
 
 class TicketCrud(

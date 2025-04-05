@@ -9,5 +9,5 @@ class IModel(ABC):
         pass
 
     @abstractmethod
-    def generate(self, prompt, max_new_tokens=512, return_full_text=False):
+    def generate(self, prompts, max_new_tokens=512):
         pass

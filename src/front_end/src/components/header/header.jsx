@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import logo from "../../assets/images/logo.svg"
 import "./header.scss"
 import { Link } from "react-router-dom"
@@ -24,6 +24,7 @@ const Header = ({
   const handleSvgAccount = () => {
     setProfileModal((pr) => !pr)
   }
+  useEffect(() => {}, [authorized])
 
   return (
     <div className="header">

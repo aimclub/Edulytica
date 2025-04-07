@@ -142,20 +142,20 @@ export const EditingProfile = ({
             <div className="inputContainerEditingProfile">
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">Старый пароль</div>
-                <Input type="text" placeholder="Введите старый пароль..." />
+                <Input type="password" placeholder="Введите старый пароль..." />
               </div>
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">
                   Введите новый пароль
                 </div>
-                <Input type="text" placeholder="Введите новый пароль..." />
+                <Input type="password" placeholder="Введите новый пароль..." />
               </div>
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">
                   Введите повторно новый пароль
                 </div>
                 <Input
-                  type="text"
+                  type="password"
                   placeholder="Введите повторно новый пароль..."
                 />
               </div>

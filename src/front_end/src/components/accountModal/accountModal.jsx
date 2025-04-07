@@ -38,9 +38,13 @@ export const AccountModal = ({
   accountSection,
   setFileResult,
 }) => {
-
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
+  const [animate, setAnimate] = useState(false)
+
+  useEffect(() => {
+    setTimeout(() => setAnimate(true), 50) // небольшая задержка, чтобы сработал transition
+  }, [])
 
   useEffect(() => {
     const filterData = () => {
@@ -71,7 +75,7 @@ export const AccountModal = ({
   }
 
   return (
-    <div className="accModal">
+    <div className={`accModal ${animate ? "animate" : ""}`}>
       <div className="titleBlockAccModal">
         <Link to="/account/info" style={{ textDecoration: "none" }}>
           <div
@@ -107,9 +111,7 @@ export const AccountModal = ({
               setAccountSection("main")
             }}
             className={
-
               accountSection === "main" || accountSection === "result"
-
                 ? "titleAccModalActive"
                 : "titleAccModal"
             }
@@ -153,7 +155,6 @@ export const AccountModal = ({
         </div>
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
-
             {filterHistory.map((file, index) => (
               <Link
                 to="/account/result"
@@ -163,7 +164,6 @@ export const AccountModal = ({
                 <div
                   className="fileLineAccModal"
                   onClick={() => handleFileLine(file)}
-
                 >
                   <div className="fileAccModal">{truncateString(file, 16)}</div>
                   <svg

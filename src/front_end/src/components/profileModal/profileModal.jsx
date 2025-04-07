@@ -14,7 +14,7 @@ export const ProfileModal = ({
   infoProfile,
 }) => {
   const handleLogOut = () => {
-    setAuthorized((pr) => !pr)
+    setAuthorized(false)
     setProfileModal(false)
   }
   const openEditingProfileModal = () => {

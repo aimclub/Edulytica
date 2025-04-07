@@ -1,9 +1,7 @@
-
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
 import { Link } from "react-router-dom"
-
 
 /**
  * Компонент для прикрепления и работы с файлом.
@@ -14,7 +12,6 @@ import { Link } from "react-router-dom"
  * @param {Function} props.setFileResult - Функция для установки имени загруженного файла.
  * @returns {JSX.Element} - Элемент интерфейса для работы с файлом.
  */
-
 
 export const AddFile = ({
   setAccountSection,
@@ -51,12 +48,10 @@ export const AddFile = ({
       ])
 
       setFileResult(fileName)
-
     } else {
       alert("Пожалуйста, выберите .pdf файл")
     }
   }
-
 
   /**
    * Обрезает строку до заданной длины и добавляет многоточие, если строка длиннее.
@@ -99,7 +94,6 @@ export const AddFile = ({
         <div className="titleAddFile">Начните работу над документом</div>
         <div className="blockAddFile">
           <div className="textBlockAddFile">
-
             {sortedParams.length > 0
               ? sortedParams.map((param) => (
                   <div className="paramBlockAddFile" key={param.name}>
@@ -121,7 +115,6 @@ export const AddFile = ({
                     {truncateString(param.name, 40)}
                   </div>
                 ))
-
               : "Выберите параметры работы над документом..."}
           </div>
           <div className="parametersLineAddFile">
@@ -175,7 +168,6 @@ export const AddFile = ({
                 to="/account/help"
                 onClick={handleHelpPage}
                 style={{ textDecoration: "none" }}
-
               >
                 <div className="parameterBtnAddFile">
                   <svg

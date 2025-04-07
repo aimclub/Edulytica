@@ -117,4 +117,15 @@
   gap: 25px;
   margin-left: 50px;
   margin-top: 54px;
+  width: 301px;
+  transform: translateY(-60px);
+  opacity: 0;
+  transition: transform 0.55s ease, opacity 0.55s ease;
+  position: relative;
+  z-index: 10;
+}
+
+.accModal.animate {
+  transform: translateY(0);
+  opacity: 1;
 }

@@ -1,6 +1,6 @@
 import uuid
 from typing import Annotated
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from fastapi import Response
 from fastapi.security import OAuth2PasswordRequestForm
 from src.common.database.crud.token_crud import TokenCrud
@@ -20,7 +20,7 @@ from src.common.utils.default_enums import UserRoleDefault
 from src.common.utils.logger import api_logs
 
 
-auth_router = APIRouter()
+auth_router = APIRouter(prefix='/v1')
 
 
 @api_logs(auth_router.post('/login'))

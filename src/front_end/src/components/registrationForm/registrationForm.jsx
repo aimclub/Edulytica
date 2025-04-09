@@ -32,9 +32,9 @@ export const RegistrationForm = ({
   }, [registrationPage])
 
   return (
-    <div className="registrationForm">
+    <>
       {loginModal === "login" ? (
-        <>
+        <div className="registrationForm">
           <div className="titleRegistrationForm">Вход</div>
           <div className="containerRegistrationForm">
             <div className="inputContainerRegistrationForm">
@@ -98,9 +98,9 @@ export const RegistrationForm = ({
               </div>
             </div>
           </div>
-        </>
+        </div>
       ) : loginModal === "registration" ? (
-        <>
+        <div className="registrationForm">
           <div className="titleRegistrationForm">Регистрация</div>
           <div className="containerRegistrationForm">
             <div className="inputContainerRegistrationForm">
@@ -146,9 +146,9 @@ export const RegistrationForm = ({
               </div>
             </div>
           </div>
-        </>
+        </div>
       ) : loginModal === "registration2" ? (
-        <>
+        <div className="registrationForm">
           <div className="titleRegistrationForm">Регистрация</div>
           <div className="containerRegistrationForm">
             <div className="inputContainerRegistrationForm">
@@ -189,8 +189,8 @@ export const RegistrationForm = ({
               </div>
             </div>
           </div>
-        </>
+        </div>
       ) : null}
-    </div>
+    </>
   )
 }

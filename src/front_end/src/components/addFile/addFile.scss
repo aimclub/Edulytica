@@ -101,3 +101,34 @@
   align-items: center;
   gap: 8px;
 }
+
+@media (max-width: 1154px) {
+  .blockAddFile {
+    max-width: 686px;
+    width: calc(100% - 72px);
+  }
+  .addFileTopCont {
+    max-width: 686px;
+  }
+  .addFile {
+    max-width: 686px;
+  }
+  .titleAddFile {
+    font-size: 37px;
+  }
+}
+@media (max-width: 1028px) {
+  .blockAddFile {
+    max-width: 586px;
+    width: calc(100% - 72px);
+  }
+  .addFileTopCont {
+    max-width: 586px;
+  }
+  .addFile {
+    max-width: 586px;
+  }
+  .titleAddFile {
+    font-size: 34px;
+  }
+}

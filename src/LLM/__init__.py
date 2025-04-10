@@ -1,2 +1,2 @@
-from IModel import *
-from utils import *
+from src.LLM.IModel import *
+from src.LLM.utils import *

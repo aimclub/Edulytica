@@ -14,12 +14,12 @@ class Qwen2_5_instruct(IModel):
         self.device = self.model.device
         self.system_prompt = system_prompt
 
-    def apply_chat_template(self, prompts: list):
+    def apply_chat_template(self, system_prompt, prompts: list):
         """Method for applying chat template"""
         messages = list()
         for prompt in prompts:
             message = [
-                {"role": "system", "content": self.system_prompt},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
             messages.append(message)
@@ -33,7 +33,7 @@ class Qwen2_5_instruct(IModel):
         Takes list of prompts and max new tokens and return list with model generated text"""
         generation_config = GenerationConfig(max_new_tokens=max_new_tokens)
 
-        texts = self.apply_chat_template(prompts)
+        texts = self.apply_chat_template(self.system_prompt, prompts)
         model_inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
 
         outputs = self.model.generate(**model_inputs, generation_config=generation_config)
@@ -61,3 +61,5 @@ class Qwen2_5_instruct_pipline(IModel):
             return_full_text=return_full_text
         )
         return self.pipeline(prompts)
+if __name__ == "__main__":
+    model = Qwen2_5_instruct()

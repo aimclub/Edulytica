@@ -1,1 +1,1 @@
-from Qwen2_5_instruct import *
+from src.LLM.qwen.Qwen2_5_instruct import *

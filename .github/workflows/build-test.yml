@@ -12,8 +12,11 @@ jobs:
     steps:
       - name: Print working directory
         run: pwd
-      - name: List files in current directory
-        run: ls -la
+      - name: List files in current working directory
+        run: |
+          current_directory=$(pwd)
+          echo "Current working directory: ${current_directory}"
+          ls -la "${current_directory}"
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v3

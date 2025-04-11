@@ -1,2 +1,2 @@
-from src.LLM.IModel import *
-from src.LLM.utils import *
+from Edulytica.src.LLM.IModel import *
+from Edulytica.src.LLM.utils import *

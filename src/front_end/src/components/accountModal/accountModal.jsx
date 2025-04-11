@@ -39,6 +39,11 @@ export const AccountModal = ({
 }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState(arr_history_file)
+  const [animate, setAnimate] = useState(false)
+
+  useEffect(() => {
+    setTimeout(() => setAnimate(true), 50) // небольшая задержка, чтобы сработал transition
+  }, [])
 
   useEffect(() => {
     const filterData = () => {
@@ -69,7 +74,7 @@ export const AccountModal = ({
   }
 
   return (
-    <div className="accModal">
+    <div className={`accModal ${animate ? "animate" : ""}`}>
       <div className="titleBlockAccModal">
         <Link to="/account/info" style={{ textDecoration: "none" }}>
           <div

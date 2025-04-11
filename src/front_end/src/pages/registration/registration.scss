@@ -6,7 +6,6 @@
   justify-content: start;
   align-items: center;
   gap: 25px;
-  overflow: hidden;
   margin-top: -8px;
 }
 .blockLeftRegistrationPage {
@@ -16,6 +15,7 @@
   gap: 6px;
   padding-left: 50px;
   cursor: pointer;
+  overflow: hidden;
   text-decoration: none;
 }
 .textLeftRegistrationPage {

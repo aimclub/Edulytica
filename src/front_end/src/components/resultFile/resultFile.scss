@@ -47,7 +47,7 @@
   color: #000;
   height: 100%;
   display: flex;
-  min-width: "700px";
+  min-width: 700px;
   margin: 30px 44px;
   overflow-y: auto;
 }
@@ -130,7 +130,8 @@
     max-width: 750px;
   }
   .textContScrollResultFile {
-    max-width: 750px;
+    max-width: 720px;
+    min-width: 500px;
   }
   .containerResultFile {
     max-width: 898px;
@@ -141,7 +142,7 @@
     max-width: 650px;
   }
   .textContScrollResultFile {
-    max-width: 650px;
+    max-width: 630px;
     min-width: 550px;
   }
 }

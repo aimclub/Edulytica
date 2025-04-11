@@ -1,6 +1,6 @@
 import unittest
 
-from src.LLM.qwen.Qwen2_5_instruct import Qwen2_5_instruct, Qwen2_5_instruct_pipline
+from Edulytica.src.LLM.qwen.Qwen2_5_instruct import Qwen2_5_instruct, Qwen2_5_instruct_pipline
 
 
 class TestQwen2_5_instruct(unittest.TestCase):

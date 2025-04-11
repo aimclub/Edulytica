@@ -1,6 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, pipeline
-from src.LLM import IModel
-from src.LLM import DEFAULT_SYSTEM_PROMPT
+from Edulytica.src.LLM import IModel
+from Edulytica.src.LLM import DEFAULT_SYSTEM_PROMPT
 
 
 class Qwen2_5_instruct(IModel):

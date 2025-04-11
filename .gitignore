@@ -8,8 +8,8 @@ __pycache__/
 .idea
 .vscode
 **/__pycache__
-**/test*
-test_folder
+#**/test*
+#test_folder
 
 # Distribution / packaging
 .Python

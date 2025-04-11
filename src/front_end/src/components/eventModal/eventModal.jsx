@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react"
 import "./eventModal.scss"
-const arr_event = [
-  "ППС1",
-  "КМУ1",
-  "ППС3",
-  "КМУ2",
-  "ППС5",
-  "ППС6",
-  "ППС2",
-  "ППС4",
-]
-
+const arr_event = ["ППС", "КМУ"]
 
 /**
  * Компонент модального окна для выбора мероприятия.
@@ -19,7 +9,6 @@ const arr_event = [
  * @param {Function} props.closeModal - Функция для закрытия модального окна.
  * @returns {JSX.Element} Модальное окно выбора мероприятия.
  */
-
 
 export const EventModal = ({ setSelectedEvent, closeModal }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")

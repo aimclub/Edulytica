@@ -30,7 +30,9 @@ const Header = ({
     <div className="header">
       {!authorized ? (
         <>
-          <img src={logo} alt="logo" />
+          <div className="logoHeader">
+            <img src={logo} alt="logo" />
+          </div>
           <div className="btnContainerHeader" style={{ marginTop: "18px" }}>
             <Link to="/login" style={{ textDecoration: "none" }}>
               <div className="loginButtonHeader">Войти</div>

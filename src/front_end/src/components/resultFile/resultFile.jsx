@@ -121,7 +121,6 @@ export const ResultFile = ({ fileName }) => {
                   style={{
                     paddingRight: isScrollable ? "20px" : "0",
                     marginRight: isScrollable ? "35px" : "44px",
-                    minWidth: "800px",
                   }}
                   ref={scrollRef}
                 >

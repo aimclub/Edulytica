@@ -85,9 +85,9 @@ export const EditingProfile = ({
                 <path
                   d="M6.83109 4.31C7.48359 4.115 8.20359 3.9875 8.99859 3.9875C12.5911 3.9875 15.5011 6.8975 15.5011 10.49C15.5011 14.0825 12.5911 16.9925 8.99859 16.9925C5.40609 16.9925 2.49609 14.0825 2.49609 10.49C2.49609 9.155 2.90109 7.91 3.59109 6.875M8.06859 2L5.90109 4.49L8.42859 6.335"
                   stroke="#BEBABA"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               Изменить
@@ -108,10 +108,10 @@ export const EditingProfile = ({
               <path
                 d="M13.2034 14.0228L19.9903 7.83603L13.2228 1.62808M1.00965 7.80637L19.8005 7.83573"
                 stroke="#B4B4B4"
-                stroke-width="1.75"
-                stroke-miterlimit="10"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeWidth="1.75"
+                strokeMiterlimit="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               />
             </svg>
           </div>
@@ -174,9 +174,9 @@ export const EditingProfile = ({
                 <path
                   d="M6.83109 4.31C7.48359 4.115 8.20359 3.9875 8.99859 3.9875C12.5911 3.9875 15.5011 6.8975 15.5011 10.49C15.5011 14.0825 12.5911 16.9925 8.99859 16.9925C5.40609 16.9925 2.49609 14.0825 2.49609 10.49C2.49609 9.155 2.90109 7.91 3.59109 6.875M8.06859 2L5.90109 4.49L8.42859 6.335"
                   stroke="#BEBABA"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
                 />
               </svg>
               Изменить

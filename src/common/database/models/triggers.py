@@ -1,8 +1,8 @@
-
 # Триггер на запрет вставки CheckCode, если в базе данных уже существует запись с таким же кодом
 # И которая была отправлена не более минуты назад
 check_code_created_at_difference_trigger = {
-    'upgrade': """
+    'upgrade': [
+        """
         CREATE OR REPLACE FUNCTION check_code_created_at_difference()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -18,22 +18,25 @@ check_code_created_at_difference_trigger = {
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-
+        """,
+        """
         CREATE TRIGGER trigger_check_code_created_at_difference
         BEFORE INSERT ON check_codes
         FOR EACH ROW
         EXECUTE FUNCTION check_code_created_at_difference();
-    """,
-    'downgrade': """
-        DROP TRIGGER IF EXISTS trigger_check_code_created_at_difference ON check_codes;
-        DROP FUNCTION IF EXISTS check_code_created_at_difference;
-    """
+        """
+    ],
+    'downgrade': [
+        """DROP TRIGGER IF EXISTS trigger_check_code_created_at_difference ON check_codes;""",
+        """DROP FUNCTION IF EXISTS check_code_created_at_difference;"""
+    ]
 }
 
 # Триггер на запрет создания пользователя, если в базе данных уже существует активный пользовать
 # С таким же логином
 check_unique_login_active = {
-    'upgrade': """
+    'upgrade': [
+        """
         CREATE OR REPLACE FUNCTION check_unique_login_active()
         RETURNS TRIGGER AS $$
         BEGIN
@@ -49,14 +52,16 @@ check_unique_login_active = {
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
-
+        """,
+        """
         CREATE TRIGGER trigger_check_unique_login_active
         BEFORE INSERT ON users
         FOR EACH ROW
         EXECUTE FUNCTION check_unique_login_active();
-    """,
-    'downgrade': """
-        DROP TRIGGER IF EXISTS trigger_check_unique_login_active ON users;
-        DROP FUNCTION IF EXISTS check_unique_login_active;
-    """
+        """
+    ],
+    'downgrade': [
+        """DROP TRIGGER IF EXISTS trigger_check_unique_login_active ON users;""",
+        """DROP FUNCTION IF EXISTS check_unique_login_active;"""
+    ]
 }

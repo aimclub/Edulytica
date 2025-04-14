@@ -1,5 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit"
 
+/**
+ * @typedef {Object} AuthState
+ * @property {User[]} users - Массив зарегистрированных пользователей
+ * @property {User|null} currentUser - Текущий авторизованный пользователь или null
+ */
+
+/** @type {AuthState} */
 const initialState = {
   users: [
     {
@@ -21,6 +28,11 @@ const authSlice = createSlice({
   initialState,
   reducers: {
     registerUser: (state, action) => {
+      /**
+       * Регистрирует нового пользователя и добавляет его в список пользователей.
+       * @param {AuthState} state - Текущее состояние auth-среза
+       * @param {{ payload: User }} action - Действие с данными пользователя
+       */
       state.users.push({
         login: action.payload.login,
         email: action.payload.email,

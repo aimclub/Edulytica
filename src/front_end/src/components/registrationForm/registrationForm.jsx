@@ -34,7 +34,10 @@ export const RegistrationForm = ({
   useEffect(() => {
     console.log("Список пользователей изменился:", users)
   }, [users])
-  // Валидация формы регистрации
+
+  /**
+   * Валидация формы регистрации
+   */
   const validateRegistrationForm = () => {
     const newErrors = {}
 
@@ -68,7 +71,9 @@ export const RegistrationForm = ({
     return Object.keys(newErrors).length === 0
   }
 
-  // Валидация формы входа
+  /**
+   * Валидация формы входа
+   */
   const validateLoginForm = () => {
     const newErrorsAuthorization = {}
     if (!authorization.name.trim()) {
@@ -90,7 +95,9 @@ export const RegistrationForm = ({
     return Object.keys(newErrorsAuthorization).length === 0
   }
 
-  // Хэндлер для регистрации
+  /**
+   * Обработка регистрации пользователя
+   */
   const handleRegister = () => {
     const data = {
       login: login,
@@ -101,7 +108,9 @@ export const RegistrationForm = ({
     dispatch(registerUser(data))
     handleClickModal("registration2")
   }
-
+  /**
+   * Сброс ошибок при переключении формы
+   */
   const handleFormSwitch = (form) => {
     setErrors({})
     setErrorsAuthorization({})
@@ -109,6 +118,10 @@ export const RegistrationForm = ({
   const handleSwitch = () => {
     setSwitchClick((prev) => !prev)
   }
+  /**
+   * Переключение текущей отображаемой формы
+   * @param {string} clickModal - Страница ("login", "registration", "registration2")
+   */
   const handleClickModal = (clickModal) => {
     setLoginModal(clickModal)
   }

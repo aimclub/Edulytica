@@ -20,6 +20,8 @@ Return:
     
     {detail: "User with such email already exists"}
 
+    {detail: "User with such login already exists"}
+
 ---
 
 ## `/check_code` (POST)
@@ -70,7 +72,7 @@ Return:
 ---
 
 ## `/logout` (GET)
-* **access_token**: str *(HEADER)*
+* **refresh_token**: str *(HEADER)*
 
 Return:
 1. 200 Ok 

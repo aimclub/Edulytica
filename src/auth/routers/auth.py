@@ -1,166 +1,256 @@
 import uuid
-from typing import Annotated
-from fastapi import APIRouter, Body
-from fastapi import Response
-from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
+from fastapi import APIRouter, Body, Depends, HTTPException, Response
+from sqlalchemy.ext.asyncio import AsyncSession
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
+from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
+from src.common.auth.helpers.utils import get_hashed_password, create_access_token, create_refresh_token, get_expiry, \
+    verify_password
+from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
+from src.common.database.crud.check_code_crud import CheckCodeCrud
 from src.common.database.crud.token_crud import TokenCrud
 from src.common.database.crud.user_crud import UserCrud
 from src.common.database.crud.user_role_crud import UserRoleCrud
 from src.common.database.database import get_session
-import src.common.database.schemas.auth as auth_schemas
-from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends, HTTPException, status
-from src.common.auth.helpers.validators import password_validate
-from src.common.database.models import User
-from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
-from src.common.auth.helpers.utils import create_access_token, create_refresh_token, verify_password, \
-    get_hashed_password, get_expiry
-from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
+from src.common.utils.check_code_utils import generate_code
 from src.common.utils.default_enums import UserRoleDefault
+from src.common.utils.email import send_email
 from src.common.utils.logger import api_logs
+from src.common.utils.moscow_datetime import datetime_now_moscow
+
+auth_router = APIRouter()
 
 
-auth_router = APIRouter(prefix='/v1')
-
-
-@api_logs(auth_router.post('/login'))
-async def login(
-    response: Response,
-    form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
-    session: AsyncSession = Depends(get_session)
-):
-    user = await UserCrud.get_filtered_by_params(session=session, login=form_data.username)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Incorrect email or password")
-
-    user = user[0]
-    password_validate(form_data.password, user.password_hash)
-
-    access_token = create_access_token(user.id)
-    checker = uuid.uuid4()
-    refresh_token = create_refresh_token(subject=user.id, checker=checker)
-
-    await TokenCrud.create(session=session, user_id=user.id, refresh_token=refresh_token, checker=checker, status=True)
-
-    response.set_cookie(
-        key="refresh_token",
-        value=f"Bearer {refresh_token}",
-        httponly=True,
-        expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
-    )
-    return auth_schemas.TokenData(access_token=access_token, refresh_token=refresh_token)
-
-
-@api_logs(auth_router.post("/register"))
-async def register_user(
-        user: auth_schemas.UserCreate,
+@api_logs(auth_router.post('/registration'))
+async def registration_handler(
+        login: str = Body(...),
+        email: str = Body(...),
+        password1: str = Body(...),
+        password2: str = Body(...),
         session: AsyncSession = Depends(get_session)
 ):
-    from sqlalchemy import or_
-
-    filter_user = or_(User.login == user.username, User.email == user.email)
-    existing_user = await UserCrud.get_filtered(session=session, filter=filter_user)
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-
-    encrypted_password = get_hashed_password(user.password)
-    role = await UserRoleCrud.get_filtered_by_params(session=session, name=UserRoleDefault.USER)
-    await UserCrud.create(
-        session=session,
-        login=user.username,
-        email=user.email,
-        password_hash=encrypted_password,
-        role_id=role.id
-    )
-
-    return {"message": "user created successfully"}
-
-
-@api_logs(auth_router.post('/change-password'))
-async def change_password(
-    request: auth_schemas.changepassword,
-    auth_data: Annotated[dict, Depends(access_token_auth)],
-    session: AsyncSession = Depends(get_session)
-):
-    user = auth_data['user']
-    if not verify_password(request.old_password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid old password")
-
-    encrypted_password = get_hashed_password(request.new_password)
-    user.password_hash = encrypted_password
-    session.add(user)
-    await session.commit()
-
-    return {"message": "Password changed successfully"}
-
-
-@api_logs(auth_router.get('/refresh'))
-async def refresh_token(
-    response: Response,
-    auth_data: Annotated[dict, Depends(refresh_token_auth)],
-    session: AsyncSession = Depends(get_session)
-):
-    payload = auth_data['payload']
-    user = auth_data['user']
-    token = auth_data['token']
-
-    tokens = await TokenCrud.get_filtered_by_params(
-        session=session,
-        user_id=user.id,
-        checker=payload['checker'],
-        refresh_token=token
-    )
-    if len(tokens) != 1:
+    if await UserCrud.get_filtered_by_params(
+        session=session, email=email, is_active=True
+    ):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Exception in token validation")
+            status_code=HTTP_400_BAD_REQUEST,
+            detail='User with such email already exists'
+        )
+    if await UserCrud.get_filtered_by_params(
+        session=session, login=login, is_active=True
+    ):
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail='User with such login already exists'
+        )
 
-    token = tokens[0]
-    access_token = create_access_token(user.id)
-    checker = uuid.uuid4()
-    refresh_token = create_refresh_token(subject=user.id, checker=checker)
+    if password1 != password2:
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail='Passwords are not equal'
+        )
 
-    await TokenCrud.update(
+    try:
+        inactive_user_with_email = await UserCrud.get_filtered_by_params(
+            session=session,
+            email=email
+        )
+
+        user_role = await UserRoleCrud.get_filtered_by_params(
+            session=session, name=UserRoleDefault.USER
+        )
+        if not inactive_user_with_email:
+            user = await UserCrud.create(
+                session=session,
+                email=email,
+                login=login,
+                password_hash=get_hashed_password(password1),
+                role_id=user_role[0].id
+            )
+        else:
+            user = await UserCrud.update(
+                session=session,
+                record_id=inactive_user_with_email[0].id,
+                email=email,
+                login=login,
+                password_hash=get_hashed_password(password1),
+                role_id=user_role[0].id
+            )
+
+        code = generate_code()
+        send_email(email, code)
+
+        await CheckCodeCrud.create(
+            session=session,
+            code=code,
+            user_id=user.id
+        )
+
+        return {'detail': 'Code has been sent'}
+    except Exception as _e:
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
+
+
+@api_logs(auth_router.post('/check_code'))
+async def check_code_handler(
+        response: Response,
+        code: str = Body(..., embed=True),
+        session: AsyncSession = Depends(get_session)
+):
+    try:
+        check_code = await CheckCodeCrud.get_recent_code(
+            session=session,
+            code=code
+        )
+
+        if not check_code:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f'Wrong code'
+            )
+
+        await UserCrud.update(
+            session=session,
+            record_id=check_code.user_id,
+            is_active=True
+        )
+
+        access_token = create_access_token(check_code.user_id)
+        checker = uuid.uuid4()
+        refresh_token = create_refresh_token(subject=check_code.user_id, checker=checker)
+
+        await TokenCrud.create(
+            session=session,
+            user_id=check_code.user_id,
+            refresh_token=refresh_token,
+            checker=checker,
+            status=True
+        )
+
+        response.set_cookie(
+            key="refresh_token",
+            value=f"Bearer {refresh_token}",
+            httponly=True,
+            expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
+        )
+        return {'detail': 'Code is correct', 'access_token': access_token}
+    except Exception as _e:
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
+
+
+@api_logs(auth_router.post('login'))
+async def login_handler(
+        response: Response,
+        login: str = Body(...),
+        password: str = Body(...),
+        session: AsyncSession = Depends(get_session)
+):
+    try:
+        user = await UserCrud.get_filtered_by_params(
+            session=session,
+            login=login,
+            is_active=True
+        )
+
+        if not user or not verify_password(password, user[0].password_hash):
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail='Credentials are incorrect'
+            )
+
+        access_token = create_access_token(user[0].id)
+        checker = uuid.uuid4()
+        refresh_token = create_refresh_token(subject=user[0].id, checker=checker)
+
+        await TokenCrud.create(
+            session=session,
+            user_id=user[0].id,
+            refresh_token=refresh_token,
+            checker=checker,
+            status=True
+        )
+
+        response.set_cookie(
+            key="refresh_token",
+            value=f"Bearer {refresh_token}",
+            httponly=True,
+            expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
+        )
+        return {'detail': 'Credentials are correct', 'access_token': access_token}
+    except Exception as _e:
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
+
+
+@api_logs(auth_router.get('/get_access'))
+async def get_access_handler(
+        response: Response,
+        refresh_token: dict = Depends(refresh_token_auth),
+        session: AsyncSession = Depends(get_session)
+):
+    token = await TokenCrud.get_filtered_by_params(
         session=session,
-        record_id=token.id,
-        refresh_token=refresh_token,
-        checker=checker
+        user_id=refresh_token['user'].id,
+        refresh_token=refresh_token['token'],
+        checker=refresh_token['payload']['checker']
+    )
+
+    if not token or token.created_at < (datetime_now_moscow() - timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
+        response.delete_cookie(key="refresh_token")
+        raise HTTPException(
+            status_code=HTTP_400_BAD_REQUEST,
+            detail='Token is incorrect'
+        )
+
+    access_token = create_access_token(refresh_token['user'].id)
+    checker = uuid.uuid4()
+    refresh_token_new = create_refresh_token(subject=refresh_token['user'].id, checker=checker)
+
+    await TokenCrud.create(
+        session=session,
+        user_id=refresh_token['user'].id,
+        refresh_token=refresh_token_new,
+        checker=checker,
+        status=True
     )
 
     response.set_cookie(
         key="refresh_token",
-        value=f"Bearer {refresh_token}",
+        value=f"Bearer {refresh_token_new}",
         httponly=True,
         expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
     )
-    return auth_schemas.TokenData(access_token=access_token, refresh_token=refresh_token)
+
+    return {'detail': 'Token is correct', 'access_token': access_token}
 
 
 @api_logs(auth_router.get('/logout'))
-async def logout(
-    response: Response,
-    auth_data: Annotated[dict, Depends(refresh_token_auth)],
-    session: AsyncSession = Depends(get_session)
+async def logout_handler(
+        response: Response,
+        refresh_token: dict = Depends(refresh_token_auth),
+        session: AsyncSession = Depends(get_session)
 ):
-    token = auth_data['token']
-    payload = auth_data['payload']
-    user = auth_data['user']
 
     tokens = await TokenCrud.get_filtered_by_params(
         session=session,
-        user_id=user.id,
-        checker=payload['checker'],
-        refresh_token=token
+        user_id=refresh_token['user'].id,
+        checker=refresh_token['payload']['checker'],
+        refresh_token=refresh_token['token']
     )
-    if len(tokens) != 1:
+    if not tokens:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=HTTP_401_UNAUTHORIZED,
             detail="Exception in token validation")
 
-    token = tokens[0]
-    await TokenCrud.delete(session=session, record_id=token.id)
+    await TokenCrud.delete(session=session, record_id=tokens[0].id)
 
     response.delete_cookie(key="refresh_token")
-    return {"message": "Logout Successfully"}
+    return {"message": "Logout Successful"}

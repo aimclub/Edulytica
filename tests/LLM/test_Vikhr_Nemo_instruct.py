@@ -1,12 +1,12 @@
 import unittest
 
-from Edulytica.src.LLM.qwen.Qwen2_5_instruct import Qwen2_5_instruct, Qwen2_5_instruct_pipline
+from Edulytica.src.LLM.vikhr import Vikhr_Nemo_instruct, Vikhr_Nemo_instruct_pipline
 
 
-class Test_Qwen2_5_instruct(unittest.TestCase):
+class Test_Vikhr_Nemo_instruct(unittest.TestCase):
     def setUp(self):
         print("Start model setup")
-        self.model = Qwen2_5_instruct()
+        self.model = Vikhr_Nemo_instruct()
         print("Model setup finish")
 
     def test_chat_template(self):

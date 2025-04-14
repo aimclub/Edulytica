@@ -20,4 +20,5 @@ ignore:
   - "src/rag/extract.py"
   - "src/extracting_rules"
   - "examples"
+  - "src/edulytica_api"
   - "src/front_end"

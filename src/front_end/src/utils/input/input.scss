@@ -1,12 +1,13 @@
 .input {
   background-color: rgba(48, 48, 48, 1);
   border-radius: 10px;
-
+  color: rgb(230, 230, 230);
   width: calc(100% - 18px);
   padding: 12.5px 0px 12.5px 18px;
   border: none;
   outline: none;
   font-family: "SF Pro Display";
+  font-size: 16px;
 }
 .input::placeholder {
   color: B4B4B4;
@@ -21,3 +22,4 @@ input:focus::placeholder {
 input:focus {
   color: rgb(230, 230, 230);
 }
+

@@ -23,6 +23,7 @@ export const AddFile = ({
   const fileInputRef = useRef(null)
 
   /** Открывает/закрывает модальное окно выбора мероприятия */
+
   const openEventModal = () => {
     setEventModal((pr) => !pr)
   }
@@ -45,6 +46,7 @@ export const AddFile = ({
         { type: "file", name: fileName },
         ...prev.filter((param) => param.type !== "file"),
       ])
+
       setFileResult(fileName)
     } else {
       alert("Пожалуйста, выберите .pdf файл")
@@ -54,6 +56,7 @@ export const AddFile = ({
   /**
    * Обрезает строку до заданной длины и добавляет многоточие, если строка длиннее.
    */
+
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "..."
@@ -112,7 +115,6 @@ export const AddFile = ({
                     {truncateString(param.name, 40)}
                   </div>
                 ))
-
               : "Выберите параметры работы над документом..."}
           </div>
           <div className="parametersLineAddFile">

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { Home } from "../pages/home/home.jsx"
 import { Registration } from "../pages/registration/registration.jsx"
 import { Account } from "../pages/account/account.jsx"
+
 /**
  * Компонент, определяющий маршруты приложения.
  * @param {boolean} props.authorized - Определяет, авторизован ли пользователь

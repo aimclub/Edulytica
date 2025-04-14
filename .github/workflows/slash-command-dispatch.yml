@@ -14,5 +14,5 @@ jobs:
           token: ${{ secrets.EDULYTICA_TOKEN }}
           reactions: true
           commands: fix-pep8
-          permission: none
+          permission: write
           issue-type: pull-request

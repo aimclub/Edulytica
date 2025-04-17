@@ -48,7 +48,7 @@ check_unique_login_active = {
             ) THEN
                 RAISE EXCEPTION 'There is already an active user with this login: %', NEW.login;
             END IF;
-        
+
             RETURN NEW;
         END;
         $$ LANGUAGE plpgsql;
@@ -99,4 +99,3 @@ check_unique_email_active = {
         """DROP FUNCTION IF EXISTS check_unique_email_active;"""
     ]
 }
-

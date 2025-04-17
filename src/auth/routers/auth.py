@@ -291,7 +291,10 @@ async def get_access_handler(
         checker=refresh_token['payload']['checker']
     )
 
-    if not token or token.created_at < (datetime_now_moscow() - timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
+    if not token or token.created_at < (
+            datetime_now_moscow() -
+            timedelta(
+            minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
         response.delete_cookie(key="refresh_token")
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST,

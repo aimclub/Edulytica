@@ -1,14 +1,22 @@
+"""
+This module defines a specialized CRUD class for handling verification codes (CheckCode)
+used during user authentication processes such as registration and login.
+
+Classes:
+    CheckCodeCrud: Provides CRUD operations for the CheckCode model
+"""
+
 from datetime import timedelta, datetime
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from src.common.config import EMAIL_CODE_EXPIRE_SECONDS
 from src.common.database.crud.base.factory import BaseCrudFactory
 from src.common.database.models import CheckCode
 from src.common.database.schemas import CheckCodeModels
 
 
 class CheckCodeCrud(
-
     BaseCrudFactory(
         model=CheckCode,
         update_schema=CheckCodeModels.Update,
@@ -18,10 +26,24 @@ class CheckCodeCrud(
 ):
     @staticmethod
     async def get_recent_code(session: AsyncSession, code: str) -> Optional[CheckCodeModels.Get]:
+        """
+        Retrieves a verification code that was created within the last <N> seconds.
+
+        This method is typically used to validate time-sensitive codes sent to users
+        for registration or login confirmation.
+
+        Args:
+            session (AsyncSession): The SQLAlchemy asynchronous session.
+            code (str): The verification code to search for.
+
+        Returns:
+            Optional[CheckCodeModels.Get]: A validated Pydantic model representing the CheckCode,
+                                           or None if no recent code is found.
+        """
         result = await session.execute(
             select(CheckCode).filter(
                 CheckCode.code == code,
-                CheckCode.created_at >= datetime.now() - timedelta(seconds=60)
+                CheckCode.created_at >= datetime.now() - timedelta(seconds=EMAIL_CODE_EXPIRE_SECONDS)
             )
         )
 

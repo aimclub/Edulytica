@@ -6,8 +6,8 @@ Create Date: 2025-04-14 19:34:13.962497
 
 """
 from typing import Sequence, Union
-from src.common.database.models.triggers import check_code_created_at_difference_trigger, check_unique_login_active
-
+from src.common.database.models.triggers import check_code_created_at_difference_trigger, check_unique_login_active, \
+    check_unique_email_active
 from alembic import op
 import sqlalchemy as sa
 
@@ -25,6 +25,8 @@ def upgrade() -> None:
         op.execute(command)
     for command in check_code_created_at_difference_trigger['upgrade']:
         op.execute(command)
+    for command in check_unique_email_active['upgrade']:
+        op.execute(command)
     # ### end Alembic commands ###
 
 
@@ -33,5 +35,7 @@ def downgrade() -> None:
     for command in check_unique_login_active['downgrade']:
         op.execute(command)
     for command in check_code_created_at_difference_trigger['downgrade']:
+        op.execute(command)
+    for command in check_unique_email_active['downgrade']:
         op.execute(command)
     # ### end Alembic commands ###

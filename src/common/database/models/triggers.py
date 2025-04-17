@@ -65,3 +65,38 @@ check_unique_login_active = {
         """DROP FUNCTION IF EXISTS check_unique_login_active;"""
     ]
 }
+
+# Триггер на запрет создания пользователя, если в базе данных уже существует активный пользовать
+# С такой же электронной почтой
+check_unique_email_active = {
+    'upgrade': [
+        """
+        CREATE OR REPLACE FUNCTION check_unique_email_active()
+        RETURNS TRIGGER AS $$
+        BEGIN
+            IF EXISTS (
+                SELECT 1
+                FROM users
+                WHERE email = NEW.email
+                AND is_active = TRUE
+            ) THEN
+                RAISE EXCEPTION 'There is already an active user with this email: %', NEW.email;
+            END IF;
+
+            RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        """,
+        """
+        CREATE TRIGGER trigger_check_unique_email_active
+        BEFORE INSERT ON users
+        FOR EACH ROW
+        EXECUTE FUNCTION check_unique_email_active();
+        """
+    ],
+    'downgrade': [
+        """DROP TRIGGER IF EXISTS trigger_check_unique_email_active ON users;""",
+        """DROP FUNCTION IF EXISTS check_unique_email_active;"""
+    ]
+}
+

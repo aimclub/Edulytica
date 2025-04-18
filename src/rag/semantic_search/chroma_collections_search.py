@@ -18,9 +18,12 @@ class ChromaSearcher:
         """
         self.host = host
         self.port = port
-        self.embedding_function = chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction(model_name=ChromaSearcher.EMBEDDING_MODEL)
+        self.embedding_function = chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction(
+            model_name=ChromaSearcher.EMBEDDING_MODEL)
         self.chroma_client = chromadb.HttpClient(host=self.host, port=self.port)
-<<<<<<< HEAD
+
+
+<< << << < HEAD
         t = []
         with open(ChromaSearcher.COLLECTIONS_FILE, "w", encoding='utf-8') as f:
             json.dump(t, f, ensure_ascii=False)

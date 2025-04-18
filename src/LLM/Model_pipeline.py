@@ -11,7 +11,7 @@ class Model_pipeline(IModel):
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map)
         self.system_prompt = system_prompt
 
-    def generate(self, prompts: list, max_new_tokens=512, return_full_text=False):
+    def __call__(self, prompts: list, max_new_tokens=512, return_full_text=False):
         """Method for text generation by model.
         Takes list of prompts and max new tokens and return list with model generated text."""
         task = "text-generation"

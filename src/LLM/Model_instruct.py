@@ -21,7 +21,7 @@ class Model_instruct(IModel):
                 messages))
         return texts
 
-    def generate(self, prompts: list, max_new_tokens=512):
+    def __call__(self, prompts: list, max_new_tokens=512):
         """Method for text generation by model.
         Takes list of prompts and max new tokens and return list with model generated text"""
         generation_config = GenerationConfig(max_new_tokens=max_new_tokens)

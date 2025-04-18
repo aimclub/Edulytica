@@ -1,1 +1,11 @@
 count_keywords: 10
+
+
+# Chroma
+host: localhost
+port: 8080
+collections_file: all_collections.json
+embedding_model: BAAI/bge-m3
+
+
+

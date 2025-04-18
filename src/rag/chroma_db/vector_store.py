@@ -1,1 +1,0 @@
-# Chroma DB component 

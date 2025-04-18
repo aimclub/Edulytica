@@ -3,10 +3,8 @@
 import os
 from loguru import logger
 from typing import Dict, Any, List, Union
-
-# Import components
-from text_processor.processor import TextProcessor
-from config.config_loader import ConfigLoader
+from src.rag.core.text_processor.processor import TextProcessor
+from src.rag.core.utils.config_loader import ConfigLoader
 
 
 class Pipeline:
@@ -40,53 +38,6 @@ class Pipeline:
         # - Chroma DB
         # - Prompt Enricher
     
-    def _initialize_prompts(self, prompt_input: Union[str, Dict[str, str]] = None):
-        """
-        Initialize prompt templates.
-        
-        Args:
-            prompt_input: Prompt string or dictionary with prompts by language
-        """
-        
-        # Process input prompt
-        if prompt_input:
-            if isinstance(prompt_input, str):
-                # If string is provided, set as default for all languages
-                logger.info("Setting single prompt for all languages")
-                for lang in self.prompts.keys():
-                    self.prompts[lang] = prompt_input
-            elif isinstance(prompt_input, dict):
-                # If dictionary is provided, update prompts
-                logger.info(f"Setting prompts from dictionary for languages: {list(prompt_input.keys())}")
-                self.prompts.update(prompt_input)
-            else:
-                logger.warning(f"Invalid prompt type: {type(prompt_input)}. Using defaults.")
-        
-        logger.info(f"Initialized prompts for languages: {list(self.prompts.keys())}")
-    
-    def set_prompt(self, language: str, prompt: str):
-        """
-        Set a prompt for a specific language.
-        
-        Args:
-            language: Language code ('en', 'ru', etc.)
-            prompt: Prompt template to use for this language
-        """
-        self.prompts[language] = prompt
-        logger.info(f"Set custom prompt for language: {language}")
-        return self
-    
-    def get_prompt(self, language: str) -> str:
-        """
-        Get the prompt for a specific language.
-        
-        Args:
-            language: Language code ('en', 'ru', etc.)
-            
-        Returns:
-            Prompt template for the specified language or English prompt as fallback
-        """
-        return self.prompts.get(language, self.prompts.get('en'))
     
     def process_text(self, text: str, language: str = None) -> Dict[str, Any]:
         """

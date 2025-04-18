@@ -4,7 +4,12 @@ from src.LLM import DEFAULT_SYSTEM_PROMPT
 
 
 class Model_instruct(IModel):
-    def __init__(self, model_name, chat_template, system_prompt=DEFAULT_SYSTEM_PROMPT, device_map="auto"):
+    def __init__(
+            self,
+            model_name,
+            chat_template,
+            system_prompt=DEFAULT_SYSTEM_PROMPT,
+            device_map="auto"):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map)
         self.device = self.model.device
@@ -16,9 +21,8 @@ class Model_instruct(IModel):
         messages = list()
         for prompt in prompts:
             messages.append(self.chat_template(prompt))
-        texts = list(
-            map(lambda message: self.tokenizer.apply_chat_template(message, tokenize=False, add_generation_prompt=True),
-                messages))
+        texts = list(map(lambda message: self.tokenizer.apply_chat_template(
+            message, tokenize=False, add_generation_prompt=True), messages))
         return texts
 
     def generate(self, prompts: list, max_new_tokens=512):

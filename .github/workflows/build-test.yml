@@ -10,16 +10,9 @@ jobs:
         python-version: [ '3.10' ]
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Print working directory
-        run: pwd
-      - name: List files in current working directory
-        run: |
-          current_directory=$(pwd)
-          echo "Current working directory: ${current_directory}"
-          ls -la "${current_directory}"
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies

@@ -1,7 +1,7 @@
 ![ITMO](https://raw.githubusercontent.com/aimclub/open-source-ops/43bb283758b43d75ec1df0a6bb4ae3eb20066323/badges/ITMO_badge_rus.svg)
 [![license](https://badgen.net/static/license/MIT/blue)](https://badgen.net/static/license/MIT/blue)
 [![Visitors](https://api.visitorbadge.io/api/combined?path=https%3A%2F%2Fgithub.com%2Faimclub%2FEdulytica&label=Visitors&labelColor=%23697689&countColor=%23263759&style=plastic)](https://visitorbadge.io/status?path=https%3A%2F%2Fgithub.com%2Faimclub%2FEdulytica)
-[![codecov](https://codecov.io/gh/LISA-ITMO/Edulytica/graph/badge.svg?token=L1I8M0KDS6)](https://codecov.io/gh/LISA-ITMO/Edulytica)
+[![codecov](https://codecov.io/gh/aimclub/Edulytica/branch/development/graph/badge.svg?token=L1I8M0KDS6)](https://codecov.io/gh/aimclub/Edulytica)
 ![build](https://github.com/aimclub/Edulytica/actions/workflows/build-test.yml/badge.svg?branch=development)
 ![docs](https://github.com/aimclub/Edulytica/actions/workflows/documentation.yml/badge.svg?branch=development)
 
@@ -85,17 +85,11 @@ Our contacts:
 - Tereshchenko Vladislav, vlad-tershch@yandex.ru;
 - Aminov Natig, natig.aminov@gmail.com.
 
-## Conferences
-1) XIII Конгресс молодых ученых ИТМО:
-   - Дворников А.С., Стрижов Д.А., Унтила А.А., Федоров Д.А. ИССЛЕДОВАНИЕ СГЕНЕРИРОВАННОГО ТЕКСТА НА ПРЕДМЕТ РАСПОЗНАВАНИЯ ИЗМЕНЕНИЙ СЕРВИСАМИ ИДЕНТИФИКАЦИИ ИСКУССТВЕННОГО ИНТЕЛЛЕКТА - 2024;
-   - Мищенко М.Ю., Мустафин Д.Э., Унтила А.А. Оценка релевантности неструктурированных данных для анализа и дообучения LLM - 2024;
-   - Маракулин А.А., Дедкова А.В., Аминов Н.С., Федоров Д.А. СРАВНИТЕЛЬНЫЙ АНАЛИЗ МЕТОДОВ PEFT ДЛЯ ДООБУЧЕНИЯ БОЛЬШИХ ЯЗЫКОВЫХ МОДЕЛЕЙ - 2024;
-   - Богданов М.А., Никифоров М.А., Аминов Н.С., Терещенко В.В., Федоров Д.А. АНАЛИЗ БОЛЬШИХ ДОКУМЕНТОВ ПРИ ПОМОЩИ БОЛЬШИХ ЯЗЫКОВЫХ МОДЕЛЕЙ - 2024;
-2) 53 конференция ППС:
-   - Мустафин Д.Э., Крылов М.М., Терещенко В.В.ХРАНЕНИЕ ГЕТЕРОГЕННЫХ ДАННЫХ ДЛЯ ИХ ПОСЛЕДУЮЩЕЙ ОБРАБОТКИ - 2023;
-   - Богданов М.А., Терещенко В.В., Аминов Н.С.ПРЕДВАРИТЕЛЬНЫЙ АНАЛИЗ ДОКУМЕНТОВ УЧЕБНОГО ПРОЦЕССА ДЛЯ ПОСЛЕДУЮЩЕГО ИХ ТЕМАТИЧЕСКОГО МОДЕЛИРОВАНИЯ - 2023;
-   - Синюков Л.В., Лаптев Е.И., Терещенко В.В.ОЦЕНКА ВЛИЯНИЯ ОБРАЗОВАТЕЛЬНЫХ ДИСЦИПЛИН НА РЕЗУЛЬТАТ КУРСОВЫХ РАБОТ С ИСПОЛЬЗОВАНИЕМ ТЕМАТИЧЕСКОГО МОДЕЛИРОВАНИЯ - 2023;
-   - Дворников А.С., Стрижов Д.А., Аминов Н.С. РАЗРАБОТКА LLM-МОДЕЛИ КЛАССИФИКАЦИИ ТЕКСТА С ЦЕЛЬЮ АВТОМАТИЧЕСКОГО ОПРЕДЕЛЕНИЯ ДОКУМЕНТА, НАПИСАННОГО ИСКУССТВЕННЫМ ИНТЕЛЛЕКТОМ - 2023.
+## Publications about Edulytica
+We also published several posts devoted to different aspects of the project:
+
+In Russian:
+- [Edulytica: LLM-ассистент для проверки научных работ](https://youtu.be/kDNREVv1IoI?si=lDzHTxTh333EcSaZ) - Scientific Open Source Meetup №8, October 2024.
 
 ## Authors
 [Tereshchenko Vladislav](https://github.com/Vl-Tershch)\

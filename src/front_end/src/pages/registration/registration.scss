@@ -6,7 +6,6 @@
   justify-content: start;
   align-items: center;
   gap: 25px;
-  overflow: hidden;
   margin-top: -8px;
 }
 .blockLeftRegistrationPage {
@@ -16,6 +15,7 @@
   gap: 6px;
   padding-left: 50px;
   cursor: pointer;
+  overflow: hidden;
   text-decoration: none;
 }
 .textLeftRegistrationPage {
@@ -25,4 +25,10 @@
   line-height: 133%;
   text-decoration: none;
   color: #b4b4b4;
+}
+
+@media (max-width: 860px) {
+  .textLeftRegistrationPage {
+    font-size: 15px;
+  }
 }

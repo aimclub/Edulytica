@@ -3,9 +3,6 @@ from typing import List
 
 from fastapi import UploadFile
 from pydantic import BaseModel, ConfigDict
-import datetime
-
-from src.edulytica_api.models.models import ResultFiles
 
 
 class UploadFileData(BaseModel):

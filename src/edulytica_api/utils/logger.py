@@ -86,7 +86,7 @@ def api_logs(route_decorator):
     A decorator that integrates API logging into FastAPI route decorators.
 
     Args:
-        route_decorator (function): A FastAPI route decorator (e.g., @app.get, @app.post).
+        route_decorator (DecoratedCallable): A FastAPI route decorator (e.g., @app.get, @app.post).
 
     Returns:
         function: A wrapped route decorator with logging enabled.

@@ -3,10 +3,13 @@ import uuid
 from pathlib import Path
 from starlette import status
 from starlette.responses import FileResponse
+from starlette.status import HTTP_400_BAD_REQUEST
+from src.edulytica_api.crud.document_crud import DocumentCrud
+from src.edulytica_api.crud.ticket_status_crud import TicketStatusCrud
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
 from src.edulytica_api.celery.tasks import get_llm_purpose_result, get_llm_summary_result
-from src.edulytica_api.crud.result_files_crud import ResultFilesCrud
-from src.edulytica_api.crud.tickets_crud import TicketsCrud
+from src.edulytica_api.crud.document_report_crud import DocumentReportCrud
+from src.edulytica_api.crud.tickets_crud import TicketCrud
 from fastapi import APIRouter, Depends, UploadFile, HTTPException
 from src.edulytica_api.database import get_session
 from src.edulytica_api.auth.auth_bearer import access_token_auth
@@ -14,6 +17,7 @@ from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 import json
 from src.edulytica_api.schemas.llm_schema import TicketGetResponse
+from src.edulytica_api.utils.default_enums import TicketStatusDefault
 from src.edulytica_api.utils.logger import api_logs
 
 llm_router = APIRouter(prefix="/llm")
@@ -31,8 +35,41 @@ async def get_purpose(
     intro = " ".join(data['table_of_content'][0]['text'])
     main_text = " ".join(data['other_text'])
 
-    ticket = await TicketsCrud.create(
-        session=session, ticket_type='Достижимость', user_id=user.id, status_id=0
+    file_extension = file.filename.split('.')[-1]
+    if file_extension not in ['pdf', 'docx', 'txt', 'odt']:
+        raise HTTPException(HTTP_400_BAD_REQUEST, 'Invalid upload file')
+
+    while True:
+        file_id = uuid.uuid4()
+
+        if not await DocumentCrud.get_by_id(
+            session=session, id=file_id
+        ):
+            break
+
+    # Without ROOT_DIR
+    file_path = os.path.join(
+        'app_files',
+        'document',
+        f'{user.id}',
+        f'{file_id}.{file_extension}')
+
+    with open(os.path.join(ROOT_DIR, file_path), 'wb') as f:
+        f.write(await file.read())
+
+    await DocumentCrud.create(
+        session=session, user_id=user.id, file_path=file_path, id=file_id
+    )
+
+    ticket_status = await TicketStatusCrud.get_filtered_by_params(
+        session=session, name=TicketStatusDefault.IN_PROGRESS.value
+    )
+    ticket = await TicketCrud.create(
+        session=session,
+        user_id=user.id,
+        ticket_status_id=ticket_status.id,
+        document_id=file_id
+        # ticket_type='Достижимость'
     )
     task = get_llm_purpose_result.delay(
         intro=intro,
@@ -65,8 +102,40 @@ async def get_summary(
     for content in data['table_of_content']:
         split_on_para(text_list, content)
 
-    ticket = await TicketsCrud.create(
-        session=session, ticket_type='Суммаризация', user_id=user.id, status_id=0
+    file_extension = file.filename.split('.')[-1]
+    if file_extension not in ['pdf', 'docx', 'txt', 'odt']:
+        raise HTTPException(HTTP_400_BAD_REQUEST, 'Invalid upload file')
+
+    while True:
+        file_id = uuid.uuid4()
+
+        if not await DocumentCrud.get_by_id(
+                session=session, id=file_id
+        ):
+            break
+
+    # Without ROOT_DIR
+    file_path = os.path.join(
+        'app_files',
+        'document',
+        f'{user.id}',
+        f'{file_id}.{file_extension}')
+
+    with open(os.path.join(ROOT_DIR, file_path), 'wb') as f:
+        f.write(await file.read())
+
+    await DocumentCrud.create(
+        session=session, user_id=user.id, file_path=file_path, id=file_id
+    )
+
+    ticket_status = await TicketStatusCrud.get_filtered_by_params(
+        session=session, name=TicketStatusDefault.IN_PROGRESS.value
+    )
+    ticket = await TicketCrud.create(
+        session=session,
+        user_id=user.id,
+        ticket_status_id=ticket_status.id,
+        document_id=file_id
     )
     task = get_llm_summary_result.delay(main_text=text_list, user_id=user.id, ticket_id=ticket.id)
     return json.dumps(task.id)
@@ -78,7 +147,7 @@ async def get_results(
     session: AsyncSession = Depends(get_session)
 ):
     user = auth_data['user']
-    tickets = await TicketsCrud.get_filtered_by_params(session=session, user_id=user.id)
+    tickets = await TicketCrud.get_filtered_by_params(session=session, user_id=user.id)
     return tickets
 
 
@@ -90,12 +159,13 @@ async def get_result(
 ):
     user = auth_data['user']
     try:
-        ticket = await TicketsCrud.get_by_id(session=session, record_id=ticket_resp.id)
+        # get_by_id_no_validate, возможно стоит перевести на получение result_file через запрос
+        ticket = await TicketCrud.get_by_id_no_validate(session=session, record_id=ticket_resp.id)
         if ticket is not None:
             data = {'status': 'In progress'}
-            if len(ticket.result_files) > 0:
-                result_file = ticket.result_files[0]
-                file_path = os.path.join(ROOT_DIR, result_file.file)
+            if ticket.document_report is not None:
+                result_file = ticket.document_report
+                file_path = os.path.join(ROOT_DIR, result_file.file_path)
                 with open(file_path, mode='r', encoding='utf-8') as f:
                     data = json.load(f)
                     data['status'] = 'Ready'
@@ -124,9 +194,13 @@ async def get_file(
     session: AsyncSession = Depends(get_session)
 ):
     try:
-        file = await ResultFilesCrud.get_by_id(session=session, record_id=file_id)
-        if file.user_id == auth_data['user'].id:
-            return os.path.join(ROOT_DIR, file.file)
+        file = await DocumentReportCrud.get_by_id(session=session, record_id=file_id)
+        ticket = await TicketCrud.get_filtered_by_params(
+            session=session,
+            document_report_id=file_id
+        )
+        if ticket.user_id == auth_data['user'].id:
+            return os.path.join(ROOT_DIR, file.file_path)
         else:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,

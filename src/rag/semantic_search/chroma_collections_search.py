@@ -34,8 +34,14 @@ class ChromaSearcher:
         - texts: list - A lists of texts (str) to be found (compared)
         - n_results: int - Number of search results to return (by default 5)
         """
-        collection = self.chroma_client.get_collection(collection_name, embedding_function=self.embedding_function)
-        return collection.query(query_texts=texts, n_results=n_results, include=["documents", "metadatas"])
+        collection = self.chroma_client.get_collection(
+            collection_name, embedding_function=self.embedding_function)
+        return collection.query(
+            query_texts=texts,
+            n_results=n_results,
+            include=[
+                "documents",
+                "metadatas"])
 
     def add_specific(self, file_name, sheet_name, collection_name):
         """
@@ -45,7 +51,7 @@ class ChromaSearcher:
         - sheet_name: str - Name of a sheet from spreadsheet file.
         - collection_name: str - Name of ChromaDB collection to be created. Must be Latin letters and numbers only.
         """
-        spec_data = pd.read_excel(file_name, sheet_name=sheet_name, header=[0,1,2,3])
+        spec_data = pd.read_excel(file_name, sheet_name=sheet_name, header=[0, 1, 2, 3])
         spec_data = spec_data.fillna("")
         res = {}
         res['description_full'] = []
@@ -75,8 +81,9 @@ class ChromaSearcher:
         all_collections[-1]['conf_title'] = spec_data.columns[0][0]
         all_collections[-1]['conf_title_short'] = sheet_name
         all_collections[-1]['collection_name'] = collection_name
-        
-        collection = self.chroma_client.create_collection(collection_name, embedding_function=self.embedding_function)
+
+        collection = self.chroma_client.create_collection(
+            collection_name, embedding_function=self.embedding_function)
         collection.add(
             metadatas=metadatas,
             documents=documents,
@@ -92,5 +99,6 @@ class ChromaSearcher:
         Arguments:
         - collection_name: str - A name of ChromaDB collection (must be an existing collection)
         """
-        collection = self.chroma_client.get_collection(collection_name, embedding_function=self.embedding_function)
+        collection = self.chroma_client.get_collection(
+            collection_name, embedding_function=self.embedding_function)
         return collection.get(include=["documents", "embeddings", "metadatas"])

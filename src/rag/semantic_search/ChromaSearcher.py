@@ -12,9 +12,12 @@ class ChromaSearcher:
     COLLECTIONS_FILE = "all_collections.json"
     EMBEDDING_MODEL = "BAAI/bge-m3"
 
-    def __init__(self, host, port):
+    def __init__(self, host: str, port: int = 8000) -> None:
         """
-        Initialization of ChromaDB client. Requires host and port.
+        Initialization of ChromaDB client.
+        Arguments:
+        - host: str - Host name
+        - port: int - Port name. By default 8000
         """
         self.host = host
         self.port = port
@@ -26,9 +29,10 @@ class ChromaSearcher:
             json.dump(t, f, ensure_ascii=False)
             f.close()
 
-    def find_similar_records(self, collection_name, texts: list, n_results=5):
+    def find_similar_records(self, collection_name: str, texts: list, n_results: int = 5) -> dict:
         """
-        A method for searching parts of specifics that could be similar to a given text
+        A method for searching parts of specifics that could be similar to a given text.
+        Method returns a dict, where target texts can be found by key "documents"
         Arguments:
         - collection_name: str - A name of a collection where parts should be searched
         - texts: list - A lists of texts (str) to be found (compared)
@@ -43,7 +47,7 @@ class ChromaSearcher:
                 "documents",
                 "metadatas"])
 
-    def add_specific(self, file_name, sheet_name, collection_name):
+    def add_specific(self, file_name: str, sheet_name: str, collection_name: str) -> None:
         """
         A method for adding specific to ChromaDB collection
         Arguments:
@@ -93,7 +97,7 @@ class ChromaSearcher:
             json.dump(all_collections, f, ensure_ascii=False)
             f.close()
 
-    def get_specifics(self, collection_name):
+    def get_specifics(self, collection_name: str) -> dict:
         """
         A method to get collection contents by name
         Arguments:

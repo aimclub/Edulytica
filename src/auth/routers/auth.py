@@ -99,6 +99,7 @@ async def registration_handler(
         )
 
         code = generate_code()
+        # Спросить выделять ли добавление кода в БД в background-task
         send_email(email, code)
 
         await CheckCodeCrud.create(

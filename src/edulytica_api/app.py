@@ -1,7 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.edulytica_api.routers.llm_services import llm_router
+from src.edulytica_api.routers.account import account_router
+from src.edulytica_api.routers.actions import actions_router
 from src.edulytica_api.routers.norm_services import normocontrol_router
 
 
@@ -32,8 +33,9 @@ app.add_middleware(
 )
 
 
-app.include_router(llm_router)
 app.include_router(normocontrol_router)
+app.include_router(account_router)
+app.include_router(actions_router)
 
 
 if __name__ == "__main__":

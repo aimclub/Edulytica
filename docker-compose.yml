@@ -23,6 +23,8 @@ services:
     depends_on:
       - edulytica_api
       - edulytica_auth
+      - edulytica_llm_models
+      - edulytica_orchestration
 
   edulytica_api:
     container_name: "EdulyticaAPI"
@@ -51,6 +53,40 @@ services:
       - ./src/common:/app/src/common
     ports:
       - "8001:8001"
+    depends_on:
+      - edulytica_db
+    env_file:
+      - ./.env
+    networks:
+      - edulytica_network
+
+  edulytica_llm_models:
+    container_name: "EdulyticaLLM"
+    build:
+      context: .
+      dockerfile: ./src/models/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+    ports:
+      - "10000:10000"
+    depends_on:
+      - edulytica_db
+    env_file:
+      - ./.env
+    networks:
+      - edulytica_network
+
+  edulytica_orchestration:
+    container_name: "EdulyticaOrchestration"
+    build:
+      context: .
+      dockerfile: ./src/orchestration/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+    ports:
+      - "10001:10001"
     depends_on:
       - edulytica_db
     env_file:

@@ -11,7 +11,11 @@ class Vikhr_Nemo_instruct(Model_instruct):
             model_name=None,
             chat_template=None,
             system_prompt=DEFAULT_SYSTEM_PROMPT,
-            device_map="auto"):
+            device_map="auto",
+            quantization=None,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True
+    ):
         if model_name is None:
             model_name = "Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24"
         if chat_template is None:
@@ -19,4 +23,5 @@ class Vikhr_Nemo_instruct(Model_instruct):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
-        super().__init__(model_name, chat_template, system_prompt, device_map)
+        super().__init__(model_name, chat_template, system_prompt, device_map, quantization, bnb_4bit_quant_type,
+                         bnb_4bit_use_double_quant)

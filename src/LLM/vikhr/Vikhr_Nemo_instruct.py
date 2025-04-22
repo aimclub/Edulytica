@@ -23,5 +23,11 @@ class Vikhr_Nemo_instruct(Model_instruct):
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
-        super().__init__(model_name, chat_template, system_prompt, device_map, quantization, bnb_4bit_quant_type,
-                         bnb_4bit_use_double_quant)
+        super().__init__(
+            model_name,
+            chat_template,
+            system_prompt,
+            device_map,
+            quantization,
+            bnb_4bit_quant_type,
+            bnb_4bit_use_double_quant)

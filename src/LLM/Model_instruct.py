@@ -22,8 +22,10 @@ class Model_instruct(IModel):
             self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
                                                               quantization_config=bnb_config)
         elif quantization == "4bit":
-            bnb_config = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_quant_type=bnb_4bit_quant_type,
-                                            bnb_4bit_use_double_quant=bnb_4bit_use_double_quant)
+            bnb_config = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_quant_type=bnb_4bit_quant_type,
+                bnb_4bit_use_double_quant=bnb_4bit_use_double_quant)
             self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
                                                               quantization_config=bnb_config)
         self.device = self.model.device

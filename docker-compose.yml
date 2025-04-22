@@ -25,6 +25,7 @@ services:
       - edulytica_auth
       - edulytica_llm_models
       - edulytica_orchestration
+      - edulytica_rag
 
   edulytica_api:
     container_name: "EdulyticaAPI"
@@ -87,6 +88,23 @@ services:
       - ./src/common:/app/src/common
     ports:
       - "10001:10001"
+    depends_on:
+      - edulytica_db
+    env_file:
+      - ./.env
+    networks:
+      - edulytica_network
+
+  edulytica_rag:
+    container_name: "EdulyticaRag"
+    build:
+      context: .
+      dockerfile: ./src/rag/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+    ports:
+      - "10002:10002"
     depends_on:
       - edulytica_db
     env_file:

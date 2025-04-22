@@ -15,7 +15,7 @@ Routes:
 
 import uuid
 from datetime import timedelta
-from fastapi import APIRouter, Body, Depends, HTTPException, Response
+from fastapi import APIRouter, Body, Depends, HTTPException, Response, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
 from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
@@ -38,11 +38,12 @@ auth_router = APIRouter()
 
 @api_logs(auth_router.post('/registration'))
 async def registration_handler(
+        background_tasks: BackgroundTasks,
         login: str = Body(...),
         email: str = Body(...),
         password1: str = Body(...),
         password2: str = Body(...),
-        session: AsyncSession = Depends(get_session)
+        session: AsyncSession = Depends(get_session),
 ):
     """
     Registers a new user and sends a confirmation code to their email address.
@@ -52,6 +53,7 @@ async def registration_handler(
     Then sends a confirmation code via email.
 
     Args:
+        background_tasks (BackgroundTasks): BackgroundTasks object
         login (str): Desired login of the user.
         email (str): User's email address.
         password1 (str): Password input.
@@ -99,14 +101,14 @@ async def registration_handler(
         )
 
         code = generate_code()
-        # Спросить выделять ли добавление кода в БД в background-task
-        send_email(email, code)
 
         await CheckCodeCrud.create(
             session=session,
             code=code,
             user_id=user.id
         )
+
+        background_tasks.add_task(send_email, to_email=email, code=code)
 
         return {'detail': 'Code has been sent'}
     except Exception as _e:

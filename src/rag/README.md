@@ -4,7 +4,6 @@
 Package for enhancing prompts with contextual information (Retrieval-Augmented Generation) within the Edulytica project.
 
 ---
-<<<<<<< HEAD
 ## Table of Contents
 - [System Architecture](#system-architecture)
 
@@ -153,19 +152,3 @@ chroma_manager.add_from_excel(specifics_path, "FRUCT", "FRUCT")
 ```
 
 
-=======
-## Structure:
-- **LanguageModelClient** - A class for working with various models. It works through *litellm*, is currently configured
-for ChatGPT, if you install a different model, you may have to change the code a little to get the response text,
-because there is no single response;
-- **SemanticSearcher** - A class for semantic search. The kNN algorithm is used: chunks of the entire text and the 
-user's query are taken, then the "distance" is determined, then it returns the 5 closest chunks that the model will 
-already process to answer the user's question;
-- **ChromaSearcher** - A class to work with ChromaDB server. Designed to store conference descriptions, retrieve 
-previously added descriptions and decription parts similar to users's query (5 by default). 
-Uses BAAI/bge-m3 to calculate text embeddings;
-- **utils** - The directory contains a class for parsing different documents and a class for preprocessing text 
-(removing unnecessary characters, tables, etc., chunking);
-- **const.py** - At the moment, there is just a prompt in which the user's query and the result of the semantic 
-search will be added through the filter.
->>>>>>> 7f6b7c64966a9d878fd03dbe376627772d86d8ef

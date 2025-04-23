@@ -1,18 +1,16 @@
 import asyncio
-import os
 from logging.config import fileConfig
 from alembic import context
-from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncConnection
+from src.common.database.models import Base
+from src.common.config import POSTGRES_USER, POSTGRES_PASSWORD, POSTGRES_IP, POSTGRES_PORT, POSTGRES_DB
 
-from src.edulytica_api.models.models import Base
 
 config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-load_dotenv()
-DATABASE_URL = f'postgresql+asyncpg://{os.environ.get("POSTGRES_USER")}:{os.environ.get("POSTGRES_PASSWORD")}@{os.environ.get("POSTGRES_IP")}:{os.environ.get("POSTGRES_PORT")}/{os.environ.get("POSTGRES_DB")}'
+DATABASE_URL = f'postgresql+asyncpg://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_IP}:{POSTGRES_PORT}/{POSTGRES_DB}'
 
 target_metadata = Base.metadata
 

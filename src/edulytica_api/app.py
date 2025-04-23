@@ -1,8 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.edulytica_api.routers.llm_services import *
-from src.edulytica_api.routers.auth import *
+from src.edulytica_api.routers.llm_services import llm_router
 from src.edulytica_api.routers.norm_services import normocontrol_router
 
 
@@ -17,13 +16,25 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-    allow_headers=["Content-Type", "Set-Cookie", "Access-Control-Allow-Headers", "Access-Control-Allow-Origin",
-                   "Authorization"],
+    allow_methods=[
+        "GET",
+        "POST",
+        "OPTIONS",
+        "DELETE",
+        "PATCH",
+        "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Set-Cookie",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Authorization"],
 )
-app.include_router(auth_router)
+
+
 app.include_router(llm_router)
 app.include_router(normocontrol_router)
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host="localhost", port=8002)

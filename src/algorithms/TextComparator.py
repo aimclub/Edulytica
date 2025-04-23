@@ -20,7 +20,11 @@ class TextComparator:
     def count_percent_of_transformed_words(input_text_before_changing, input_text_after_changing):
         global stop_words, punctuation_marks
 
-        if type(input_text_before_changing) != str or type(input_text_after_changing) != str:
+        if not isinstance(
+                input_text_before_changing,
+                str) or not isinstance(
+                input_text_after_changing,
+                str):
             raise TypeError("Input must be a strings")
 
         # getting all the words of the text
@@ -53,4 +57,4 @@ class TextComparator:
                 count_of_deleted_words += 1
 
         return round(((count_of_added_words + count_of_deleted_words) / (
-                len(words_of_text_after_changing) + len(words_of_text_before_changing))) * 100, 2)
+            len(words_of_text_after_changing) + len(words_of_text_before_changing))) * 100, 2)

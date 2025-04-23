@@ -3,7 +3,6 @@ import os
 import tempfile
 import zipfile
 import xml.etree.ElementTree as ET
-from os.path import join
 from xml.etree.ElementTree import Element
 from .schemas import schemas
 from .Elem import Elem
@@ -53,7 +52,8 @@ class Parser:
         check = False
         text = []
         for p in root.iter(f"{{{schemas.w}}}p"):
-            if p.findall(f'{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{next_anchor_id}"]') and check:
+            if p.findall(
+                    f'{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{next_anchor_id}"]') and check:
                 return text if list_view else '\n'.join(text)
             if check:
                 text.append(self._parse_text_from_anchor(p))
@@ -105,7 +105,8 @@ class Parser:
                             else:
                                 num = (f'{str(len(struct))}.{str(len(struct[-1]))}.'
                                        f'{str(len(struct[-1].sub_elements) + 1)}')
-                                struct[-1].sub_elements[-1].append(Elem(num, text.text, hyperlink_id))
+                                struct[-1].sub_elements[-1].append(Elem(num,
+                                                                   text.text, hyperlink_id))
                                 break
         return struct, potentially_damage
 
@@ -173,13 +174,11 @@ def get_structural_paragraphs(file):
             return
         temp = []
         for i, elem in enumerate(elements):
-            if i<len(elements)-1:
-                temp.append(convert_element_to_dict(elem, p, elements[i+1]))
+            if i < len(elements) - 1:
+                temp.append(convert_element_to_dict(elem, p, elements[i + 1]))
             else:
                 temp.append(convert_element_to_dict(elem, p))
         return temp
-
-
 
     try:
         import io

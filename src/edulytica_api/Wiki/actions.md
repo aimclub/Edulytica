@@ -53,6 +53,8 @@ Return:
 
     {detail: "Ticket doesn't exist"}
 
+    {detail: "You're not ticket creator"}
+
 ---
 
 ## `/get_ticket_file` (GET)

@@ -1,3 +1,16 @@
+"""
+This module defines user account-related API endpoints for editing profile information,
+changing passwords, and retrieving ticket history in a FastAPI application.
+
+The endpoints are protected via JWT-based access token authentication and provide secure
+ways for users to update their personal information or access their activity history.
+
+Routes:
+    POST /account/edit_profile: Updates the user's profile details (name, surname, organization).
+    POST /account/change_password: Allows users to change their password after verifying the current one.
+    GET /account/ticket_history: Returns the user's ticket history.
+"""
+
 from typing import Optional
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -21,6 +34,22 @@ async def edit_profile(
     organization: Optional[str] = Body(None),
     session: AsyncSession = Depends(get_session)
 ):
+    """
+    Updates the authenticated user's profile information.
+
+    Allows the user to modify one or more fields including their name, surname, and organization.
+    At least one field must be specified.
+
+    Args:
+        auth_data (dict): Contains the authenticated user's data.
+        name (str, optional): New name for the user.
+        surname (str, optional): New surname for the user.
+        organization (str, optional): New organization for the user.
+        session (AsyncSession): Asynchronous database session.
+
+    Raises:
+        HTTPException: If no fields are provided or an internal error occurs.
+    """
     try:
         if not (name or surname or organization):
             raise HTTPException(
@@ -50,6 +79,23 @@ async def change_password(
     new_password2: str = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
+    """
+    Changes the password for the authenticated user.
+
+    Verifies that the provided old password is correct and the new passwords match
+    before updating the stored password hash.
+
+    Args:
+        auth_data (dict): Contains the authenticated user's data.
+        old_password (str): The current password.
+        new_password1 (str): The new password.
+        new_password2 (str): Confirmation of the new password.
+        session (AsyncSession): Asynchronous database session.
+
+    Raises:
+        HTTPException: If the old password is incorrect, the new passwords do not match,
+        or if an internal error occurs.
+    """
     try:
         if not verify_password(password=old_password, hashed_pass=auth_data['user'].password_hash):
             raise HTTPException(
@@ -79,6 +125,21 @@ async def ticket_history(
     auth_data: dict = Depends(access_token_auth),
     session: AsyncSession = Depends(get_session)
 ):
+    """
+    Retrieves the ticket history for the authenticated user.
+
+    Returns all tickets associated with the user from the database.
+
+    Args:
+        auth_data (dict): Contains the authenticated user's data.
+        session (AsyncSession): Asynchronous database session.
+
+    Returns:
+        dict: A message confirming the retrieval and a list of tickets.
+
+    Raises:
+        HTTPException: If an internal error occurs during data retrieval.
+    """
     try:
         tickets = await TicketCrud.get_filtered_by_params(
             session=session,

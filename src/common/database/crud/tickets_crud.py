@@ -1,3 +1,11 @@
+"""
+This module defines a specialized CRUD class for managing ticket-related operations.
+
+Classes:
+    TicketCrud: Extends the generic CRUD factory with additional logic
+                to retrieve tickets by ID, including shared ones.
+"""
+
 import uuid
 from typing import Optional
 from sqlalchemy import select, or_, and_
@@ -8,7 +16,6 @@ from src.common.database.schemas import TicketModels
 
 
 class TicketCrud(
-
     BaseCrudFactory(
         model=Ticket,
         update_schema=TicketModels.Update,
@@ -22,6 +29,18 @@ class TicketCrud(
             ticket_id: uuid.UUID,
             user_id: uuid.UUID
     ) -> Optional[TicketModels.Get]:
+        """
+        Retrieves a ticket by ID if it belongs to the user or is marked as shared.
+
+        Args:
+            session (AsyncSession): The SQLAlchemy asynchronous session.
+            ticket_id (uuid.UUID): The unique identifier of the ticket.
+            user_id (uuid.UUID): The ID of the user requesting the ticket.
+
+        Returns:
+            Optional[TicketModels.Get]: A validated Pydantic model of the ticket
+                                        if found and accessible, or None otherwise.
+        """
         result = await session.execute(
             select(Ticket).where(
                 and_(

@@ -6,15 +6,15 @@ from ..embedder import EmbeddingProcessor
 
 class ChromaDBManager:
     """
-    Класс для управления коллекциями в ChromaDB
+    Class for managing collections in ChromaDB
     """
     def __init__(self, embedding_processor=None):
         """
-        Инициализация менеджера ChromaDB и установление соединения
+        Initialize ChromaDB manager and establish connection
         
         Args:
-            embedding_processor: Процессор эмбеддингов (опционально)
-                              Если не указан, будет создан новый
+            embedding_processor: Embedding processor (optional)
+                              If not specified, a new one will be created
         """
         config_loader = ConfigLoader()
         config = config_loader.load_config()
@@ -23,7 +23,7 @@ class ChromaDBManager:
         
         logger.info(f"Initializing ChromaDBManager with host: {self.host}, port: {self.port}")
         
-        # Устанавливаем соединение с ChromaDB
+        # Establish connection with ChromaDB
         try:
             self.chroma_client = chromadb.HttpClient(host=self.host, port=self.port)
             logger.info("Successfully connected to ChromaDB")
@@ -31,7 +31,7 @@ class ChromaDBManager:
             logger.error(f"Failed to connect to ChromaDB: {e}")
             raise
         
-        # Используем переданный процессор эмбеддингов или создаем новый
+        # Use provided embedding processor or create a new one
         if embedding_processor:
             self.embedding_processor = embedding_processor
             self.embedding_function = embedding_processor.get_embedding_function()
@@ -46,10 +46,10 @@ class ChromaDBManager:
     
     def list_collections(self) -> List[Dict[str, Any]]:
         """
-        Получить список всех коллекций в ChromaDB
+        Get a list of all collections in ChromaDB
         
         Returns:
-            Список коллекций с их метаданными
+            List of collections with their metadata
         """
         try:
             collections = self.chroma_client.list_collections()
@@ -61,24 +61,24 @@ class ChromaDBManager:
     
     def create_collection(self, name: str, metadata: Optional[Dict[str, Any]] = None) -> Any:
         """
-        Создать новую коллекцию
+        Create a new collection
         
         Args:
-            name: Имя коллекции
-            metadata: Метаданные коллекции (опционально)
+            name: Collection name
+            metadata: Collection metadata (optional)
             
         Returns:
-            Объект коллекции
+            Collection object
         """
         try:
-            # Пробуем получить существующую коллекцию
+            # Try to get existing collection
             collection = self.chroma_client.get_collection(
                 name=name, 
                 embedding_function=self.embedding_function
             )
             logger.info(f"Collection '{name}' already exists.")
         except Exception:
-            # Если коллекция не существует, создаем новую
+            # If collection does not exist, create a new one
             collection = self.chroma_client.create_collection(
                 name=name,
                 metadata=metadata,
@@ -90,13 +90,13 @@ class ChromaDBManager:
     
     def get_collection(self, name: str) -> Any:
         """
-        Получить коллекцию по имени
+        Get a collection by name
         
         Args:
-            name: Имя коллекции
+            name: Collection name
             
         Returns:
-            Объект коллекции или None, если коллекция не найдена
+            Collection object or None if collection not found
         """
         try:
             collection = self.chroma_client.get_collection(
@@ -115,16 +115,16 @@ class ChromaDBManager:
                      metadatas: Optional[List[Dict[str, Any]]] = None, 
                      ids: Optional[List[str]] = None) -> bool:
         """
-        Добавить документы в коллекцию
+        Add documents to a collection
         
         Args:
-            collection_name: Имя коллекции
-            documents: Список текстов документов
-            metadatas: Список метаданных для каждого документа (опционально)
-            ids: Список идентификаторов для каждого документа (опционально)
+            collection_name: Collection name
+            documents: List of document texts
+            metadatas: List of metadata for each document (optional)
+            ids: List of IDs for each document (optional)
             
         Returns:
-            True, если документы успешно добавлены, иначе False
+            True if documents were successfully added, False otherwise
         """
         try:
             collection = self.get_collection(collection_name)
@@ -132,11 +132,11 @@ class ChromaDBManager:
                 logger.error(f"Collection '{collection_name}' not found")
                 return False
             
-            # Генерируем идентификаторы, если они не предоставлены
+            # Generate IDs if not provided
             if not ids:
                 ids = [f"id{i}" for i in range(len(documents))]
             
-            # Добавляем документы в коллекцию
+            # Add documents to the collection
             collection.add(
                 documents=documents,
                 metadatas=metadatas,
@@ -153,14 +153,14 @@ class ChromaDBManager:
                               collection_name: str, 
                               include: Optional[List[str]] = None) -> Dict[str, Any]:
         """
-        Получить все содержимое коллекции
+        Get all collection contents
         
         Args:
-            collection_name: Имя коллекции
-            include: Что включать в результаты ("documents", "metadatas", "embeddings")
+            collection_name: Collection name
+            include: What to include in results ("documents", "metadatas", "embeddings")
             
         Returns:
-            Содержимое коллекции или пустой словарь в случае ошибки
+            Collection contents or empty dictionary in case of error
         """
         try:
             collection = self.get_collection(collection_name)
@@ -168,11 +168,11 @@ class ChromaDBManager:
                 logger.error(f"Collection '{collection_name}' not found")
                 return {}
             
-            # Устанавливаем, что включать в результаты по умолчанию
+            # Set what to include in results by default
             if include is None:
                 include = ["documents", "metadatas"]
             
-            # Получаем все содержимое коллекции
+            # Get all collection contents
             contents = collection.get(include=include)
             
             logger.info(f"Got contents for collection '{collection_name}': {len(contents.get('ids', []))} documents")
@@ -183,30 +183,30 @@ class ChromaDBManager:
     
     def add_from_excel(self, file_name: str, sheet_name: str, collection_name: str) -> bool:
         """
-        Добавить данные из Excel-файла в коллекцию ChromaDB
+        Add data from Excel file to ChromaDB collection
         
         Args:
-            file_name: Путь к Excel-файлу
-            sheet_name: Имя листа в Excel-файле
-            collection_name: Имя коллекции для создания/обновления
+            file_name: Path to Excel file
+            sheet_name: Sheet name in Excel file
+            collection_name: Collection name to create/update
             
         Returns:
-            True, если данные успешно добавлены, иначе False
+            True if data was successfully added, False otherwise
         """
         try:
-            # Используем текущий процессор эмбеддингов
+            # Use current embedding processor
             processor = self.embedding_processor
             
-            # Обрабатываем данные из Excel
+            # Process data from Excel
             data = processor.process_excel_data(file_name, sheet_name)
             
-            # Создаем или получаем коллекцию
+            # Create or get collection
             self.create_collection(
                 name=collection_name, 
                 metadata=data["collection_metadata"]
             )
             
-            # Добавляем документы в коллекцию
+            # Add documents to the collection
             success = self.add_documents(
                 collection_name=collection_name,
                 documents=data["documents"],
@@ -226,20 +226,20 @@ class ChromaDBManager:
     
     def delete_all_collections(self) -> Dict[str, Any]:
         """
-        Удалить все коллекции в ChromaDB
+        Delete all collections in ChromaDB
         
         Returns:
-            Словарь с информацией о результатах удаления:
+            Dictionary with information about the result of the operation:
             {
-                "success": bool - общий успех операции,
-                "total": int - общее количество коллекций,
-                "deleted": int - количество успешно удаленных коллекций,
-                "failed": int - количество коллекций, которые не удалось удалить,
-                "failed_collections": List[str] - имена коллекций, которые не удалось удалить
+                "success": bool - overall success of the operation,
+                "total": int - total number of collections,
+                "deleted": int - number of successfully deleted collections,
+                "failed": int - number of collections that could not be deleted,
+                "failed_collections": List[str] - names of collections that could not be deleted
             }
         """
         try:
-            # Получаем список всех коллекций
+            # Get a list of all collections
             collections = self.list_collections()
             
             if not collections:
@@ -252,12 +252,12 @@ class ChromaDBManager:
                     "failed_collections": []
                 }
             
-            # Счетчики для отслеживания прогресса
+            # Counters for tracking progress
             deleted_count = 0
             failed_count = 0
             failed_collections = []
             
-            # Удаляем каждую коллекцию
+            # Delete each collection
             for collection in collections:
                 collection_name = collection.name
                 try:
@@ -269,10 +269,10 @@ class ChromaDBManager:
                     failed_collections.append(collection_name)
                     logger.error(f"Failed to delete collection '{collection_name}': {e}")
             
-            # Определяем общий успех операции
+            # Determine overall success of the operation
             success = failed_count == 0
             
-            # Результат операции
+            # Result of the operation
             result = {
                 "success": success,
                 "total": len(collections),

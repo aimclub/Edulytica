@@ -8,15 +8,15 @@ from ..utils.config_loader import ConfigLoader
 
 class EmbeddingProcessor:
     """
-    Класс для создания и обработки эмбеддингов из текстовых данных
+    Class for creating and processing embeddings from text data
     """
     def __init__(self, embedding_model: Optional[str] = None):
         """
-        Инициализация с выбором модели эмбеддингов
+        Initialization with embedding model selection
         
         Args:
-            embedding_model: Название модели для создания эмбеддингов (опционально)
-                            Если не указана, будет использована модель из конфигурации
+            embedding_model: Name of the model for creating embeddings (optional)
+                            If not specified, the model from the configuration will be used
         """
         config_loader = ConfigLoader()
         self.embedding_model = embedding_model or config_loader.get_embedding_model()
@@ -32,22 +32,22 @@ class EmbeddingProcessor:
     
     def get_embedding_function(self):
         """
-        Получить функцию для создания эмбеддингов
+        Get the function for creating embeddings
         
         Returns:
-            Функция для создания эмбеддингов
+            Function for creating embeddings
         """
         return self.embedding_function
     
     def embed_texts(self, texts: List[str]) -> np.ndarray:
         """
-        Создает эмбеддинги для списка текстов
+        Creates embeddings for a list of texts
         
         Args:
-            texts: Список текстов для эмбеддинга
+            texts: List of texts for embedding
             
         Returns:
-            Массив эмбеддингов размерности (n_texts, embedding_dim)
+            Array of embeddings with shape (n_texts, embedding_dim)
         """
         try:
             embeddings = self.embedding_function(texts)
@@ -58,13 +58,13 @@ class EmbeddingProcessor:
     
     def normalize_embeddings(self, embeddings: np.ndarray) -> np.ndarray:
         """
-        L2-нормализует эмбеддинги по каждой строке
+        L2-normalizes embeddings along each row
         
         Args:
-            embeddings: Массив эмбеддингов
+            embeddings: Array of embeddings
             
         Returns:
-            Нормализованные эмбеддинги
+            Normalized embeddings
         """
         norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
         return embeddings / np.where(norms == 0, 1, norms)
@@ -73,46 +73,46 @@ class EmbeddingProcessor:
                                  query_embeddings: np.ndarray, 
                                  document_embeddings: np.ndarray) -> np.ndarray:
         """
-        Вычисляет косинусное сходство между запросами и документами
+        Computes cosine similarity between queries and documents
         
         Args:
-            query_embeddings: Эмбеддинги запросов, размерности (n_queries, embedding_dim)
-            document_embeddings: Эмбеддинги документов, размерности (n_docs, embedding_dim)
+            query_embeddings: Query embeddings with shape (n_queries, embedding_dim)
+            document_embeddings: Document embeddings with shape (n_docs, embedding_dim)
             
         Returns:
-            Матрица косинусного сходства размерности (n_queries, n_docs)
+            Cosine similarity matrix with shape (n_queries, n_docs)
         """
-        # Нормализуем эмбеддинги для косинусного сходства
+        # Normalize embeddings for cosine similarity
         query_norm = self.normalize_embeddings(query_embeddings)
         doc_norm = self.normalize_embeddings(document_embeddings)
         
-        # Вычисляем косинусное сходство как скалярное произведение нормализованных векторов
+        # Compute cosine similarity as the dot product of normalized vectors
         return query_norm.dot(doc_norm.T)
     
     def process_excel_data(self, file_name: str, sheet_name: str) -> Dict[str, Any]:
         """
-        Обработка Excel-файла и подготовка данных для эмбеддингов
+        Process Excel file and prepare data for embeddings
         
         Args:
-            file_name: Путь к Excel-файлу
-            sheet_name: Имя листа в Excel-файле
+            file_name: Path to the Excel file
+            sheet_name: Sheet name in the Excel file
             
         Returns:
-            Словарь со структурированными данными для сохранения в ChromaDB
+            Dictionary with structured data for saving to ChromaDB
         """
         logger.info(f"Processing Excel data from file: {file_name}, sheet: {sheet_name}")
         
         try:
-            # Чтение данных из Excel
+            # Read data from Excel
             spec_data = pd.read_excel(file_name, sheet_name=sheet_name, header=[0,1,2,3])
             spec_data = spec_data.fillna("")
             logger.info(f"Successfully read Excel data with shape: {spec_data.shape}")
             
-            # Обработка данных
+            # Process data
             res = {}
             res['description_full'] = []
             
-            # Обрабатываем заголовки столбцов
+            # Process column headers
             for i in spec_data.columns:
                 ii = list(i)
                 res['description_full'].append({})
@@ -126,7 +126,7 @@ class EmbeddingProcessor:
                 res['description_full'][-1]['column_title'] = res['description_full'][-1]['column_title'][:-2]
                 res['description_full'][-1]['column_text'] = " ".join(spec_data[i].tolist()).strip()
             
-            # Готовим данные для ChromaDB
+            # Prepare data for ChromaDB
             ids = []
             documents = []
             metadatas = []
@@ -139,7 +139,7 @@ class EmbeddingProcessor:
                 }
                 metadatas.append(deepcopy(md))
             
-            # Создаем метаданные коллекции
+            # Create collection metadata
             collection_metadata = {
                 "source_file": file_name,
                 "sheet_name": sheet_name,

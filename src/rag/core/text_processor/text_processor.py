@@ -5,24 +5,24 @@ from loguru import logger
 
 class TextProcessor:
     """
-    Класс для обработки текста статьи и подготовки его к поиску по эмбеддингам
+    Class for processing article text and preparing it for embedding-based search
     """
     
     def __init__(self):
         """
-        Инициализация процессора текста
+        Initialize the text processor
         """
         pass
     
     def extract_title(self, text: str) -> str:
         """
-        Извлекает название статьи как первую непустую строку.
+        Extracts the article title as the first non-empty line.
         
         Args:
-            text: Текст статьи
+            text: Article text
             
         Returns:
-            Название статьи
+            Article title
         """
         for line in text.splitlines():
             stripped = line.strip()
@@ -32,13 +32,13 @@ class TextProcessor:
 
     def extract_literature_section(self, text: str) -> Tuple[str, str]:
         """
-        Разделяет текст на основную часть и раздел 'Литература' (или 'References').
+        Divides the text into main part and 'Literature' (or 'References') section.
         
         Args:
-            text: Текст статьи
+            text: Article text
             
         Returns:
-            Кортеж (основной_текст, раздел_литературы)
+            Tuple (main_text, literature_section)
         """
         pattern = re.compile(r'(^|\n)(литература|references)\s*[:\-]?\s*', re.IGNORECASE)
         match = pattern.search(text)
@@ -50,27 +50,27 @@ class TextProcessor:
 
     def preprocess_article(self, text: str) -> List[str]:
         """
-        Предобрабатывает статью и разбивает ее на части для дальнейшего анализа.
+        Preprocesses the article and splits it into parts for further analysis.
         
         Args:
-            text: Полный текст статьи
+            text: Full article text
             
         Returns:
-            Список частей статьи для обработки (название, основной текст, литература)
+            List of article parts for processing (title, main text, literature)
         """
-        # 1. Извлекаем название
+        # 1. Extract title
         title = self.extract_title(text)
         
-        # 2. Отделяем литературу от основного текста
+        # 2. Separate literature from main text
         main_with_title, literature = self.extract_literature_section(text)
         
-        # 3. Убираем название из начала основного текста, если оно там повторяется
+        # 3. Remove title from the beginning of main text if it repeats there
         if main_with_title.startswith(title):
             main_text = main_with_title[len(title):].strip()
         else:
             main_text = main_with_title
         
-        # Возвращаем список частей статьи
+        # Return list of article parts
         chunks = [title, main_text, literature]
         
         

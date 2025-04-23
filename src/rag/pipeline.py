@@ -4,7 +4,7 @@ from typing import List, Dict, Any, Optional, Union, Tuple
 from loguru import logger
 import numpy as np
 
-# Импортируем компоненты системы
+# Import system components
 from core.utils.config_loader import ConfigLoader
 from core.text_processor.text_processor import TextProcessor
 from core.chroma_db.chroma_manager import ChromaDBManager
@@ -14,27 +14,27 @@ from core.embedder.embedding_processor import EmbeddingProcessor
 
 class RAGPipeline:
     """
-    Основной класс для реализации RAG пайплайна.
-    Включает обработку текста, поиск соответствующих данных в ChromaDB,
-    извлечение специфик событий и обогащение промта.
+    Main class for implementing the RAG pipeline.
+    Includes text processing, searching for relevant data in ChromaDB,
+    extracting event specifics, and enriching prompts.
     """
     
     def __init__(self):
         """
-        Инициализация всех компонентов RAG пайплайна
+        Initialize all components of the RAG pipeline
         """
-        # Загружаем конфигурацию
+        # Load configuration
         self.config_loader = ConfigLoader()
         self.config = self.config_loader.load_config()
         
-        # Инициализируем компоненты
+        # Initialize components
         self.embedding_processor = EmbeddingProcessor()
         self.text_processor = TextProcessor()
         self.chroma_manager = ChromaDBManager(embedding_processor=self.embedding_processor)
         self.event_specifics = EventSpecifics(self.embedding_processor, self.chroma_manager)
         self.prompt_enricher = PromptEnricher()
         
-        # Загружаем параметры из конфигурации
+        # Load parameters from configuration
         self.rag_prompt = self.config_loader.get_rag_prompt()
         self.general_top = self.config_loader.get_general_top()
         self.article_top = self.config_loader.get_article_top()
@@ -42,15 +42,15 @@ class RAGPipeline:
     
     def preprocess_article(self, text: str) -> List[str]:
         """
-        Обрабатывает текст статьи и разбивает на части для анализа.
+        Process article text and split it into parts for analysis.
         
         Args:
-            text: Текст статьи
+            text: Article text
             
         Returns:
-            Список частей статьи для обработки
+            List of article parts for processing
         """
-        # Используем функцию из Text Processor для предобработки статьи
+        # Use the function from Text Processor to preprocess the article
         chunks = self.text_processor.preprocess_article(text)
         logger.info(f"Preprocessed article into {len(chunks)} chunks")
         return chunks
@@ -60,33 +60,33 @@ class RAGPipeline:
                            queries: List[str], 
                            top_k: int) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Выполняет поиск по эмбеддингам в указанной коллекции.
+        Perform search by embeddings in the specified collection.
         
         Args:
-            collection_name: Имя коллекции в ChromaDB
-            queries: Список запросов
-            top_k: Количество результатов для возврата
+            collection_name: Collection name in ChromaDB
+            queries: List of queries
+            top_k: Number of results to return
             
         Returns:
-            Словарь с результатами поиска для каждого запроса
+            Dictionary with search results for each query
         """
-        # Загружаем коллекцию
+        # Load collection
         contents = self._load_collection_contents(collection_name)
         if not contents or 'embeddings' not in contents:
             logger.error(f"Failed to load contents from collection {collection_name}")
             return {}
         
-        # Нормализуем эмбеддинги коллекции
+        # Normalize collection embeddings
         col_embs_norm = self.embedding_processor.normalize_embeddings(contents['embeddings'])
         
-        # Получаем эмбеддинги запросов
+        # Get query embeddings
         q_embs = self.embedding_processor.embed_texts(queries)
         q_embs_norm = self.embedding_processor.normalize_embeddings(q_embs)
         
-        # Вычисляем матрицу сходства
+        # Calculate similarity matrix
         sims = self.embedding_processor.compute_cosine_similarity(q_embs_norm, col_embs_norm)
         
-        # Собираем результаты
+        # Collect results
         results = self._get_topk_hits(
             sims, 
             contents['documents'], 
@@ -100,13 +100,13 @@ class RAGPipeline:
     
     def _load_collection_contents(self, collection_name: str) -> Dict[str, Any]:
         """
-        Загружает содержимое коллекции из ChromaDB.
+        Load collection contents from ChromaDB.
         
         Args:
-            collection_name: Имя коллекции
+            collection_name: Collection name
             
         Returns:
-            Словарь с эмбеддингами, документами и метаданными
+            Dictionary with embeddings, documents, and metadata
         """
         collection = self.chroma_manager.get_collection(collection_name)
         if collection is None:
@@ -127,17 +127,17 @@ class RAGPipeline:
                       queries: List[str], 
                       top_k: int) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Для каждого запроса возвращает top-k документов с метаданными и схожестью.
+        For each query, returns top-k documents with metadata and similarity.
         
         Args:
-            sims: Матрица косинусного сходства
-            docs: Список документов
-            metas: Список метаданных
-            queries: Список запросов
-            top_k: Количество результатов для возврата
+            sims: Cosine similarity matrix
+            docs: List of documents
+            metas: List of metadata
+            queries: List of queries
+            top_k: Number of results to return
             
         Returns:
-            Словарь запрос -> список результатов
+            Dictionary query -> list of results
         """
         results: Dict[str, List[Dict[str, Any]]] = {}
         for qi, query in enumerate(queries):
@@ -157,14 +157,14 @@ class RAGPipeline:
                       hits_by_chunk: Dict[str, List[Dict[str, Any]]], 
                       top_n: Optional[int] = None) -> List[Dict[str, Any]]:
         """
-        Агрегирует результаты поиска по разным чанкам и возвращает top-n.
+        Aggregates search results across different chunks and returns top-n.
         
         Args:
-            hits_by_chunk: Результаты поиска по чанкам
-            top_n: Количество результатов для возврата
+            hits_by_chunk: Search results by chunk
+            top_n: Number of results to return
             
         Returns:
-            Список агрегированных результатов
+            List of aggregated results
         """
         agg: Dict[str, Dict[str, Any]] = {}
 
@@ -188,7 +188,7 @@ class RAGPipeline:
                     agg_entry['count'] += 1
                     agg_entry['chunks'].append(chunk)
 
-        # Преобразуем в список и сортируем по убыванию sum_similarity
+        # Convert to list and sort by descending sum_similarity
         aggregated_list = sorted(
             agg.values(),
             key=lambda x: x['sum_similarity'],
@@ -201,7 +201,7 @@ class RAGPipeline:
     
     def process_article(self, article_text: str, conference_name: str) -> List[str]:
         """
-        Основной метод получения специфик для статьи.
+        Main method for getting specifics for an article.
         """
         chunks = self.preprocess_article(article_text)
         return self.event_specifics.find_specifics(
@@ -212,7 +212,9 @@ class RAGPipeline:
         )
     
     def process_prompt(self, conference_name: str) -> List[str]:
-        # Получаем специфику для промта RAG
+        """
+        Get specifics for the RAG prompt
+        """
         return self.event_specifics.find_specifics(
             collection_name=conference_name,
             chunks=[self.rag_prompt],
@@ -221,49 +223,21 @@ class RAGPipeline:
         )
     
     def pipeline(self, article_text: str, conference_name: str, prompt: str) -> str:
-        # Получаем специфики для промта и статьи
+        """
+        Main pipeline method that processes the article and prompt
+        
+        Args:
+            article_text: Article text to process
+            conference_name: Name of the conference
+            prompt: Base prompt to enrich
+            
+        Returns:
+            Enriched prompt with context-specific information
+        """
+        # Get specifics for prompt and article
         prompt_specifics = self.process_prompt(conference_name)
         article_specifics = self.process_article(article_text, conference_name)
-        # Объединяем все специфики
+        # Combine all specifics
         all_specifics = prompt_specifics + article_specifics
-        # Формируем обогащенный промт
+        # Form enriched prompt
         return self.prompt_enricher.enrich_prompt(base_prompt=prompt, specifics=all_specifics)
-
-
-# pipeline = RAGPipeline()
-# conference_name = "KMU"
-# agg = pipeline.process_prompt(conference_name)
-# print(agg)
-
-
-        
-            # logger.info(f"Aggregated: {aggregated}")
-            
-            # # 4. Если есть результаты, обогащаем исходный промт
-            # if aggregated and len(aggregated) > 0:
-            #     best_match = aggregated[0]
-                
-            #     # Формируем информацию о событии
-            #     event_info = f"Дополнительно:\n"
-                
-            #     # Добавляем название категории, если есть в метаданных
-            #     if 'column_title' in best_match['metadata']:
-            #         event_info += f"Категория: {best_match['metadata']['column_title']}\n"
-                
-            #     # Добавляем текст информации о событии
-            #     event_info += f"{best_match['document']}"
-                
-            #     # Добавляем информацию к исходному промту
-            #     enriched_prompt = f"{prompt}\n\n{event_info}" if prompt else f"{article_text}\n\n{event_info}"
-                
-            #     logger.info("Successfully enriched prompt with event specifics")
-            #     return enriched_prompt
-            # else:
-            #     logger.warning(f"No relevant event specifics found for conference: {conference_name}")
-            #     # Если информация не найдена, возвращаем исходный промт
-            #     return prompt if prompt else article_text
-                
-        # except Exception as e:
-        #     logger.error(f"Error processing article: {e}")
-        #     # В случае ошибки возвращаем исходный промт
-        #     return prompt if prompt else article_text

@@ -6,7 +6,7 @@ from core.chroma_db.chroma_manager import ChromaDBManager
 
 class EventSpecifics:
     """
-    Класс для поиска специфик событий по эмбеддингам и агрегации результатов
+    Class for finding event specifics using embeddings and aggregating results
     """
     def __init__(self, embedding_processor: EmbeddingProcessor, chroma_manager: ChromaDBManager):
         self.embedding_processor = embedding_processor
@@ -20,20 +20,20 @@ class EventSpecifics:
         top_n: int
     ) -> List[str]:
         """
-        Ищет и агрегирует результаты для списка чанков текста
+        Searches for and aggregates results for a list of text chunks
         """
-        # 1. Загрузка содержимого коллекции
+        # 1. Load collection contents
         contents = self._load_collection_contents(collection_name)
         if not contents:
             return []
-        # 2. Нормализация эмбеддингов коллекции
+        # 2. Normalize collection embeddings
         col_embs_norm = self.embedding_processor.normalize_embeddings(contents['embeddings'])
-        # 3. Эмбеддинги запросов и их нормализация
+        # 3. Create query embeddings and normalize them
         q_embs = self.embedding_processor.embed_texts(chunks)
         q_embs_norm = self.embedding_processor.normalize_embeddings(q_embs)
-        # 4. Вычисление сходства
+        # 4. Calculate similarity
         sims = self.embedding_processor.compute_cosine_similarity(q_embs_norm, col_embs_norm)
-        # 5. Сбор hit-ов по чанкам
+        # 5. Collect hits by chunk
         hits_by_chunk = self._get_topk_hits(
             sims,
             contents['documents'],
@@ -41,12 +41,21 @@ class EventSpecifics:
             chunks,
             top_k
         )
-        # 6. Агрегация результатов
+        # 6. Aggregate results
         aggregated = self._aggregate_hits(hits_by_chunk, top_n)
-        # 7. Возвращаем список документов
+        # 7. Return list of documents
         return [item['document'] for item in aggregated]
 
     def _load_collection_contents(self, collection_name: str) -> Dict[str, Any]:
+        """
+        Load contents from a ChromaDB collection
+        
+        Args:
+            collection_name: Name of the collection
+            
+        Returns:
+            Dictionary with embeddings, documents, and metadata
+        """
         collection = self.chroma_manager.get_collection(collection_name)
         if collection is None:
             logger.error(f"Collection '{collection_name}' not found")
@@ -66,6 +75,19 @@ class EventSpecifics:
         queries: List[str],
         top_k: int
     ) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Get top-k results for each query
+        
+        Args:
+            sims: Similarity matrix
+            docs: List of documents
+            metas: List of metadata
+            queries: List of queries
+            top_k: Number of results to return for each query
+            
+        Returns:
+            Dictionary mapping queries to their top-k results
+        """
         results: Dict[str, List[Dict[str, Any]]] = {}
         for qi, query in enumerate(queries):
             sim_row = sims[qi]
@@ -85,6 +107,16 @@ class EventSpecifics:
         hits_by_chunk: Dict[str, List[Dict[str, Any]]],
         top_n: int
     ) -> List[Dict[str, Any]]:
+        """
+        Aggregate hits across different chunks
+        
+        Args:
+            hits_by_chunk: Dictionary mapping chunks to their hits
+            top_n: Number of top results to return after aggregation
+            
+        Returns:
+            List of aggregated results, sorted by total similarity
+        """
         agg: Dict[str, Dict[str, Any]] = {}
         for chunk, hits in hits_by_chunk.items():
             for hit in hits:

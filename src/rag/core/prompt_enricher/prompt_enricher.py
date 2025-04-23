@@ -3,22 +3,22 @@ from core.utils.config_loader import ConfigLoader
 
 class PromptEnricher:
     """
-    Класс для обогащения промта на основе специфических деталей.
+    Class for enriching prompts based on specific details.
     """
     def enrich_prompt(self, base_prompt: str, specifics: List[str]) -> str:
         """
-        Объединяет базовый промт и список специфических деталей.
+        Combines the base prompt and a list of specific details.
 
         Args:
-            base_prompt: Исходный промт
-            specifics: Список строк со специфической информацией
+            base_prompt: Original prompt
+            specifics: List of strings with specific information
 
         Returns:
-            Обогащенный промт в виде строки
+            Enriched prompt as a string
         """
         if not specifics:
             return base_prompt
-        # Получаем префикс из конфигурации
+        # Get prefix from configuration
         prefix = ConfigLoader().get_additional_info_prefix()
         specifics_text = "\n\n".join(specifics)
         info_block = f"{prefix}\n{specifics_text}"

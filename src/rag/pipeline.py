@@ -31,7 +31,7 @@ class RAGPipeline:
         self.embedding_processor = EmbeddingProcessor()
         self.text_processor = TextProcessor()
         self.chroma_manager = ChromaDBManager(embedding_processor=self.embedding_processor)
-        self.event_specifics = EventSpecifics()
+        self.event_specifics = EventSpecifics(self.embedding_processor, self.chroma_manager)
         self.prompt_enricher = PromptEnricher()
         
         # Загружаем параметры из конфигурации
@@ -199,48 +199,35 @@ class RAGPipeline:
             return aggregated_list[:top_n]
         return aggregated_list
     
-    def process_article(self, article_text: str, conference_name: str) -> str:
+    def process_article(self, article_text: str, conference_name: str) -> List[str]:
         """
-        Основной метод обработки статьи и обогащения промта.
-        
-        Args:
-            article_text: Текст статьи
-            conference_name: Название конференции
-            prompt: Исходный промт, к которому нужно добавить информацию (опционально)
-            
-        Returns:
-            Обогащенный промт
+        Основной метод получения специфик для статьи.
         """
-
-        # try:
-        # 1. Предобработка текста статьи и разбивка на чанки
         chunks = self.preprocess_article(article_text)
-        # logger.info(f"Chunks: {chunks}")
-        
-        # 2. Поиск по эмбеддингам для каждого чанка
-        results = self.search_by_embedding(conference_name, chunks, self.general_top)
-            
-        aggregated = self.aggregate_hits(results, self.article_top)
-        return aggregated[0]['document']
-
-    def process_prompt(self, conference_name: str) -> str:
-        # chunks = self.preprocess_article( self.rag_prompt)
-        # logger.info(f"Chunks: {chunks}")
-        results = self.search_by_embedding(conference_name, [self.rag_prompt], self.general_top)
-        documents = [
-            hit['document']
-            for hits in results.values()
-            for hit in hits
-        ]
-        return documents
+        return self.event_specifics.find_specifics(
+            collection_name=conference_name,
+            chunks=chunks,
+            top_k=self.general_top,
+            top_n=self.article_top
+        )
     
-
+    def process_prompt(self, conference_name: str) -> List[str]:
+        # Получаем специфику для промта RAG
+        return self.event_specifics.find_specifics(
+            collection_name=conference_name,
+            chunks=[self.rag_prompt],
+            top_k=self.general_top,
+            top_n=self.general_top
+        )
+    
     def pipeline(self, article_text: str, conference_name: str, prompt: str) -> str:
-        article_info = self.process_article(article_text, conference_name)
-        prompt_info = self.process_prompt(conference_name)
-        prompt_info.append(article_info)
-
-        return prompt_info
+        # Получаем специфики для промта и статьи
+        prompt_specifics = self.process_prompt(conference_name)
+        article_specifics = self.process_article(article_text, conference_name)
+        # Объединяем все специфики
+        all_specifics = prompt_specifics + article_specifics
+        # Формируем обогащенный промт
+        return self.prompt_enricher.enrich_prompt(base_prompt=prompt, specifics=all_specifics)
 
 
 # pipeline = RAGPipeline()

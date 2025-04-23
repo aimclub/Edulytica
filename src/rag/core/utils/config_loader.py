@@ -150,3 +150,9 @@ class ConfigLoader:
             Название модели эмбеддингов
         """
         return self.get_value('embedding_model')
+    
+    def get_additional_info_prefix(self) -> str:
+        """
+        Получение префикса дополнительной информации из конфигурации.
+        """
+        return self.get_value('additional_info_prefix')

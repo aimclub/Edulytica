@@ -1,124 +1,152 @@
 import os
 import yaml
 from loguru import logger
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 
 class ConfigLoader:
     """
-    Utility class for loading configuration from YAML files.
+    Класс для загрузки конфигурации из YAML файлов.
+    Реализует паттерн Синглтон, чтобы гарантировать единственный экземпляр и загрузку конфигурации один раз.
     """
+    _instance = None
+    _config_loaded = False
+    
+    def __new__(cls, config_path: str = None):
+        """
+        Реализация паттерна Синглтон.
+        Возвращает существующий экземпляр класса или создает новый.
+        """
+        if cls._instance is None:
+            cls._instance = super(ConfigLoader, cls).__new__(cls)
+            cls._instance.config_path = config_path
+            cls._instance.config_data = None
+        elif config_path is not None and cls._instance.config_path != config_path:
+            logger.warning(f"ConfigLoader уже инициализирован с путем {cls._instance.config_path}, " 
+                           f"игнорирование нового пути {config_path}")
+        return cls._instance
     
     def __init__(self, config_path: str = None):
         """
-        Initialize the config loader.
+        Инициализация загрузчика конфигурации.
+        Если экземпляр уже существует, просто обновляет путь если он отличается.
         
         Args:
-            config_path: Path to the YAML config file. If None, uses default path.
+            config_path: Путь к конфигурационному YAML файлу. Если None, используется путь по умолчанию.
         """
-        if config_path is None:
-            current_dir = os.path.dirname(os.path.abspath(__file__))
-            self.config_path = os.path.join(current_dir, '../../config/config.yaml')
-        else:
-            self.config_path = config_path
-            
-        self.config_data = None
+        # Если __new__ вернул существующий экземпляр, этот код не будет изменять config_path,
+        # поэтому нам нужно проверить только случай, когда path не установлен
+        if self.config_path is None:
+            if config_path is None:
+                current_dir = os.path.dirname(os.path.abspath(__file__))
+                self.config_path = os.path.join(current_dir, '../../config/config.yaml')
+            else:
+                self.config_path = config_path
     
     def load_config(self) -> Dict[str, Any]:
         """
-        Load the configuration from the YAML file.
+        Загрузка конфигурации из YAML файла.
+        Загружает только один раз, повторные вызовы возвращают кэшированные данные.
         
         Returns:
-            Dictionary containing configuration values
+            Словарь с конфигурационными значениями
         """
+        # Если конфигурация уже загружена, возвращаем кэшированные данные
+        if ConfigLoader._config_loaded and self.config_data is not None:
+            return self.config_data
+        
         try:
-            
             if not os.path.exists(self.config_path):
-                logger.error(f"Config file not found: {self.config_path}")
-                return {}
+                logger.error(f"Конфигурационный файл не найден: {self.config_path}")
+                raise FileNotFoundError(f"Конфигурационный файл не найден: {self.config_path}")
             
-            with open(self.config_path, 'r') as config_file:
+            with open(self.config_path, 'r', encoding='utf-8') as config_file:
                 self.config_data = yaml.safe_load(config_file)
                 
             if not self.config_data:
-                logger.warning("Config file is empty or invalid")
-                self.config_data = {}
+                logger.warning("Конфигурационный файл пуст или недействителен")
+                raise ValueError("Конфигурационный файл пуст или недействителен")
                 
-            logger.info(f"Configuration loaded successfully: {self.config_data}")
+            logger.info(f"Конфигурация успешно загружена: {self.config_data}")
+            ConfigLoader._config_loaded = True
             return self.config_data
             
         except Exception as e:
-            logger.error(f"Error loading configuration: {e}")
-            return {}
+            logger.error(f"Ошибка загрузки конфигурации: {e}")
+            raise
     
-    def get_value(self, key: str, default: Any = None) -> Any:
+    def get_value(self, key: str) -> Any:
         """
-        Get a specific configuration value by key.
+        Получение конкретного значения конфигурации по ключу.
         
         Args:
-            key: Configuration key to retrieve
-            default: Default value to return if key is not found
+            key: Ключ конфигурации для получения
             
         Returns:
-            Configuration value or default
+            Значение конфигурации
+            
+        Raises:
+            KeyError: Если ключ не найден в конфигурации
         """
         if self.config_data is None:
             self.load_config()
             
-        value = self.config_data.get(key, default)
-        return value
+        if key not in self.config_data:
+            logger.error(f"Ключ '{key}' не найден в конфигурации")
+            raise KeyError(f"Ключ '{key}' не найден в конфигурации")
+        
+        return self.config_data[key]
     
-    def get_text_processor_config(self) -> Dict[str, Any]:
+    def get_rag_prompt(self) -> str:
         """
-        Get configuration specifically for the text processor.
+        Получение промта RAG из конфигурации.
         
         Returns:
-            Dictionary with text processor configuration
+            Промт RAG
         """
-        if self.config_data is None:
-            self.load_config()
-            
-        # Get text processor specific configuration
-        count_keywords = self.get_value('count_keywords', 10)
+        return self.get_value('rag_promt')
+    
+    def get_general_top(self) -> int:
+        """
+        Получение количества результатов для общего поиска.
         
-        config = {
-            'max_keywords': count_keywords
-        }
+        Returns:
+            Количество результатов для общего поиска
+        """
+        return int(self.get_value('general_top'))
+    
+    def get_article_top(self) -> int:
+        """
+        Получение количества результатов для поиска по статье.
         
-        return config
-
+        Returns:
+            Количество результатов для поиска по статье
+        """
+        return int(self.get_value('artical_top'))
+    
     def get_host(self) -> str:
         """
-        Get the host value from the configuration.
-
+        Получение значения хоста из конфигурации.
+        
         Returns:
-            Host as a string
+            Хост в виде строки
         """
         return self.get_value('host')
-
+    
     def get_port(self) -> int:
         """
-        Get the port value from the configuration.
-
+        Получение значения порта из конфигурации.
+        
         Returns:
-            Port as an integer
+            Порт в виде целого числа
         """
         return int(self.get_value('port'))
-
-    def get_collections_file(self) -> str:
-        """
-        Get the collections file value from the configuration.
-
-        Returns:
-            Collections file as a string
-        """
-        return self.get_value('collections_file')
-
+    
     def get_embedding_model(self) -> str:
         """
-        Get the embedding model value from the configuration.
-
+        Получение модели эмбеддингов из конфигурации.
+        
         Returns:
-            Embedding model as a string
+            Название модели эмбеддингов
         """
         return self.get_value('embedding_model')

@@ -1,161 +1,282 @@
-# Main pipeline component that connects all modules 
-
+import sys
 import os
+from typing import List, Dict, Any, Optional, Union, Tuple
 from loguru import logger
-from typing import Dict, Any, List, Union
-from src.rag.core.text_processor.processor import TextProcessor
-from src.rag.core.utils.config_loader import ConfigLoader
+import numpy as np
 
+# Импортируем компоненты системы
+from core.utils.config_loader import ConfigLoader
+from core.text_processor.text_processor import TextProcessor
+from core.chroma_db.chroma_manager import ChromaDBManager
+from core.event_specifics.event_finder import EventSpecifics
+from core.prompt_enricher.prompt_enricher import PromptEnricher
+from core.embedder.embedding_processor import EmbeddingProcessor
 
-class Pipeline:
+class RAGPipeline:
     """
-    Main pipeline component that connects all RAG modules.
+    Основной класс для реализации RAG пайплайна.
+    Включает обработку текста, поиск соответствующих данных в ChromaDB,
+    извлечение специфик событий и обогащение промта.
     """
     
-    def __init__(self, config_path: str = None, prompt: Union[str, Dict[str, str]] = None):
+    def __init__(self):
         """
-        Initialize the pipeline with all necessary components.
+        Инициализация всех компонентов RAG пайплайна
+        """
+        # Загружаем конфигурацию
+        self.config_loader = ConfigLoader()
+        self.config = self.config_loader.load_config()
+        
+        # Инициализируем компоненты
+        self.embedding_processor = EmbeddingProcessor()
+        self.text_processor = TextProcessor()
+        self.chroma_manager = ChromaDBManager(embedding_processor=self.embedding_processor)
+        self.event_specifics = EventSpecifics()
+        self.prompt_enricher = PromptEnricher()
+        
+        # Загружаем параметры из конфигурации
+        self.rag_prompt = self.config_loader.get_rag_prompt()
+        self.general_top = self.config_loader.get_general_top()
+        self.article_top = self.config_loader.get_article_top()
+        
+    
+    def preprocess_article(self, text: str) -> List[str]:
+        """
+        Обрабатывает текст статьи и разбивает на части для анализа.
         
         Args:
-            config_path: Path to configuration file
-            prompt: Base prompt or dictionary with prompts for different languages
-        """
-        logger.info("Initializing RAG Pipeline")
-        
-        # Load configuration
-        self.config_loader = ConfigLoader(config_path)
-        
-        # Initialize text processor
-        self.text_processor = TextProcessor(config_path=config_path)
-        logger.info("Text processor initialized")
-        
-        # Initialize prompts
-        self.prompts = {}
-        self._initialize_prompts(prompt)
-        
-        # Here we would initialize other components:
-        # - Event Specifics
-        # - Chroma DB
-        # - Prompt Enricher
-    
-    
-    def process_text(self, text: str, language: str = None) -> Dict[str, Any]:
-        """
-        Process input text through the pipeline.
-        
-        Args:
-            text: Input text to process
-            language: Force specific language (optional)
+            text: Текст статьи
             
         Returns:
-            Dictionary with processing results
+            Список частей статьи для обработки
         """
-        logger.info("Processing text through pipeline")
-        logger.info(f"Original text: {text}")
-        
-        # Step 1: Process text with TextProcessor
-        text_processing_result = self.text_processor.process(text)
-        
-        if "error" in text_processing_result:
-            logger.error(f"Error in text processing: {text_processing_result['error']}")
-            return text_processing_result
-        
-        # Get detected language or use forced language
-        detected_lang = language or text_processing_result.get("language", "en")
-        logger.info(f"Language for processing: {detected_lang}")
-        
-        # Log the preprocessed text
-        preprocessed_text = text_processing_result.get("preprocessed_text", "")
-        logger.info(f"Preprocessed text: {preprocessed_text}")
-        
-        # Log the extracted keywords
-        keywords = text_processing_result.get("keywords", [])
-        logger.info(f"Extracted {len(keywords)} keywords: {keywords}")
-        # Get the prompt for the detected language
-        base_prompt = self.get_prompt(detected_lang)
-        text_processing_result["base_prompt"] = base_prompt
-        
-        # Here we would continue with other pipeline steps:
-        # - Find event specifics
-        # - Query Chroma DB
-        # - Enrich prompt
-        
-        # For now, just return the text processor result
-        return text_processing_result
+        # Используем функцию из Text Processor для предобработки статьи
+        chunks = self.text_processor.preprocess_article(text)
+        logger.info(f"Preprocessed article into {len(chunks)} chunks")
+        return chunks
     
-    def enrich_prompt(self, text: str, language: str = None) -> Dict[str, Any]:
+    def search_by_embedding(self, 
+                           collection_name: str, 
+                           queries: List[str], 
+                           top_k: int) -> Dict[str, List[Dict[str, Any]]]:
         """
-        Process text and enrich the prompt with relevant information.
+        Выполняет поиск по эмбеддингам в указанной коллекции.
         
         Args:
-            text: Input text to process
-            language: Force specific language (optional)
+            collection_name: Имя коллекции в ChromaDB
+            queries: Список запросов
+            top_k: Количество результатов для возврата
             
         Returns:
-            Dictionary with original and enriched prompts
+            Словарь с результатами поиска для каждого запроса
         """
-        # This would be the main entry point for the RAG system
+        # Загружаем коллекцию
+        contents = self._load_collection_contents(collection_name)
+        if not contents or 'embeddings' not in contents:
+            logger.error(f"Failed to load contents from collection {collection_name}")
+            return {}
         
-        processing_result = self.process_text(text, language)
+        # Нормализуем эмбеддинги коллекции
+        col_embs_norm = self.embedding_processor.normalize_embeddings(contents['embeddings'])
         
-        if "error" in processing_result:
-            return processing_result
+        # Получаем эмбеддинги запросов
+        q_embs = self.embedding_processor.embed_texts(queries)
+        q_embs_norm = self.embedding_processor.normalize_embeddings(q_embs)
         
-        # Here is where we would take the processing results and create an enriched prompt
-        keywords = processing_result.get("keywords", [])
-        detected_lang = processing_result.get("language", "en")
+        # Вычисляем матрицу сходства
+        sims = self.embedding_processor.compute_cosine_similarity(q_embs_norm, col_embs_norm)
         
-        # Get base prompt from processing_result (already set from self.prompts)
-        base_prompt = processing_result.get("base_prompt")
+        # Собираем результаты
+        results = self._get_topk_hits(
+            sims, 
+            contents['documents'], 
+            contents['metadatas'], 
+            queries, 
+            top_k
+        )
         
-        # Create language-specific enriched prompt
-        if detected_lang == 'ru':
-            context_prefix = "\n\nКонтекст:\nВопрос: "
-            keywords_prefix = "\nКлючевые слова: "
-        else:
-            context_prefix = "\n\nContext:\nInput: "
-            keywords_prefix = "\nKeywords: "
+        logger.info(f"Found {len(results)} results for queries in collection {collection_name}")
+        return results
+    
+    def _load_collection_contents(self, collection_name: str) -> Dict[str, Any]:
+        """
+        Загружает содержимое коллекции из ChromaDB.
+        
+        Args:
+            collection_name: Имя коллекции
             
-        enriched_prompt = f"{base_prompt}{context_prefix}{text}{keywords_prefix}{', '.join(keywords)}"
+        Returns:
+            Словарь с эмбеддингами, документами и метаданными
+        """
+        collection = self.chroma_manager.get_collection(collection_name)
+        if collection is None:
+            logger.error(f"Collection '{collection_name}' not found")
+            return {}
         
-        result = {
-            "original_prompt": text,
-            "base_prompt": base_prompt,
-            "preprocessed_text": processing_result.get("preprocessed_text", ""),
-            "keywords": keywords,
-            "language": detected_lang,
-            "enriched_prompt": enriched_prompt
+        contents = collection.get(include=['embeddings', 'documents', 'metadatas'])
+        return {
+            'embeddings': np.array(contents['embeddings']),
+            'documents': contents['documents'],
+            'metadatas': contents['metadatas']
         }
+    
+    def _get_topk_hits(self, 
+                      sims: np.ndarray, 
+                      docs: List[str], 
+                      metas: List[dict], 
+                      queries: List[str], 
+                      top_k: int) -> Dict[str, List[Dict[str, Any]]]:
+        """
+        Для каждого запроса возвращает top-k документов с метаданными и схожестью.
         
-        return result
+        Args:
+            sims: Матрица косинусного сходства
+            docs: Список документов
+            metas: Список метаданных
+            queries: Список запросов
+            top_k: Количество результатов для возврата
+            
+        Returns:
+            Словарь запрос -> список результатов
+        """
+        results: Dict[str, List[Dict[str, Any]]] = {}
+        for qi, query in enumerate(queries):
+            sim_row = sims[qi]
+            best_idxs = np.argsort(-sim_row)[:top_k]
+            hits = []
+            for idx in best_idxs:
+                hits.append({
+                    'document': docs[idx],
+                    'metadata': metas[idx],
+                    'similarity': float(sim_row[idx])
+                })
+            results[query] = hits
+        return results
+    
+    def aggregate_hits(self, 
+                      hits_by_chunk: Dict[str, List[Dict[str, Any]]], 
+                      top_n: Optional[int] = None) -> List[Dict[str, Any]]:
+        """
+        Агрегирует результаты поиска по разным чанкам и возвращает top-n.
+        
+        Args:
+            hits_by_chunk: Результаты поиска по чанкам
+            top_n: Количество результатов для возврата
+            
+        Returns:
+            Список агрегированных результатов
+        """
+        agg: Dict[str, Dict[str, Any]] = {}
+
+        for chunk, hits in hits_by_chunk.items():
+            for hit in hits:
+                doc = hit['document']
+                sim = hit['similarity']
+                md = hit['metadata']
+
+                if doc not in agg:
+                    agg[doc] = {
+                        'document': doc,
+                        'metadata': md,
+                        'sum_similarity': sim,
+                        'count': 1,
+                        'chunks': [chunk]
+                    }
+                else:
+                    agg_entry = agg[doc]
+                    agg_entry['sum_similarity'] += sim
+                    agg_entry['count'] += 1
+                    agg_entry['chunks'].append(chunk)
+
+        # Преобразуем в список и сортируем по убыванию sum_similarity
+        aggregated_list = sorted(
+            agg.values(),
+            key=lambda x: x['sum_similarity'],
+            reverse=True
+        )
+
+        if top_n is not None:
+            return aggregated_list[:top_n]
+        return aggregated_list
+    
+    def process_article(self, article_text: str, conference_name: str) -> str:
+        """
+        Основной метод обработки статьи и обогащения промта.
+        
+        Args:
+            article_text: Текст статьи
+            conference_name: Название конференции
+            prompt: Исходный промт, к которому нужно добавить информацию (опционально)
+            
+        Returns:
+            Обогащенный промт
+        """
+
+        # try:
+        # 1. Предобработка текста статьи и разбивка на чанки
+        chunks = self.preprocess_article(article_text)
+        # logger.info(f"Chunks: {chunks}")
+        
+        # 2. Поиск по эмбеддингам для каждого чанка
+        results = self.search_by_embedding(conference_name, chunks, self.general_top)
+            
+        aggregated = self.aggregate_hits(results, self.article_top)
+        return aggregated[0]['document']
+
+    def process_prompt(self, conference_name: str) -> str:
+        # chunks = self.preprocess_article( self.rag_prompt)
+        # logger.info(f"Chunks: {chunks}")
+        results = self.search_by_embedding(conference_name, [self.rag_prompt], self.general_top)
+        documents = [
+            hit['document']
+            for hits in results.values()
+            for hit in hits
+        ]
+        return documents
+    
+
+    def pipeline(self, article_text: str, conference_name: str, prompt: str) -> str:
+        article_info = self.process_article(article_text, conference_name)
+        prompt_info = self.process_prompt(conference_name)
+        prompt_info.append(article_info)
+
+        return prompt_info
 
 
-# Example usage
-if __name__ == "__main__":
-    # Установка единого промпта для всех языков
-    main_prompt = """Вы - эксперт в области искусственного интеллекта в образовании.
-Дайте исчерпывающий ответ на вопрос, используя примеры реальных проектов и исследований."""
-    
-    # Инициализация с указанным промптом
-    rag_pipeline = Pipeline(prompt=main_prompt)
-    
-    # Пример текста на русском языке
-    sample_text_ru = "Как можно применить машинное обучение для персонализации образования? Мне нужны примеры для моих студентов."
-    
-    # Обработка текста с использованием промпта, заданного при инициализации
-    result_ru = rag_pipeline.enrich_prompt(sample_text_ru)
-    
-    # # Вывод результатов
-    # print(f"Исходный текст: {result_ru['original_prompt']}")
-    # print(f"Определенный язык: {result_ru['language']}")
-    # print(f"Ключевые слова: {', '.join(result_ru['keywords'])}")
-    
-    # # Пример установки нового промпта для английского языка
-    # rag_pipeline.set_prompt('en', "You are an education technology expert. Answer the question with practical examples.")
-    
-    # # Пример обработки английского текста
-    # sample_text_en = "How can we use AI to improve online education?"
-    # result_en = rag_pipeline.enrich_prompt(sample_text_en)
-    # print(f"Original text: {result_en['original_prompt']}")
-    # print(f"Detected language: {result_en['language']}")
-    # print(f"Keywords: {', '.join(result_en['keywords'])}") 
+# pipeline = RAGPipeline()
+# conference_name = "KMU"
+# agg = pipeline.process_prompt(conference_name)
+# print(agg)
+
+
+        
+            # logger.info(f"Aggregated: {aggregated}")
+            
+            # # 4. Если есть результаты, обогащаем исходный промт
+            # if aggregated and len(aggregated) > 0:
+            #     best_match = aggregated[0]
+                
+            #     # Формируем информацию о событии
+            #     event_info = f"Дополнительно:\n"
+                
+            #     # Добавляем название категории, если есть в метаданных
+            #     if 'column_title' in best_match['metadata']:
+            #         event_info += f"Категория: {best_match['metadata']['column_title']}\n"
+                
+            #     # Добавляем текст информации о событии
+            #     event_info += f"{best_match['document']}"
+                
+            #     # Добавляем информацию к исходному промту
+            #     enriched_prompt = f"{prompt}\n\n{event_info}" if prompt else f"{article_text}\n\n{event_info}"
+                
+            #     logger.info("Successfully enriched prompt with event specifics")
+            #     return enriched_prompt
+            # else:
+            #     logger.warning(f"No relevant event specifics found for conference: {conference_name}")
+            #     # Если информация не найдена, возвращаем исходный промт
+            #     return prompt if prompt else article_text
+                
+        # except Exception as e:
+        #     logger.error(f"Error processing article: {e}")
+        #     # В случае ошибки возвращаем исходный промт
+        #     return prompt if prompt else article_text

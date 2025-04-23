@@ -1,4 +1,4 @@
-name: Edulytica_Code_Docs Workflow
+name: Code Documentation Workflow
 
 on:
   push:

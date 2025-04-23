@@ -1,8 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import Header from "../../components/header/header"
 import { RegistrationForm } from "../../components/registrationForm/registrationForm"
 import "./registration.scss"
 import { Link } from "react-router-dom"
+import { motion } from "framer-motion"
 /**
  * @param {object} props - Объект с пропсами компонента
  * @param {string} props.registrationPage - Определяет, какую страницу отображать в форме регистрации (login или registration)
@@ -17,6 +18,12 @@ export const Registration = ({
   setAuthorized,
 }) => {
   useEffect(() => {}, [registrationPage])
+  // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
+  const [key, setKey] = useState(0)
+
+  useEffect(() => {
+    setKey((prevKey) => prevKey + 1)
+  }, [registrationPage])
 
   return (
     <div className="registrationPage">
@@ -53,14 +60,22 @@ export const Registration = ({
               />
             </svg>
             <div className="textLeftRegistrationPage">Главная</div>
-          </div>{" "}
+          </div>
         </Link>
       </div>
-      <RegistrationForm
-        registrationPage={registrationPage}
-        authorized={authorized}
-        setAuthorized={setAuthorized}
-      />
+      <motion.div
+        key={key}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <RegistrationForm
+          registrationPage={registrationPage}
+          authorized={authorized}
+          setAuthorized={setAuthorized}
+        />{" "}
+      </motion.div>
     </div>
   )
 }

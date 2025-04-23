@@ -13,6 +13,7 @@ load_dotenv('config/open.env')
 with open(f"config/roles/{getenv('ROLE')}.txt", 'r', encoding='UTF-8') as file:
     role = file.read()
 
+
 class OpenModel:
     """
     A class that provides access to the ChatGPT model
@@ -56,9 +57,9 @@ class OpenModel:
     def send_file(self, path: str):
         """ structures the file in json """
         chunks = DocumentFormatter.split(path)
-        
+
         responses = []
-            
+
         for i in range(len(chunks)):
             chunk = chunks[i]
             correctJSON = False
@@ -66,13 +67,13 @@ class OpenModel:
                 count_bags = 0
                 print(colored(f"[{i+1} File] Attempting..", 'dark_grey'))
                 resp = self.send(chunk.page_content)
-                try: 
-                    resp_json = json.loads(resp) # validate JSON
+                try:
+                    resp_json = json.loads(resp)  # validate JSON
                     responses.append(resp_json)
                     OpenModel._log(resp)
                     correctJSON = True
                     print(colored(f"[{i+1} File] Success", 'light_green'))
-                except:
+                except BaseException:
                     correctJSON = False
                     count_bags += 1
                     OpenModel._log(resp, err=True)
@@ -92,6 +93,6 @@ class OpenModel:
     def _log(content, err=False):
         """ saves the model's responses """
         current_datetime = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-        
+
         with open(f"logs/{'err/' if err else ''}log_{current_datetime}.txt", 'w', encoding='UTF-8') as log:
             log.write(content)

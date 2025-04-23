@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom"
 import { Home } from "../pages/home/home.jsx"
 import { Registration } from "../pages/registration/registration.jsx"
 import { Account } from "../pages/account/account.jsx"
+
 /**
  * Компонент, определяющий маршруты приложения.
  * @param {boolean} props.authorized - Определяет, авторизован ли пользователь
@@ -60,6 +61,20 @@ const AppRoutes = ({
       />
       <Route
         path="/account/info"
+        element={
+          <Account
+            accountModal={accountModal}
+            setAccountModal={setAccountModal}
+            profileModal={profileModal}
+            setProfileModal={setProfileModal}
+            setAuthorized={setAuthorized}
+            accountSection={accountSection}
+            setAccountSection={setAccountSection}
+          />
+        }
+      />
+      <Route
+        path="/account/result"
         element={
           <Account
             accountModal={accountModal}

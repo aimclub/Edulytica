@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 """
-Скрипт для запуска всех модульных тестов RAG модуля
+Script for running all RAG module unit tests
 """
 import unittest
 import sys
 import os
 
-# Добавляем родительскую директорию в путь для правильного импорта
+# Add parent directory to path for correct imports
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Загружаем все тесты
+# Load all tests
 loader = unittest.TestLoader()
 start_dir = os.path.dirname(os.path.abspath(__file__))
 suite = loader.discover(start_dir, pattern="test_*.py")
 
-# Запускаем тесты
+# Run tests
 runner = unittest.TextTestRunner(verbosity=2)
 result = runner.run(suite)
 
-# Выходим с кодом ошибки, если были неудачные тесты
+# Exit with error code if there were failed tests
 sys.exit(not result.wasSuccessful()) 

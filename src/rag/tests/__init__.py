@@ -1,6 +1,6 @@
-"""Модульные тесты для RAG модуля"""
+"""Unit tests for RAG module"""
 
-# Импортируем тесты для автоматического обнаружения
+# Import tests for automatic discovery
 from tests.test_text_processor import TestTextProcessor
 from tests.test_prompt_enricher import TestPromptEnricher
 from tests.test_pipeline import TestRAGPipeline 

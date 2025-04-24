@@ -23,22 +23,22 @@ Package for enhancing prompts with contextual information (Retrieval-Augmented G
 
 ```
 src/rag/
-├── api/                  # API interfaces for accessing the RAG system
-├── config/               # Configuration files
-│   └── config.yaml       # Main configuration file
-├── core/                 # Core components
-│   ├── chroma_db/        # ChromaDB interaction
-│   ├── embedder/         # Creation and processing of embeddings
-│   ├── event_specifics/  # Event specifics search
-│   ├── prompt_enricher/  # Prompt enrichment with context
-│   ├── text_processor/   # Text processing
-│   └── utils/            # Utilities
-├── data/                 # System data
+├── config/                # Configuration files
+│   └── config.yaml        # Main configuration file
+├── core/                  # Core components
+│   ├── chroma_db/         # ChromaDB interaction
+│   ├── embedder/          # Creation and processing of embeddings
+│   ├── event_specifics/   # Event specifics search
+│   ├── prompt_enricher/   # Prompt enrichment with context
+│   ├── text_processor/    # Text processing
+│   └── utils/             # Utilities
+├── data/                  # System data
 │   └── Specification.xlsx # Conference specifications
-├── docs/                 # Documentation
-├── docker-compose.yml    # Docker configuration
-├── pipeline.py           # Main RAG pipeline
-└── requirements.txt      # Project dependencies
+├── tests/                 # Unit tests
+├── docs/                  # Documentation
+├── docker-compose.yml     # Docker configuration
+├── pipeline.py            # Main RAG pipeline
+└── requirements.txt       # Project dependencies
 ```
 
 ## Installation

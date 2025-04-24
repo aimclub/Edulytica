@@ -4,6 +4,16 @@ import "./registrationForm.scss"
 import { Link } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import { registerUser, loginUser } from "../../store/authSlice"
+import {
+  validateEmail,
+  validateLogin,
+  validatePassword,
+  validateRepeatPassword,
+  validateAuthorizationName,
+  validateAuthorizationPassword,
+  validateUserCredentials,
+} from "../../utils/validationUtils"
+
 /**
  * @param {object} props - Объект с пропсами компонента.
  * @param {string} props.registrationPage - Определяет, какую страницу отображать (login или registration).
@@ -39,33 +49,16 @@ export const RegistrationForm = ({
    * Валидация формы регистрации
    */
   const validateRegistrationForm = () => {
-    const newErrors = {}
+    const newErrors = {
+      email: validateEmail(email),
+      login: validateLogin(login, users),
+      password: validatePassword(password),
+      repeatPassword: validateRepeatPassword(password, repeatPassword),
+    }
 
-    if (email.trim().length === 0) {
-      newErrors.email = "* Обязательное поле"
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = "* Некорректный email"
-    }
-    if (login.trim().length === 0) {
-      newErrors.login = "* Обязательное поле"
-    } else if (login.trim().length < 3) {
-      newErrors.login = "* Логин слишком короткий"
-    } else if (users.some((user) => user.login === login.trim())) {
-      newErrors.login = "* Этот логин уже занят"
-    }
-    if (password.length === 0) {
-      newErrors.password = "* Обязательное поле"
-    } else if (password.length < 8) {
-      newErrors.password = "* Минимум 8 символов"
-    } else if (!/\d/.test(password)) {
-      newErrors.password = "* Пароль должен содержать хотя бы одну цифру"
-    } else if (!/[a-zA-Zа-яА-Я]/.test(password)) {
-      newErrors.password = "* Пароль должен содержать хотя бы одну букву"
-    }
-    if (repeatPassword.length === 0) {
-      newErrors.repeatPassword = "* Обязательное поле"
-    } else if (password !== repeatPassword && password.length !== 0)
-      newErrors.repeatPassword = "* Пароли не совпадают"
+    Object.keys(newErrors).forEach(
+      (key) => newErrors[key] === null && delete newErrors[key]
+    )
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -75,24 +68,26 @@ export const RegistrationForm = ({
    * Валидация формы входа
    */
   const validateLoginForm = () => {
-    const newErrorsAuthorization = {}
-    if (!authorization.name.trim()) {
-      newErrorsAuthorization.name = "* Введите логин"
+    const newErrors = {
+      name: validateAuthorizationName(authorization.name),
+      password: validateAuthorizationPassword(authorization.password),
     }
-    if (!authorization.password.trim()) {
-      newErrorsAuthorization.password = "* Введите пароль"
-    }
-    const user = users.find(
-      (user) =>
-        (user.login === authorization.name ||
-          user.email === authorization.name) &&
-        user.password === authorization.password
+
+    const generalError = validateUserCredentials(
+      authorization.name,
+      authorization.password,
+      users
     )
-    if (!user && authorization.name.trim() && authorization.password.trim()) {
-      newErrorsAuthorization.name = "* Неверный логин или пароль"
+    if (generalError) {
+      newErrors.name = generalError
     }
-    setErrorsAuthorization(newErrorsAuthorization)
-    return Object.keys(newErrorsAuthorization).length === 0
+
+    Object.keys(newErrors).forEach(
+      (key) => newErrors[key] === null && delete newErrors[key]
+    )
+
+    setErrorsAuthorization(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
   /**

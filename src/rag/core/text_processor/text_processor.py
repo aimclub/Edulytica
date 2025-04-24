@@ -5,13 +5,11 @@ from loguru import logger
 class TextProcessor:
     """
     Class for processing article text and preparing it for embedding-based search
-    :return: None
     """
     
     def __init__(self):
         """
         Initialize the text processor
-        :return: None
         """
         pass
     

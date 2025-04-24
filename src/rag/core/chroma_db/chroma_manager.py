@@ -7,14 +7,11 @@ from ..embedder import EmbeddingProcessor
 class ChromaDBManager:
     """
     Class for managing collections in ChromaDB
-    :return: None
     """
     def __init__(self, embedding_processor=None):
         """
         Initialize ChromaDB manager and establish connection
         :param embedding_processor: Embedding processor instance
-
-        :return: None
         """
         config_loader = ConfigLoader()
         config = config_loader.load_config()

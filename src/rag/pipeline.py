@@ -11,13 +11,13 @@ class RAGPipeline:
     """
     Main class for implementing the RAG pipeline
     :param self: Instance of RAGPipeline
-    :return: None
     """
     
     def __init__(self):
         """
         Initialize all components of the RAG pipeline
         :param self: Instance of RAGPipeline
+
         :return: None
         """
         # Load configuration
@@ -41,6 +41,7 @@ class RAGPipeline:
         """
         Process article text and split it into parts for analysis
         :param text: Article text
+
         :return: List of article parts for processing
         """
         # Use the function from Text Processor to preprocess the article
@@ -54,6 +55,7 @@ class RAGPipeline:
         Main method for getting specifics for an article
         :param article_text: Text of the article
         :param conference_name: Name of the conference
+
         :return: List of specific information
         """
         chunks = self.preprocess_article(article_text)
@@ -68,6 +70,7 @@ class RAGPipeline:
         """
         Get specifics for the RAG prompt
         :param conference_name: Name of the conference
+
         :return: List of specific information
         """
         return self.event_specifics.find_specifics(
@@ -83,6 +86,7 @@ class RAGPipeline:
         :param article_text: Article text to process
         :param conference_name: Name of the conference
         :param prompt: Base prompt to enrich
+
         :return: Enriched prompt with context-specific information
         """
         # Get specifics for prompt and article

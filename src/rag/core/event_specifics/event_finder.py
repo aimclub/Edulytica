@@ -7,15 +7,12 @@ from core.chroma_db.chroma_manager import ChromaDBManager
 class EventSpecifics:
     """
     Class for finding event specifics using embeddings and aggregating results
-    :return: None
     """
     def __init__(self, embedding_processor: EmbeddingProcessor, chroma_manager: ChromaDBManager):
         """
         Initialize EventSpecifics with embedding processor and ChromaDB manager
         :param embedding_processor: Embedding processor instance
         :param chroma_manager: ChromaDB manager instance
-
-        :return: None
         """
         self.embedding_processor = embedding_processor
         self.chroma_manager = chroma_manager

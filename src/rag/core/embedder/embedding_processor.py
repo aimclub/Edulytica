@@ -9,14 +9,11 @@ from ..utils.config_loader import ConfigLoader
 class EmbeddingProcessor:
     """
     Class for creating and processing embeddings from text data
-    :return: None
     """
     def __init__(self, embedding_model: Optional[str] = None):
         """
         Initialization with embedding model selection
         :param embedding_model: Name of the model for creating embeddings
-
-        :return: None
         """
         config_loader = ConfigLoader()
         self.embedding_model = embedding_model or config_loader.get_embedding_model()

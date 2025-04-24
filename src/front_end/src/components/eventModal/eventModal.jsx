@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import "./eventModal.scss"
-const arr_event = ["ППС", "КМУ"]
 
 /**
  * Компонент модального окна для выбора мероприятия.
@@ -10,23 +9,29 @@ const arr_event = ["ППС", "КМУ"]
  * @returns {JSX.Element} Модальное окно выбора мероприятия.
  */
 
-export const EventModal = ({ setSelectedEvent, closeModal }) => {
+export const EventModal = ({
+  setSelectedEvent,
+  closeModal,
+  setAddEventModal,
+  event,
+}) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
-  const [filterEvent, setFilterEvent] = useState(arr_event)
+  const [filterEvent, setFilterEvent] = useState(event)
   useEffect(() => {
     const filterData = () => {
       if (!searchTermEvent) {
-        setFilterEvent(arr_event)
+        setFilterEvent(event)
         return
       }
-      const results = arr_event.filter((item) => {
-        return item.toLowerCase().includes(searchTermEvent.toLowerCase())
+      const results = event.filter((item) => {
+        return item.name.toLowerCase().includes(searchTermEvent.toLowerCase())
       })
       setFilterEvent(results)
     }
 
     filterData()
-  }, [searchTermEvent])
+  }, [searchTermEvent, event])
+
   const handleSearchChange = (event) => {
     setSearchTermEvent(event.target.value)
   }
@@ -34,6 +39,7 @@ export const EventModal = ({ setSelectedEvent, closeModal }) => {
     setSelectedEvent(event)
     closeModal()
   }
+
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "..."
@@ -44,7 +50,12 @@ export const EventModal = ({ setSelectedEvent, closeModal }) => {
     <div className="eventModal">
       <div className="titleBlockEventModal">
         <div className="titleEventModal">Выберите мероприятие</div>
-        <div className="textAddEventModal">+ добавить своё</div>
+        <div
+          className="textAddEventModal"
+          onClick={() => setAddEventModal(true)}
+        >
+          + добавить своё
+        </div>
       </div>
       <div className="inputBlockEventModal">
         <svg
@@ -72,11 +83,11 @@ export const EventModal = ({ setSelectedEvent, closeModal }) => {
         <div className="blockEventModalScroll">
           {filterEvent.map((ev) => (
             <div
-              key={ev}
+              key={ev.name}
               className="lineBlockEventModal"
               onClick={() => handleEventSelect(ev)}
             >
-              {truncateString(ev, 13)}
+              {truncateString(ev.name, 13)}
             </div>
           ))}
         </div>

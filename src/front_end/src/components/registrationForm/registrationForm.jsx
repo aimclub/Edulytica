@@ -2,7 +2,8 @@ import { useState, useEffect } from "react"
 import { Input } from "../../utils/input/input"
 import "./registrationForm.scss"
 import { Link } from "react-router-dom"
-
+import { useDispatch, useSelector } from "react-redux"
+import { registerUser, loginUser } from "../../store/authSlice"
 /**
  * @param {object} props - Объект с пропсами компонента.
  * @param {string} props.registrationPage - Определяет, какую страницу отображать (login или registration).
@@ -18,9 +19,109 @@ export const RegistrationForm = ({
 }) => {
   const [switchClick, setSwitchClick] = useState(false)
   const [loginModal, setLoginModal] = useState(registrationPage)
+  const [email, setEmail] = useState("")
+  const [login, setLogin] = useState("")
+  const [password, setPassword] = useState("")
+  const [repeatPassword, setRepeatPassword] = useState("")
+  const [errors, setErrors] = useState({})
+  const [authorization, setAuthorization] = useState({ name: "", password: "" })
+  const [errorsAuthorization, setErrorsAuthorization] = useState({})
+
+  // Селектор пользователей
+  const users = useSelector((state) => state.auth.users)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    console.log("Список пользователей изменился:", users)
+  }, [users])
+
+  /**
+   * Валидация формы регистрации
+   */
+  const validateRegistrationForm = () => {
+    const newErrors = {}
+
+    if (email.trim().length === 0) {
+      newErrors.email = "* Обязательное поле"
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = "* Некорректный email"
+    }
+    if (login.trim().length === 0) {
+      newErrors.login = "* Обязательное поле"
+    } else if (login.trim().length < 3) {
+      newErrors.login = "* Логин слишком короткий"
+    } else if (users.some((user) => user.login === login.trim())) {
+      newErrors.login = "* Этот логин уже занят"
+    }
+    if (password.length === 0) {
+      newErrors.password = "* Обязательное поле"
+    } else if (password.length < 8) {
+      newErrors.password = "* Минимум 8 символов"
+    } else if (!/\d/.test(password)) {
+      newErrors.password = "* Пароль должен содержать хотя бы одну цифру"
+    } else if (!/[a-zA-Zа-яА-Я]/.test(password)) {
+      newErrors.password = "* Пароль должен содержать хотя бы одну букву"
+    }
+    if (repeatPassword.length === 0) {
+      newErrors.repeatPassword = "* Обязательное поле"
+    } else if (password !== repeatPassword && password.length !== 0)
+      newErrors.repeatPassword = "* Пароли не совпадают"
+
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  /**
+   * Валидация формы входа
+   */
+  const validateLoginForm = () => {
+    const newErrorsAuthorization = {}
+    if (!authorization.name.trim()) {
+      newErrorsAuthorization.name = "* Введите логин"
+    }
+    if (!authorization.password.trim()) {
+      newErrorsAuthorization.password = "* Введите пароль"
+    }
+    const user = users.find(
+      (user) =>
+        (user.login === authorization.name ||
+          user.email === authorization.name) &&
+        user.password === authorization.password
+    )
+    if (!user && authorization.name.trim() && authorization.password.trim()) {
+      newErrorsAuthorization.name = "* Неверный логин или пароль"
+    }
+    setErrorsAuthorization(newErrorsAuthorization)
+    return Object.keys(newErrorsAuthorization).length === 0
+  }
+
+  /**
+   * Обработка регистрации пользователя
+   */
+  const handleRegister = () => {
+    const data = {
+      login: login,
+      email: email,
+      password: password,
+    }
+
+    dispatch(registerUser(data))
+    handleClickModal("registration2")
+  }
+  /**
+   * Сброс ошибок при переключении формы
+   */
+  const handleFormSwitch = (form) => {
+    setErrors({})
+    setErrorsAuthorization({})
+  }
   const handleSwitch = () => {
     setSwitchClick((prev) => !prev)
   }
+  /**
+   * Переключение текущей отображаемой формы
+   * @param {string} clickModal - Страница ("login", "registration", "registration2")
+   */
   const handleClickModal = (clickModal) => {
     setLoginModal(clickModal)
   }
@@ -40,11 +141,46 @@ export const RegistrationForm = ({
             <div className="inputContainerRegistrationForm">
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Почта \ Логин</div>
-                <Input type="text" placeholder="Введите почту или логин..." />
+                <div className="blockValidationInputRegistrationForm">
+                  {" "}
+                  <Input
+                    type="text"
+                    value={authorization.name}
+                    onChange={(e) =>
+                      setAuthorization({
+                        ...authorization,
+                        name: e.target.value,
+                      })
+                    }
+                    placeholder="Введите почту или логин..."
+                  />
+                  {errorsAuthorization.name && (
+                    <div className="errorTextRegistrationForm">
+                      {errorsAuthorization.name}
+                    </div>
+                  )}
+                </div>{" "}
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Пароль</div>
-                <Input type="password" placeholder="Введите пароль..." />
+                <div className="blockValidationInputRegistrationForm">
+                  <Input
+                    type="password"
+                    value={authorization.password}
+                    onChange={(e) =>
+                      setAuthorization({
+                        ...authorization,
+                        password: e.target.value,
+                      })
+                    }
+                    placeholder="Введите пароль..."
+                  />
+                  {errorsAuthorization.password && (
+                    <div className="errorTextRegistrationForm">
+                      {errorsAuthorization.password}
+                    </div>
+                  )}
+                </div>{" "}
               </div>
             </div>
             <div className="switchContRegistrationForm">
@@ -79,19 +215,23 @@ export const RegistrationForm = ({
               </div>
             </div>
             <div className="blockBtnRegistrationForm">
-              <Link style={{ width: "100%" }} to="/account">
-                {" "}
-                <button
-                  className="btnRegistrationForm"
-                  onClick={handleBtnRegistrationForm}
-                >
-                  Войти в аккаунт
-                </button>
-              </Link>
+              <button
+                className="btnRegistrationForm"
+                onClick={() => {
+                  if (validateLoginForm()) {
+                    setAuthorized(true)
+                    dispatch(loginUser(authorization))
+                    window.location.href = "/account"
+                  }
+                }}
+              >
+                Войти в аккаунт
+              </button>
               <div
                 className="textBtnRegistrationForm"
                 onClick={() => {
                   handleClickModal("registration")
+                  handleFormSwitch()
                 }}
               >
                 Cоздать аккаунт?
@@ -106,15 +246,51 @@ export const RegistrationForm = ({
             <div className="inputContainerRegistrationForm">
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Почта</div>
-                <Input type="text" placeholder="Введите почту..." />
+                <div className="blockValidationInputRegistrationForm">
+                  <Input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Введите почту..."
+                  />
+                  {errors.email && (
+                    <div className="errorTextRegistrationForm">
+                      {errors.email}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Логин</div>
-                <Input type="text" placeholder="Введите логин..." />
+                <div className="blockValidationInputRegistrationForm">
+                  <Input
+                    type="text"
+                    value={login}
+                    onChange={(e) => setLogin(e.target.value)}
+                    placeholder="Введите логин..."
+                  />
+                  {errors.login && (
+                    <div className="errorTextRegistrationForm">
+                      {errors.login}
+                    </div>
+                  )}
+                </div>{" "}
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Пароль</div>
-                <Input type="password" placeholder="Введите пароль..." />
+                <div className="blockValidationInputRegistrationForm">
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Введите пароль..."
+                  />
+                  {errors.password && (
+                    <div className="errorTextRegistrationForm">
+                      {errors.password}
+                    </div>
+                  )}{" "}
+                </div>
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">
@@ -122,15 +298,24 @@ export const RegistrationForm = ({
                 </div>
                 <Input
                   type="password"
+                  value={repeatPassword}
+                  onChange={(e) => setRepeatPassword(e.target.value)}
                   placeholder="Введите повторно пароль..."
                 />
+                {errors.repeatPassword && (
+                  <div className="errorTextRegistrationForm">
+                    {errors.repeatPassword}
+                  </div>
+                )}{" "}
               </div>
             </div>
             <div className="blockBtnRegistrationForm">
               <button
                 className="btnRegistrationForm"
                 onClick={() => {
-                  handleClickModal("registration2")
+                  if (validateRegistrationForm()) {
+                    handleRegister()
+                  }
                 }}
               >
                 Создать аккаунт
@@ -140,6 +325,7 @@ export const RegistrationForm = ({
                 className="textBtnRegistrationForm"
                 onClick={() => {
                   handleClickModal("login")
+                  handleFormSwitch()
                 }}
               >
                 Уже есть аккаунт?

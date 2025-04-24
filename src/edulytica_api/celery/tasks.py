@@ -1,17 +1,9 @@
 import celery
 from celery import Celery
-import json
-import os
-import uuid
 from pathlib import Path
-from src.edulytica_api.crud.document_report_crud import DocumentReportCrud
-from src.edulytica_api.crud.document_summary_crud import DocumentSummaryCrud
-from src.edulytica_api.crud.ticket_status_crud import TicketStatusCrud
-from src.edulytica_api.crud.tickets_crud import TicketCrud
-from src.edulytica_api.database import SessionLocal
-from src.edulytica_api.llms.llm_model import Conversation, LLM
+from src.common.database.database import SessionLocal
+from src.edulytica_api.llms.llm_model import LLM
 from celery.signals import celeryd_after_setup
-from src.edulytica_api.utils.default_enums import TicketStatusDefault
 
 app = Celery('tasks')
 app.config_from_object('src.edulytica_api.celery.celeryconfig')

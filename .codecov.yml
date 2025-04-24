@@ -22,3 +22,5 @@ ignore:
   - "examples"
   - "src/edulytica_api"
   - "src/front_end"
+  - "src/common"
+  - "src/auth"

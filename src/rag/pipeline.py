@@ -9,14 +9,16 @@ from core.embedder.embedding_processor import EmbeddingProcessor
 
 class RAGPipeline:
     """
-    Main class for implementing the RAG pipeline.
-    Includes text processing, searching for relevant data in ChromaDB,
-    extracting event specifics, and enriching prompts.
+    Main class for implementing the RAG pipeline
+    :param self: Instance of RAGPipeline
+    :return: None
     """
     
     def __init__(self):
         """
         Initialize all components of the RAG pipeline
+        :param self: Instance of RAGPipeline
+        :return: None
         """
         # Load configuration
         self.config_loader = ConfigLoader()
@@ -37,13 +39,9 @@ class RAGPipeline:
     
     def preprocess_article(self, text: str) -> List[str]:
         """
-        Process article text and split it into parts for analysis.
-        
-        Args:
-            text: Article text
-            
-        Returns:
-            List of article parts for processing
+        Process article text and split it into parts for analysis
+        :param text: Article text
+        :return: List of article parts for processing
         """
         # Use the function from Text Processor to preprocess the article
         chunks = self.text_processor.preprocess_article(text)
@@ -53,7 +51,10 @@ class RAGPipeline:
     
     def process_article(self, article_text: str, conference_name: str) -> List[str]:
         """
-        Main method for getting specifics for an article.
+        Main method for getting specifics for an article
+        :param article_text: Text of the article
+        :param conference_name: Name of the conference
+        :return: List of specific information
         """
         chunks = self.preprocess_article(article_text)
         return self.event_specifics.find_specifics(
@@ -66,6 +67,8 @@ class RAGPipeline:
     def process_prompt(self, conference_name: str) -> List[str]:
         """
         Get specifics for the RAG prompt
+        :param conference_name: Name of the conference
+        :return: List of specific information
         """
         return self.event_specifics.find_specifics(
             collection_name=conference_name,
@@ -77,14 +80,10 @@ class RAGPipeline:
     def pipeline(self, article_text: str, conference_name: str, prompt: str) -> str:
         """
         Main pipeline method that processes the article and prompt
-        
-        Args:
-            article_text: Article text to process
-            conference_name: Name of the conference
-            prompt: Base prompt to enrich
-            
-        Returns:
-            Enriched prompt with context-specific information
+        :param article_text: Article text to process
+        :param conference_name: Name of the conference
+        :param prompt: Base prompt to enrich
+        :return: Enriched prompt with context-specific information
         """
         # Get specifics for prompt and article
         prompt_specifics = self.process_prompt(conference_name)

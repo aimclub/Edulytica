@@ -6,16 +6,19 @@ from typing import Dict, Any
 
 class ConfigLoader:
     """
-    Class for loading configuration from YAML files.
-    Implements the Singleton pattern to ensure a single instance and load the configuration only once.
+    Class for loading configuration from YAML files
+    :param self: Instance of ConfigLoader
+    :return: None
     """
     _instance = None
     _config_loaded = False
     
     def __new__(cls, config_path: str = None):
         """
-        Implementation of the Singleton pattern.
-        Returns an existing instance of the class or creates a new one.
+        Implementation of the Singleton pattern
+        :param cls: Class of ConfigLoader
+        :param config_path: Path to the YAML configuration file
+        :return: Instance of ConfigLoader
         """
         if cls._instance is None:
             cls._instance = super(ConfigLoader, cls).__new__(cls)
@@ -28,11 +31,10 @@ class ConfigLoader:
     
     def __init__(self, config_path: str = None):
         """
-        Initialize the configuration loader.
-        If an instance already exists, just updates the path if it's different.
-        
-        Args:
-            config_path: Path to the YAML configuration file. If None, the default path is used.
+        Initialize the configuration loader
+        :param self: Instance of ConfigLoader
+        :param config_path: Path to the YAML configuration file
+        :return: None
         """
         # If __new__ returned an existing instance, this code won't change config_path,
         # so we only need to check the case when path is not set
@@ -45,11 +47,9 @@ class ConfigLoader:
     
     def load_config(self) -> Dict[str, Any]:
         """
-        Load configuration from YAML file.
-        Loads only once, subsequent calls return cached data.
-        
-        Returns:
-            Dictionary with configuration values
+        Load configuration from YAML file
+        :param self: Instance of ConfigLoader
+        :return: Dictionary with configuration values
         """
         # If configuration is already loaded, return cached data
         if ConfigLoader._config_loaded and self.config_data is not None:
@@ -77,16 +77,10 @@ class ConfigLoader:
     
     def get_value(self, key: str) -> Any:
         """
-        Get a specific configuration value by key.
-        
-        Args:
-            key: Configuration key to retrieve
-            
-        Returns:
-            Configuration value
-            
-        Raises:
-            KeyError: If the key is not found in the configuration
+        Get a specific configuration value by key
+        :param self: Instance of ConfigLoader
+        :param key: Configuration key to retrieve
+        :return: Configuration value
         """
         if self.config_data is None:
             self.load_config()
@@ -99,63 +93,56 @@ class ConfigLoader:
     
     def get_rag_prompt(self) -> str:
         """
-        Get the RAG prompt from the configuration.
-        
-        Returns:
-            RAG prompt
+        Get the RAG prompt from the configuration
+        :param self: Instance of ConfigLoader
+        :return: RAG prompt
         """
         return self.get_value('rag_promt')
     
     def get_general_top(self) -> int:
         """
-        Get the number of results for general search.
-        
-        Returns:
-            Number of results for general search
+        Get the number of results for general search
+        :param self: Instance of ConfigLoader
+        :return: Number of results for general search
         """
         return int(self.get_value('general_top'))
     
     def get_article_top(self) -> int:
         """
-        Get the number of results for article search.
-        
-        Returns:
-            Number of results for article search
+        Get the number of results for article search
+        :param self: Instance of ConfigLoader
+        :return: Number of results for article search
         """
         return int(self.get_value('artical_top'))
     
     def get_host(self) -> str:
         """
-        Get the host value from the configuration.
-        
-        Returns:
-            Host as a string
+        Get the host value from the configuration
+        :param self: Instance of ConfigLoader
+        :return: Host as a string
         """
         return self.get_value('host')
     
     def get_port(self) -> int:
         """
-        Get the port value from the configuration.
-        
-        Returns:
-            Port as an integer
+        Get the port value from the configuration
+        :param self: Instance of ConfigLoader
+        :return: Port as an integer
         """
         return int(self.get_value('port'))
     
     def get_embedding_model(self) -> str:
         """
-        Get the embedding model from the configuration.
-        
-        Returns:
-            Embedding model name
+        Get the embedding model from the configuration
+        :param self: Instance of ConfigLoader
+        :return: Embedding model name
         """
         return self.get_value('embedding_model')
     
     def get_additional_info_prefix(self) -> str:
         """
-        Get the additional information prefix from the configuration.
-        
-        Returns:
-            Additional information prefix
+        Get the additional information prefix from the configuration
+        :param self: Instance of ConfigLoader
+        :return: Additional information prefix
         """
         return self.get_value('additional_info_prefix')

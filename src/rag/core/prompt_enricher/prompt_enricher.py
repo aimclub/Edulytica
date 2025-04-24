@@ -3,18 +3,16 @@ from core.utils.config_loader import ConfigLoader
 
 class PromptEnricher:
     """
-    Class for enriching prompts based on specific details.
+    Class for enriching prompts based on specific details
+    :return: None
     """
     def enrich_prompt(self, base_prompt: str, specifics: List[str]) -> str:
         """
-        Combines the base prompt and a list of specific details.
+        Combines the base prompt and a list of specific details
+        :param base_prompt: Original prompt
+        :param specifics: List of strings with specific information
 
-        Args:
-            base_prompt: Original prompt
-            specifics: List of strings with specific information
-
-        Returns:
-            Enriched prompt as a string
+        :return: Enriched prompt as a string
         """
         if not specifics:
             return base_prompt

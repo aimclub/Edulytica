@@ -9,14 +9,14 @@ from ..utils.config_loader import ConfigLoader
 class EmbeddingProcessor:
     """
     Class for creating and processing embeddings from text data
+    :return: None
     """
     def __init__(self, embedding_model: Optional[str] = None):
         """
         Initialization with embedding model selection
-        
-        Args:
-            embedding_model: Name of the model for creating embeddings (optional)
-                            If not specified, the model from the configuration will be used
+        :param embedding_model: Name of the model for creating embeddings
+
+        :return: None
         """
         config_loader = ConfigLoader()
         self.embedding_model = embedding_model or config_loader.get_embedding_model()
@@ -33,21 +33,17 @@ class EmbeddingProcessor:
     def get_embedding_function(self):
         """
         Get the function for creating embeddings
-        
-        Returns:
-            Function for creating embeddings
+
+        :return: Function for creating embeddings
         """
         return self.embedding_function
     
     def embed_texts(self, texts: List[str]) -> np.ndarray:
         """
         Creates embeddings for a list of texts
-        
-        Args:
-            texts: List of texts for embedding
-            
-        Returns:
-            Array of embeddings with shape (n_texts, embedding_dim)
+        :param self: Instance of EmbeddingProcessor
+        :param texts: List of texts for embedding
+        :return: Array of embeddings with shape (n_texts, embedding_dim)
         """
         try:
             embeddings = self.embedding_function(texts)
@@ -59,12 +55,9 @@ class EmbeddingProcessor:
     def normalize_embeddings(self, embeddings: np.ndarray) -> np.ndarray:
         """
         L2-normalizes embeddings along each row
-        
-        Args:
-            embeddings: Array of embeddings
-            
-        Returns:
-            Normalized embeddings
+        :param self: Instance of EmbeddingProcessor
+        :param embeddings: Array of embeddings
+        :return: Normalized embeddings
         """
         norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
         return embeddings / np.where(norms == 0, 1, norms)
@@ -74,13 +67,10 @@ class EmbeddingProcessor:
                                  document_embeddings: np.ndarray) -> np.ndarray:
         """
         Computes cosine similarity between queries and documents
-        
-        Args:
-            query_embeddings: Query embeddings with shape (n_queries, embedding_dim)
-            document_embeddings: Document embeddings with shape (n_docs, embedding_dim)
-            
-        Returns:
-            Cosine similarity matrix with shape (n_queries, n_docs)
+        :param self: Instance of EmbeddingProcessor
+        :param query_embeddings: Query embeddings with shape (n_queries, embedding_dim)
+        :param document_embeddings: Document embeddings with shape (n_docs, embedding_dim)
+        :return: Cosine similarity matrix with shape (n_queries, n_docs)
         """
         # Normalize embeddings for cosine similarity
         query_norm = self.normalize_embeddings(query_embeddings)
@@ -92,13 +82,10 @@ class EmbeddingProcessor:
     def process_excel_data(self, file_name: str, sheet_name: str) -> Dict[str, Any]:
         """
         Process Excel file and prepare data for embeddings
-        
-        Args:
-            file_name: Path to the Excel file
-            sheet_name: Sheet name in the Excel file
-            
-        Returns:
-            Dictionary with structured data for saving to ChromaDB
+        :param self: Instance of EmbeddingProcessor
+        :param file_name: Path to the Excel file
+        :param sheet_name: Sheet name in the Excel file
+        :return: Dictionary with structured data for saving to ChromaDB
         """
         logger.info(f"Processing Excel data from file: {file_name}, sheet: {sheet_name}")
         

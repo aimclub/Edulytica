@@ -7,14 +7,14 @@ from ..embedder import EmbeddingProcessor
 class ChromaDBManager:
     """
     Class for managing collections in ChromaDB
+    :return: None
     """
     def __init__(self, embedding_processor=None):
         """
         Initialize ChromaDB manager and establish connection
-        
-        Args:
-            embedding_processor: Embedding processor (optional)
-                              If not specified, a new one will be created
+        :param embedding_processor: Embedding processor instance
+
+        :return: None
         """
         config_loader = ConfigLoader()
         config = config_loader.load_config()
@@ -47,9 +47,8 @@ class ChromaDBManager:
     def list_collections(self) -> List[Dict[str, Any]]:
         """
         Get a list of all collections in ChromaDB
-        
-        Returns:
-            List of collections with their metadata
+
+        :return: List of collections with their metadata
         """
         try:
             collections = self.chroma_client.list_collections()
@@ -62,13 +61,10 @@ class ChromaDBManager:
     def create_collection(self, name: str, metadata: Optional[Dict[str, Any]] = None) -> Any:
         """
         Create a new collection
-        
-        Args:
-            name: Collection name
-            metadata: Collection metadata (optional)
-            
-        Returns:
-            Collection object
+        :param name: Collection name
+        :param metadata: Collection metadata
+
+        :return: Collection object
         """
         try:
             # Try to get existing collection
@@ -91,12 +87,9 @@ class ChromaDBManager:
     def get_collection(self, name: str) -> Any:
         """
         Get a collection by name
-        
-        Args:
-            name: Collection name
-            
-        Returns:
-            Collection object or None if collection not found
+        :param name: Collection name
+
+        :return: Collection object or None if collection not found
         """
         try:
             collection = self.chroma_client.get_collection(
@@ -116,15 +109,12 @@ class ChromaDBManager:
                      ids: Optional[List[str]] = None) -> bool:
         """
         Add documents to a collection
-        
-        Args:
-            collection_name: Collection name
-            documents: List of document texts
-            metadatas: List of metadata for each document (optional)
-            ids: List of IDs for each document (optional)
-            
-        Returns:
-            True if documents were successfully added, False otherwise
+        :param collection_name: Collection name
+        :param documents: List of document texts
+        :param metadatas: List of metadata for each document
+        :param ids: List of IDs for each document
+
+        :return: True if documents were successfully added, False otherwise
         """
         try:
             collection = self.get_collection(collection_name)
@@ -154,13 +144,10 @@ class ChromaDBManager:
                               include: Optional[List[str]] = None) -> Dict[str, Any]:
         """
         Get all collection contents
-        
-        Args:
-            collection_name: Collection name
-            include: What to include in results ("documents", "metadatas", "embeddings")
-            
-        Returns:
-            Collection contents or empty dictionary in case of error
+        :param collection_name: Collection name
+        :param include: What to include in results
+
+        :return: Collection contents or empty dictionary in case of error
         """
         try:
             collection = self.get_collection(collection_name)
@@ -184,14 +171,11 @@ class ChromaDBManager:
     def add_from_excel(self, file_name: str, sheet_name: str, collection_name: str) -> bool:
         """
         Add data from Excel file to ChromaDB collection
-        
-        Args:
-            file_name: Path to Excel file
-            sheet_name: Sheet name in Excel file
-            collection_name: Collection name to create/update
-            
-        Returns:
-            True if data was successfully added, False otherwise
+        :param file_name: Path to Excel file
+        :param sheet_name: Sheet name in Excel file
+        :param collection_name: Collection name to create/update
+
+        :return: True if data was successfully added, False otherwise
         """
         try:
             # Use current embedding processor
@@ -227,16 +211,8 @@ class ChromaDBManager:
     def delete_all_collections(self) -> Dict[str, Any]:
         """
         Delete all collections in ChromaDB
-        
-        Returns:
-            Dictionary with information about the result of the operation:
-            {
-                "success": bool - overall success of the operation,
-                "total": int - total number of collections,
-                "deleted": int - number of successfully deleted collections,
-                "failed": int - number of collections that could not be deleted,
-                "failed_collections": List[str] - names of collections that could not be deleted
-            }
+
+        :return: Dictionary with information about the result of the operation
         """
         try:
             # Get a list of all collections

@@ -7,8 +7,16 @@ from core.chroma_db.chroma_manager import ChromaDBManager
 class EventSpecifics:
     """
     Class for finding event specifics using embeddings and aggregating results
+    :return: None
     """
     def __init__(self, embedding_processor: EmbeddingProcessor, chroma_manager: ChromaDBManager):
+        """
+        Initialize EventSpecifics with embedding processor and ChromaDB manager
+        :param embedding_processor: Embedding processor instance
+        :param chroma_manager: ChromaDB manager instance
+
+        :return: None
+        """
         self.embedding_processor = embedding_processor
         self.chroma_manager = chroma_manager
 
@@ -21,6 +29,12 @@ class EventSpecifics:
     ) -> List[str]:
         """
         Searches for and aggregates results for a list of text chunks
+        :param collection_name: Name of the collection to search in
+        :param chunks: List of text chunks to search for
+        :param top_k: Number of top results per chunk
+        :param top_n: Number of top results after aggregation
+
+        :return: List of specific information
         """
         # 1. Load collection contents
         contents = self._load_collection_contents(collection_name)
@@ -49,12 +63,9 @@ class EventSpecifics:
     def _load_collection_contents(self, collection_name: str) -> Dict[str, Any]:
         """
         Load contents from a ChromaDB collection
-        
-        Args:
-            collection_name: Name of the collection
-            
-        Returns:
-            Dictionary with embeddings, documents, and metadata
+        :param collection_name: Name of the collection
+
+        :return: Dictionary with embeddings, documents, and metadata
         """
         collection = self.chroma_manager.get_collection(collection_name)
         if collection is None:
@@ -77,16 +88,13 @@ class EventSpecifics:
     ) -> Dict[str, List[Dict[str, Any]]]:
         """
         Get top-k results for each query
-        
-        Args:
-            sims: Similarity matrix
-            docs: List of documents
-            metas: List of metadata
-            queries: List of queries
-            top_k: Number of results to return for each query
-            
-        Returns:
-            Dictionary mapping queries to their top-k results
+        :param sims: Similarity matrix
+        :param docs: List of documents
+        :param metas: List of metadata
+        :param queries: List of queries
+        :param top_k: Number of results to return for each query
+
+        :return: Dictionary mapping queries to their top-k results
         """
         results: Dict[str, List[Dict[str, Any]]] = {}
         for qi, query in enumerate(queries):
@@ -109,13 +117,10 @@ class EventSpecifics:
     ) -> List[Dict[str, Any]]:
         """
         Aggregate hits across different chunks
-        
-        Args:
-            hits_by_chunk: Dictionary mapping chunks to their hits
-            top_n: Number of top results to return after aggregation
-            
-        Returns:
-            List of aggregated results, sorted by total similarity
+        :param hits_by_chunk: Dictionary mapping chunks to their hits
+        :param top_n: Number of top results to return after aggregation
+
+        :return: List of aggregated results, sorted by total similarity
         """
         agg: Dict[str, Dict[str, Any]] = {}
         for chunk, hits in hits_by_chunk.items():

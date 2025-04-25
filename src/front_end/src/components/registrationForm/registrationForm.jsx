@@ -12,7 +12,7 @@ import {
   validateAuthorizationName,
   validateAuthorizationPassword,
   validateUserCredentials,
-} from "../../utils/validationUtils"
+} from "../../utils/validation/validationUtils"
 
 /**
  * @param {object} props - Объект с пропсами компонента.

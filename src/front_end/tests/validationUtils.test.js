@@ -6,7 +6,7 @@ import {
   validateAuthorizationName,
   validateAuthorizationPassword,
   validateUserCredentials,
-} from "./validationUtils"
+} from "../src/utils/validation/validationUtils"
 
 describe("validateEmail", () => {
   test("должен вернуть ошибку, если email пустой", () => {

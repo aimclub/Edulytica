@@ -1,0 +1,7 @@
+chromadb
+sentence-transformers
+numpy
+pandas
+loguru
+pyyaml
+nltk

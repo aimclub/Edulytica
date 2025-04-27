@@ -1,1 +1,1 @@
-from .prompt_enricher import PromptEnricher 
+from .prompt_enricher import PromptEnricher

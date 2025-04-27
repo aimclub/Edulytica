@@ -15,12 +15,12 @@ class TestPromptEnricher(unittest.TestCase):
         # Create a mock for ConfigLoader
         self.config_loader_patcher = patch('core.prompt_enricher.prompt_enricher.ConfigLoader')
         self.mock_config_loader = self.config_loader_patcher.start()
-        
+
         # Configure mock to return a known prefix value
         mock_instance = MagicMock()
         mock_instance.get_additional_info_prefix.return_value = "Additional Information:"
         self.mock_config_loader.return_value = mock_instance
-        
+
         # Create an instance of the tested class
         self.prompt_enricher = PromptEnricher()
 
@@ -36,15 +36,15 @@ class TestPromptEnricher(unittest.TestCase):
             "The paper must be at least 4 pages long",
             "File format - PDF"
         ]
-        
+
         enriched = self.prompt_enricher.enrich_prompt(base_prompt, specifics)
-        
+
         # Check that the base prompt is included
         self.assertIn(base_prompt, enriched)
-        
+
         # Check that the prefix is included
         self.assertIn("Additional Information:", enriched)
-        
+
         # Check that all specific details are included
         for specific in specifics:
             self.assertIn(specific, enriched)
@@ -53,9 +53,9 @@ class TestPromptEnricher(unittest.TestCase):
         """Test prompt enrichment without specific details"""
         base_prompt = "Analyze the scientific article"
         specifics = []
-        
+
         enriched = self.prompt_enricher.enrich_prompt(base_prompt, specifics)
-        
+
         # If no specific details, should return the base prompt
         self.assertEqual(enriched, base_prompt)
 
@@ -63,9 +63,9 @@ class TestPromptEnricher(unittest.TestCase):
         """Test enrichment with an empty base prompt"""
         base_prompt = ""
         specifics = ["Requirement 1", "Requirement 2"]
-        
+
         enriched = self.prompt_enricher.enrich_prompt(base_prompt, specifics)
-        
+
         # Check that the result contains only the information block
         self.assertIn("Additional Information:", enriched)
         self.assertIn("Requirement 1", enriched)
@@ -75,4 +75,4 @@ class TestPromptEnricher(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main() 
+    unittest.main()

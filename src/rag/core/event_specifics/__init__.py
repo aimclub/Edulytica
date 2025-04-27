@@ -1,1 +1,1 @@
-from .event_finder import EventSpecifics 
+from .event_finder import EventSpecifics

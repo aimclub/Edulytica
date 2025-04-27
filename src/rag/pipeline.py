@@ -7,12 +7,13 @@ from core.event_specifics.event_finder import EventSpecifics
 from core.prompt_enricher.prompt_enricher import PromptEnricher
 from core.embedder.embedding_processor import EmbeddingProcessor
 
+
 class RAGPipeline:
     """
     Main class for implementing the RAG pipeline
     :param self: Instance of RAGPipeline
     """
-    
+
     def __init__(self):
         """
         Initialize all components of the RAG pipeline
@@ -23,20 +24,19 @@ class RAGPipeline:
         # Load configuration
         self.config_loader = ConfigLoader()
         self.config = self.config_loader.load_config()
-        
+
         # Initialize components
         self.embedding_processor = EmbeddingProcessor()
         self.text_processor = TextProcessor()
         self.chroma_manager = ChromaDBManager(embedding_processor=self.embedding_processor)
         self.event_specifics = EventSpecifics(self.embedding_processor, self.chroma_manager)
         self.prompt_enricher = PromptEnricher()
-        
+
         # Load parameters from configuration
         self.rag_prompt = self.config_loader.get_rag_prompt()
         self.general_top = self.config_loader.get_general_top()
         self.article_top = self.config_loader.get_article_top()
-        
-    
+
     def preprocess_article(self, text: str) -> List[str]:
         """
         Process article text and split it into parts for analysis
@@ -49,7 +49,6 @@ class RAGPipeline:
         logger.info(f"Preprocessed article into {len(chunks)} chunks")
         return chunks
 
-    
     def process_article(self, article_text: str, conference_name: str) -> List[str]:
         """
         Main method for getting specifics for an article
@@ -65,7 +64,7 @@ class RAGPipeline:
             top_k=self.general_top,
             top_n=self.article_top
         )
-    
+
     def process_prompt(self, conference_name: str) -> List[str]:
         """
         Get specifics for the RAG prompt
@@ -79,7 +78,7 @@ class RAGPipeline:
             top_k=self.general_top,
             top_n=self.general_top
         )
-    
+
     def pipeline(self, article_text: str, conference_name: str, prompt: str) -> str:
         """
         Main pipeline method that processes the article and prompt

@@ -1,1 +1,1 @@
-from .chroma_manager import ChromaDBManager 
+from .chroma_manager import ChromaDBManager

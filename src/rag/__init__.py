@@ -1,1 +1,1 @@
-from .pipeline import RAGPipeline 
+from .pipeline import RAGPipeline

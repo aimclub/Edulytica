@@ -4,10 +4,12 @@ from loguru import logger
 from core.embedder.embedding_processor import EmbeddingProcessor
 from core.chroma_db.chroma_manager import ChromaDBManager
 
+
 class EventSpecifics:
     """
     Class for finding event specifics using embeddings and aggregating results
     """
+
     def __init__(self, embedding_processor: EmbeddingProcessor, chroma_manager: ChromaDBManager):
         """
         Initialize EventSpecifics with embedding processor and ChromaDB manager

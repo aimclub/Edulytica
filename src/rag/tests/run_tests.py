@@ -19,4 +19,4 @@ runner = unittest.TextTestRunner(verbosity=2)
 result = runner.run(suite)
 
 # Exit with error code if there were failed tests
-sys.exit(not result.wasSuccessful()) 
+sys.exit(not result.wasSuccessful())

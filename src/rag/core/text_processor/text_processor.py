@@ -2,17 +2,18 @@ import re
 from typing import List, Tuple
 from loguru import logger
 
+
 class TextProcessor:
     """
     Class for processing article text and preparing it for embedding-based search
     """
-    
+
     def __init__(self):
         """
         Initialize the text processor
         """
         pass
-    
+
     def extract_title(self, text: str) -> str:
         """
         Extracts the article title as the first non-empty line
@@ -50,20 +51,18 @@ class TextProcessor:
         """
         # 1. Extract title
         title = self.extract_title(text)
-        
+
         # 2. Separate literature from main text
         main_with_title, literature = self.extract_literature_section(text)
-        
+
         # 3. Remove title from the beginning of main text if it repeats there
         if main_with_title.startswith(title):
             main_text = main_with_title[len(title):].strip()
         else:
             main_text = main_with_title
-        
+
         # Return list of article parts
         chunks = [title, main_text, literature]
-        
-        
+
         logger.info(f"Preprocessed article into {len(chunks)} parts")
         return chunks
-            

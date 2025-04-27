@@ -1,10 +1,12 @@
 from typing import List
 from core.utils.config_loader import ConfigLoader
 
+
 class PromptEnricher:
     """
     Class for enriching prompts based on specific details
     """
+
     def enrich_prompt(self, base_prompt: str, specifics: List[str]) -> str:
         """
         Combines the base prompt and a list of specific details

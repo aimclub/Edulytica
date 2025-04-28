@@ -20,7 +20,7 @@ import os
 import uuid
 from pathlib import Path
 from uuid import UUID
-from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException
+from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
@@ -34,7 +34,6 @@ from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.ticket_type_crud import TicketTypeCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import get_session
-from src.common.database.models import DocumentSummary
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
@@ -135,7 +134,7 @@ async def new_ticket(
 @api_logs(actions_router.get("/get_event_id"))
 async def get_event_id(
     auth_data: dict = Depends(access_token_auth),
-    event_name: str = Body(..., embed=True),
+    event_name: str = Query(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -173,7 +172,7 @@ async def get_event_id(
 @api_logs(actions_router.get("/get_ticket"))
 async def get_ticket(
     auth_data: dict = Depends(access_token_auth),
-    ticket_id: UUID = Body(..., embed=True),
+    ticket_id: UUID = Query(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -207,7 +206,7 @@ async def get_ticket(
 @api_logs(actions_router.get("/get_ticket_file"))
 async def get_ticket_file(
     auth_data: dict = Depends(access_token_auth),
-    ticket_id: UUID = Body(..., embed=True),
+    ticket_id: UUID = Query(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -247,7 +246,7 @@ async def get_ticket_file(
 @api_logs(actions_router.get("/get_ticket_summary"))
 async def get_ticket_summary(
     auth_data: dict = Depends(access_token_auth),
-    ticket_id: UUID = Body(..., embed=True),
+    ticket_id: UUID = Query(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -289,7 +288,7 @@ async def get_ticket_summary(
 @api_logs(actions_router.get("/get_ticket_result"))
 async def get_ticket_result(
     auth_data: dict = Depends(access_token_auth),
-    ticket_id: UUID = Body(..., embed=True),
+    ticket_id: UUID = Query(...),
     session: AsyncSession = Depends(get_session)
 ):
     """

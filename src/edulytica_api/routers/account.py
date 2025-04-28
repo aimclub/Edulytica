@@ -21,7 +21,7 @@ from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.crud.user_crud import UserCrud
 from src.common.database.database import get_session
 from src.common.utils.logger import api_logs
-
+from src.edulytica_api.schemas.account_schemas import EditProfileRequest, ChangePasswordRequest
 
 account_router = APIRouter(prefix="/account")
 
@@ -29,9 +29,7 @@ account_router = APIRouter(prefix="/account")
 @api_logs(account_router.post("/edit_profile"))
 async def edit_profile(
     auth_data: dict = Depends(access_token_auth),
-    name: Optional[str] = Body(None),
-    surname: Optional[str] = Body(None),
-    organization: Optional[str] = Body(None),
+    data: EditProfileRequest = Body(..., embed=True),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -42,16 +40,14 @@ async def edit_profile(
 
     Args:
         auth_data (dict): Contains the authenticated user's data.
-        name (str, optional): New name for the user.
-        surname (str, optional): New surname for the user.
-        organization (str, optional): New organization for the user.
+        data (EditProfileRequest): Pydantic-model, that contains name, surname and organization
         session (AsyncSession): Asynchronous database session.
 
     Raises:
         HTTPException: If no fields are provided or an internal error occurs.
     """
     try:
-        if not (name or surname or organization):
+        if not (data.name or data.surname or data.organization):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='None of the arguments were specified'
@@ -60,9 +56,9 @@ async def edit_profile(
         await UserCrud.update(
             session=session,
             record_id=auth_data['user'].id,
-            name=name,
-            surname=surname,
-            organization=organization
+            name=data.name,
+            surname=data.surname,
+            organization=data.organization
         )
     except Exception as _e:
         raise HTTPException(
@@ -74,9 +70,7 @@ async def edit_profile(
 @api_logs(account_router.post("/change_password"))
 async def change_password(
     auth_data: dict = Depends(access_token_auth),
-    old_password: str = Body(...),
-    new_password1: str = Body(...),
-    new_password2: str = Body(...),
+    data: ChangePasswordRequest = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -87,9 +81,7 @@ async def change_password(
 
     Args:
         auth_data (dict): Contains the authenticated user's data.
-        old_password (str): The current password.
-        new_password1 (str): The new password.
-        new_password2 (str): Confirmation of the new password.
+        data (ChangePasswordRequest): Pydantic-model, that contain passwords
         session (AsyncSession): Asynchronous database session.
 
     Raises:
@@ -97,21 +89,21 @@ async def change_password(
         or if an internal error occurs.
     """
     try:
-        if not verify_password(password=old_password, hashed_pass=auth_data['user'].password_hash):
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail='Old password incorrect'
-            )
-        if new_password1 != new_password2:
+        if data.new_password1 != data.new_password2:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='New passwords not equal'
+            )
+        if not verify_password(password=data.old_password, hashed_pass=auth_data['user'].password_hash):
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Old password incorrect'
             )
 
         await UserCrud.update(
             session=session,
             record_id=auth_data['user'].id,
-            password_hash=get_hashed_password(new_password1)
+            password_hash=get_hashed_password(data.new_password1)
         )
     except Exception as _e:
         raise HTTPException(

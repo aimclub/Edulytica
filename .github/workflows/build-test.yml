@@ -23,6 +23,9 @@ jobs:
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
+      - name: Copy test environment
+        run: cp tests/.test_env .env
+
       - name: Clear pytest cache
         env:
           PYTHONPATH: ${{ github.workspace }}

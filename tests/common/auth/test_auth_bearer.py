@@ -1,5 +1,3 @@
-import uuid
-
 import pytest
 from jose import jwt
 from fastapi import HTTPException

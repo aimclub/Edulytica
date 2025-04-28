@@ -24,6 +24,8 @@ jobs:
           pip install pytest pytest-cov
 
       - name: Clear pytest cache
+        env:
+          PYTHONPATH: ${{ github.workspace }}
         run: pytest --cache-clear
 
       - name: Run tests with coverage

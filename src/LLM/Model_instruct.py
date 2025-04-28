@@ -15,19 +15,17 @@ class Model_instruct(IModel):
             bnb_4bit_use_double_quant=True):
         """To use quantization model pass argument quantization='4bit' to load in 4bit or quantization='8bit' to load in 8bit"""
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        if quantization is None:
-            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map)
-        elif quantization == "8bit":
+        bnb_config = None
+
+        if quantization == "8bit":
             bnb_config = BitsAndBytesConfig(load_in_8bit=True)
-            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
-                                                              quantization_config=bnb_config)
         elif quantization == "4bit":
             bnb_config = BitsAndBytesConfig(
                 load_in_4bit=True,
                 bnb_4bit_quant_type=bnb_4bit_quant_type,
                 bnb_4bit_use_double_quant=bnb_4bit_use_double_quant)
-            self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
-                                                              quantization_config=bnb_config)
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
+                                                          quantization_config=bnb_config)
         self.device = self.model.device
         self.system_prompt = system_prompt
         self.chat_template = chat_template

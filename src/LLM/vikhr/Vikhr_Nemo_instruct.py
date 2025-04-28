@@ -8,7 +8,7 @@ class Vikhr_Nemo_instruct(Model_instruct):
 
     def __init__(
             self,
-            model_name=None,
+            model_name="Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24",
             chat_template=None,
             system_prompt=DEFAULT_SYSTEM_PROMPT,
             device_map="auto",
@@ -16,8 +16,6 @@ class Vikhr_Nemo_instruct(Model_instruct):
             bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True
     ):
-        if model_name is None:
-            model_name = "Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24"
         if chat_template is None:
             chat_template = lambda prompt: [
                 {"role": "system", "content": system_prompt},

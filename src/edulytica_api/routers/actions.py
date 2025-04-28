@@ -238,7 +238,10 @@ async def get_ticket_file(
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='File not found')
 
-        return FileResponse(path=str(file_path), media_type='application/octet-stream', filename=file_path.name)
+        return FileResponse(
+            path=str(file_path),
+            media_type='application/octet-stream',
+            filename=file_path.name)
     except Exception as _e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
@@ -280,7 +283,10 @@ async def get_ticket_summary(
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='Ticket summary not found')
 
-        return FileResponse(path=str(file_path), media_type='application/octet-stream', filename=file_path.name)
+        return FileResponse(
+            path=str(file_path),
+            media_type='application/octet-stream',
+            filename=file_path.name)
     except Exception as _e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
@@ -322,7 +328,10 @@ async def get_ticket_result(
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='Ticket result not found')
 
-        return FileResponse(path=str(file_path), media_type='application/octet-stream', filename=file_path.name)
+        return FileResponse(
+            path=str(file_path),
+            media_type='application/octet-stream',
+            filename=file_path.name)
     except Exception as _e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 

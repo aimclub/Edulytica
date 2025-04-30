@@ -8,19 +8,24 @@ class Qwen2_5_instruct(Model_instruct):
 
     def __init__(
             self,
-            model_name=None,
+            model_name="RefalMachine/ruadapt_qwen2.5_7B_ext_u48_instruct",
             chat_template=None,
             system_prompt=DEFAULT_SYSTEM_PROMPT,
-            device_map="auto"):
-        if model_name is None:
-            model_name = "RefalMachine/ruadapt_qwen2.5_7B_ext_u48_instruct"
+            device_map="auto",
+            quantization=None,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_use_double_quant=True
+    ):
         if chat_template is None:
             chat_template = lambda prompt: [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": prompt}
             ]
-        super().__init__(model_name, chat_template, system_prompt, device_map)
-
-
-if __name__ == "__main__":
-    model = Qwen2_5_instruct()
+        super().__init__(
+            model_name,
+            chat_template,
+            system_prompt,
+            device_map,
+            quantization,
+            bnb_4bit_quant_type,
+            bnb_4bit_use_double_quant)

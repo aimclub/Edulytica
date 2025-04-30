@@ -3,8 +3,8 @@ import sys
 import os
 from unittest.mock import patch, MagicMock
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.prompt_enricher.prompt_enricher import PromptEnricher
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
+from rag.core.prompt_enricher.prompt_enricher import PromptEnricher
 
 
 class TestPromptEnricher(unittest.TestCase):
@@ -13,7 +13,7 @@ class TestPromptEnricher(unittest.TestCase):
     def setUp(self):
         """Set up the test environment"""
         # Create a mock for ConfigLoader
-        self.config_loader_patcher = patch('core.prompt_enricher.prompt_enricher.ConfigLoader')
+        self.config_loader_patcher = patch('rag.core.prompt_enricher.prompt_enricher.ConfigLoader')
         self.mock_config_loader = self.config_loader_patcher.start()
 
         # Configure mock to return a known prefix value

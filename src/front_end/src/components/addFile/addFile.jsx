@@ -18,6 +18,8 @@ export const AddFile = ({
   selectedParams,
   setSelectedParams,
   setFileResult,
+  setAddEventModal,
+  event,
 }) => {
   const [eventModal, setEventModal] = useState(false)
   const fileInputRef = useRef(null)
@@ -80,8 +82,9 @@ export const AddFile = ({
   /** Переключает раздел аккаунта на результат и сбрасывает параметры */
   const handleAddFileSvg = useCallback(() => {
     setAccountSection("result")
+    console.log(selectedParams) // теперь зависимость учтена
     resetParams()
-  }, [setAccountSection, resetParams])
+  }, [setAccountSection, resetParams, selectedParams])
 
   const sortedParams = useMemo(
     () => selectedParams.sort((a, b) => (a.type === "file" ? -1 : 1)),
@@ -256,11 +259,13 @@ export const AddFile = ({
           <EventModal
             setSelectedEvent={(event) =>
               setSelectedParams((prev) => [
-                { type: "event", name: event },
+                { type: "event", name: event.name, info: event.info },
                 ...prev.filter((param) => param.type !== "event"),
               ])
             }
             closeModal={openEventModal}
+            setAddEventModal={setAddEventModal}
+            event={event}
           />
         )}
       </div>

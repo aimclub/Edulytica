@@ -23,3 +23,8 @@ input:focus {
   color: rgb(230, 230, 230);
 }
 
+textarea.input {
+  resize: none;
+  overflow: auto;
+  padding-top: 14px;
+}

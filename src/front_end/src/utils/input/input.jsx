@@ -1,5 +1,24 @@
 import "./input.scss"
-export const Input = ({ type, placeholder, name, onChange, value }) => {
+export const Input = ({
+  type,
+  placeholder,
+  name,
+  onChange,
+  style,
+  value,
+  multiline = false,
+}) => {
+  if (multiline) {
+    return (
+      <textarea
+        placeholder={placeholder}
+        name={name}
+        onChange={onChange}
+        className="input"
+        style={style}
+      />
+    )
+  }
   return (
     <input
       type={type}

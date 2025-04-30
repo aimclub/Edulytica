@@ -59,7 +59,6 @@ export const RegistrationForm = ({
     Object.keys(newErrors).forEach(
       (key) => newErrors[key] === null && delete newErrors[key]
     )
-
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }

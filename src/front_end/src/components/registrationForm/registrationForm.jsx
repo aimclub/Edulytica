@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { Input } from "../../utils/input/input"
 import "./registrationForm.scss"
-import { Link } from "react-router-dom"
-import { useDispatch, useSelector } from "react-redux"
-import { registerUser, loginUser } from "../../store/authSlice"
+import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { loginUser } from "../../store/authSlice"
 import {
   validateEmail,
   validateLogin,
@@ -11,8 +11,9 @@ import {
   validateRepeatPassword,
   validateAuthorizationName,
   validateAuthorizationPassword,
-  validateUserCredentials,
+  validateBackend,
 } from "../../utils/validation/validationUtils"
+import { authService } from "../../services/auth.service"
 
 /**
  * @param {object} props - Объект с пропсами компонента.
@@ -32,18 +33,76 @@ export const RegistrationForm = ({
   const [email, setEmail] = useState("")
   const [login, setLogin] = useState("")
   const [password, setPassword] = useState("")
+  const [code, setCode] = useState("")
   const [repeatPassword, setRepeatPassword] = useState("")
   const [errors, setErrors] = useState({})
   const [authorization, setAuthorization] = useState({ name: "", password: "" })
   const [errorsAuthorization, setErrorsAuthorization] = useState({})
+  const [errorsCheckCode, setErrorsCheckCode] = useState({})
 
-  // Селектор пользователей
-  const users = useSelector((state) => state.auth.users)
+  const navigate = useNavigate()
   const dispatch = useDispatch()
 
-  useEffect(() => {
-    console.log("Список пользователей изменился:", users)
-  }, [users])
+  //Вход в аккаунт
+  const loginHandler = async () => {
+    try {
+      const data = await authService.login(
+        authorization.name,
+        authorization.password
+      )
+      if (data?.access_token) {
+        localStorage.setItem("token", data.access_token)
+        dispatch(loginUser({ ...data.user, token: data.access_token }))
+        setAuthorized(true)
+        navigate("/account")
+      } else {
+        alert("Неверный ответ от сервера")
+      }
+    } catch (err) {
+      const backendErrors = validateBackend(err.detail)
+      setErrorsAuthorization((prevErrors) => ({
+        ...prevErrors,
+        ...backendErrors,
+      }))
+    }
+  }
+
+  //Регистрация
+  const registrationHandler = async () => {
+    try {
+      const data = await authService.registration(
+        login,
+        email,
+        password,
+        repeatPassword
+      )
+      if (data) {
+        setLoginModal("registration2")
+      }
+    } catch (err) {
+      const backendErrors = validateBackend(err.detail)
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ...backendErrors,
+      }))
+    }
+  }
+
+  const registration2Handler = async () => {
+    try {
+      const data = await authService.checkCode(code)
+      if (data) {
+        setAuthorized(true)
+        navigate("/account")
+      }
+    } catch (err) {
+      const backendErrors = validateBackend(err.detail)
+      setErrorsCheckCode((prevErrors) => ({
+        ...prevErrors,
+        ...backendErrors,
+      }))
+    }
+  }
 
   /**
    * Валидация формы регистрации
@@ -51,7 +110,7 @@ export const RegistrationForm = ({
   const validateRegistrationForm = () => {
     const newErrors = {
       email: validateEmail(email),
-      login: validateLogin(login, users),
+      login: validateLogin(login),
       password: validatePassword(password),
       repeatPassword: validateRepeatPassword(password, repeatPassword),
     }
@@ -73,15 +132,6 @@ export const RegistrationForm = ({
       password: validateAuthorizationPassword(authorization.password),
     }
 
-    const generalError = validateUserCredentials(
-      authorization.name,
-      authorization.password,
-      users
-    )
-    if (generalError) {
-      newErrors.name = generalError
-    }
-
     Object.keys(newErrors).forEach(
       (key) => newErrors[key] === null && delete newErrors[key]
     )
@@ -91,28 +141,24 @@ export const RegistrationForm = ({
   }
 
   /**
-   * Обработка регистрации пользователя
-   */
-  const handleRegister = () => {
-    const data = {
-      login: login,
-      email: email,
-      password: password,
-    }
-
-    dispatch(registerUser(data))
-    handleClickModal("registration2")
-  }
-  /**
    * Сброс ошибок при переключении формы
    */
-  const handleFormSwitch = (form) => {
+  const handleFormSwitch = () => {
     setErrors({})
     setErrorsAuthorization({})
+    setErrorsCheckCode({})
+    setEmail("")
+    setLogin("")
+    setPassword("")
+    setRepeatPassword("")
+    setCode("")
+    setAuthorization({ name: "", password: "" })
   }
+
   const handleSwitch = () => {
     setSwitchClick((prev) => !prev)
   }
+
   /**
    * Переключение текущей отображаемой формы
    * @param {string} clickModal - Страница ("login", "registration", "registration2")
@@ -120,9 +166,7 @@ export const RegistrationForm = ({
   const handleClickModal = (clickModal) => {
     setLoginModal(clickModal)
   }
-  const handleBtnRegistrationForm = () => {
-    setAuthorized((pr) => !pr)
-  }
+
   useEffect(() => {
     setLoginModal(registrationPage)
   }, [registrationPage])
@@ -137,7 +181,6 @@ export const RegistrationForm = ({
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Почта \ Логин</div>
                 <div className="blockValidationInputRegistrationForm">
-                  {" "}
                   <Input
                     type="text"
                     value={authorization.name}
@@ -154,7 +197,7 @@ export const RegistrationForm = ({
                       {errorsAuthorization.name}
                     </div>
                   )}
-                </div>{" "}
+                </div>
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Пароль</div>
@@ -175,7 +218,7 @@ export const RegistrationForm = ({
                       {errorsAuthorization.password}
                     </div>
                   )}
-                </div>{" "}
+                </div>
               </div>
             </div>
             <div className="switchContRegistrationForm">
@@ -214,9 +257,7 @@ export const RegistrationForm = ({
                 className="btnRegistrationForm"
                 onClick={() => {
                   if (validateLoginForm()) {
-                    setAuthorized(true)
-                    dispatch(loginUser(authorization))
-                    window.location.href = "/account"
+                    loginHandler()
                   }
                 }}
               >
@@ -269,7 +310,7 @@ export const RegistrationForm = ({
                       {errors.login}
                     </div>
                   )}
-                </div>{" "}
+                </div>
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Пароль</div>
@@ -284,7 +325,7 @@ export const RegistrationForm = ({
                     <div className="errorTextRegistrationForm">
                       {errors.password}
                     </div>
-                  )}{" "}
+                  )}
                 </div>
               </div>
               <div className="blockInputRegistrationForm">
@@ -301,7 +342,7 @@ export const RegistrationForm = ({
                   <div className="errorTextRegistrationForm">
                     {errors.repeatPassword}
                   </div>
-                )}{" "}
+                )}
               </div>
             </div>
             <div className="blockBtnRegistrationForm">
@@ -309,13 +350,12 @@ export const RegistrationForm = ({
                 className="btnRegistrationForm"
                 onClick={() => {
                   if (validateRegistrationForm()) {
-                    handleRegister()
+                    registrationHandler()
                   }
                 }}
               >
                 Создать аккаунт
               </button>
-
               <div
                 className="textBtnRegistrationForm"
                 onClick={() => {
@@ -352,19 +392,26 @@ export const RegistrationForm = ({
               </div>
               <div className="blockInputRegistrationForm">
                 <div className="titleInputRegistrationForm">Введите код</div>
-                <Input type="password" placeholder="" />
+                <Input
+                  type="password"
+                  placeholder=""
+                  value={code}
+                  onChange={(e) => setCode(e.target.value)}
+                />
+                {errorsCheckCode.name && (
+                  <div className="errorTextRegistrationForm">
+                    {errorsCheckCode.name}
+                  </div>
+                )}
               </div>
             </div>
             <div className="blockBtnRegistrationForm">
-              <Link style={{ width: "100%" }} to="/account">
-                {" "}
-                <button
-                  className="btnRegistrationForm"
-                  onClick={handleBtnRegistrationForm}
-                >
-                  Отправить
-                </button>
-              </Link>
+              <button
+                className="btnRegistrationForm"
+                onClick={registration2Handler}
+              >
+                Отправить
+              </button>
               <div className="textBtnRegistrationForm">
                 Отправить код повторно
               </div>

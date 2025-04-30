@@ -5,12 +5,10 @@ export const validateEmail = (email) => {
   return null
 }
 
-export const validateLogin = (login, users) => {
+export const validateLogin = (login) => {
   const trimmed = login.trim()
   if (!trimmed) return "* Обязательное поле"
   if (trimmed.length < 3) return "* Логин слишком короткий"
-  if (users.some((user) => user.login === trimmed))
-    return "* Этот логин уже занят"
   return null
 }
 
@@ -40,12 +38,43 @@ export const validateAuthorizationPassword = (password) => {
   return null
 }
 
-export const validateUserCredentials = (name, password, users) => {
-  const user = users.find(
-    (user) =>
-      (user.login === name || user.email === name) && user.password === password
-  )
-  if (!user && name.trim() && password.trim())
-    return "* Неверный логин или пароль"
+//Валидация ошибок от сервера
+export const validateBackend = (err) => {
+  if (err === "User with such email already exists") {
+    const newErrors = {
+      email: "* Пользователь с такой почтой уже существует",
+      login: null,
+      password: null,
+      repeatPassword: null,
+    }
+    return newErrors
+  } else if (err === "User with such login already exists") {
+    const newErrors = {
+      email: null,
+      login: "* Пользователь с таким логином уже существует",
+      password: null,
+      repeatPassword: null,
+    }
+    return newErrors
+  } else if (err === "Passwords are not equal") {
+    const newErrors = {
+      email: null,
+      login: null,
+      password: "* Пароли не совпадают",
+      repeatPassword: null,
+    }
+    return newErrors
+  } else if (err === "Credentials are incorrect") {
+    const newErrors = {
+      name: "* Неверный логин или пароль",
+      password: null,
+    }
+    return newErrors
+  } else if (err === "Wrong code") {
+    const newErrors = {
+      name: "* Неверный пароль",
+    }
+    return newErrors
+  }
   return null
 }

@@ -1,11 +1,11 @@
 from typing import List
 from loguru import logger
-from core.utils.config_loader import ConfigLoader
-from core.text_processor.text_processor import TextProcessor
-from core.chroma_db.chroma_manager import ChromaDBManager
-from core.event_specifics.event_finder import EventSpecifics
-from core.prompt_enricher.prompt_enricher import PromptEnricher
-from core.embedder.embedding_processor import EmbeddingProcessor
+from src.rag.core.utils.config_loader import ConfigLoader
+from src.rag.core.text_processor.text_processor import TextProcessor
+from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
+from src.rag.core.event_specifics.event_finder import EventSpecifics
+from src.rag.core.prompt_enricher.prompt_enricher import PromptEnricher
+from src.rag.core.embedder.embedding_processor import EmbeddingProcessor
 
 
 class RAGPipeline:

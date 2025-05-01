@@ -1,5 +1,5 @@
 from typing import List
-from core.utils.config_loader import ConfigLoader
+from src.rag.core.utils.config_loader import ConfigLoader
 
 
 class PromptEnricher:

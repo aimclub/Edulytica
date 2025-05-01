@@ -1,8 +1,8 @@
 from typing import List, Dict, Any
 import numpy as np
 from loguru import logger
-from core.embedder.embedding_processor import EmbeddingProcessor
-from core.chroma_db.chroma_manager import ChromaDBManager
+from src.rag.core.embedder.embedding_processor import EmbeddingProcessor
+from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
 
 
 class EventSpecifics:

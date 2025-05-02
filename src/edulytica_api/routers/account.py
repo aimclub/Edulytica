@@ -96,7 +96,9 @@ async def change_password(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='New passwords not equal'
             )
-        if not verify_password(password=data.old_password, hashed_pass=auth_data['user'].password_hash):
+        if not verify_password(
+                password=data.old_password,
+                hashed_pass=auth_data['user'].password_hash):
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='Old password incorrect'

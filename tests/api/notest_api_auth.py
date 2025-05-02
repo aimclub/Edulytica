@@ -32,8 +32,13 @@ def notest_full_auth_flow(client):
     # 2. get check code
     import asyncio
     session = asyncio.run(get_session().__anext__())
-    user = asyncio.run(UserCrud.get_filtered_by_params(session, email="test@example.com", login="testuser"))[0]
-    check_code = asyncio.run(CheckCodeCrud.get_filtered_by_params(session, user_id=user.id))[-1].code
+    user = asyncio.run(
+        UserCrud.get_filtered_by_params(
+            session,
+            email="test@example.com",
+            login="testuser"))[0]
+    check_code = asyncio.run(CheckCodeCrud.get_filtered_by_params(
+        session, user_id=user.id))[-1].code
 
     # 3. Check code
     r = client.post("/check_code", json={"code": check_code})

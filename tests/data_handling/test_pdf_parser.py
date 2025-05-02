@@ -31,6 +31,5 @@ class PDFParserTest(unittest.TestCase):
             os.remove('testresult_noexists.csv')
 
 
-
 if __name__ == '__main__':
     unittest.main()

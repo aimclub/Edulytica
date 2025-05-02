@@ -65,4 +65,3 @@ def test_send_email(mock_smtp):
     mock_server.login.assert_called_once()
     mock_server.sendmail.assert_called_once()
     mock_server.quit.assert_called_once()
-

@@ -166,7 +166,11 @@ def test_get_ticket_summary_success(mock_summary, mock_ticket, client, tmp_path)
     mock_ticket.return_value = MagicMock(document_summary_id=uuid.uuid4())
     mock_summary.return_value = MagicMock(file_path=str(file_path))
 
-    response = client(app).get("/actions/get_ticket_summary", params={"ticket_id": str(uuid.uuid4())})
+    response = client(app).get(
+        "/actions/get_ticket_summary",
+        params={
+            "ticket_id": str(
+                uuid.uuid4())})
     assert response.status_code == 200
 
 
@@ -175,7 +179,11 @@ def test_get_ticket_summary_success(mock_summary, mock_ticket, client, tmp_path)
 def test_get_ticket_summary_not_found(mock_ticket, client):
     mock_ticket.return_value = None
 
-    response = client(app).get("/actions/get_ticket_summary", params={"ticket_id": str(uuid.uuid4())})
+    response = client(app).get(
+        "/actions/get_ticket_summary",
+        params={
+            "ticket_id": str(
+                uuid.uuid4())})
     assert response.status_code == 400
 
 
@@ -189,7 +197,11 @@ def test_get_ticket_result_success(mock_report, mock_ticket, client, tmp_path):
     mock_ticket.return_value = MagicMock(document_id=uuid.uuid4())
     mock_report.return_value = MagicMock(file_path=str(file_path))
 
-    response = client(app).get("/actions/get_ticket_result", params={"ticket_id": str(uuid.uuid4())})
+    response = client(app).get(
+        "/actions/get_ticket_result",
+        params={
+            "ticket_id": str(
+                uuid.uuid4())})
     assert response.status_code == 200
 
 
@@ -198,7 +210,11 @@ def test_get_ticket_result_success(mock_report, mock_ticket, client, tmp_path):
 def test_get_ticket_result_not_found(mock_ticket, client):
     mock_ticket.return_value = None
 
-    response = client(app).get("/actions/get_ticket_result", params={"ticket_id": str(uuid.uuid4())})
+    response = client(app).get(
+        "/actions/get_ticket_result",
+        params={
+            "ticket_id": str(
+                uuid.uuid4())})
     assert response.status_code == 400
 
 

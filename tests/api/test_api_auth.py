@@ -285,4 +285,3 @@ def test_logout_token_not_found(mock_token_get, client):
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json()["detail"] == "Exception in token validation"
-

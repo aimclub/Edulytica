@@ -52,7 +52,6 @@ def test_password_validate_failure():
     assert exc_info.value.detail == "Incorrect email or password"
 
 
-
 def test_create_access_token():
     subject = "example_user"
     token = create_access_token(subject)
@@ -101,6 +100,7 @@ async def test_oauth2_cookie_token():
 
     assert response.status_code == 200
     assert response.json() == {"token": "cookie_token"}
+
 
 @pytest.mark.asyncio
 async def test_oauth2_missing_token():

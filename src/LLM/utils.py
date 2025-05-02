@@ -5,6 +5,4 @@ DEFAULT_SYSTEM_PROMPT = """\
 """
 
 
-class QwantizationExeption(Exception):
-    def __init__(self, message):
-        super().__init__(message)
+

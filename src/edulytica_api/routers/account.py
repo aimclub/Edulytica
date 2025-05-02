@@ -11,7 +11,6 @@ Routes:
     GET /account/ticket_history: Returns the user's ticket history.
 """
 
-from typing import Optional
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
@@ -23,13 +22,14 @@ from src.common.database.database import get_session
 from src.common.utils.logger import api_logs
 from src.edulytica_api.schemas.account_schemas import EditProfileRequest, ChangePasswordRequest
 
+
 account_router = APIRouter(prefix="/account")
 
 
 @api_logs(account_router.post("/edit_profile"))
 async def edit_profile(
     auth_data: dict = Depends(access_token_auth),
-    data: EditProfileRequest = Body(..., embed=True),
+    data: EditProfileRequest = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -60,6 +60,8 @@ async def edit_profile(
             surname=data.surname,
             organization=data.organization
         )
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -105,6 +107,8 @@ async def change_password(
             record_id=auth_data['user'].id,
             password_hash=get_hashed_password(data.new_password1)
         )
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -142,6 +146,8 @@ async def ticket_history(
             'detail': 'Ticket history found',
             'tickets': tickets
         }
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,

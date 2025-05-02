@@ -1,10 +1,8 @@
-from datetime import timedelta, datetime
-
 import pytest
+from datetime import timedelta
 from unittest.mock import AsyncMock, patch, ANY
 from fastapi import status
-from sympy.unify.core import is_args
-
+from src.auth.app import app
 from src.common.auth.helpers.utils import get_hashed_password
 from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
 from src.common.utils.moscow_datetime import datetime_now_moscow
@@ -35,7 +33,7 @@ async def test_registration_success(
         "password2": "securepass"
     }
 
-    response = client.post("/registration", json=payload)
+    response = client(app).post("/registration", json=payload)
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == {"detail": "Code has been sent"}
@@ -47,7 +45,7 @@ async def test_registration_success(
 async def test_registration_existing_email(mock_user_get, client):
     mock_user_get.side_effect = [[AsyncMock()], []]
 
-    response = client.post("/registration", json={
+    response = client(app).post("/registration", json={
         "login": "newuser",
         "email": "existing@example.com",
         "password1": "securepass",
@@ -63,7 +61,7 @@ async def test_registration_existing_email(mock_user_get, client):
 async def test_registration_existing_login(mock_user_get, client):
     mock_user_get.side_effect = [[], [AsyncMock()]]
 
-    response = client.post("/registration", json={
+    response = client(app).post("/registration", json={
         "login": "existinguser",
         "email": "new@example.com",
         "password1": "securepass",
@@ -79,7 +77,7 @@ async def test_registration_existing_login(mock_user_get, client):
 async def test_registration_password_mismatch(mock_user_get, client):
     mock_user_get.side_effect = [[], []]
 
-    response = client.post("/registration", json={
+    response = client(app).post("/registration", json={
         "login": "user1",
         "email": "user1@example.com",
         "password1": "pass1",
@@ -110,7 +108,7 @@ def test_check_code_success(
     )
     mock_get_active_user.return_value = None
 
-    response = client.post("/check_code", json={"code": "123456"})
+    response = client(app).post("/check_code", json={"code": "123456"})
 
     assert response.status_code == status.HTTP_200_OK
     data = response.json()
@@ -126,7 +124,7 @@ def test_check_code_success(
 def test_check_code_invalid_code(mock_get_recent_code, client):
     mock_get_recent_code.return_value = None
 
-    response = client.post("/check_code", json={"code": "wrong"})
+    response = client(app).post("/check_code", json={"code": "wrong"})
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "Wrong code"
@@ -150,7 +148,7 @@ def test_check_code_user_exists(
         id=1, login="user1", email="user1@example.com", is_active=True
     )
 
-    response = client.post("/check_code", json={"code": "123456"})
+    response = client(app).post("/check_code", json={"code": "123456"})
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "User with such email or login already is active"
@@ -169,7 +167,7 @@ def test_login_success(
                   password_hash=get_hashed_password('testpassword'))
     ]
 
-    response = client.post("/login", json={
+    response = client(app).post("/login", json={
         "login": "user1",
         "password": "testpassword"
     })
@@ -188,7 +186,7 @@ def test_login_success(
 def test_login_user_not_found(mock_user_get, client):
     mock_user_get.return_value = []
 
-    response = client.post("/login", json={
+    response = client(app).post("/login", json={
         "login": "unknown",
         "password": "any"
     })
@@ -207,7 +205,7 @@ def test_login_wrong_password(mock_verify_password, mock_user_get, client):
     ]
     mock_verify_password.return_value = False
 
-    response = client.post("/login", json={
+    response = client(app).post("/login", json={
         "login": "user1",
         "password": "wrong-password"
     })
@@ -219,14 +217,14 @@ def test_login_wrong_password(mock_verify_password, mock_user_get, client):
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
 @patch("src.auth.routers.auth.TokenCrud.create")
-def test_get_access_success(mock_token_create, mock_token_get, client, override_refresh_token_auth):
+def test_get_access_success(mock_token_create, mock_token_get, client):
     mock_token_get.return_value = [
         AsyncMock(
             created_at=datetime_now_moscow() - timedelta(minutes=5)
         )
     ]
 
-    response = client.get("/get_access")
+    response = client(app).get("/get_access")
 
     assert response.status_code == status.HTTP_200_OK
     assert "access_token" in response.json()
@@ -236,10 +234,10 @@ def test_get_access_success(mock_token_create, mock_token_get, client, override_
 
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
-def test_get_access_token_not_found(mock_token_get, client, override_refresh_token_auth):
+def test_get_access_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 
-    response = client.get("/get_access")
+    response = client(app).get("/get_access")
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "Token is incorrect"
@@ -249,7 +247,7 @@ def test_get_access_token_not_found(mock_token_get, client, override_refresh_tok
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
 @patch("src.auth.routers.auth.datetime_now_moscow")
-def test_get_access_expired_token(mock_datetime, mock_token_get, client, override_refresh_token_auth):
+def test_get_access_expired_token(mock_datetime, mock_token_get, client):
     mock_datetime.return_value = datetime_now_moscow()
 
     expired_time = datetime_now_moscow() - timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES + 5)
@@ -257,7 +255,7 @@ def test_get_access_expired_token(mock_datetime, mock_token_get, client, overrid
         AsyncMock(created_at=expired_time)
     ]
 
-    response = client.get("/get_access")
+    response = client(app).get("/get_access")
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert response.json()["detail"] == "Token is incorrect"
@@ -267,10 +265,10 @@ def test_get_access_expired_token(mock_datetime, mock_token_get, client, overrid
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
 @patch("src.auth.routers.auth.TokenCrud.delete")
-def test_logout_success(mock_token_delete, mock_token_get, client, override_refresh_token_auth):
+def test_logout_success(mock_token_delete, mock_token_get, client):
     mock_token_get.return_value = [AsyncMock(id=42)]
 
-    response = client.get("/logout")
+    response = client(app).get("/logout")
 
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["message"] == "Logout Successful"
@@ -280,10 +278,10 @@ def test_logout_success(mock_token_delete, mock_token_get, client, override_refr
 
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
-def test_logout_token_not_found(mock_token_get, client, override_refresh_token_auth):
+def test_logout_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 
-    response = client.get("/logout")
+    response = client(app).get("/logout")
 
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert response.json()["detail"] == "Exception in token validation"

@@ -111,6 +111,8 @@ async def registration_handler(
         background_tasks.add_task(send_email, to_email=email, code=code)
 
         return {'detail': 'Code has been sent'}
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -193,6 +195,8 @@ async def check_code_handler(
             expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
         )
         return {'detail': 'Code is correct', 'access_token': access_token}
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -257,6 +261,8 @@ async def login_handler(
             expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
         )
         return {'detail': 'Credentials are correct', 'access_token': access_token}
+    except HTTPException as http_exc:
+        raise http_exc
     except Exception as _e:
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
@@ -287,43 +293,51 @@ async def get_access_handler(
     Raises:
         HTTPException: If the refresh token is invalid or expired.
     """
-    token = await TokenCrud.get_filtered_by_params(
-        session=session,
-        user_id=refresh_token['user'].id,
-        refresh_token=refresh_token['token'],
-        checker=refresh_token['payload']['checker']
-    )
-
-    if not token or token.created_at < (
-            datetime_now_moscow() -
-            timedelta(
-            minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
-        response.delete_cookie(key="refresh_token")
-        raise HTTPException(
-            status_code=HTTP_400_BAD_REQUEST,
-            detail='Token is incorrect'
+    try:
+        token = await TokenCrud.get_filtered_by_params(
+            session=session,
+            user_id=refresh_token['user'].id,
+            refresh_token=refresh_token['token'],
+            checker=refresh_token['payload']['checker']
         )
 
-    access_token = create_access_token(refresh_token['user'].id)
-    checker = uuid.uuid4()
-    refresh_token_new = create_refresh_token(subject=refresh_token['user'].id, checker=checker)
+        if not token or token[0].created_at < (
+                datetime_now_moscow() -
+                timedelta(
+                    minutes=REFRESH_TOKEN_EXPIRE_MINUTES)):
+            response.delete_cookie(key="refresh_token")
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Token is incorrect'
+            )
 
-    await TokenCrud.create(
-        session=session,
-        user_id=refresh_token['user'].id,
-        refresh_token=refresh_token_new,
-        checker=checker,
-        status=True
-    )
+        access_token = create_access_token(refresh_token['user'].id)
+        checker = uuid.uuid4()
+        refresh_token_new = create_refresh_token(subject=refresh_token['user'].id, checker=checker)
 
-    response.set_cookie(
-        key="refresh_token",
-        value=f"Bearer {refresh_token_new}",
-        httponly=True,
-        expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
-    )
+        await TokenCrud.create(
+            session=session,
+            user_id=refresh_token['user'].id,
+            refresh_token=refresh_token_new,
+            checker=checker,
+            status=True
+        )
 
-    return {'detail': 'Token is correct', 'access_token': access_token}
+        response.set_cookie(
+            key="refresh_token",
+            value=f"Bearer {refresh_token_new}",
+            httponly=True,
+            expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
+        )
+
+        return {'detail': 'Token is correct', 'access_token': access_token}
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as _e:
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
 
 
 @api_logs(auth_router.get('/logout'))
@@ -348,18 +362,26 @@ async def logout_handler(
     Raises:
         HTTPException: If the token is invalid or missing in the database.
     """
-    tokens = await TokenCrud.get_filtered_by_params(
-        session=session,
-        user_id=refresh_token['user'].id,
-        checker=refresh_token['payload']['checker'],
-        refresh_token=refresh_token['token']
-    )
-    if not tokens:
+    try:
+        tokens = await TokenCrud.get_filtered_by_params(
+            session=session,
+            user_id=refresh_token['user'].id,
+            checker=refresh_token['payload']['checker'],
+            refresh_token=refresh_token['token']
+        )
+        if not tokens:
+            raise HTTPException(
+                status_code=HTTP_401_UNAUTHORIZED,
+                detail="Exception in token validation")
+
+        await TokenCrud.delete(session=session, record_id=tokens[0].id)
+
+        response.delete_cookie(key="refresh_token")
+        return {"message": "Logout Successful"}
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as _e:
         raise HTTPException(
-            status_code=HTTP_401_UNAUTHORIZED,
-            detail="Exception in token validation")
-
-    await TokenCrud.delete(session=session, record_id=tokens[0].id)
-
-    response.delete_cookie(key="refresh_token")
-    return {"message": "Logout Successful"}
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )

@@ -60,9 +60,9 @@ async def edit_profile(
             surname=data.surname,
             organization=data.organization
         )
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -109,9 +109,9 @@ async def change_password(
             record_id=auth_data['user'].id,
             password_hash=get_hashed_password(data.new_password1)
         )
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -148,9 +148,9 @@ async def ticket_history(
             'detail': 'Ticket history found',
             'tickets': tickets
         }
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'

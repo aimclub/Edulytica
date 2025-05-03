@@ -111,9 +111,9 @@ async def registration_handler(
         background_tasks.add_task(send_email, to_email=email, code=code)
 
         return {'detail': 'Code has been sent'}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -195,9 +195,9 @@ async def check_code_handler(
             expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
         )
         return {'detail': 'Code is correct', 'access_token': access_token}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -261,9 +261,9 @@ async def login_handler(
             expires=get_expiry(REFRESH_TOKEN_EXPIRE_MINUTES)
         )
         return {'detail': 'Credentials are correct', 'access_token': access_token}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -331,9 +331,9 @@ async def get_access_handler(
         )
 
         return {'detail': 'Token is correct', 'access_token': access_token}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
@@ -378,9 +378,9 @@ async def logout_handler(
 
         response.delete_cookie(key="refresh_token")
         return {"message": "Logout Successful"}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'

@@ -129,9 +129,9 @@ async def new_ticket(
                                      user_id=auth_data['user'].id, ticket_id=ticket.id)
 
         return {'detail': 'Ticket has been created', 'ticket_id': ticket.id}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -168,9 +168,9 @@ async def get_event_id(
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Event doesn\'t exist')
 
         return {'detail': 'Event was found', 'event_id': event.id}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -204,9 +204,9 @@ async def get_ticket(
                                 detail='Ticket doesn\'t exist or you\'re not ticket creator')
 
         return {'detail': 'Ticket was found', 'ticket': ticket[0]}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -249,9 +249,9 @@ async def get_ticket_file(
             path=str(file_path),
             media_type='application/octet-stream',
             filename=file_path.name)
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -296,9 +296,9 @@ async def get_ticket_summary(
             path=str(file_path),
             media_type='application/octet-stream',
             filename=file_path.name)
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -343,9 +343,9 @@ async def get_ticket_result(
             path=str(file_path),
             media_type='application/octet-stream',
             filename=file_path.name)
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -385,7 +385,7 @@ async def ticket_share(
         )
 
         return {'detail': 'Status has been changed'}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')

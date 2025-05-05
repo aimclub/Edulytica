@@ -18,7 +18,7 @@ app = FastAPI()
 oauth2_scheme = OAuth2PasswordBearerWithCookie(tokenUrl="token")
 
 
-@app.get("/refresh")
+@app.get("/get_access")
 async def refresh_token(token: str = Depends(oauth2_scheme)):
     return {"token": token}
 
@@ -96,7 +96,7 @@ async def test_oauth2_bearer_token():
 @pytest.mark.asyncio
 async def test_oauth2_cookie_token():
     client = TestClient(app)
-    response = client.get("/refresh", cookies={"refresh_token": "Bearer cookie_token"})
+    response = client.get("/get_access", cookies={"refresh_token": "Bearer cookie_token"})
 
     assert response.status_code == 200
     assert response.json() == {"token": "cookie_token"}

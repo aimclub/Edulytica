@@ -1,10 +1,8 @@
 import unittest
-import sys
 import os
 from unittest.mock import patch, MagicMock
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
-from src.rag.pipeline import RAGPipeline
+from Edulytica.src.rag.pipeline import RAGPipeline
 
 
 class TestRAGPipeline(unittest.TestCase):
@@ -13,12 +11,12 @@ class TestRAGPipeline(unittest.TestCase):
     def setUp(self):
         """Set up the test environment with mocks for all dependencies"""
         # Prepare patches for all components
-        self.config_loader_patcher = patch('src.rag.pipeline.ConfigLoader')
-        self.embedding_processor_patcher = patch('src.rag.pipeline.EmbeddingProcessor')
-        self.text_processor_patcher = patch('src.rag.pipeline.TextProcessor')
-        self.chroma_manager_patcher = patch('src.rag.pipeline.ChromaDBManager')
-        self.event_specifics_patcher = patch('src.rag.pipeline.EventSpecifics')
-        self.prompt_enricher_patcher = patch('src.rag.pipeline.PromptEnricher')
+        self.config_loader_patcher = patch('Edulytica.src.rag.pipeline.ConfigLoader')
+        self.embedding_processor_patcher = patch('Edulytica.src.rag.pipeline.EmbeddingProcessor')
+        self.text_processor_patcher = patch('Edulytica.src.rag.pipeline.TextProcessor')
+        self.chroma_manager_patcher = patch('Edulytica.src.rag.pipeline.ChromaDBManager')
+        self.event_specifics_patcher = patch('Edulytica.src.rag.pipeline.EventSpecifics')
+        self.prompt_enricher_patcher = patch('Edulytica.src.rag.pipeline.PromptEnricher')
 
         # Start patches
         self.mock_config_loader = self.config_loader_patcher.start()

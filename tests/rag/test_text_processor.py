@@ -1,10 +1,7 @@
 import unittest
-import sys
 import os
-import time
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../src')))
-from rag.core.text_processor.text_processor import TextProcessor
+from Edulytica.src.rag.core.text_processor.text_processor import TextProcessor
 
 
 class TestTextProcessor(unittest.TestCase):

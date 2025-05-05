@@ -62,7 +62,6 @@ def test_get_access_success(integration_client):
     assert "access_token" in response.json()
 
 
-
 @pytest.mark.order(5)
 def test_logout_success(integration_client):
     login_resp = integration_client.post("/login", json={

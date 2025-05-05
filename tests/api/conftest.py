@@ -49,4 +49,3 @@ def client():
 def integration_client():
     with TestClient(app) as c:
         yield c
-

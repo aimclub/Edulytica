@@ -12,27 +12,30 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Load env vars safely from file
+      - name: Load .env from file into GITHUB_ENV
         run: |
-          while IFS= read -r line || [[ -n "$line" ]]; do
-            echo "$line" >> $GITHUB_ENV
-          done < $DOTENV_PATH
+          echo "Loading environment variables from $DOTENV_PATH"
+          cat "$DOTENV_PATH" | tr -d '\r' | tee -a $GITHUB_ENV
 
-      - name: Run PostgreSQL manually via Docker
+      - name: Start PostgreSQL container manually
         run: |
           docker run -d \
-            -e POSTGRES_USER=$POSTGRES_USER \
-            -e POSTGRES_PASSWORD=$POSTGRES_PASSWORD \
-            -e POSTGRES_DB=$POSTGRES_DB \
-            -p $POSTGRES_PORT:5432 \
-            --name edulytica-db \
+            --name postgres_edulytica \
+            -e POSTGRES_USER=${POSTGRES_USER} \
+            -e POSTGRES_PASSWORD=${POSTGRES_PASSWORD} \
+            -e POSTGRES_DB=${POSTGRES_DB} \
+            -p ${POSTGRES_PORT}:5432 \
             postgres:16-alpine
 
       - name: Wait for PostgreSQL to be ready
         run: |
-          until pg_isready -h 127.0.0.1 -p $POSTGRES_PORT -U $POSTGRES_USER; do
-            echo "Waiting for postgres..."
-            sleep 1
+          echo "Waiting for PostgreSQL to be ready..."
+          for i in {1..10}; do
+            if docker exec postgres_edulytica pg_isready -U ${POSTGRES_USER}; then
+              echo "PostgreSQL is ready."
+              break
+            fi
+            sleep 2
           done
 
       - name: Set up Python
@@ -42,14 +45,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov
 
-      - name: Run Alembic migrations
-        run: alembic upgrade head
+      - name: Apply Alembic migrations
         env:
           PYTHONPATH: ${{ github.workspace }}
+        run: alembic upgrade head
 
       - name: Run tests
         env:

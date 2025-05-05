@@ -15,7 +15,7 @@ jobs:
       - name: Load .env from file into GITHUB_ENV
         run: |
           echo "Loading environment variables from $DOTENV_PATH"
-          cat $DOTENV_PATH >> $GITHUB_ENV
+          cat "$DOTENV_PATH" | tr -d '\r' | tee -a $GITHUB_ENV
 
       - name: Start PostgreSQL container manually
         run: |

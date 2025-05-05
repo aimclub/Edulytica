@@ -184,8 +184,7 @@ async def check_code_handler(
             session=session,
             user_id=check_code.user_id,
             refresh_token=refresh_token,
-            checker=checker,
-            status=True
+            checker=checker
         )
 
         response.set_cookie(
@@ -250,8 +249,7 @@ async def login_handler(
             session=session,
             user_id=user[0].id,
             refresh_token=refresh_token,
-            checker=checker,
-            status=True
+            checker=checker
         )
 
         response.set_cookie(
@@ -319,8 +317,7 @@ async def get_access_handler(
             session=session,
             user_id=refresh_token['user'].id,
             refresh_token=refresh_token_new,
-            checker=checker,
-            status=True
+            checker=checker
         )
 
         response.set_cookie(

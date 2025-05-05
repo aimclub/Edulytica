@@ -1,5 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
+
+from src.auth.app import app
 from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
 from src.common.auth.helpers.utils import get_hashed_password
 from src.common.database.database import get_session, SessionLocal
@@ -41,3 +43,10 @@ def client():
 
         return TestClient(app)
     return _client_for_app
+
+
+@pytest.fixture(scope="session")
+def integration_client():
+    with TestClient(app) as c:
+        yield c
+

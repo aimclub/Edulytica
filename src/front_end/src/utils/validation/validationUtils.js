@@ -39,42 +39,54 @@ export const validateAuthorizationPassword = (password) => {
 }
 
 //Валидация ошибок от сервера
+const ERROR_TYPES = {
+  EMAIL_EXISTS: "User with such email already exists",
+  LOGIN_EXISTS: "User with such login already exists",
+  PASSWORDS_NOT_MATCH: "Passwords are not equal",
+  INVALID_CREDENTIALS: "Credentials are incorrect",
+  INVALID_CODE: "Wrong code",
+}
+
 export const validateBackend = (err) => {
-  if (err === "User with such email already exists") {
-    const newErrors = {
-      email: "* Пользователь с такой почтой уже существует",
-      login: null,
-      password: null,
-      repeatPassword: null,
-    }
-    return newErrors
-  } else if (err === "User with such login already exists") {
-    const newErrors = {
-      email: null,
-      login: "* Пользователь с таким логином уже существует",
-      password: null,
-      repeatPassword: null,
-    }
-    return newErrors
-  } else if (err === "Passwords are not equal") {
-    const newErrors = {
-      email: null,
-      login: null,
-      password: "* Пароли не совпадают",
-      repeatPassword: null,
-    }
-    return newErrors
-  } else if (err === "Credentials are incorrect") {
-    const newErrors = {
-      name: "* Неверный логин или пароль",
-      password: null,
-    }
-    return newErrors
-  } else if (err === "Wrong code") {
-    const newErrors = {
-      name: "* Неверный пароль",
-    }
-    return newErrors
+  switch (err) {
+    case ERROR_TYPES.EMAIL_EXISTS:
+      return {
+        email: "* Пользователь с такой почтой уже существует",
+        login: null,
+        password: null,
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.LOGIN_EXISTS:
+      return {
+        email: null,
+        login: "* Пользователь с таким логином уже существует",
+        password: null,
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.PASSWORDS_NOT_MATCH:
+      return {
+        email: null,
+        login: null,
+        password: "* Пароли не совпадают",
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.INVALID_CREDENTIALS:
+      return {
+        name: "* Неверный логин или пароль",
+        password: null,
+      }
+
+    case ERROR_TYPES.INVALID_CODE:
+      return {
+        name: "* Неверный пароль",
+      }
+
+    default:
+      return {
+        general: "* Произошла неизвестная ошибка",
+      }
   }
-  return null
 }

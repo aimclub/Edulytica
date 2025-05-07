@@ -41,9 +41,6 @@ class CheckCodeCrud(
             Optional[CheckCodeModels.Get]: A validated Pydantic model representing the CheckCode,
                                            or None if no recent code is found.
         """
-
-        kogda = datetime_now_moscow() - timedelta(seconds=EMAIL_CODE_EXPIRE_SECONDS)
-
         result = await session.execute(
             select(CheckCode).filter(
                 CheckCode.code == code,

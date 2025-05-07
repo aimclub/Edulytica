@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import logo from "../../assets/images/logo.svg"
 import "./header.scss"
 import { Link } from "react-router-dom"
+
 /**
  * @param {object} props - Объект с пропсами компонента
  * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
@@ -10,21 +11,17 @@ import { Link } from "react-router-dom"
  * @param {function} props.setProfileModal - Функция для открытия/закрытия модального окна профиля.
  * @returns {JSX.Element} верхний блок страницы, изменяющийся при авторизации
  */
-const Header = ({
-  authorized,
-  setAuthorized,
-  setAccountModal,
-  setProfileModal,
-}) => {
+const Header = ({ authorized, setAccountModal, setProfileModal }) => {
   const [openModalInformation, setOpenModalInformation] = useState(true)
+
   const handleClickLogo = () => {
     setOpenModalInformation((pr) => !pr)
     setAccountModal((pr) => !pr)
   }
+
   const handleSvgAccount = () => {
     setProfileModal((pr) => !pr)
   }
-  useEffect(() => {}, [authorized])
 
   return (
     <div className="header">
@@ -113,4 +110,5 @@ const Header = ({
     </div>
   )
 }
+
 export default Header

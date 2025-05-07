@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom"
 import "./profileModal.scss"
 import { useEffect } from "react"
+import { useDispatch } from "react-redux"
+import { logoutUser } from "../../store/authSlice"
+
 /**
  * @param {object} props - Объект с пропсами компонента.
  * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя.
@@ -13,15 +16,22 @@ export const ProfileModal = ({
   setEditingProfileModal,
   infoProfile,
 }) => {
+  const dispatch = useDispatch()
+
   const handleLogOut = () => {
+    dispatch(logoutUser())
+    localStorage.removeItem("token")
     setAuthorized(false)
     setProfileModal(false)
   }
+
   const openEditingProfileModal = () => {
     setEditingProfileModal(true)
     setProfileModal(false)
   }
+
   useEffect(() => {}, [infoProfile])
+
   return (
     <div className="profileModal">
       <div

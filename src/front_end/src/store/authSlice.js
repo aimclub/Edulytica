@@ -2,27 +2,31 @@ import { createSlice } from "@reduxjs/toolkit"
 
 /**
  * @typedef {Object} AuthState
- * @property {User|null} user - Текущий авторизованный пользователь или null
+ * @property {User|null} currentUser - Текущий авторизованный пользователь или null
  * @property {boolean} isAuth - Флаг авторизации
+ * @property {string|null} token - Токен авторизации
  */
 
 /** @type {AuthState} */
 const initialState = {
-  user: null,
+  currentUser: null,
   isAuth: false,
+  token: null,
 }
 
 const authSlice = createSlice({
-  name: "user",
+  name: "auth",
   initialState,
   reducers: {
     loginUser: (state, action) => {
-      state.user = action.payload
+      state.currentUser = action.payload
       state.isAuth = true
+      state.token = action.payload.token
     },
     logoutUser: (state) => {
+      state.currentUser = null
       state.isAuth = false
-      state.user = null
+      state.token = null
     },
   },
 })

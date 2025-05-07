@@ -23,11 +23,7 @@ import { authService } from "../../services/auth.service"
  * @returns {JSX.Element} Форма регистрации или входа.
  */
 
-export const RegistrationForm = ({
-  registrationPage,
-  authorized,
-  setAuthorized,
-}) => {
+export const RegistrationForm = ({ registrationPage }) => {
   const [switchClick, setSwitchClick] = useState(false)
   const [loginModal, setLoginModal] = useState(registrationPage)
   const [email, setEmail] = useState("")
@@ -52,8 +48,12 @@ export const RegistrationForm = ({
       )
       if (data?.access_token) {
         localStorage.setItem("token", data.access_token)
-        dispatch(loginUser({ ...data.user, token: data.access_token }))
-        setAuthorized(true)
+        dispatch(
+          loginUser({
+            username: authorization.name,
+            token: data.access_token,
+          })
+        )
         navigate("/account")
       } else {
         alert("Неверный ответ от сервера")
@@ -92,7 +92,12 @@ export const RegistrationForm = ({
     try {
       const data = await authService.checkCode(code)
       if (data) {
-        setAuthorized(true)
+        dispatch(
+          loginUser({
+            username: login,
+            token: data.access_token,
+          })
+        )
         navigate("/account")
       }
     } catch (err) {

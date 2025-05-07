@@ -1,13 +1,11 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import AppRoutes from "./routes/AppRoutes.jsx"
 import { BrowserRouter } from "react-router-dom"
+import { useSelector } from "react-redux"
 
 const App = () => {
-  /**
-   * Указывает, авторизован ли пользователь
-   * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
-   */
-  const [authorized, setAuthorized] = useState(false)
+  const { isAuth } = useSelector((state) => state.auth)
+  const [authorized, setAuthorized] = useState(isAuth)
 
   /**
    * Контролирует видимость модального левого окна с историей файлов
@@ -20,6 +18,11 @@ const App = () => {
    * @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]}
    */
   const [profileModal, setProfileModal] = useState(false)
+
+  // Обновляем authorized при изменении isAuth
+  useEffect(() => {
+    setAuthorized(isAuth)
+  }, [isAuth])
 
   return (
     <BrowserRouter>

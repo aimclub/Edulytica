@@ -1,6 +1,6 @@
 import unittest
 
-from Edulytica.src.rag.utils.TextProcessingUtils import TextProcessingUtils
+from src.rag.utils.TextProcessingUtils import TextProcessingUtils
 
 
 class TestTextProcessingUtils(unittest.TestCase):

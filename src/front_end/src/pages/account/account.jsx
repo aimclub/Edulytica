@@ -7,6 +7,7 @@ import { ProfileModal } from "../../components/profileModal/profileModal"
 import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
+import { AddEvent } from "../../components/addEvent/addEvent"
 /**
  *  * Компонент страницы аккаунта пользователя.
  * @param {object} props - Объект с пропсами компонента
@@ -33,16 +34,32 @@ export const Account = ({
   const [fileResult, setFileResult] = useState("")
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
+  const [addEventModal, setAddEventModal] = useState(false)
   const [infoProfile, setInfoProfile] = useState({
     name: "...",
     surname: "...",
     nick: "fedorova_m",
     birthday: "...",
   })
+  const [event, setEvent] = useState([
+    { name: "ППС", info: "Это описание мероприятия ППС" },
+    { name: "КМУ", info: "Это описание мероприятия КМУ" },
+  ])
   const [key, setKey] = useState(0)
+  useEffect(() => {
+    console.log(event)
+  }, [event])
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
   }, [accountSection])
+  useEffect(() => {
+    if (addEventModal) {
+      setTimeout(() => setEditingProfileAnimation(true), 10)
+    } else {
+      setEditingProfileAnimation(false)
+    }
+  }, [addEventModal])
+
   useEffect(() => {
     if (editingProfileModal) {
       setTimeout(() => setEditingProfileAnimation(true), 10)
@@ -50,6 +67,7 @@ export const Account = ({
       setEditingProfileAnimation(false)
     }
   }, [editingProfileModal])
+
   return (
     <div className="accPage">
       <Header
@@ -81,6 +99,8 @@ export const Account = ({
                   selectedParams={selectedParams}
                   setSelectedParams={setSelectedParams}
                   setFileResult={setFileResult}
+                  setAddEventModal={setAddEventModal}
+                  event={event}
                 />
               </div>
             ) : accountSection === "result" ? (
@@ -113,6 +133,22 @@ export const Account = ({
               setEditingProfileModal={() => setEditingProfileModal(false)}
               infoProfile={infoProfile}
               setInfoProfile={setInfoProfile}
+            />
+          </div>
+        </>
+      )}
+      {addEventModal && (
+        <>
+          <div className="editingProfileOverlay" />
+          <div
+            className={`editingProfileModalWrapper ${
+              editingProfileAnimation ? "show" : ""
+            }`}
+          >
+            <AddEvent
+              setAddEventModal={setAddEventModal}
+              event={event}
+              setEvent={setEvent}
             />
           </div>
         </>

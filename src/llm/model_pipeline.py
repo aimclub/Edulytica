@@ -1,9 +1,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from src.LLM import IModel
-from src.LLM import DEFAULT_SYSTEM_PROMPT
+from src.llm import model_interface
+from src.llm import DEFAULT_SYSTEM_PROMPT
 
 
-class Model_pipeline(IModel):
+class Model_pipeline(model_interface):
     def __init__(self, model_name, system_prompt=DEFAULT_SYSTEM_PROMPT, device_map="auto"):
         """Class for Vikhr-Nemo instruct usage. For inference using huggingface transformers pipeline"""
 

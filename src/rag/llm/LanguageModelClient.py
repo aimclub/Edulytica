@@ -10,7 +10,7 @@ class LanguageModelClient:
         """
         Initialize the LanguageModelClient with the given API key.
 
-        :param api_key: The API key for authenticating with the LLM providers.
+        :param api_key: The API key for authenticating with the llm providers.
         """
         self.api_key = api_key
 

@@ -1,6 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from src.LLM import Model_pipeline
-from src.LLM import DEFAULT_SYSTEM_PROMPT
+from src.llm import Model_pipeline
+from src.llm import DEFAULT_SYSTEM_PROMPT
 
 
 class Qwen2_5_instruct_pipeline(Model_pipeline):

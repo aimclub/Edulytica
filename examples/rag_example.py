@@ -13,7 +13,7 @@ def ragExample():
     performing semantic search based on a user query, and generating a response.
 
     First, we load the API key for the model from .env, parse the document, perform preprocessing,
-    perform a semantic search, send the result to LLM and wait for an answer to the user's question.
+    perform a semantic search, send the result to llm and wait for an answer to the user's question.
     """
 
     load_dotenv()

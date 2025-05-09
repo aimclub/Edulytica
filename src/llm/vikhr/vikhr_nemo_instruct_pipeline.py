@@ -1,6 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from src.LLM import DEFAULT_SYSTEM_PROMPT
-from src.LLM.Model_pipeline import Model_pipeline
+from src.llm import DEFAULT_SYSTEM_PROMPT
+from src.llm.model_pipeline import Model_pipeline
 
 
 class Vikhr_Nemo_instruct_pipeline(Model_pipeline):

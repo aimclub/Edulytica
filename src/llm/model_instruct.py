@@ -1,7 +1,7 @@
 from src.llm import model_interface
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
 from src.llm import DEFAULT_SYSTEM_PROMPT
-from src.exeptions.LLM.quantization_exeption import QuantizationExeption
+from src.exeptions.llm.quantization_exeption import QuantizationExeption
 
 
 class Model_instruct(model_interface):

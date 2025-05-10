@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom"
 import "./profileModal.scss"
 import { useEffect } from "react"
-import { useDispatch } from "react-redux"
 import { authService } from "../../services/auth.service"
 
 /**

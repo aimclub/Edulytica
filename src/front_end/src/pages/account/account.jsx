@@ -8,7 +8,7 @@ import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
-import { useSelector } from "react-redux"
+
 /**
  *  * Компонент страницы аккаунта пользователя.
  * @param {object} props - Объект с пропсами компонента

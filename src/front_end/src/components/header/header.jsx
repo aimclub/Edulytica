@@ -1,8 +1,7 @@
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import logo from "../../assets/images/logo.svg"
 import "./header.scss"
-import { Link, useNavigate } from "react-router-dom"
-import { useSelector } from "react-redux"
+import { Link } from "react-router-dom"
 
 /**
  * @param {object} props - Объект с пропсами компонента

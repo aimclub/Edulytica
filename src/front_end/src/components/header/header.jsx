@@ -1,31 +1,34 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import logo from "../../assets/images/logo.svg"
 import "./header.scss"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useSelector } from "react-redux"
 
 /**
  * @param {object} props - Объект с пропсами компонента
- * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
- * @param {function} props.setAuthorized - Функция для установки значения авторизации пользователя
- * @param {function} props.setAccountModal - Функция для открытия/закрытия модального окна аккаунта.
+ * @param {boolean} props.isAuth - Флаг, указывающий, авторизован ли пользователь
+ * @param {function} props.setAccountModal - Функция для открытия/закрытия левого модального окна c историей документов.
  * @param {function} props.setProfileModal - Функция для открытия/закрытия модального окна профиля.
  * @returns {JSX.Element} верхний блок страницы, изменяющийся при авторизации
  */
-const Header = ({ authorized, setAccountModal, setProfileModal }) => {
+const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
+  // Хранит состояние открытия/закрытия левого модального окна c историей документов
   const [openModalInformation, setOpenModalInformation] = useState(true)
 
+  //Скрытие/открытие левого модального окна c историей документов
   const handleClickLogo = () => {
     setOpenModalInformation((pr) => !pr)
     setAccountModal((pr) => !pr)
   }
 
+  //Скрытие/открытие модального окна c информацией о профиле
   const handleSvgAccount = () => {
     setProfileModal((pr) => !pr)
   }
 
   return (
     <div className="header">
-      {!authorized ? (
+      {!isAuth ? (
         <>
           <div className="logoHeader">
             <img src={logo} alt="logo" />

@@ -2,10 +2,15 @@ import React, { useState, useEffect } from "react"
 import AppRoutes from "./routes/AppRoutes.jsx"
 import { BrowserRouter } from "react-router-dom"
 import { useSelector } from "react-redux"
+import { validateToken } from "./api/axios.api"
 
 const App = () => {
   const { isAuth } = useSelector((state) => state.auth)
-  const [authorized, setAuthorized] = useState(isAuth)
+
+  useEffect(() => {
+    // Проверяем токен при загрузке приложения
+    validateToken()
+  }, [])
 
   /**
    * Контролирует видимость модального левого окна с историей файлов
@@ -19,16 +24,10 @@ const App = () => {
    */
   const [profileModal, setProfileModal] = useState(false)
 
-  // Обновляем authorized при изменении isAuth
-  useEffect(() => {
-    setAuthorized(isAuth)
-  }, [isAuth])
-
   return (
     <BrowserRouter>
       <AppRoutes
-        authorized={authorized}
-        setAuthorized={setAuthorized}
+        isAuth={isAuth}
         accountModal={accountModal}
         setAccountModal={setAccountModal}
         profileModal={profileModal}

@@ -6,8 +6,7 @@ import { Account } from "../pages/account/account.jsx"
 
 /**
  * Компонент, определяющий маршруты приложения.
- * @param {boolean} props.authorized - Определяет, авторизован ли пользователь
- * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setAuthorized - Функция для установки состояния авторизации
+ * @param {boolean} props.isAuth - Определяет, авторизован ли пользователь
  * @param {boolean} props.accountModal - Определяет, отображать ли модальное окно аккаунта, которое с историей файлов
  * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setAccountModal - Функция для установки состояния видимости модального окна аккаунта
  * @param {boolean} props.profileModal - Определяет, отображать ли модальное окно профиля
@@ -16,8 +15,7 @@ import { Account } from "../pages/account/account.jsx"
  */
 
 const AppRoutes = ({
-  authorized,
-  setAuthorized,
+  isAuth,
   accountModal,
   setAccountModal,
   profileModal,
@@ -27,10 +25,7 @@ const AppRoutes = ({
 }) => {
   return (
     <Routes>
-      <Route
-        path="/"
-        element={<Home authorized={authorized} setAuthorized={setAuthorized} />}
-      />
+      <Route path="/" element={<Home isAuth={isAuth} />} />
       <Route
         path="/account"
         element={
@@ -39,9 +34,9 @@ const AppRoutes = ({
             setAccountModal={setAccountModal}
             profileModal={profileModal}
             setProfileModal={setProfileModal}
-            setAuthorized={setAuthorized}
             accountSection={accountSection}
             setAccountSection={setAccountSection}
+            isAuth={isAuth}
           />
         }
       />
@@ -53,7 +48,6 @@ const AppRoutes = ({
             setAccountModal={setAccountModal}
             profileModal={profileModal}
             setProfileModal={setProfileModal}
-            setAuthorized={setAuthorized}
             accountSection={accountSection}
             setAccountSection={setAccountSection}
           />
@@ -67,7 +61,6 @@ const AppRoutes = ({
             setAccountModal={setAccountModal}
             profileModal={profileModal}
             setProfileModal={setProfileModal}
-            setAuthorized={setAuthorized}
             accountSection={accountSection}
             setAccountSection={setAccountSection}
           />
@@ -81,7 +74,6 @@ const AppRoutes = ({
             setAccountModal={setAccountModal}
             profileModal={profileModal}
             setProfileModal={setProfileModal}
-            setAuthorized={setAuthorized}
             accountSection={accountSection}
             setAccountSection={setAccountSection}
           />
@@ -90,22 +82,12 @@ const AppRoutes = ({
       <Route
         path="/registration"
         element={
-          <Registration
-            registrationPage="registration"
-            authorized={authorized}
-            setAuthorized={setAuthorized}
-          />
+          <Registration registrationPage="registration" isAuth={isAuth} />
         }
       />
       <Route
         path="/login"
-        element={
-          <Registration
-            registrationPage="login"
-            authorized={authorized}
-            setAuthorized={setAuthorized}
-          />
-        }
+        element={<Registration registrationPage="login" isAuth={isAuth} />}
       />
     </Routes>
   )

@@ -18,12 +18,11 @@ import { authService } from "../../services/auth.service"
 /**
  * @param {object} props - Объект с пропсами компонента.
  * @param {string} props.registrationPage - Определяет, какую страницу отображать (login или registration).
- * @param {boolean} props.authorized - Флаг, показывающий, авторизован ли пользователь.
- * @param {function} props.setAuthorized - Функция для изменения статуса авторизации пользователя.
+ * @param {boolean} props.isAuth - Флаг, показывающий, авторизован ли пользователь.
  * @returns {JSX.Element} Форма регистрации или входа.
  */
 
-export const RegistrationForm = ({ registrationPage }) => {
+export const RegistrationForm = ({ registrationPage, isAuth }) => {
   const [switchClick, setSwitchClick] = useState(false)
   const [loginModal, setLoginModal] = useState(registrationPage)
   const [email, setEmail] = useState("")
@@ -42,10 +41,10 @@ export const RegistrationForm = ({ registrationPage }) => {
   //Вход в аккаунт
   const loginHandler = async () => {
     try {
-      const data = await authService.login(
-        authorization.name,
-        authorization.password
-      )
+      const data = await authService.login({
+        login: authorization.name,
+        password: authorization.password,
+      })
       if (data?.access_token) {
         localStorage.setItem("token", data.access_token)
         dispatch(
@@ -70,12 +69,12 @@ export const RegistrationForm = ({ registrationPage }) => {
   //Регистрация
   const registrationHandler = async () => {
     try {
-      const data = await authService.registration(
-        login,
-        email,
-        password,
-        repeatPassword
-      )
+      const data = await authService.registration({
+        login: login,
+        email: email,
+        password: password,
+        repeatPassword: repeatPassword,
+      })
       if (data) {
         setLoginModal("registration2")
       }
@@ -88,6 +87,7 @@ export const RegistrationForm = ({ registrationPage }) => {
     }
   }
 
+  //Проверка кода подтверждения
   const registration2Handler = async () => {
     try {
       const data = await authService.checkCode(code)

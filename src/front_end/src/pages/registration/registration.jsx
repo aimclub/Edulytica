@@ -4,26 +4,27 @@ import { RegistrationForm } from "../../components/registrationForm/registration
 import "./registration.scss"
 import { Link } from "react-router-dom"
 import { motion } from "framer-motion"
+import { useDispatch } from "react-redux"
+import { logoutUser } from "../../store/authSlice"
+
 /**
  * @param {object} props - Объект с пропсами компонента
  * @param {string} props.registrationPage - Определяет, какую страницу отображать в форме регистрации (login или registration)
- * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
- * @param {function} props.setAuthorized - Функция для установки значения авторизации пользователя
+ * @param {boolean} props.isAuth - Флаг, указывающий, авторизован ли пользователь
  * @returns {JSX.Element} Страница регистрации
  */
 
-export const Registration = ({
-  registrationPage,
-  authorized,
-  setAuthorized,
-}) => {
-  useEffect(() => {}, [registrationPage])
-  // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
+export const Registration = ({ registrationPage, isAuth }) => {
+  const dispatch = useDispatch()
   const [key, setKey] = useState(0)
-
+  useEffect(() => {}, [isAuth])
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
   }, [registrationPage])
+
+  const handleLogout = () => {
+    dispatch(logoutUser())
+  }
 
   return (
     <div className="registrationPage">
@@ -37,12 +38,9 @@ export const Registration = ({
           width: "100%",
         }}
       >
-        <Header authorized={authorized} setAuthorized={setAuthorized} />
+        <Header isAuth={isAuth} />
         <Link to="/" style={{ textDecoration: "none" }}>
-          <div
-            className="blockLeftRegistrationPage"
-            onClick={() => setAuthorized(false)}
-          >
+          <div className="blockLeftRegistrationPage" onClick={handleLogout}>
             <svg
               width="24"
               height="24"
@@ -70,11 +68,7 @@ export const Registration = ({
         exit={{ opacity: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <RegistrationForm
-          registrationPage={registrationPage}
-          authorized={authorized}
-          setAuthorized={setAuthorized}
-        />{" "}
+        <RegistrationForm registrationPage={registrationPage} isAuth={isAuth} />{" "}
       </motion.div>
     </div>
   )

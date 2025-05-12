@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from src.rag.utils.FileParser import FileParser
 from src.rag.utils.TextProcessingUtils import TextProcessingUtils
 from src.rag.semantic_search.SemanticSearcher import SemanticSearcher
-from src.rag.llm.LanguageModelClient import LanguageModelClient
+from src.rag.llm.language_model_client import LanguageModelClient
 from src.rag.const import PROMPT_TEMPLATE
 
 

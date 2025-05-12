@@ -11,7 +11,8 @@ class TestPromptEnricher(unittest.TestCase):
     def setUp(self):
         """Set up the test environment"""
         # Create a mock for ConfigLoader
-        self.config_loader_patcher = patch('Edulytica.src.rag.core.prompt_enricher.prompt_enricher.ConfigLoader')
+        self.config_loader_patcher = patch(
+            'Edulytica.src.rag.core.prompt_enricher.prompt_enricher.ConfigLoader')
         self.mock_config_loader = self.config_loader_patcher.start()
 
         # Configure mock to return a known prefix value

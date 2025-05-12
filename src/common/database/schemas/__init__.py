@@ -31,7 +31,7 @@ from src.common.database.schemas.system_schemas import (
     _EventGet,
     _CustomEventCreate,
     _CustomEventUpdate,
-    _CustomEventGet)
+    _CustomEventGet, _TicketTypeCreate, _TicketTypeUpdate, _TicketTypeGet)
 
 
 class UserModels:
@@ -75,6 +75,17 @@ class TicketStatusModels:
         pass
 
     class Get(_TicketGet):
+        pass
+
+
+class TicketTypeModels:
+    class Create(_TicketTypeCreate):
+        pass
+
+    class Update(_TicketTypeUpdate):
+        pass
+
+    class Get(_TicketTypeGet):
         pass
 
 

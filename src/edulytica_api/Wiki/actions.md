@@ -19,6 +19,8 @@ Return:
 
     {detail: "Invalid file uploaded"}
 
+    {detail: "Invalid file type, only PDF or DOCX"}
+
     {detail: "Incorrect event id"}
 
 ---
@@ -51,9 +53,7 @@ Return:
     {detail: "Ticket was found", ticket: TicketModel}
 2. 400 BadRequest
 
-    {detail: "Ticket doesn't exist"}
-
-    {detail: "You're not ticket creator"}
+    {detail: "'Ticket doesn't exist or you're not ticket creator'"}
 
 ---
 
@@ -66,7 +66,7 @@ Return:
 Return:
 1. 200 Ok
 
-    {detail: "File was found", file: UploadFile}
+    Return: FileResponse
 2. 400 BadRequest
 
     {detail: "Ticket doesn't exist"}
@@ -82,7 +82,7 @@ Return:
 Return:
 1. 200 Ok
 
-    {detail: "Ticket summary found", summary: UploadFile}
+    return FireResponse
 2. 400 BadRequest
 
     {detail: "Ticket doesn't exist"}
@@ -100,7 +100,7 @@ Return:
 Return:
 1. 200 Ok
 
-    {detail: "Ticket result was found", result_file: UploadFile}
+    return FireResponse
 2. 400 BadRequest
 
     {detail: "Ticket doesn't exist"}
@@ -121,6 +121,4 @@ Return:
     {detail: "Status has been changed"}
 2. 400 BadRequest
 
-    {detail: "You aren't ticket owner"}
-
-    {detail: "Ticket doesn't exist"}
+    {detail: "You aren't ticket owner or ticket doesn't exist"}

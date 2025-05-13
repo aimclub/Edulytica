@@ -25,7 +25,7 @@ class Model_instruct(model_interface):
                 load_in_4bit=True,
                 bnb_4bit_quant_type=bnb_4bit_quant_type,
                 bnb_4bit_use_double_quant=bnb_4bit_use_double_quant)
-        else:
+        elif quantization is not None:
             raise QuantizationExeption
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
                                                           quantization_config=bnb_config)

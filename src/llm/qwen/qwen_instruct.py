@@ -1,9 +1,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
-from src.llm import Model_instruct
+from src.llm import ModelInstruct
 from src.llm import DEFAULT_SYSTEM_PROMPT
 
 
-class Qwen2_5_instruct(Model_instruct):
+class QwenInstruct(ModelInstruct):
     """Class for Qwen2.5 instruct usage. For inference using huggingface transformers"""
 
     def __init__(

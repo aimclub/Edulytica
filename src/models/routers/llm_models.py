@@ -1,3 +1,8 @@
+"""
+Этот сервис будет управлять Модельками и посылкой данных в них
+"""
+
+
 import os
 import uuid
 from pathlib import Path
@@ -67,7 +72,7 @@ async def get_purpose(
     ticket = await TicketCrud.create(
         session=session,
         user_id=user.id,
-        ticket_status_id=ticket_status.id,
+        ticket_status_id=ticket_status[0].id,
         document_id=file_id
         # ticket_type='Достижимость'
     )
@@ -134,7 +139,7 @@ async def get_summary(
     ticket = await TicketCrud.create(
         session=session,
         user_id=user.id,
-        ticket_status_id=ticket_status.id,
+        ticket_status_id=ticket_status[0].id,
         document_id=file_id
     )
     task = get_llm_summary_result.delay(main_text=text_list, user_id=user.id, ticket_id=ticket.id)

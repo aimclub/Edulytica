@@ -1,10 +1,10 @@
-from src.llm import model_interface
+from src.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
 from src.llm import DEFAULT_SYSTEM_PROMPT
 from src.exeptions.llm.quantization_exeption import QuantizationExeption
 
 
-class Model_instruct(model_interface):
+class ModelInstruct(IModel):
     def __init__(
             self,
             model_name,

@@ -6,7 +6,7 @@ Classes:
     CheckCodeCrud: Provides CRUD operations for the CheckCode model
 """
 
-from datetime import timedelta, datetime
+from datetime import timedelta, datetime, timezone
 from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -14,6 +14,7 @@ from src.common.config import EMAIL_CODE_EXPIRE_SECONDS
 from src.common.database.crud.base.factory import BaseCrudFactory
 from src.common.database.models import CheckCode
 from src.common.database.schemas import CheckCodeModels
+from src.common.utils.moscow_datetime import datetime_now_moscow
 
 
 class CheckCodeCrud(
@@ -43,7 +44,7 @@ class CheckCodeCrud(
         result = await session.execute(
             select(CheckCode).filter(
                 CheckCode.code == code,
-                CheckCode.created_at >= datetime.now() - timedelta(seconds=EMAIL_CODE_EXPIRE_SECONDS)
+                CheckCode.created_at >= datetime_now_moscow() - timedelta(seconds=EMAIL_CODE_EXPIRE_SECONDS)
             )
         )
 

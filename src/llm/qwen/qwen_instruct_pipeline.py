@@ -1,9 +1,9 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from src.llm import Model_pipeline
+from src.llm import ModelPipeline
 from src.llm import DEFAULT_SYSTEM_PROMPT
 
 
-class Qwen2_5_instruct_pipeline(Model_pipeline):
+class QwenInstructPipeline(ModelPipeline):
     def __init__(self, model_name=None, device_map="auto"):
         """Class for Qwen2.5 instruct usage. For inference using huggingface transformers pipeline"""
         if model_name is None:

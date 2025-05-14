@@ -90,6 +90,20 @@ class _TicketStatusGet(_TicketStatusUpdate):
     pass
 
 
+class _TicketTypeCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str
+
+
+class _TicketTypeUpdate(_TicketTypeCreate):
+    id: UUID4
+
+
+class _TicketTypeGet(_TicketTypeUpdate):
+    pass
+
+
 class _DocumentCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

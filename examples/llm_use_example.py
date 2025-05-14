@@ -1,6 +1,6 @@
-from src.llm.qwen.Qwen2_5_instruct import Qwen2_5_instruct
+from src.llm.qwen import QwenInstruct
 
 if __name__ == "__main__":
-    model = Qwen2_5_instruct(quantization="8bit")
+    model = QwenInstruct(quantization="8bit")
     print(model.device)
     print(model(["Привет!"]))

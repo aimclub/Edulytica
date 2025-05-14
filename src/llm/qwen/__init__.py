@@ -1,1 +1,2 @@
-from Edulytica.src.llm.qwen.qwen2_5_instruct import *
+from src.llm.qwen.qwen_instruct import *
+from src.llm.qwen.qwen_instruct_pipeline import *

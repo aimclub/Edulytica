@@ -1,10 +1,6 @@
-name: Frontend Build
+name: Edulytica API Frontend Build
 
-on:
-  push:
-    branches: [development, main]
-  pull_request:
-    branches: [development, main]
+on: [ push, pull_request ]
 
 jobs:
   build:
@@ -26,3 +22,9 @@ jobs:
       - name: Build frontend
         working-directory: ./src/front_end
         run: npm run build
+
+      - name: Run tests
+        working-directory: ./src/front_end
+        run: |
+          npm install 
+          npm test

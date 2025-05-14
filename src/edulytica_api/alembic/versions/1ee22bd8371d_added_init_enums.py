@@ -10,8 +10,7 @@ from typing import Sequence, Union
 
 from alembic import op
 
-from src.common.utils.default_enums import UserRoleDefault, TicketStatusDefault
-
+from src.common.utils.default_enums import UserRoleDefault, TicketStatusDefault, TicketTypeDefault
 
 # revision identifiers, used by Alembic.
 revision: str = '1ee22bd8371d'
@@ -38,6 +37,13 @@ def upgrade() -> None:
                    ('{uuid.uuid4()}', '{TicketStatusDefault.FAILED.value}')
             ON CONFLICT (name) DO NOTHING;
         """)
+
+    op.execute(f"""
+                INSERT INTO ticket_types (id, name)
+                VALUES
+                ('{uuid.uuid4()}', '{TicketTypeDefault.ACHIEVABILITY.value}')
+                ON CONFLICT (name) DO NOTHING;
+            """)
     # ### end Alembic commands ###
 
 
@@ -47,4 +53,5 @@ def downgrade() -> None:
     op.execute(f"DELETE FROM ticket_statuses WHERE name IN ('{TicketStatusDefault.CREATED.value}',"
                f" '{TicketStatusDefault.IN_PROGRESS.value}', '{TicketStatusDefault.COMPLETED.value}',"
                f" '{TicketStatusDefault.FAILED.value}')")
+    op.execute(f"DELETE FROM ticket_types WHERE name = '{TicketTypeDefault.ACHIEVABILITY.value}'")
     # ### end Alembic commands ###

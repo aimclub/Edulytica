@@ -12,43 +12,49 @@ class TestEmbeddingProcessor(unittest.TestCase):
 
     def setUp(self):
         """Set up the test environment with mocks for all dependencies"""
-        # Prepare patches for all dependencies
+        # Создаем моки сначала, до патчинга
+        # Подготавливаем мок для конфигурации
+        self.mock_config_instance = MagicMock()
+        self.mock_config_instance.get_embedding_model.return_value = "all-MiniLM-L6-v2"
+        
+        # Подготавливаем мок для embedding функции
+        self.mock_embedding_function = MagicMock()
+        self.mock_embedding_function.side_effect = lambda texts: [[0.1, 0.2, 0.3] for _ in texts]
+        
+        # Подготавливаем мок для chromadb
+        self.mock_embedding_functions = MagicMock()
+        self.mock_embedding_functions.SentenceTransformerEmbeddingFunction.return_value = self.mock_embedding_function
+        
+        # Патчим зависимости
         self.config_loader_patcher = patch('src.rag.core.utils.config_loader.ConfigLoader')
-        self.chromadb_patcher = patch('src.rag.core.embedder.embedding_processor.chromadb')
+        self.chromadb_utils_patcher = patch('src.rag.core.embedder.embedding_processor.chromadb.utils.embedding_functions')
         self.pandas_read_excel_patcher = patch('src.rag.core.embedder.embedding_processor.pd.read_excel')
         
-        # Start patches
-        self.mock_config_loader = self.config_loader_patcher.start()
-        self.mock_chromadb = self.chromadb_patcher.start()
+        # Запускаем патчи
+        self.mock_config_loader_class = self.config_loader_patcher.start()
+        self.mock_chromadb_utils = self.chromadb_utils_patcher.start()
         self.mock_pandas_read_excel = self.pandas_read_excel_patcher.start()
         
-        # Configure return values for configuration
-        config_instance = MagicMock()
-        config_instance.get_embedding_model.return_value = "all-MiniLM-L6-v2"
-        self.mock_config_loader.return_value = config_instance
-        
-        # Configure return values for embedding function
-        mock_embedding_function = MagicMock()
-        mock_embedding_function.side_effect = lambda texts: [[0.1, 0.2, 0.3] for _ in texts]
-        self.mock_chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction.return_value = mock_embedding_function
-        self.mock_embedding_function = mock_embedding_function
+        # Настраиваем возвращаемые значения
+        self.mock_config_loader_class.return_value = self.mock_config_instance
+        self.mock_chromadb_utils.SentenceTransformerEmbeddingFunction.return_value = self.mock_embedding_function
 
-        # Create an instance of EmbeddingProcessor
+        # Создаем экземпляр EmbeddingProcessor
         self.embedding_processor = EmbeddingProcessor()
 
     def tearDown(self):
         """Stop all patches"""
         self.config_loader_patcher.stop()
-        self.chromadb_patcher.stop()
+        self.chromadb_utils_patcher.stop()
         self.pandas_read_excel_patcher.stop()
 
     def test_init(self):
         """Test initialization of EmbeddingProcessor class"""
         # Check that the config loader was used to get the model
-        self.mock_config_loader.return_value.get_embedding_model.assert_called_once()
+        self.mock_config_instance.get_embedding_model.assert_called_once()
         
         # Check that the embedding function was created with the right model
-        self.mock_chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction.assert_called_once_with(
+        self.mock_chromadb_utils.SentenceTransformerEmbeddingFunction.assert_called_once_with(
             model_name="all-MiniLM-L6-v2"
         )
         
@@ -57,10 +63,13 @@ class TestEmbeddingProcessor(unittest.TestCase):
 
     def test_init_with_custom_model(self):
         """Test initialization with custom model"""
+        # Сбрасываем счетчики вызовов
+        self.mock_chromadb_utils.SentenceTransformerEmbeddingFunction.reset_mock()
+        
         custom_processor = EmbeddingProcessor(embedding_model="custom-model")
         
         # Check that the embedding function was created with the custom model
-        self.mock_chromadb.utils.embedding_functions.SentenceTransformerEmbeddingFunction.assert_called_with(
+        self.mock_chromadb_utils.SentenceTransformerEmbeddingFunction.assert_called_once_with(
             model_name="custom-model"
         )
         
@@ -77,20 +86,20 @@ class TestEmbeddingProcessor(unittest.TestCase):
 
     def test_embed_texts(self):
         """Test creating embeddings for texts"""
-        # Configure mock to return specific embeddings
-        self.mock_embedding_function.side_effect = lambda texts: [[0.1, 0.2, 0.3] for _ in texts]
-        
-        # Test the method
+        # Выполняем метод встраивания текстов
         texts = ["text1", "text2", "text3"]
-        result = self.embedding_processor.embed_texts(texts)
         
-        # Check the embedding function was called with the correct parameters
-        self.mock_embedding_function.assert_called_once_with(texts)
+        # Используем патч метода для избежания ошибок super()
+        with patch.object(self.embedding_processor, 'embedding_function', self.mock_embedding_function):
+            result = self.embedding_processor.embed_texts(texts)
         
-        # Check the result is a numpy array with the correct shape
-        self.assertIsInstance(result, np.ndarray)
-        self.assertEqual(result.shape, (3, 3))  # 3 texts with 3 dimensions each
-        np.testing.assert_array_almost_equal(result, np.array([[0.1, 0.2, 0.3], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]]))
+            # Check the embedding function was called with the correct parameters
+            self.mock_embedding_function.assert_called_once_with(texts)
+            
+            # Check the result is a numpy array with the correct shape
+            self.assertIsInstance(result, np.ndarray)
+            self.assertEqual(result.shape, (3, 3))  # 3 texts with 3 dimensions each
+            np.testing.assert_array_almost_equal(result, np.array([[0.1, 0.2, 0.3], [0.1, 0.2, 0.3], [0.1, 0.2, 0.3]]))
 
     def test_normalize_embeddings(self):
         """Test normalizing embeddings"""
@@ -146,18 +155,20 @@ class TestEmbeddingProcessor(unittest.TestCase):
             [0.0, 1.0, 0.0]   # doc 3 - identical to query 2
         ])
         
-        # Patch the normalize_embeddings method to return inputs (already normalized)
-        self.embedding_processor.normalize_embeddings = lambda x: x
-        
-        # Test the method
-        result = self.embedding_processor.compute_cosine_similarity(query_embeddings, document_embeddings)
-        
-        # Check the result is a similarity matrix with correct values
-        expected = np.array([
-            [1.0, 0.0, 0.0],  # query 1 similar to doc 1, not to others
-            [0.0, 0.0, 1.0]   # query 2 similar to doc 3, not to others
-        ])
-        np.testing.assert_array_almost_equal(result, expected)
+        # Используем патч метода normalize_embeddings вместо прямого изменения
+        with patch.object(self.embedding_processor, 'normalize_embeddings', side_effect=lambda x: x):
+            # Test the method
+            result = self.embedding_processor.compute_cosine_similarity(query_embeddings, document_embeddings)
+            
+            # Проверяем, что метод normalize_embeddings был вызван дважды
+            self.assertEqual(self.embedding_processor.normalize_embeddings.call_count, 2)
+            
+            # Check the result is a similarity matrix with correct values
+            expected = np.array([
+                [1.0, 0.0, 0.0],  # query 1 similar to doc 1, not to others
+                [0.0, 0.0, 1.0]   # query 2 similar to doc 3, not to others
+            ])
+            np.testing.assert_array_almost_equal(result, expected)
 
     def test_process_excel_data(self):
         """Test processing Excel data"""

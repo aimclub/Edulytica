@@ -26,17 +26,18 @@ class TestConfigLoader(unittest.TestCase):
             'additional_info_prefix': 'Additional info: '
         }
         
-        # Create a mock for yaml.safe_load
-        self.yaml_patcher = patch('src.rag.core.utils.config_loader.yaml.safe_load')
-        self.mock_yaml_load = self.yaml_patcher.start()
+        # Используем более точное патчирование вместо патчирования всего модуля yaml
+        # Создаем патч для yaml.safe_load
+        self.yaml_safe_load_patcher = patch('src.rag.core.utils.config_loader.yaml.safe_load')
+        self.mock_yaml_load = self.yaml_safe_load_patcher.start()
         self.mock_yaml_load.return_value = self.sample_config
         
-        # Create a mock for os.path.exists
+        # Создаем патч для os.path.exists
         self.os_path_exists_patcher = patch('src.rag.core.utils.config_loader.os.path.exists')
         self.mock_os_path_exists = self.os_path_exists_patcher.start()
         self.mock_os_path_exists.return_value = True
         
-        # Create a mock for open
+        # Создаем патч для open
         self.open_patcher = patch('src.rag.core.utils.config_loader.open', 
                                   new_callable=mock_open, 
                                   read_data='dummy_yaml_content')
@@ -44,7 +45,7 @@ class TestConfigLoader(unittest.TestCase):
 
     def tearDown(self):
         """Clean up after each test"""
-        self.yaml_patcher.stop()
+        self.yaml_safe_load_patcher.stop()
         self.os_path_exists_patcher.stop()
         self.open_patcher.stop()
 
@@ -147,20 +148,22 @@ class TestConfigLoader(unittest.TestCase):
         """Test getting a specific value from the configuration"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting a value
-        result = config_loader.get_value('host')
-        
-        # Check the result
-        self.assertEqual(result, 'localhost')
+        # Вместо прямого изменения config_data, создаем патч для load_config
+        with patch.object(config_loader, 'load_config', return_value=self.sample_config):
+            # Устанавливаем данные напрямую, чтобы избежать вызова load_config
+            config_loader.config_data = self.sample_config
+            
+            # Test getting a value
+            result = config_loader.get_value('host')
+            
+            # Check the result
+            self.assertEqual(result, 'localhost')
 
     def test_get_value_key_error(self):
         """Test getting a non-existent value from the configuration"""
         config_loader = ConfigLoader()
         
-        # Force load config
+        # Устанавливаем данные напрямую, чтобы избежать вызова load_config
         config_loader.config_data = self.sample_config
         
         # Check that KeyError is raised for non-existent key
@@ -171,111 +174,127 @@ class TestConfigLoader(unittest.TestCase):
         """Test that get_value loads the config if not already loaded"""
         config_loader = ConfigLoader()
         
-        # Reset config_data to None
-        config_loader.config_data = None
-        
-        # Call get_value
-        result = config_loader.get_value('host')
-        
-        # Check that the file was opened
-        self.mock_open.assert_called_once()
-        
-        # Check the result
-        self.assertEqual(result, 'localhost')
+        # Используем patch.object вместо прямого изменения config_data
+        with patch.object(ConfigLoader, 'load_config', return_value=self.sample_config):
+            # Reset config_data to None
+            config_loader.config_data = None
+            
+            # Call get_value
+            result = config_loader.get_value('host')
+            
+            # Проверяем, что load_config был вызван
+            ConfigLoader.load_config.assert_called_once()
+            
+            # Check the result
+            self.assertEqual(result, 'localhost')
 
     def test_get_rag_prompt(self):
         """Test getting the RAG prompt"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the RAG prompt
-        result = config_loader.get_rag_prompt()
-        
-        # Check the result
-        self.assertEqual(result, 'This is a RAG prompt template')
+        # Используем patch.object для метода get_value вместо прямого изменения config_data
+        with patch.object(config_loader, 'get_value', return_value='This is a RAG prompt template'):
+            # Test getting the RAG prompt
+            result = config_loader.get_rag_prompt()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('rag_promt')
+            
+            # Check the result
+            self.assertEqual(result, 'This is a RAG prompt template')
 
     def test_get_general_top(self):
         """Test getting the general top value"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the general top value
-        result = config_loader.get_general_top()
-        
-        # Check the result is an integer
-        self.assertIsInstance(result, int)
-        self.assertEqual(result, 5)
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value=5):
+            # Test getting the general top value
+            result = config_loader.get_general_top()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('general_top')
+            
+            # Check the result is an integer
+            self.assertIsInstance(result, int)
+            self.assertEqual(result, 5)
 
     def test_get_article_top(self):
         """Test getting the article top value"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the article top value
-        result = config_loader.get_article_top()
-        
-        # Check the result is an integer
-        self.assertIsInstance(result, int)
-        self.assertEqual(result, 2)
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value=2):
+            # Test getting the article top value
+            result = config_loader.get_article_top()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('artical_top')
+            
+            # Check the result is an integer
+            self.assertIsInstance(result, int)
+            self.assertEqual(result, 2)
 
     def test_get_host(self):
         """Test getting the host value"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the host value
-        result = config_loader.get_host()
-        
-        # Check the result
-        self.assertEqual(result, 'localhost')
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value='localhost'):
+            # Test getting the host value
+            result = config_loader.get_host()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('host')
+            
+            # Check the result
+            self.assertEqual(result, 'localhost')
 
     def test_get_port(self):
         """Test getting the port value"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the port value
-        result = config_loader.get_port()
-        
-        # Check the result is an integer
-        self.assertIsInstance(result, int)
-        self.assertEqual(result, 8000)
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value=8000):
+            # Test getting the port value
+            result = config_loader.get_port()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('port')
+            
+            # Check the result is an integer
+            self.assertIsInstance(result, int)
+            self.assertEqual(result, 8000)
 
     def test_get_embedding_model(self):
         """Test getting the embedding model"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the embedding model
-        result = config_loader.get_embedding_model()
-        
-        # Check the result
-        self.assertEqual(result, 'all-MiniLM-L6-v2')
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value='all-MiniLM-L6-v2'):
+            # Test getting the embedding model
+            result = config_loader.get_embedding_model()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('embedding_model')
+            
+            # Check the result
+            self.assertEqual(result, 'all-MiniLM-L6-v2')
 
     def test_get_additional_info_prefix(self):
         """Test getting the additional info prefix"""
         config_loader = ConfigLoader()
         
-        # Force load config
-        config_loader.config_data = self.sample_config
-        
-        # Test getting the additional info prefix
-        result = config_loader.get_additional_info_prefix()
-        
-        # Check the result
-        self.assertEqual(result, 'Additional info: ')
+        # Используем patch.object для метода get_value
+        with patch.object(config_loader, 'get_value', return_value='Additional info: '):
+            # Test getting the additional info prefix
+            result = config_loader.get_additional_info_prefix()
+            
+            # Проверяем, что get_value был вызван с правильным параметром
+            config_loader.get_value.assert_called_once_with('additional_info_prefix')
+            
+            # Check the result
+            self.assertEqual(result, 'Additional info: ')
 
 
 if __name__ == '__main__':

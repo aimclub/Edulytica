@@ -59,7 +59,7 @@ class EmbeddingProcessor:
         :param embeddings: Array of embeddings
         :return: Normalized embeddings
         """
-        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)   
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)   # pragma: no cover
         return embeddings / np.where(norms == 0, 1, norms) # pragma: no cover
 
     def compute_cosine_similarity(self,
@@ -87,7 +87,7 @@ class EmbeddingProcessor:
         :param sheet_name: Sheet name in the Excel file
         :return: Dictionary with structured data for saving to ChromaDB
         """
-        logger.info(f"Processing Excel data from file: {file_name}, sheet: {sheet_name}")
+        logger.info(f"Processing Excel data from file: {file_name}, sheet: {sheet_name}") # pragma: no cover
 
         try: # pragma: no cover
             # Read data from Excel

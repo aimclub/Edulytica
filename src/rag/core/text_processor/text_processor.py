@@ -56,10 +56,10 @@ class TextProcessor:
         main_with_title, literature = self.extract_literature_section(text)
 
         # 3. Remove title from the beginning of main text if it repeats there
-        if main_with_title.startswith(title): # pragma: no cover
+        if main_with_title.startswith(title):  # pragma: no cover
             main_text = main_with_title[len(title):].strip()
         else:
-            main_text = main_with_title # pragma: no cover
+            main_text = main_with_title  # pragma: no cover
 
         # Return list of article parts
         chunks = [title, main_text, literature]

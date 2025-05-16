@@ -59,7 +59,7 @@ class TextProcessor:
         if main_with_title.startswith(title):
             main_text = main_with_title[len(title):].strip()
         else:
-            main_text = main_with_title # pragma: no cover
+            main_text = main_with_title  # pragma: no cover
 
         # Return list of article parts
         chunks = [title, main_text, literature]

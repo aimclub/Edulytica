@@ -72,7 +72,7 @@ class RAGPipeline:
 
         :return: List of specific information
         """
-        return self.event_specifics.find_specifics( # pragma: no cover
+        return self.event_specifics.find_specifics(  # pragma: no cover
             collection_name=conference_name,
             chunks=[self.rag_prompt],
             top_k=self.general_top,

@@ -16,8 +16,8 @@ class EventSpecifics:
         :param embedding_processor: Embedding processor instance
         :param chroma_manager: ChromaDB manager instance
         """
-        self.embedding_processor = embedding_processor # pragma: no cover
-        self.chroma_manager = chroma_manager # pragma: no cover
+        self.embedding_processor = embedding_processor  # pragma: no cover
+        self.chroma_manager = chroma_manager  # pragma: no cover
 
     def find_specifics(
         self,

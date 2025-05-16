@@ -5,123 +5,94 @@ import {
   validateRepeatPassword,
   validateAuthorizationName,
   validateAuthorizationPassword,
-  validateUserCredentials,
 } from "../src/utils/validation/validationUtils"
 
 describe("validateEmail", () => {
-  test("должен вернуть ошибку, если email пустой", () => {
-    expect(validateEmail("")).toBe("* Обязательное поле")
-  })
-
-  test("должен вернуть ошибку, если email некорректный", () => {
-    expect(validateEmail("not-an-email")).toBe("* Некорректный email")
-  })
-
-  test("валидный email не должен возвращать ошибку", () => {
+  test("should return null for valid email", () => {
     expect(validateEmail("test@example.com")).toBeNull()
+    expect(validateEmail("user.name@domain.co.uk")).toBeNull()
+    expect(validateEmail("user+tag@example.com")).toBeNull()
+  })
+
+  test("should return error message for invalid email", () => {
+    expect(validateEmail("")).toBe("* Обязательное поле")
+    expect(validateEmail("test@")).toBe("* Некорректный email")
+    expect(validateEmail("test@example")).toBe("* Некорректный email")
+    expect(validateEmail("test@.com")).toBe("* Некорректный email")
+    expect(validateEmail("@example.com")).toBe("* Некорректный email")
   })
 })
 
 describe("validateLogin", () => {
-  const users = [{ login: "fedorova_23" }]
-
-  test("должен вернуть ошибку, если логин пустой", () => {
-    expect(validateLogin("", users)).toBe("* Обязательное поле")
+  test("should return null for valid login", () => {
+    expect(validateLogin("username")).toBeNull()
+    expect(validateLogin("user123")).toBeNull()
+    expect(validateLogin("user_name")).toBeNull()
+    expect(validateLogin("user-name")).toBeNull()
   })
 
-  test("должен вернуть ошибку, если логин слишком короткий", () => {
-    expect(validateLogin("ab", users)).toBe("* Логин слишком короткий")
-  })
-
-  test("должен вернуть ошибку, если логин уже занят", () => {
-    expect(validateLogin("fedorova_23", users)).toBe("* Этот логин уже занят")
-  })
-
-  test("валидный логин не должен возвращать ошибку", () => {
-    expect(validateLogin("newUser", users)).toBeNull()
+  test("should return error message for invalid login", () => {
+    expect(validateLogin("")).toBe("* Обязательное поле")
+    expect(validateLogin("ab")).toBe("* Логин слишком короткий")
   })
 })
 
 describe("validatePassword", () => {
-  test("должен вернуть ошибку, если пароль пустой", () => {
+  test("should return null for valid password", () => {
+    expect(validatePassword("Password1")).toBeNull()
+    expect(validatePassword("Пароль123")).toBeNull()
+  })
+
+  test("should return error message for invalid password", () => {
     expect(validatePassword("")).toBe("* Обязательное поле")
-  })
-
-  test("должен вернуть ошибку, если пароль короче 8 символов", () => {
-    expect(validatePassword("Abc123")).toBe("* Минимум 8 символов")
-  })
-
-  test("должен вернуть ошибку, если нет цифры", () => {
-    expect(validatePassword("Password")).toBe(
+    expect(validatePassword("short")).toBe("* Минимум 8 символов")
+    expect(validatePassword("longbutnodigit")).toBe(
       "* Пароль должен содержать хотя бы одну цифру"
     )
-  })
-
-  test("должен вернуть ошибку, если нет буквы", () => {
     expect(validatePassword("12345678")).toBe(
       "* Пароль должен содержать хотя бы одну букву"
     )
   })
-
-  test("валидный пароль не должен возвращать ошибку", () => {
-    expect(validatePassword("Pass1234")).toBeNull()
-  })
 })
 
 describe("validateRepeatPassword", () => {
-  test("должен вернуть ошибку, если поле повтора пустое", () => {
-    expect(validateRepeatPassword("password", "")).toBe("* Обязательное поле")
+  test("should return null when passwords match", () => {
+    expect(validateRepeatPassword("Password123", "Password123")).toBeNull()
   })
 
-  test("должен вернуть ошибку, если пароли не совпадают", () => {
-    expect(validateRepeatPassword("password1", "password2")).toBe(
-      "* Пароли не совпадают"
+  test("should return error message when repeat password is empty", () => {
+    expect(validateRepeatPassword("Password123", "")).toBe(
+      "* Обязательное поле"
     )
   })
 
-  test("совпадающие пароли не должны возвращать ошибку", () => {
-    expect(validateRepeatPassword("password", "password")).toBeNull()
+  test("should return error message when passwords don't match", () => {
+    expect(validateRepeatPassword("Password123", "Password321")).toBe(
+      "* Пароли не совпадают"
+    )
   })
 })
 
 describe("validateAuthorizationName", () => {
-  test("должен вернуть ошибку, если логин пустой", () => {
-    expect(validateAuthorizationName("   ")).toBe("* Введите логин")
+  test("should return null for valid input", () => {
+    expect(validateAuthorizationName("username")).toBeNull()
+    expect(validateAuthorizationName("test@example.com")).toBeNull()
   })
 
-  test("валидный логин не должен возвращать ошибку", () => {
-    expect(validateAuthorizationName("admin")).toBeNull()
+  test("should return error message for empty input", () => {
+    expect(validateAuthorizationName("")).toBe("* Введите логин")
+    expect(validateAuthorizationName("   ")).toBe("* Введите логин")
   })
 })
 
 describe("validateAuthorizationPassword", () => {
-  test("должен вернуть ошибку, если пароль пустой", () => {
-    expect(validateAuthorizationPassword("  ")).toBe("* Введите пароль")
+  test("should return null for valid password", () => {
+    expect(validateAuthorizationPassword("somepassword")).toBeNull()
+    expect(validateAuthorizationPassword("P@ssw0rd")).toBeNull()
   })
 
-  test("валидный пароль не должен возвращать ошибку", () => {
-    expect(validateAuthorizationPassword("secret23")).toBeNull()
-  })
-})
-
-describe("validateUserCredentials", () => {
-  const users = [
-    { login: "admin", email: "admin@example.com", password: "12345678" },
-  ]
-
-  test("должен вернуть ошибку при неверных данных", () => {
-    expect(validateUserCredentials("wrong", "wrong", users)).toBe(
-      "* Неверный логин или пароль"
-    )
-  })
-
-  test("валидный логин и пароль не должны возвращать ошибку", () => {
-    expect(validateUserCredentials("admin", "12345678", users)).toBeNull()
-  })
-
-  test("валидный email и пароль не должны возвращать ошибку", () => {
-    expect(
-      validateUserCredentials("admin@example.com", "12345678", users)
-    ).toBeNull()
+  test("should return error message for empty password", () => {
+    expect(validateAuthorizationPassword("")).toBe("* Введите пароль")
+    expect(validateAuthorizationPassword("   ")).toBe("* Введите пароль")
   })
 })

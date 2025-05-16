@@ -1,27 +1,39 @@
 import { Link } from "react-router-dom"
 import "./profileModal.scss"
 import { useEffect } from "react"
+import { authService } from "../../services/auth.service"
+
 /**
  * @param {object} props - Объект с пропсами компонента.
- * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя.
+ * @param {function} props.setProfileModal - Функция для закрытия модального окна профиля.
+ * @param {function} props.setEditingProfileModal - Функция для открытия модального окна редактирования профиля.
+ * @param {object} props.infoProfile - Информация о профиле пользователя.
  * @returns {JSX.Element} Модальное окно профиля.
  */
 
 export const ProfileModal = ({
-  setAuthorized,
   setProfileModal,
   setEditingProfileModal,
   infoProfile,
 }) => {
-  const handleLogOut = () => {
-    setAuthorized(false)
-    setProfileModal(false)
+  //Выход из аккаунта
+  const logoutHandler = async () => {
+    try {
+      await authService.logout()
+      setProfileModal(false)
+    } catch (error) {
+      console.error("Logout failed:", error)
+    }
   }
+
+  //Открытие модального окна редактирования профиля
   const openEditingProfileModal = () => {
     setEditingProfileModal(true)
     setProfileModal(false)
   }
+
   useEffect(() => {}, [infoProfile])
+
   return (
     <div className="profileModal">
       <div
@@ -68,7 +80,7 @@ export const ProfileModal = ({
             paddingLeft: "13px",
             cursor: "pointer",
           }}
-          onClick={handleLogOut}
+          onClick={logoutHandler}
         >
           Выйти из аккаунта
         </div>

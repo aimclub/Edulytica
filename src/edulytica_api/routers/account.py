@@ -156,6 +156,7 @@ async def ticket_history(
             detail=f'500 ERR: {_e}'
         )
 
+
 @api_logs(account_router.get("/get_account"))
 async def get_account(
     auth_data: dict = Depends(access_token_auth)

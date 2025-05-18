@@ -1,6 +1,6 @@
 import $api from "../api/axios.api"
 import store from "../store/store"
-import { loginUser, logoutUser } from "../store/authSlice"
+import { loginUser, logoutUser, fetchUserData } from "../store/authSlice"
 
 /**
  * @typedef {Object} LoginCredentials
@@ -30,8 +30,14 @@ class AuthService {
    */
   async login(credentials) {
     try {
+      console.log("Logging in...")
       const response = await $api.post("/auth/login", credentials)
       store.dispatch(loginUser({ token: response.data.access_token }))
+
+      // Получаем данные пользователя после успешного входа
+      console.log("Login successful, fetching user data...")
+      await store.dispatch(fetchUserData())
+
       return response.data
     } catch (error) {
       console.error("Login error:", error)
@@ -62,7 +68,14 @@ class AuthService {
    */
   async checkCode(code) {
     try {
+      console.log("Checking registration code...")
       const response = await $api.post("/auth/check_code", { code })
+      store.dispatch(loginUser({ token: response.data.access_token }))
+
+      // Получаем данные пользователя после успешной регистрации
+      console.log("Registration successful, fetching user data...")
+      await store.dispatch(fetchUserData())
+
       return response.data
     } catch (error) {
       console.error("Code verification error:", error)

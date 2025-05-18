@@ -8,6 +8,8 @@ import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
+import { useSelector, useDispatch } from "react-redux"
+import { fetchUserData } from "../../store/authSlice"
 
 /**
  *  * Компонент страницы аккаунта пользователя.
@@ -30,28 +32,56 @@ export const Account = ({
   setAccountSection,
   isAuth,
 }) => {
+  const dispatch = useDispatch()
   const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
   const [fileResult, setFileResult] = useState("")
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)
+
+  // Получаем данные пользователя из Redux store
+  const userData = useSelector((state) => state.auth.currentUser)
+  console.log("Current user data from Redux:", userData)
+
+  // Fetch account data when component mounts
+  useEffect(() => {
+    dispatch(fetchUserData())
+  }, [dispatch])
+
   const [infoProfile, setInfoProfile] = useState({
-    name: "...",
-    surname: "...",
-    nick: "fedorova_m",
-    birthday: "...",
+    name: userData?.name || "...",
+    surname: userData?.surname || "...",
+    login: userData?.login || "...",
+    organization: userData?.organization || "...",
   })
+
+  // Обновляем infoProfile при изменении данных пользователя
+  useEffect(() => {
+    console.log("User data changed, updating infoProfile:", userData)
+    if (userData) {
+      setInfoProfile({
+        name: userData.name || "...",
+        surname: userData.surname || "...",
+        login: userData.login || "...",
+        organization: userData.organization || "...",
+      })
+    }
+  }, [userData])
+
   const [event, setEvent] = useState([
     { name: "ППС", info: "Это описание мероприятия ППС" },
     { name: "КМУ", info: "Это описание мероприятия КМУ" },
   ])
   const [key, setKey] = useState(0)
+
   useEffect(() => {
     console.log(event)
   }, [event])
+
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
   }, [accountSection])
+
   useEffect(() => {
     if (addEventModal) {
       setTimeout(() => setEditingProfileAnimation(true), 10)

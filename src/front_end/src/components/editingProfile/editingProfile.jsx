@@ -32,9 +32,12 @@ export const EditingProfile = ({
     console.log("Обновленный профиль:", localProfile)
   }
 
+  /**
+   * Обработчик отправки формы редактирования профиля.
+   * Отправляет обновленные данные профиля на сервер и обновляет локальное состояние.
+   */
   const handleEditingProfileModal = async () => {
     try {
-      // Отправляем только нужные поля
       const payload = {
         name: localProfile.name,
         surname: localProfile.surname,
@@ -46,10 +49,14 @@ export const EditingProfile = ({
       setEditingProfileModal(false)
     } catch (error) {
       console.error("Ошибка при обновлении профиля:", error)
-      // Можно добавить отображение ошибки пользователю
     }
   }
 
+  /**
+   * Валидация формы сброса пароля.
+   * Проверяет корректность введенных паролей и возвращает ошибки валидации.
+   * @returns {Object} Объект с ошибками валидации или пустой объект, если ошибок нет.
+   */
   const validatePasswordForm = () => {
     const newErrors = {
       oldPassword: validatePassword(oldPassword),
@@ -63,6 +70,11 @@ export const EditingProfile = ({
     return Object.keys(newErrors).length === 0
   }
 
+  /**
+   * Обработчик сброса пароля.
+   * Валидирует введенные данные и отправляет их на сервер для сброса пароля.
+   * Обновляет локальное состояние и закрывает модальное окно.
+   */
   const handlePasswordReset = async () => {
     if (!validatePasswordForm()) return
     try {

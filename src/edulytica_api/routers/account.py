@@ -155,3 +155,32 @@ async def ticket_history(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
         )
+
+@api_logs(account_router.get("/get_account"))
+async def get_account(
+    auth_data: dict = Depends(access_token_auth)
+):
+    """
+    Retrieves basic information about the authenticated user.
+
+    This endpoint returns the user data extracted from the JWT access token,
+    which typically includes user ID, email, roles, and other metadata.
+
+    Args:
+        auth_data (dict): Contains the authenticated user's data from the access token.
+
+    Returns:
+        dict: A dictionary containing user information.
+
+    Raises:
+        HTTPException: If token is invalid or any unexpected error occurs.
+    """
+    try:
+        return auth_data['user']
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(
+            status_code=500,
+            detail=f"500 ERR: {_e}"
+        )

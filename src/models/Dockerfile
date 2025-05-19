@@ -13,4 +13,4 @@ ENV PYTHONPATH=/app
 COPY . .
 COPY src/common /app/src/common
 
-CMD ["uvicorn", "src.models.app:app", "--host", "0.0.0.0", "--port", "10000"]
+CMD ["python", "src/models/kafka_worker.py"]

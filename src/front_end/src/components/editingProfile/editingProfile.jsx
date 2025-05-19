@@ -19,13 +19,21 @@ export const EditingProfile = ({
   const [newPassword2, setNewPassword2] = useState("")
   const [passwordErrors, setPasswordErrors] = useState({})
 
-  // Fetch profile data when component mounts
-
-  // Update local profile when infoProfile changes
+  /**
+   * Обновляет локальное состояние при изменении infoProfile.
+   */
   useEffect(() => {
     setLocalProfile(infoProfile)
   }, [infoProfile])
 
+  /**
+   * Обработчик изменения полей формы редактирования профиля.
+   * Обновляет локальное состояние профиля при вводе данных.
+   *
+   * @param {Event} e - Событие изменения поля ввода
+   * @param {string} e.target.name - Имя поля (name, surname, organization)
+   * @param {string} e.target.value - Новое значение поля
+   */
   const handleChangeInfo = (e) => {
     const { name, value } = e.target
     setLocalProfile((prev) => ({ ...prev, [name]: value }))

@@ -7,14 +7,25 @@ import { validateToken } from "./utils/validateToken"
 
 function App() {
   const isAuth = useSelector((state) => state.auth.isAuth)
-  const [accountModal, setAccountModal] = useState(false)
-  const [profileModal, setProfileModal] = useState(false)
+
+  /**
+   * Контролирует видимость модального левого окна с историей файлов
+   */
+  const [accountModal, setAccountModal] = useState(true)
   const [accountSection, setAccountSection] = useState("main")
 
+  /**
+   * Контролирует видимость модального окна профиля
+   */
+  const [profileModal, setProfileModal] = useState(false)
+
   useEffect(() => {
+    // Проверяем токен при загрузке приложения
     validateToken()
   }, [])
+
   useEffect(() => {}, [isAuth])
+
   return (
     <BrowserRouter>
       <AppRoutes

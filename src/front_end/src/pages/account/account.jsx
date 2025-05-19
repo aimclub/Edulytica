@@ -43,7 +43,6 @@ export const Account = ({
   const userData = useSelector((state) => state.auth.currentUser)
   console.log("Current user data from Redux:", userData)
 
-  // Fetch account data when component mounts
   useEffect(() => {
     dispatch(fetchUserData())
   }, [dispatch])

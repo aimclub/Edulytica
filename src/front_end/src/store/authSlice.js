@@ -2,48 +2,59 @@ import { createSlice } from "@reduxjs/toolkit"
 
 /**
  * @typedef {Object} AuthState
- * @property {User[]} users - Массив зарегистрированных пользователей
  * @property {User|null} currentUser - Текущий авторизованный пользователь или null
+ * @property {boolean} isAuth - Флаг авторизации
+ * @property {string|null} token - Токен авторизации
  */
 
-/** @type {AuthState} */
-const initialState = {
-  users: [
-    {
-      login: "fedorova",
-      email: "maryfedorova2309@mail.ru",
-      password: "Masha2309",
-    },
-    {
-      login: "fedorova_m",
-      email: "maryfedorova2309@gmail.com",
-      password: "Masha2309",
-    },
-  ],
-  currentUser: null,
+// Получаем начальное состояние из localStorage или используем дефолтное
+const getInitialState = () => {
+  const savedState = localStorage.getItem("authState")
+  if (savedState) {
+    try {
+      return JSON.parse(savedState)
+    } catch (e) {
+      console.error("Failed to parse saved auth state:", e)
+    }
+  }
+  return {
+    currentUser: null,
+    isAuth: false,
+    token: null,
+  }
 }
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: getInitialState(),
   reducers: {
-    registerUser: (state, action) => {
-      /**
-       * Регистрирует нового пользователя и добавляет его в список пользователей.
-       * @param {AuthState} state - Текущее состояние auth-среза
-       * @param {{ payload: User }} action - Действие с данными пользователя
-       */
-      state.users.push({
-        login: action.payload.login,
-        email: action.payload.email,
-        password: action.payload.password,
-      })
-    },
     loginUser: (state, action) => {
-      state.currentUser = action.payload
+      state.currentUser = action.payload.user || state.currentUser
+      state.isAuth = true
+      state.token = action.payload.token
+      // Сохраняем состояние в localStorage
+      localStorage.setItem("authState", JSON.stringify(state))
+    },
+    logoutUser: (state) => {
+      // Очищаем состояние
+      state.currentUser = null
+      state.isAuth = false
+      state.token = null
+
+      // Очищаем localStorage
+      try {
+        localStorage.removeItem("authState")
+      } catch (error) {
+        console.error("Error clearing localStorage:", error)
+      }
+    },
+    updateToken: (state, action) => {
+      state.token = action.payload
+      // Обновляем состояние в localStorage
+      localStorage.setItem("authState", JSON.stringify(state))
     },
   },
 })
 
-export const { registerUser, loginUser } = authSlice.actions
+export const { loginUser, logoutUser, updateToken } = authSlice.actions
 export default authSlice.reducer

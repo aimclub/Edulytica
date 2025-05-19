@@ -4,16 +4,15 @@ import "./home.scss"
 import { motion } from "framer-motion"
 /**
  * @param {object} props - Объект с пропсами компонента
- * @param {boolean} props.authorized - Флаг, указывающий, авторизован ли пользователь
- * @param {function} props.setAuthorized - Функция для установки значения авторизации пользователя
+ * @param {boolean} props.isAuth - Флаг, указывающий, авторизован ли пользователь
  * @returns {JSX.Element} Главная страница в неавторизированном состоянии
  */
 
-export const Home = ({ authorized, setAuthorized }) => {
-  useEffect(() => {}, [authorized])
+export const Home = ({ isAuth }) => {
+  useEffect(() => {}, [isAuth])
   return (
     <div className="homePage">
-      <Header authorized={authorized} setAuthorized={setAuthorized} />
+      <Header isAuth={isAuth} />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

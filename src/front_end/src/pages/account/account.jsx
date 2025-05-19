@@ -8,6 +8,7 @@ import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
+
 /**
  *  * Компонент страницы аккаунта пользователя.
  * @param {object} props - Объект с пропсами компонента
@@ -15,7 +16,6 @@ import { AddEvent } from "../../components/addEvent/addEvent"
  * @param {function} props.setAccountModal - Функция для установки значения флага отображения модального окна аккаунта
  * @param {boolean} props.profileModal - Флаг, определяющий, отображается ли модальное окно профиля
  * @param {function} props.setProfileModal - Функция для установки значения флага отображения модального окна профиля
- * @param {function} props.setAuthorized - Функция для установки статуса авторизации пользователя
  * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result" и т. д.).
  * @param {function} props.setAccountSection - Функция для обновления текущей секции аккаунта.
  * @returns {JSX.Element} Страница аккаунта пользователя
@@ -26,9 +26,9 @@ export const Account = ({
   setAccountModal,
   profileModal,
   setProfileModal,
-  setAuthorized,
   accountSection,
   setAccountSection,
+  isAuth,
 }) => {
   const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
   const [fileResult, setFileResult] = useState("")
@@ -71,8 +71,7 @@ export const Account = ({
   return (
     <div className="accPage">
       <Header
-        authorized={true}
-        setAuthorized={null}
+        isAuth={isAuth}
         setAccountModal={setAccountModal}
         setProfileModal={setProfileModal}
       />
@@ -114,7 +113,6 @@ export const Account = ({
       <div className={`profileModalAccPage ${profileModal ? "visible" : ""}`}>
         {profileModal && (
           <ProfileModal
-            setAuthorized={setAuthorized}
             setProfileModal={setProfileModal}
             setEditingProfileModal={setEditingProfileModal}
             infoProfile={infoProfile}

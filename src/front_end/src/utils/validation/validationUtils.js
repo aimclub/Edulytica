@@ -5,12 +5,10 @@ export const validateEmail = (email) => {
   return null
 }
 
-export const validateLogin = (login, users) => {
+export const validateLogin = (login) => {
   const trimmed = login.trim()
   if (!trimmed) return "* Обязательное поле"
   if (trimmed.length < 3) return "* Логин слишком короткий"
-  if (users.some((user) => user.login === trimmed))
-    return "* Этот логин уже занят"
   return null
 }
 
@@ -40,12 +38,55 @@ export const validateAuthorizationPassword = (password) => {
   return null
 }
 
-export const validateUserCredentials = (name, password, users) => {
-  const user = users.find(
-    (user) =>
-      (user.login === name || user.email === name) && user.password === password
-  )
-  if (!user && name.trim() && password.trim())
-    return "* Неверный логин или пароль"
-  return null
+//Валидация ошибок от сервера
+const ERROR_TYPES = {
+  EMAIL_EXISTS: "User with such email already exists",
+  LOGIN_EXISTS: "User with such login already exists",
+  PASSWORDS_NOT_MATCH: "Passwords are not equal",
+  INVALID_CREDENTIALS: "Credentials are incorrect",
+  INVALID_CODE: "Wrong code",
+}
+
+export const validateBackend = (err) => {
+  switch (err) {
+    case ERROR_TYPES.EMAIL_EXISTS:
+      return {
+        email: "* Пользователь с такой почтой уже существует",
+        login: null,
+        password: null,
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.LOGIN_EXISTS:
+      return {
+        email: null,
+        login: "* Пользователь с таким логином уже существует",
+        password: null,
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.PASSWORDS_NOT_MATCH:
+      return {
+        email: null,
+        login: null,
+        password: "* Пароли не совпадают",
+        repeatPassword: null,
+      }
+
+    case ERROR_TYPES.INVALID_CREDENTIALS:
+      return {
+        name: "* Неверный логин или пароль",
+        password: null,
+      }
+
+    case ERROR_TYPES.INVALID_CODE:
+      return {
+        name: "* Неверный пароль",
+      }
+
+    default:
+      return {
+        general: "* Произошла неизвестная ошибка",
+      }
+  }
 }

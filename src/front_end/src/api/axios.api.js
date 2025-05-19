@@ -18,4 +18,23 @@ const $api = axios.create({
   },
 })
 
+/**
+ * Интерцептор запросов для автоматического добавления токена авторизации.
+ */
+$api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("authState")
+      ? JSON.parse(localStorage.getItem("authState")).token
+      : null
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  }
+)
+
 export default $api

@@ -17,6 +17,7 @@ consumer = Consumer({
 })
 
 consumer.subscribe([KAFKA_INCOMING_TOPIC])
+# TODO: Разделить на 2 контейнера (Для Summary модели и для Result)
 
 
 async def process_ticket(message_data: dict):

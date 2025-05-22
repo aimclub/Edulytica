@@ -1,9 +1,10 @@
-from src.LLM import IModel
+from src.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
-from src.LLM import DEFAULT_SYSTEM_PROMPT
+from src.llm import DEFAULT_SYSTEM_PROMPT
+from src.exeptions.llm.quantization_exeption import QuantizationExeption
 
 
-class Model_instruct(IModel):
+class ModelInstruct(IModel):
     def __init__(
             self,
             model_name,
@@ -24,6 +25,8 @@ class Model_instruct(IModel):
                 load_in_4bit=True,
                 bnb_4bit_quant_type=bnb_4bit_quant_type,
                 bnb_4bit_use_double_quant=bnb_4bit_use_double_quant)
+        elif quantization is not None:
+            raise QuantizationExeption
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
                                                           quantization_config=bnb_config)
         self.device = self.model.device

@@ -1,14 +1,14 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
-from src.LLM import Model_instruct
-from src.LLM import DEFAULT_SYSTEM_PROMPT
+from src.llm import ModelInstruct
+from src.llm import DEFAULT_SYSTEM_PROMPT
 
 
-class Qwen2_5_instruct(Model_instruct):
-    """Class for Qwen2.5 instruct usage. For inference using huggingface transformers"""
+class VikhrNemoInstruct(ModelInstruct):
+    """Class for Vikhr-Nemo instruct usage. For inference using huggingface transformers"""
 
     def __init__(
             self,
-            model_name="RefalMachine/ruadapt_qwen2.5_7B_ext_u48_instruct",
+            model_name="Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24",
             chat_template=None,
             system_prompt=DEFAULT_SYSTEM_PROMPT,
             device_map="auto",

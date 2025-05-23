@@ -33,7 +33,7 @@ export const Account = ({
   isAuth,
 }) => {
   const dispatch = useDispatch()
-  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения файла и мероприятия
+  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения параметров при отправки документа
   const [fileResult, setFileResult] = useState("")
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)

@@ -1,12 +1,24 @@
 import asyncio
 import json
+import os
 import uuid
 from confluent_kafka import Consumer, KafkaError
-from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID, KAFKA_INCOMING_TOPIC
+from dotenv import load_dotenv
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.common.database.database import get_session
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.utils.default_enums import TicketStatusDefault
+
+
+load_dotenv()
+LLM_ROLE = os.environ.get("LLM_ROLE")
+if LLM_ROLE == 'summary':
+    KAFKA_INCOMING_TOPIC = os.environ.get("KAFKA_SUMMARY_TOPIC")
+elif LLM_ROLE == 'result':
+    KAFKA_INCOMING_TOPIC = os.environ.get("KAFKA_RESULT_TOPIC")
+else:
+    KAFKA_INCOMING_TOPIC = "Unknown"
 
 
 consumer = Consumer({
@@ -17,7 +29,6 @@ consumer = Consumer({
 })
 
 consumer.subscribe([KAFKA_INCOMING_TOPIC])
-# TODO: Разделить на 2 контейнера (Для Summary модели и для Result)
 
 
 async def process_ticket(message_data: dict):
@@ -29,6 +40,7 @@ async def process_ticket(message_data: dict):
         print(f"[KafkaWorker] Ticket {ticket_id} -> IN_PROGRESS")
 
         # Заглушка, имитация обработки тикета, пока нет моделей
+        # Разделить логику summary и result, вынести по разным функциям
         await asyncio.sleep(15)
 
         status = await TicketStatusCrud.get_filtered_by_params(session=session, name=TicketStatusDefault.COMPLETED.value)

@@ -60,21 +60,45 @@ services:
     networks:
       - edulytica_network
 
-  edulytica_llm_models:
-    container_name: "EdulyticaLLM"
+  edulytica_llm_summary:
+    container_name: "EdulyticaSummary"
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
       - ./src/common:/app/src/common
+      - ./src/LLM:/app/src/LLM
     ports:
-      - "10000:10000"
+      - "10001:10001"
     depends_on:
       - kafka
       - edulytica_db
     env_file:
       - ./.env
+    environment:
+      - LLM_ROLE=summary
+    networks:
+      - edulytica_network
+
+  edulytica_llm_result:
+    container_name: "EdulyticaResult"
+    build:
+      context: .
+      dockerfile: ./src/models/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+      - ./src/LLM:/app/src/LLM
+    ports:
+      - "10002:10002"
+    depends_on:
+      - kafka
+      - edulytica_db
+    env_file:
+      - ./.env
+    environment:
+      - LLM_ROLE=result
     networks:
       - edulytica_network
 

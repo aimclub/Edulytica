@@ -1,6 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from routers.rag import rag_router
 
 
 app = FastAPI()
@@ -28,6 +29,9 @@ app.add_middleware(
         "Access-Control-Allow-Origin",
         "Authorization"],
 )
+
+
+app.include_router(rag_router)
 
 
 if __name__ == "__main__":

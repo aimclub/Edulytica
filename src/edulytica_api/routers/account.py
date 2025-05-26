@@ -1,3 +1,4 @@
+
 """
 This module defines user account-related API endpoints for editing profile information,
 changing passwords, and retrieving ticket history in a FastAPI application.
@@ -185,3 +186,4 @@ async def get_account(
             status_code=500,
             detail=f"500 ERR: {_e}"
         )
+

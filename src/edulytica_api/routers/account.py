@@ -186,4 +186,3 @@ async def get_account(
             status_code=500,
             detail=f"500 ERR: {_e}"
         )
-

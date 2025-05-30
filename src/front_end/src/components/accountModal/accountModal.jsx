@@ -20,8 +20,8 @@ export const AccountModal = ({
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
   const [tickets, setTickets] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState(null)
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 50)

@@ -1,5 +1,3 @@
-from uuid import uuid4
-
 from fastapi import APIRouter, Body, Query
 from src.common.utils.logger import api_logs
 from src.rag import RAGPipeline

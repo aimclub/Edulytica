@@ -60,8 +60,8 @@ services:
     networks:
       - edulytica_network
 
-  edulytica_llm_summary:
-    container_name: "EdulyticaSummary"
+  edulytica_llm_qwen:
+    container_name: "EdulyticaQwen"
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
@@ -77,12 +77,12 @@ services:
     env_file:
       - ./.env
     environment:
-      - LLM_ROLE=summary
+      - MODEL_TYPE=qwen
     networks:
       - edulytica_network
 
-  edulytica_llm_result:
-    container_name: "EdulyticaResult"
+  edulytica_llm_vikhr:
+    container_name: "EdulyticaVikhr"
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
@@ -98,7 +98,7 @@ services:
     env_file:
       - ./.env
     environment:
-      - LLM_ROLE=result
+      - MODEL_TYPE=vikhr
     networks:
       - edulytica_network
 

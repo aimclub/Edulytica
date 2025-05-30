@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react"
 import { Input } from "../../utils/input/input"
 import "./editingProfile.scss"
+import $api from "../../api/axios.api"
+import {
+  validatePassword,
+  validateBackend,
+} from "../../utils/validation/validationUtils"
+
 export const EditingProfile = ({
   setEditingProfileModal,
   infoProfile,
@@ -8,21 +14,94 @@ export const EditingProfile = ({
 }) => {
   const [openEditingProfileModal, setOpenEditingProfileModal] = useState("info")
   const [localProfile, setLocalProfile] = useState(infoProfile)
+  const [oldPassword, setOldPassword] = useState("")
+  const [newPassword1, setNewPassword1] = useState("")
+  const [newPassword2, setNewPassword2] = useState("")
+  const [passwordErrors, setPasswordErrors] = useState({})
+
+  /**
+   * Обновляет локальное состояние при изменении infoProfile.
+   */
+  useEffect(() => {
+    setLocalProfile(infoProfile)
+  }, [infoProfile])
+
+  /**
+   * Обработчик изменения полей формы редактирования профиля.
+   * Обновляет локальное состояние профиля при вводе данных.
+   *
+   * @param {Event} e - Событие изменения поля ввода
+   * @param {string} e.target.name - Имя поля (name, surname, organization)
+   * @param {string} e.target.value - Новое значение поля
+   */
   const handleChangeInfo = (e) => {
     const { name, value } = e.target
     setLocalProfile((prev) => ({ ...prev, [name]: value }))
     console.log("Обновленный профиль:", localProfile)
   }
 
-  useEffect(() => {
-    setLocalProfile(infoProfile)
-  }, [infoProfile])
-
-  const handleEditingProfileModal = () => {
-    setOpenEditingProfileModal("info")
-    setInfoProfile(localProfile)
-    setEditingProfileModal(false)
+  /**
+   * Обработчик отправки формы редактирования профиля.
+   * Отправляет обновленные данные профиля на сервер и обновляет локальное состояние.
+   */
+  const handleEditingProfileModal = async () => {
+    try {
+      const payload = {
+        name: localProfile.name,
+        surname: localProfile.surname,
+        organization: localProfile.organization,
+      }
+      await $api.post("/account/edit_profile", payload)
+      setOpenEditingProfileModal("info")
+      setInfoProfile(localProfile)
+      setEditingProfileModal(false)
+    } catch (error) {
+      console.error("Ошибка при обновлении профиля:", error)
+    }
   }
+
+  /**
+   * Валидация формы сброса пароля.
+   * Проверяет корректность введенных паролей и возвращает ошибки валидации.
+   * @returns {Object} Объект с ошибками валидации или пустой объект, если ошибок нет.
+   */
+  const validatePasswordForm = () => {
+    const newErrors = {
+      oldPassword: validatePassword(oldPassword),
+      newPassword1: validatePassword(newPassword1),
+      newPassword2: validatePassword(newPassword2),
+    }
+    Object.keys(newErrors).forEach(
+      (key) => newErrors[key] === null && delete newErrors[key]
+    )
+    setPasswordErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
+
+  /**
+   * Обработчик сброса пароля.
+   * Валидирует введенные данные и отправляет их на сервер для сброса пароля.
+   * Обновляет локальное состояние и закрывает модальное окно.
+   */
+  const handlePasswordReset = async () => {
+    if (!validatePasswordForm()) return
+    try {
+      await $api.post("/account/change_password", {
+        old_password: oldPassword,
+        new_password1: newPassword1,
+        new_password2: newPassword2,
+      })
+      setOpenEditingProfileModal("info")
+      setEditingProfileModal(false)
+    } catch (err) {
+      let backendErrors = {}
+      if (err?.response?.data?.detail) {
+        backendErrors = validateBackend(err.response.data.detail)
+      }
+      setPasswordErrors((prev) => ({ ...prev, ...backendErrors }))
+    }
+  }
+
   return (
     <div className="editingProfile">
       {openEditingProfileModal === "info" ? (
@@ -57,17 +136,17 @@ export const EditingProfile = ({
                 />
               </div>
               <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">Дата рождения</div>
+                <div className="titleInputEditingProfile">Организация</div>
                 <Input
                   type="text"
                   placeholder={
-                    infoProfile.birthday !== "..." &&
-                    infoProfile.birthday !== " "
-                      ? infoProfile.birthday
-                      : "Введите дату рождения..."
+                    infoProfile.organization !== "..." &&
+                    infoProfile.organization !== " "
+                      ? infoProfile.organization
+                      : "Введите вашу организацию..."
                   }
                   onChange={handleChangeInfo}
-                  name="birthday"
+                  name="organization"
                 />
               </div>
             </div>
@@ -142,13 +221,33 @@ export const EditingProfile = ({
             <div className="inputContainerEditingProfile">
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">Старый пароль</div>
-                <Input type="password" placeholder="Введите старый пароль..." />
+                <Input
+                  type="password"
+                  placeholder="Введите старый пароль..."
+                  value={oldPassword}
+                  onChange={(e) => setOldPassword(e.target.value)}
+                />
+                {passwordErrors.oldPassword && (
+                  <div className="errorTextEditingProfile">
+                    {passwordErrors.oldPassword}
+                  </div>
+                )}
               </div>
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">
                   Введите новый пароль
                 </div>
-                <Input type="password" placeholder="Введите новый пароль..." />
+                <Input
+                  type="password"
+                  placeholder="Введите новый пароль..."
+                  value={newPassword1}
+                  onChange={(e) => setNewPassword1(e.target.value)}
+                />
+                {passwordErrors.newPassword1 && (
+                  <div className="errorTextEditingProfile">
+                    {passwordErrors.newPassword1}
+                  </div>
+                )}
               </div>
               <div className="blockInputEditingProfile">
                 <div className="titleInputEditingProfile">
@@ -157,12 +256,19 @@ export const EditingProfile = ({
                 <Input
                   type="password"
                   placeholder="Введите повторно новый пароль..."
+                  value={newPassword2}
+                  onChange={(e) => setNewPassword2(e.target.value)}
                 />
+                {passwordErrors.newPassword2 && (
+                  <div className="errorTextEditingProfile">
+                    {passwordErrors.newPassword2}
+                  </div>
+                )}
               </div>
             </div>
             <div
               className="btnBottomEditingProfile"
-              onClick={handleEditingProfileModal}
+              onClick={handlePasswordReset}
             >
               <svg
                 width="18"

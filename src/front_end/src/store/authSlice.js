@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
+import $api from "../api/axios.api"
 
 /**
  * @typedef {Object} AuthState
@@ -53,8 +54,28 @@ const authSlice = createSlice({
       // Обновляем состояние в localStorage
       localStorage.setItem("authState", JSON.stringify(state))
     },
+    setUserData: (state, action) => {
+      state.currentUser = action.payload
+      // Обновляем состояние в localStorage
+      localStorage.setItem("authState", JSON.stringify(state))
+    },
   },
 })
 
-export const { loginUser, logoutUser, updateToken } = authSlice.actions
+// Thunk для получения данных пользователя
+export const fetchUserData = () => async (dispatch, getState) => {
+  try {
+    console.log("Fetching user data...")
+    const response = await $api.get("/account/get_account")
+    console.log("User data received:", response.data)
+    dispatch(setUserData(response.data))
+    return response.data
+  } catch (error) {
+    console.error("Error fetching user data:", error)
+    throw error
+  }
+}
+
+export const { loginUser, logoutUser, updateToken, setUserData } =
+  authSlice.actions
 export default authSlice.reducer

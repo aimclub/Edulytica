@@ -41,10 +41,13 @@ export const RegistrationForm = ({ registrationPage, isAuth }) => {
   //Вход в аккаунт
   const loginHandler = async () => {
     try {
-      const data = await authService.login({
-        login: authorization.name,
-        password: authorization.password,
-      })
+      const data = await authService.login(
+        {
+          login: authorization.name,
+          password: authorization.password,
+        },
+        dispatch
+      )
       if (data?.access_token) {
         localStorage.setItem("token", data.access_token)
         dispatch(
@@ -90,7 +93,7 @@ export const RegistrationForm = ({ registrationPage, isAuth }) => {
   //Проверка кода подтверждения
   const registration2Handler = async () => {
     try {
-      const data = await authService.checkCode(code)
+      const data = await authService.checkCode(code, dispatch)
       if (data) {
         dispatch(
           loginUser({

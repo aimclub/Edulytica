@@ -52,10 +52,10 @@ export const ProfileModal = ({
         <div className="infProfileModal">Имя: {infoProfile.name}</div>
         <div className="infProfileModal">Фамилия: {infoProfile.surname}</div>
         <div className="infProfileModal">
-          Имя пользователя: {infoProfile.nick}
+          Имя пользователя: {infoProfile.login}
         </div>
         <div className="infProfileModal">
-          Дата рождения: {infoProfile.birthday}
+          Организация: {infoProfile.organization}
         </div>
       </div>
       <div

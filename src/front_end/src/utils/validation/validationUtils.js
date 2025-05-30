@@ -45,48 +45,57 @@ const ERROR_TYPES = {
   PASSWORDS_NOT_MATCH: "Passwords are not equal",
   INVALID_CREDENTIALS: "Credentials are incorrect",
   INVALID_CODE: "Wrong code",
+  OLD_PASSWORD_INCORRECT: "Old password incorrect",
+  NEW_PASSWORDS_NOT_MATCH: "New passwords not equal",
 }
 
 export const validateBackend = (err) => {
-  switch (err) {
-    case ERROR_TYPES.EMAIL_EXISTS:
-      return {
-        email: "* Пользователь с такой почтой уже существует",
-        login: null,
-        password: null,
-        repeatPassword: null,
-      }
-
-    case ERROR_TYPES.LOGIN_EXISTS:
-      return {
-        email: null,
-        login: "* Пользователь с таким логином уже существует",
-        password: null,
-        repeatPassword: null,
-      }
-
-    case ERROR_TYPES.PASSWORDS_NOT_MATCH:
-      return {
-        email: null,
-        login: null,
-        password: "* Пароли не совпадают",
-        repeatPassword: null,
-      }
-
-    case ERROR_TYPES.INVALID_CREDENTIALS:
-      return {
-        name: "* Неверный логин или пароль",
-        password: null,
-      }
-
-    case ERROR_TYPES.INVALID_CODE:
-      return {
-        name: "* Неверный пароль",
-      }
-
-    default:
-      return {
-        general: "* Произошла неизвестная ошибка",
-      }
+  if (err === ERROR_TYPES.EMAIL_EXISTS) {
+    return {
+      email: "* Пользователь с такой почтой уже существует",
+      login: null,
+      password: null,
+      repeatPassword: null,
+    }
+  }
+  if (err === ERROR_TYPES.LOGIN_EXISTS) {
+    return {
+      email: null,
+      login: "* Пользователь с таким логином уже существует",
+      password: null,
+      repeatPassword: null,
+    }
+  }
+  if (err === ERROR_TYPES.PASSWORDS_NOT_MATCH) {
+    return {
+      email: null,
+      login: null,
+      password: "* Пароли не совпадают",
+      repeatPassword: null,
+    }
+  }
+  if (err === ERROR_TYPES.INVALID_CREDENTIALS) {
+    return {
+      name: "* Неверный логин или пароль",
+      password: null,
+    }
+  }
+  if (err === ERROR_TYPES.INVALID_CODE) {
+    return {
+      name: "* Неверный пароль",
+    }
+  }
+  if (err === ERROR_TYPES.OLD_PASSWORD_INCORRECT) {
+    return {
+      oldPassword: "* Неверный старый пароль",
+    }
+  }
+  if (err === ERROR_TYPES.NEW_PASSWORDS_NOT_MATCH) {
+    return {
+      newPassword1: "* Новые пароли не совпадают",
+    }
+  }
+  return {
+    general: "* Произошла неизвестная ошибка",
   }
 }

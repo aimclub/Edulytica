@@ -1,0 +1,15 @@
+# Chroma
+host: localhost
+port: 8080
+collections_file: all_collections.json
+embedding_model: BAAI/bge-m3
+
+#rag promt
+rag_promt: "общая информация о конференции, правила оформления статей, требования к структуре и форматированию, цели конференции"
+additional_info_prefix: "Дополнительная информация:"
+general_top: 3
+artical_top: 1
+
+
+
+

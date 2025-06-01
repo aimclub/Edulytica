@@ -23,7 +23,6 @@ services:
     depends_on:
       - edulytica_api
       - edulytica_auth
-      - edulytica_llm_models
       - edulytica_rag
 
   edulytica_api:

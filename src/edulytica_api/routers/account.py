@@ -1,4 +1,3 @@
-
 """
 This module defines user account-related API endpoints for editing profile information,
 changing passwords, and retrieving ticket history in a FastAPI application.

@@ -67,7 +67,7 @@ class CheckCodeModels:
         pass
 
 
-class TicketStatusModels:
+class TicketModels:
     class Create(_TicketCreate):
         pass
 
@@ -89,7 +89,7 @@ class TicketTypeModels:
         pass
 
 
-class TicketModels:
+class TicketStatusModels:
     class Create(_TicketStatusCreate):
         pass
 

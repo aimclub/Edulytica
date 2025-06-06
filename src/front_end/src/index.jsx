@@ -22,6 +22,7 @@ $api.interceptors.response.use(
   (response) => response,
   async (error) => {
     console.log("Interceptor caught error:", error.response?.status)
+    console.log("Interceptor caught error:", error.response?.data?.detail)
     const originalRequest = error.config
     if (error.response?.status === 401 && !originalRequest._retry) {
       console.log("Attempting to refresh token...")

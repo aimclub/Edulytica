@@ -1,29 +1,8 @@
 import { useEffect, useState } from "react"
 import "./accountModal.scss"
 import { Link } from "react-router-dom"
-const arr_history_file = [
-  "file1.pdf",
-  "file2.pdf",
-  "edulytica_PPS.pdf",
-  "itmo_stars.pdf",
-  "msha.pdf",
-  "file3.pdf",
-  "molotov_history_itmo.pdf",
-  "mas.pdf",
-  "kik_WB.pdf",
-  "file_math.pdf",
-  "file14.pdf",
-  "file2.pdf",
-  "itmo_file.pdf",
-  "file11.pdf",
-  "file100.pdf",
-  "file12.pdf",
-  "file13.pdf",
-  "file14.pdf",
-  "file15.pdf",
-  "file16.pdf",
-  "file17.pdf",
-]
+import { ticketService } from "../../services/ticket.service"
+
 /**
  *
  * @returns {JSX.Element} left modal window with user file history
@@ -38,30 +17,55 @@ export const AccountModal = ({
   setFileResult,
 }) => {
   const [searchTerm, setSearchTerm] = useState("")
-  const [filterHistory, setFilterHistory] = useState(arr_history_file)
+  const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
+  const [tickets, setTickets] = useState([])
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState(null)
 
   useEffect(() => {
-    setTimeout(() => setAnimate(true), 50) // небольшая задержка, чтобы сработал transition
+    setTimeout(() => setAnimate(true), 50)
   }, [])
 
   useEffect(() => {
     const filterData = () => {
       if (!searchTerm) {
-        setFilterHistory(arr_history_file)
+        setFilterHistory(tickets)
         return
       }
-      const results = arr_history_file.filter((item) => {
-        return item.toLowerCase().includes(searchTerm.toLowerCase())
+      const results = tickets.filter((ticket) => {
+        return ticket.document_id
+          ?.toLowerCase()
+          .includes(searchTerm.toLowerCase())
       })
       setFilterHistory(results)
     }
 
     filterData()
-  }, [searchTerm, filterHistory])
-  const handleFileLine = (file) => {
+  }, [searchTerm, tickets])
+
+  useEffect(() => {
+    const fetchTicketHistory = async () => {
+      setIsLoading(true)
+      setError(null)
+      try {
+        const ticketHistory = await ticketService.getTicketHistory()
+        setTickets(ticketHistory)
+        setFilterHistory(ticketHistory)
+      } catch (err) {
+        setError("Не удалось загрузить историю тикетов")
+        console.error("Error loading ticket history:", err)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchTicketHistory()
+  }, [])
+
+  const handleFileLine = (ticket) => {
     setAccountSection("result")
-    setFileResult(file)
+    setFileResult(ticket.document_id)
   }
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -154,17 +158,19 @@ export const AccountModal = ({
         </div>
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
-            {filterHistory.map((file, index) => (
+            {filterHistory.map((ticket) => (
               <Link
                 to="/account/result"
                 style={{ textDecoration: "none" }}
-                key={`${file}-${index}`}
+                key={ticket.id}
               >
                 <div
                   className="fileLineAccModal"
-                  onClick={() => handleFileLine(file)}
+                  onClick={() => handleFileLine(ticket)}
                 >
-                  <div className="fileAccModal">{truncateString(file, 16)}</div>
+                  <div className="fileAccModal">
+                    {truncateString(ticket.document_id || "Без названия", 16)}
+                  </div>
                   <svg
                     style={{ marginRight: "25px" }}
                     width="12"

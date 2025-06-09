@@ -4,25 +4,25 @@ import os
 import uuid
 from confluent_kafka import Consumer, KafkaError
 from dotenv import load_dotenv
-
-from src.LLM import Model_pipeline
-from src.LLM.qwen.Qwen2_5_instruct_pipeline import Qwen2_5_instruct_pipeline
-from src.LLM.vikhr.Vikhr_Nemo_instruct_pipeline import Vikhr_Nemo_instruct_pipeline
+from src.llm.model_pipeline import ModelPipeline
+from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
+from src.llm.vikhr.vikhr_nemo_instruct_pipeline import VikhrNemoInstructPipeline
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.common.database.database import get_session
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.utils.default_enums import TicketStatusDefault
 
+
 load_dotenv()
 MODEL_TYPE = os.environ.get("MODEL_TYPE")
 PREFIX = f'Kafka | ModelWorker: {MODEL_TYPE}'
-KAFKA_INCOMING_TOPIC = f'ticket.{MODEL_TYPE}_result'
-llm_model: Model_pipeline = None
+KAFKA_INCOMING_TOPIC = f'llm_tasks.{MODEL_TYPE}'
+llm_model: ModelPipeline = None
 if MODEL_TYPE == 'qwen':
-    llm_model = Qwen2_5_instruct_pipeline()
+    llm_model = QwenInstructPipeline()
 elif MODEL_TYPE == 'vikhr':
-    llm_model = Vikhr_Nemo_instruct_pipeline()
+    llm_model = VikhrNemoInstructPipeline()
 else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
 
@@ -34,9 +34,11 @@ consumer = Consumer({
     'enable.auto.commit': False
 })
 
-consumer.subscribe([KAFKA_INCOMING_TOPIC])
+# Подписываемся еще и на любые
+consumer.subscribe([KAFKA_INCOMING_TOPIC, "llm_tasks.any"])
 
 
+# TODO Переделать под сохранение результатов в Kafka
 async def process_ticket(message_data: dict):
     """
         Expected message format:

@@ -44,7 +44,7 @@ class ModelInstruct(IModel):
 
     def __call__(self, prompts: list, max_new_tokens=512):
         """Method for text generation by model.
-        Takes list of prompts and max new tokens and return list with model generated text"""
+        Takes list of prompts1 and max new tokens and return list with model generated text"""
         generation_config = GenerationConfig(max_new_tokens=max_new_tokens)
 
         texts = self.apply_chat_template(self.system_prompt, prompts)

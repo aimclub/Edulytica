@@ -14,6 +14,15 @@ services:
     networks:
       - edulytica_network
 
+  edulytica_redis:
+    container_name: "edulytica_redis"
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    networks:
+      - uraraka_network
+
   edulytica_gateway:
     image: nginx:1.27.4-alpine
     ports:

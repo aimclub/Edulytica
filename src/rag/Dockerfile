@@ -2,11 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY src/rag/api_requirements.txt .
+COPY src/rag/requirements.txt .
 COPY src/common/requirements_common.txt .
 
 RUN pip install -r requirements_common.txt
-RUN pip install -r api_requirements.txt
+RUN pip install -r requirements.txt
 
 ENV PYTHONPATH=/app
 

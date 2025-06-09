@@ -15,9 +15,9 @@ from src.edulytica_api.app import app
 @patch("src.edulytica_api.routers.actions.TicketTypeCrud.get_filtered_by_params")
 @patch("src.edulytica_api.routers.actions.TicketCrud.create")
 @patch("src.edulytica_api.routers.actions.get_structural_paragraphs")
-@patch("src.edulytica_api.routers.actions.get_llm_purpose_result.delay")
+@patch("src.edulytica_api.routers.actions.Producer")
 def test_new_ticket_success(
-    mock_llm_task,
+    mock_kafka_producer,
     mock_get_paragraphs,
     mock_ticket_create,
     mock_type,
@@ -36,10 +36,14 @@ def test_new_ticket_success(
     mock_status.return_value = [AsyncMock(id=1)]
     mock_type.return_value = [AsyncMock(id=1)]
     mock_ticket_create.return_value = AsyncMock(id=123)
+
     mock_get_paragraphs.return_value = {
         "table_of_content": [{"text": ["Intro"]}],
         "other_text": ["Main"]
     }
+
+    mock_producer_instance = MagicMock()
+    mock_kafka_producer.return_value = mock_producer_instance
 
     file_content = b"dummy file content"
     response = client(app).post(
@@ -50,6 +54,9 @@ def test_new_ticket_success(
 
     assert response.status_code == 200
     assert "ticket_id" in response.json()
+
+    mock_producer_instance.produce.assert_called_once()
+    mock_producer_instance.flush.assert_called_once()
 
 
 @pytest.mark.asyncio

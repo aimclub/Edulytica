@@ -14,3 +14,8 @@ JWT_PRIVATE_KEY=testjwtprivatekey
 SENDER_EMAIL=sender@test.com
 SENDER_PASSWORD=senderpassword
 EMAIL_CODE_EXPIRE_SECONDS=60
+
+KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+KAFKA_SUMMARY_TOPIC=tickets.summary
+KAFKA_RESULT_TOPIC=tickets.result
+KAFKA_GROUP_ID=llm-consumer-group

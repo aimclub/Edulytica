@@ -23,8 +23,6 @@ services:
     depends_on:
       - edulytica_api
       - edulytica_auth
-      - edulytica_llm_models
-      - edulytica_orchestration
       - edulytica_rag
 
   edulytica_api:
@@ -61,39 +59,64 @@ services:
     networks:
       - edulytica_network
 
-  edulytica_llm_models:
-    container_name: "EdulyticaLLM"
+  edulytica_llm_qwen:
+    container_name: "EdulyticaQwen"
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
       - ./src/common:/app/src/common
-    ports:
-      - "10000:10000"
-    depends_on:
-      - edulytica_db
-    env_file:
-      - ./.env
-    networks:
-      - edulytica_network
-
-  edulytica_orchestration:
-    container_name: "EdulyticaOrchestration"
-    build:
-      context: .
-      dockerfile: ./src/orchestration/Dockerfile
-    volumes:
-      - ./src:/app/src
-      - ./src/common:/app/src/common
+      - ./src/LLM:/app/src/LLM
     ports:
       - "10001:10001"
     depends_on:
+      - kafka
       - edulytica_db
     env_file:
       - ./.env
+    environment:
+      - MODEL_TYPE=qwen
     networks:
       - edulytica_network
+
+  edulytica_llm_vikhr:
+    container_name: "EdulyticaVikhr"
+    build:
+      context: .
+      dockerfile: ./src/models/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+      - ./src/LLM:/app/src/LLM
+    ports:
+      - "10002:10002"
+    depends_on:
+      - kafka
+      - edulytica_db
+    env_file:
+      - ./.env
+    environment:
+      - MODEL_TYPE=vikhr
+    networks:
+      - edulytica_network
+
+#  edulytica_orchestration:
+#    container_name: "EdulyticaOrchestration"
+#    build:
+#      context: .
+#      dockerfile: ./src/orchestration/Dockerfile
+#    volumes:
+#      - ./src:/app/src
+#      - ./src/common:/app/src/common
+#    ports:
+#      - "10001:10001"
+#    depends_on:
+#      - edulytica_db
+#    env_file:
+#      - ./.env
+#    networks:
+#      - edulytica_network
 
   edulytica_rag:
     container_name: "EdulyticaRag"
@@ -117,6 +140,8 @@ services:
     build:
       context: ./src/front_end
       dockerfile: Dockerfile
+    dns:
+      - 8.8.8.8
     ports:
       - "3000:3000"
     networks:
@@ -133,6 +158,46 @@ services:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma # this is the default path, change it as needed
       - ANONYMIZED_TELEMETRY=TRUE
+    networks:
+      - edulytica_network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.6.0
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - edulytica_network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.6.0
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    networks:
+      - edulytica_network
+
+  kafka_ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8081:8080"
+    depends_on:
+      - kafka
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
     networks:
       - edulytica_network
 

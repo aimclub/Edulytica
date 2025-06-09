@@ -11,4 +11,4 @@ done
 
 echo "PostgreSQL is ready, migration starting..."
 alembic upgrade head
-exec uvicorn src.edulytica_api.app:app --host 0.0.0.0 --port 8000
+exec uvicorn src.edulytica_api.app:app --host 0.0.0.0 --port 8002

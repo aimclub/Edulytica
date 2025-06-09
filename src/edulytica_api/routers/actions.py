@@ -18,13 +18,16 @@ Routes:
 
 import os
 import uuid
+import json
 from pathlib import Path
 from uuid import UUID
 from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Query
 from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
+from confluent_kafka import Producer
 from src.common.auth.auth_bearer import access_token_auth
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.document_summary_crud import DocumentSummaryCrud
 from src.common.database.crud.event_crud import EventCrud
@@ -37,7 +40,6 @@ from src.common.database.database import get_session
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
-from src.edulytica_api.celery.tasks import get_llm_purpose_result
 
 actions_router = APIRouter(prefix="/actions")
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -103,7 +105,7 @@ async def new_ticket(
         )
 
         ticket_status = await TicketStatusCrud.get_filtered_by_params(
-            session=session, name=TicketStatusDefault.IN_PROGRESS.value
+            session=session, name=TicketStatusDefault.CREATED.value
         )
         ticket_type = await TicketTypeCrud.get_filtered_by_params(
             session=session, name=TicketTypeDefault.ACHIEVABILITY.value
@@ -122,11 +124,36 @@ async def new_ticket(
             ticket_data['custom_event_id'] = custom_event.id
         ticket = await TicketCrud.create(**ticket_data)
 
+        kafka_config = {
+            'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS
+        }
+        producer = Producer(kafka_config)
+
+        def delivery_report(err, msg):
+            if err is not None:
+                print(f"[Kafka] Delivery failed for ticket {ticket.id}: {err}")
+            else:
+                print(f"[Kafka] Message delivered to {msg.topic()} [{msg.partition()}]")
+
         data = get_structural_paragraphs(file.file)
         intro = " ".join(data['table_of_content'][0]['text'])
         main_text = " ".join(data['other_text'])
-        get_llm_purpose_result.delay(intro=intro, main_text=main_text,
-                                     user_id=auth_data['user'].id, ticket_id=ticket.id)
+
+        kafka_message = {
+            'ticket_id': str(ticket.id),
+            'user_id': str(auth_data['user'].id),
+            'intro': intro,
+            'main_text': main_text
+        }
+
+        # TODO: Переделать для обращения к АПИ оркестратора, пока оставил для тестов
+        producer.produce(
+            topic='KAFKA_INCOMING_TOPIC',
+            key=str(ticket.id),
+            value=json.dumps(kafka_message).encode('utf-8'),
+            on_delivery=delivery_report
+        )
+        producer.flush()
 
         return {'detail': 'Ticket has been created', 'ticket_id': ticket.id}
     except HTTPException as http_exc:  # pragma: no cover

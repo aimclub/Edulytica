@@ -1,22 +1,34 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Query
 from src.common.utils.logger import api_logs
+from src.rag import RAGPipeline
 
 
 rag_router = APIRouter(prefix="/rag")
+pipeline = RAGPipeline()
 
 
 @api_logs(rag_router.post('/upload_text'))
 async def upload_text_handler(
-        text: str = Body(..., embed=True)
+        text: str = Body(...),
+        event_name: str = Body(...)
 ):
-    pass
+    chunks = pipeline.preprocess_article(text)
+    success = pipeline.chroma_manager.add_documents(
+        collection_name=event_name,
+        documents=chunks,
+    )
+    return {"status": "success" if success else "failed", "chunks_uploaded": len(chunks)}
 
 
-@api_logs(rag_router.post('/get_result'))
+@api_logs(rag_router.get('/get_result'))
 async def get_result_handler(
-        text: str,
-        event_name: str,
-        prompt: str
+        text: str = Query(...),
+        event_name: str = Query(...),
+        prompt: str = Query(...)
 ):
-    # return str
-    pass
+    result = pipeline.pipeline(
+        article_text=text,
+        conference_name=event_name,
+        prompt=prompt
+    )
+    return {"result": result}

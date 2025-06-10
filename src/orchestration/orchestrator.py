@@ -1,8 +1,6 @@
 import os
 import uuid
 from typing import Dict, Any, Union
-from fastapi import Depends
-from src.orchestration.clients.client_dependencies import get_state_manager, get_kafka_producer, get_rag_client
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager
@@ -181,16 +179,3 @@ class Orchestrator:
         }
 
         await self.kafka_producer.send_and_wait(f"llm_tasks.{model}", message)
-
-
-def get_orchestrator(
-    state_manager: StateManager = Depends(get_state_manager),
-    kafka_producer: KafkaProducer = Depends(get_kafka_producer),
-    rag_client: RagClient = Depends(get_rag_client)
-) -> Orchestrator:
-    # orchestrator = Depends(get_orchestrator)
-    return Orchestrator(
-        state_manager=state_manager,
-        kafka_producer=kafka_producer,
-        rag_client=rag_client
-    )

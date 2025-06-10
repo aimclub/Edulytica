@@ -11,24 +11,29 @@ from src.orchestration.routers.orchestrator_router import rt
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    app.state.redis_client = redis.from_url(
+    redis_client = redis.from_url(
         "redis://edulytica_redis",
         encoding="utf-8",
         decode_responses=False
     )
-    app.state.kafka_producer = AIOKafkaProducer(
+    kafka_producer = AIOKafkaProducer(
         bootstrap_servers='kafka:9092'
     )
-    app.state.http_client = AsyncClient()
+    http_client = AsyncClient()
 
-    await app.state.redis_client.ping()
-    await app.state.kafka_producer.start()
+    try:
+        await redis_client.ping()
+        await kafka_producer.start()
 
-    yield
+        app.state.redis_client = redis_client
+        app.state.kafka_producer = kafka_producer
+        app.state.http_client = http_client
 
-    await app.state.kafka_producer.stop()
-    await app.state.redis_client.close()
-    await app.state.http_client.aclose()
+        yield
+    finally:
+        await kafka_producer.stop()
+        await redis_client.close()
+        await http_client.aclose()
 
 app = FastAPI(lifespan=lifespan)
 origins = [

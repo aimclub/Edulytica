@@ -1,6 +1,7 @@
 import os
 import uuid
 from typing import Dict, Any, Union
+import asyncio
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager
@@ -15,72 +16,72 @@ class Orchestrator:
     # "1": { ...
     # И перепиши модели "model": "qwen" / "vikhr" / "any"
     TASKS: Dict[int, Dict[int, Dict[str, Dict[str, Any]]]] = {
-        1: {
-            1: {
+        "1": {
+            "1": {
                 "1.1": {"dependencies": [], "use_rag": True, "model": "2"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": True, "model": "3"},
                 "1.3": {"dependencies": ["1.2"], "use_rag": True, "model": "3"},
             },
-            2: {
+            "2": {
                 "2.1": {"dependencies": [], "use_rag": False, "model": "1"},
                 "2.2": {"dependencies": ["2.1"], "use_rag": False, "model": "3"},
             },
-            3: {
+            "3": {
                 "3.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "3.2": {"dependencies": ["3.1"], "use_rag": False, "model": "2"},
                 "3.3": {"dependencies": ["3.2"], "use_rag": False, "model": "3"},
             },
-            4: {
+            "4": {
                 "4.1": {"dependencies": [], "use_rag": False, "model": "1"},
                 "4.2": {"dependencies": ["4.1"], "use_rag": False, "model": "3"},
             },
-            5: {
+            "5": {
                 "5.1": {"dependencies": [], "use_rag": False, "model": "1"},
                 "5.2": {"dependencies": ["5.1"], "use_rag": False, "model": "1"},
                 "5.3": {"dependencies": ["5.2"], "use_rag": False, "model": "3"},
             },
-            6: {
+            "6": {
                 "6.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "6.2": {"dependencies": ["6.1"], "use_rag": False, "model": "3"},
                 "6.3": {"dependencies": ["6.2"], "use_rag": False, "model": "1"},
                 "6.4": {"dependencies": ["6.3"], "use_rag": False, "model": "3"},
                 "6.5": {"dependencies": ["6.4"], "use_rag": False, "model": "3"},
             },
-            7: {
+            "7": {
                 "7.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "7.2": {"dependencies": ["7.1"], "use_rag": False, "model": "3"},
             },
-            8: {
+            "8": {
                 "8.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "8.2": {"dependencies": ["8.1"], "use_rag": False, "model": "3"},
                 "8.3": {"dependencies": ["8.2"], "use_rag": False, "model": "3"},
             },
-            9: {
+            "9": {
                 "9.1": {"dependencies": [], "use_rag": True, "model": "1"},
                 "9.2": {"dependencies": ["9.1"], "use_rag": True, "model": "2"},
                 "9.3": {"dependencies": ["9.2"], "use_rag": True, "model": "3"},
             },
-            10: {
+            "10": {
                 "10.1": {"dependencies": [], "use_rag": True, "model": "2"},
             },
-            11: {
+            "11": {
                 "11.1": {"dependencies": [], "use_rag": True, "model": "3"},
                 "11.2": {"dependencies": ["11.1"], "use_rag": True, "model": "3"},
                 "11.3": {"dependencies": ["11.2"], "use_rag": True, "model": "3"},
             },
-            12: {
+            "12": {
                 "12.1": {"dependencies": [], "use_rag": True, "model": "2"},
             },
         },
 
-        2: {
-            2: {
+        "2": {
+            "2": {
                 "2.1": {"dependencies": [], "use_rag": False, "model": "4"},
                 "2.2": {"dependencies": ["2.1"], "use_rag": False, "model": "4"},
             }
         },
 
-        3: {
+        "3": {
         },
     }
 
@@ -114,6 +115,9 @@ class Orchestrator:
             * Инициализируем состояние задач в StateManager
             * Запускаем выполнение мегазадачи
         """
+        await self.state_manager.init_ticket(ticket_id, mega_task_id)
+        subtasks = self.TASKS[mega_task_id]
+        await self._run_mega_task(ticket_id, subtasks, document_text)
 
     async def _run_mega_task(
             self,
@@ -125,7 +129,12 @@ class Orchestrator:
             Запускаем параллельное выполнение всех задач внутри мегазадачи через _run_task
             Посмотри asyncio.gather
         """
-        pass
+        tasks_list = []
+        for task_id, subtasks in dependencies.items():
+            tasks_list.append(
+                self._run_task(ticket_id, task_id, subtasks, document_text)
+            )
+        await asyncio.gather(*tasks_list)
 
     async def _run_task(
             self,
@@ -139,7 +148,14 @@ class Orchestrator:
             Не запускаем тут зависимые задачи !!!
             Это будет делать триггер-функция в консьюмере Кафки
         """
-        pass
+        initial = [
+            sid for sid, meta in subtasks.items()
+            if meta["dependencies"] == []
+        ]
+        await asyncio.gather(*[
+            self._execute_subtask(ticket_id, sid, document_text)
+            for sid in initial
+        ])
 
     async def _execute_subtask(
             self,
@@ -154,7 +170,23 @@ class Orchestrator:
             * Получаем детали, обогащаем промт в Rag (если нужно)
             * Отправляем задачу в Kafka
         """
-        pass
+        prompt = self._get_prompt_text(subtask_id)
+        await self.state_manager.update_status(ticket_id, subtask_id, "started")
+
+        use_rag = False
+
+        mega = subtask_id.split(".")[0]
+        for mt, tasks in self.TASKS[mega].items():
+            if subtask_id in tasks:
+                use_rag = tasks[subtask_id]["use_rag"]
+                model = tasks[subtask_id]["model"]
+                break
+        if use_rag:
+            prompt = await self.rag_client.enrich(prompt)
+
+        await self._send_to_kafka(ticket_id, prompt, model)
+
+        await self.state_manager.update_status(ticket_id, subtask_id, "queued")
 
     def _get_prompt_text(self, subtask_id: str) -> Union[str, None]:
         """
@@ -162,7 +194,13 @@ class Orchestrator:
             Так как нам нужно подставлять что-то в промты советую их переписать через {params}
             И потом подставлять значения через .format(**kwargs)
         """
-        pass
+        mega = subtask_id.split(".")[0]
+        path = os.path.join(self.PROMPTS_DIRS[mega], f"{subtask_id}.txt")
+        try:
+            with open(path, encoding="utf-8") as f:
+                return f.read()
+        except FileNotFoundError:
+            return None
 
     async def _send_to_kafka(
             self,

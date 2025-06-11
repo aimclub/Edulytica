@@ -194,7 +194,7 @@ async def get_event_id(
         if not event:
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Event doesn\'t exist')
 
-        return {'detail': 'Event was found', 'event_id': event.id}
+        return {'detail': 'Event was found', 'event_id': event[0].id}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

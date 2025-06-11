@@ -88,7 +88,7 @@ async def new_ticket(
         file_extension = (file.filename or '').rsplit('.', 1)[-1].lower()
         while True:
             file_id = uuid.uuid4()
-            if not await DocumentCrud.get_by_id(session=session, id=file_id):
+            if not await DocumentCrud.get_by_id(session=session, record_id=file_id):
                 break
 
         file_dir = os.path.join(ROOT_DIR, 'app_files', 'document', f'{auth_data["user"].id}')

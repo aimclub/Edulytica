@@ -12,9 +12,6 @@ class Orchestrator:
     Скелет класса Оркестратора
     """
 
-    # Сделай все ключи строками
-    # "1": { ...
-    # И перепиши модели "model": "qwen" / "vikhr" / "any"
     TASKS: Dict[int, Dict[int, Dict[str, Dict[str, Any]]]] = {
         "1": {
             "1": {

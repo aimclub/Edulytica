@@ -18,6 +18,7 @@ Routes:
 
 import os
 import uuid
+import traceback
 from pathlib import Path
 from uuid import UUID
 from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Query
@@ -86,7 +87,7 @@ async def new_ticket(
         file_extension = (file.filename or '').rsplit('.', 1)[-1].lower()
         while True:
             file_id = uuid.uuid4()
-            if not await DocumentCrud.get_by_id(session=session, id=file_id):
+            if not await DocumentCrud.get_by_id(session=session, record_id=file_id):
                 break
 
         file_dir = os.path.join(ROOT_DIR, 'app_files', 'document', f'{auth_data["user"].id}')
@@ -123,16 +124,66 @@ async def new_ticket(
         ticket = await TicketCrud.create(**ticket_data)
 
         data = get_structural_paragraphs(file.file)
-        intro = " ".join(data['table_of_content'][0]['text'])
-        main_text = " ".join(data['other_text'])
-        get_llm_purpose_result.delay(intro=intro, main_text=main_text,
-                                     user_id=auth_data['user'].id, ticket_id=ticket.id)
+        toc = data.get('table_of_content', [])
+        if toc and toc[0].get('text'):
+            intro = " ".join(toc[0]['text'])
+        else:
+            intro = ""
+        main_text = " ".join(data.get('other_text', []))
+        # get_llm_purpose_result.delay(intro=intro, main_text=main_text,
+        #                              user_id=auth_data['user'].id, ticket_id=ticket.id)
 
         return {'detail': 'Ticket has been created', 'ticket_id': ticket.id}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover
+        print(traceback.format_exc())
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.get("/get_events"))
+async def get_events(
+    auth_data: dict = Depends(access_token_auth),
+    session: AsyncSession = Depends(get_session),
+):
+    """
+    Retrieves a list of all events available to the user.
+    Includes both standard and custom events.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        session (AsyncSession): Database session.
+
+    Returns:
+        dict: List of events with their IDs and names.
+
+    Raises:
+        HTTPException: If an internal server error occurs.
+    """
+    try:
+        standard_events = await EventCrud.get_all(session=session)
+        standard_events_list = [
+            {"id": event.id, "name": event.name, "type": "standard"}
+            for event in standard_events
+        ]
+
+        custom_events = await CustomEventCrud.get_filtered_by_params(
+            session=session, user_id=auth_data["user"].id
+        )
+        custom_events_list = [
+            {"id": event.id, "name": event.name, "type": "custom"}
+            for event in custom_events
+        ]
+
+        all_events = standard_events_list + custom_events_list
+
+        return {"detail": "Events were found", "events": all_events}
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as _e:
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f"500 ERR: {_e}"
+        )
 
 
 @api_logs(actions_router.get("/get_event_id"))
@@ -167,7 +218,7 @@ async def get_event_id(
         if not event:
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail='Event doesn\'t exist')
 
-        return {'detail': 'Event was found', 'event_id': event.id}
+        return {'detail': 'Event was found', 'event_id': event[0].id}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

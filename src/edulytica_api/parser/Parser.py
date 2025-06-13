@@ -7,19 +7,63 @@ from xml.etree.ElementTree import Element
 from .schemas import schemas
 from .Elem import Elem
 from typing import List, Dict
+import pdfplumber
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTRect, LTChar
+import io
 
 
 class Parser:
     """
-    Class, that parses DOCX-document and saves it in json-format
+    Class that parses DOCX and PDF documents and saves them in json-format
     :param self.path: path to file
     :param self._temp_dir: path to the temp directory, where the unpacked DOCX-document is stored
+    :param self.file_type: type of the file ('docx' or 'pdf')
     """
 
     def __init__(self, path):
         self.path = path
         self._temp_dir = tempfile.mkdtemp()
-        self._extract_files()
+        self.file_type = self._get_file_type()
+        if self.file_type == 'docx':
+            self._extract_files()
+
+    def _get_file_type(self):
+        """
+        Determines the file type based on the file extension or content
+        """
+        filename = getattr(self.path, 'name', None) or getattr(self.path, 'filename', None)
+        content_type = getattr(self.path, 'content_type', None)
+
+        if content_type:
+            if content_type == 'application/pdf':
+                return 'pdf'
+            elif content_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+                return 'docx'
+            # можно добавить другие типы, если нужно
+
+        if filename:
+            if filename.lower().endswith('.pdf'):
+                return 'pdf'
+            elif filename.lower().endswith('.docx'):
+                return 'docx'
+
+        # Если не удалось определить по имени и content_type — пробуем по сигнатуре файла
+        try:
+            pos = self.path.tell() if hasattr(self.path, 'tell') else 0
+            header = self.path.read(4)
+            if hasattr(self.path, 'seek'):
+                self.path.seek(pos)
+            if header.startswith(b'%PDF'):
+                return 'pdf'
+            elif header.startswith(b'PK\x03\x04'):
+                return 'docx'
+            else:
+                raise ValueError("Unsupported file type. Only PDF and DOCX files are supported.")
+        except Exception as e:
+            raise ValueError(f"Error detecting file type: {str(e)}")
+
+        raise ValueError("Unsupported file type. Only PDF and DOCX files are supported.")
 
     def _extract_files(self):
         """
@@ -30,7 +74,16 @@ class Parser:
 
     def parse(self):
         """
-        Parses document.xml part and returns content and flag (potentially damaged)
+        Parses document and returns content and flag (potentially damaged)
+        """
+        if self.file_type == 'docx':
+            return self._parse_docx()
+        else:
+            return self._parse_pdf()
+
+    def _parse_docx(self):
+        """
+        Parses DOCX document.xml part and returns content and flag (potentially damaged)
         """
         tree = ET.parse(os.path.join(self._temp_dir, 'word', 'document.xml'))
         root = tree.getroot()
@@ -41,11 +94,41 @@ class Parser:
                     paragraphs.append(para)
         return self._parse_paragraphs(paragraphs)
 
+    def _parse_pdf(self):
+        """
+        Parses PDF file and returns content and flag (potentially damaged)
+        """
+        struct = []
+        potentially_damage = False
+        
+        try:
+            with pdfplumber.open(self.path) as pdf:
+                for page in pdf.pages:
+                    text = page.extract_text()
+                    if text:
+                        # Create a simple structure for PDF content
+                        struct.append(Elem(str(len(struct) + 1), text.strip(), None))
+        except Exception as e:
+            potentially_damage = True
+            print(f"Error parsing PDF: {e}")
+            
+        return struct, potentially_damage
+
     def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id,
                                      list_view: bool = True):
         """
         Parses text, that attached to a chapter by anchor_id
         """
+        if self.file_type == 'pdf':
+            # For PDF files, return all text as there's no concept of anchors
+            with pdfplumber.open(self.path) as pdf:
+                text = []
+                for page in pdf.pages:
+                    page_text = page.extract_text()
+                    if page_text:
+                        text.append(page_text.strip())
+                return text if list_view else '\n'.join(text)
+        
         tree = ET.parse(os.path.join(self._temp_dir, 'word', 'document.xml'))
         root = tree.getroot()
 
@@ -112,7 +195,7 @@ class Parser:
 
     def save(self, struct: Dict, path: str = None):
         """
-        Save DOCX-document as JSON
+        Save document as JSON
         """
         if path is None:
             path = self.path
@@ -124,6 +207,15 @@ class Parser:
         """
         Gets other text from a document
         """
+        if self.file_type == 'pdf':
+            with pdfplumber.open(self.path) as pdf:
+                all_text = []
+                for page in pdf.pages:
+                    text = page.extract_text()
+                    if text:
+                        all_text.append(text.strip())
+                return all_text
+
         tree = ET.parse(os.path.join(self._temp_dir, 'word', 'document.xml'))
         root = tree.getroot()
         all_text = []
@@ -182,11 +274,18 @@ def get_structural_paragraphs(file):
 
     try:
         import io
-        with io.BytesIO(file.read()) as f:
-            p = Parser(path=f)
-            s, pot = p.parse()
-            n = {'potentially_damage': pot, 'table_of_content': struct_to_dict(s, p),
-                 'other_text': p.get_other_text()}
-            return n
+        # Если это UploadFile (FastAPI), у него есть .file, иначе это уже file-like объект
+        file_like = getattr(file, 'file', file)
+        file_like.seek(0)
+        file_content = file_like.read()
+        file_obj = io.BytesIO(file_content)
+        # Пробуем добавить атрибуты, если они есть
+        file_obj.content_type = getattr(file, 'content_type', None)
+        file_obj.name = getattr(file, 'filename', None)
+        p = Parser(path=file_obj)
+        s, pot = p.parse()
+        n = {'potentially_damage': pot, 'table_of_content': struct_to_dict(s, p),
+             'other_text': p.get_other_text()}
+        return n
     except Exception as _e:
         raise _e

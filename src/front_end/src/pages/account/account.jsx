@@ -10,6 +10,7 @@ import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchUserData } from "../../store/authSlice"
+import { ticketService } from "../../services/ticket.service"
 
 /**
  *  * Компонент страницы аккаунта пользователя.
@@ -38,6 +39,7 @@ export const Account = ({
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)
+  const [tickets, setTickets] = useState([])
 
   // Получаем данные пользователя из Redux store
   const userData = useSelector((state) => state.auth.currentUser)
@@ -97,6 +99,15 @@ export const Account = ({
     }
   }, [editingProfileModal])
 
+  const fetchTicketHistory = async () => {
+    try {
+      const ticketHistory = await ticketService.getTicketHistory()
+      setTickets(ticketHistory)
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
   return (
     <div className="accPage">
       <Header
@@ -110,6 +121,8 @@ export const Account = ({
             setAccountSection={setAccountSection}
             accountSection={accountSection}
             setFileResult={setFileResult}
+            tickets={tickets}
+            fetchTicketHistory={fetchTicketHistory}
           />
         ) : null}
         <div className="addFileAccPageAnimate">
@@ -129,6 +142,7 @@ export const Account = ({
                   setFileResult={setFileResult}
                   setAddEventModal={setAddEventModal}
                   event={event}
+                  fetchTicketHistory={fetchTicketHistory}
                 />
               </div>
             ) : accountSection === "result" ? (

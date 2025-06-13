@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import "./eventModal.scss"
+import { ticketService } from "../../services/ticket.service"
 
 /**
  * Компонент модального окна для выбора мероприятия.
@@ -13,28 +14,48 @@ export const EventModal = ({
   setSelectedEvent,
   closeModal,
   setAddEventModal,
-  event,
 }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
-  const [filterEvent, setFilterEvent] = useState(event)
+  const [filterEvent, setFilterEvent] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        setIsLoading(true)
+        setError(null)
+        const eventsList = await ticketService.getEvents()
+        setFilterEvent(eventsList)
+      } catch (error) {
+        setError("Ошибка при загрузке мероприятий")
+        console.error("Error loading events:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchEvents()
+  }, [])
+
   useEffect(() => {
     const filterData = () => {
       if (!searchTermEvent) {
-        setFilterEvent(event)
         return
       }
-      const results = event.filter((item) => {
+      const results = filterEvent.filter((item) => {
         return item.name.toLowerCase().includes(searchTermEvent.toLowerCase())
       })
       setFilterEvent(results)
     }
 
     filterData()
-  }, [searchTermEvent, event])
+  }, [searchTermEvent])
 
   const handleSearchChange = (event) => {
     setSearchTermEvent(event.target.value)
   }
+
   const handleEventSelect = (event) => {
     setSelectedEvent(event)
     closeModal()
@@ -46,6 +67,7 @@ export const EventModal = ({
     }
     return str
   }
+
   return (
     <div className="eventModal">
       <div className="titleBlockEventModal">
@@ -81,15 +103,21 @@ export const EventModal = ({
 
       <div className="blockEventModal">
         <div className="blockEventModalScroll">
-          {filterEvent.map((ev) => (
-            <div
-              key={ev.name}
-              className="lineBlockEventModal"
-              onClick={() => handleEventSelect(ev)}
-            >
-              {truncateString(ev.name, 13)}
-            </div>
-          ))}
+          {isLoading ? (
+            <div className="lineBlockEventModal">Загрузка мероприятий...</div>
+          ) : error ? (
+            <div className="lineBlockEventModal">{error}</div>
+          ) : (
+            filterEvent.map((ev) => (
+              <div
+                key={ev.id}
+                className="lineBlockEventModal"
+                onClick={() => handleEventSelect(ev)}
+              >
+                {truncateString(ev.name, 13)}
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

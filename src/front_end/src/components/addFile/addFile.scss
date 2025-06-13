@@ -34,6 +34,7 @@
   border: 1.5px solid #676767;
   border-radius: 13px;
   cursor: pointer;
+  text-wrap: nowrap;
 }
 .rightparametersLineAddFile {
   display: flex;
@@ -46,6 +47,7 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  gap: 10px;
 }
 .svgParameterBtnAddFile {
   padding: 7px;
@@ -79,6 +81,24 @@
   gap: 0;
   max-width: 786px;
   width: 100%;
+
+  .error-message {
+    color: #ff4d4f;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #fff2f0;
+    border: 1px solid #ffccc7;
+    border-radius: 4px;
+  }
+
+  .loading-message {
+    color: #1890ff;
+    margin: 10px 0;
+    padding: 8px 12px;
+    background-color: #e6f7ff;
+    border: 1px solid #91d5ff;
+    border-radius: 4px;
+  }
 }
 .addFileTopCont {
   display: flex;
@@ -91,7 +111,7 @@
   width: 100%;
 }
 .eventModalAddFile {
-  margin-left: 215px;
+  margin-left: 111px;
   margin-top: -12px;
   z-index: 20px;
 }
@@ -116,6 +136,18 @@
   .titleAddFile {
     font-size: 37px;
   }
+  .rightparametersLineAddFileCont {
+    width: 100%;
+    overflow: hidden;
+    margin-left: -30px;
+  }
+  .rightparametersLineAddFile {
+    overflow-x: auto;
+    min-width: 0;
+    padding-bottom: 8px;
+    margin-left: 30px;
+    padding-left: 30px;
+  }
 }
 @media (max-width: 1028px) {
   .blockAddFile {
@@ -130,5 +162,17 @@
   }
   .titleAddFile {
     font-size: 34px;
+  }
+  .rightparametersLineAddFileCont {
+    width: 100%;
+    overflow: hidden;
+    margin-left: -30px;
+  }
+  .rightparametersLineAddFile {
+    overflow-x: auto;
+    min-width: 0;
+    padding-bottom: 8px;
+    margin-left: 30px;
+    padding-left: 30px;
   }
 }

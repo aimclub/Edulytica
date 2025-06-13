@@ -9,19 +9,22 @@ import { ticketService } from "../../services/ticket.service"
  * @param {function} props.setAccountSection - Функция для установки текущей секции аккаунта.
  * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result", "info", "help").
  * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
+ * @param {array} props.tickets - Массив тикетов.
+ * @param {function} props.fetchTicketHistory - Функция для получения истории тикетов.
  */
 
 export const AccountModal = ({
   setAccountSection,
   accountSection,
   setFileResult,
+  tickets,
+  fetchTicketHistory,
 }) => {
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
-  const [tickets, setTickets] = useState([])
-  const [, setIsLoading] = useState(false)
-  const [, setError] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 50)
@@ -45,22 +48,7 @@ export const AccountModal = ({
   }, [searchTerm, tickets])
 
   useEffect(() => {
-    const fetchTicketHistory = async () => {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const ticketHistory = await ticketService.getTicketHistory()
-        setTickets(ticketHistory)
-        setFilterHistory(ticketHistory)
-      } catch (err) {
-        setError("Не удалось загрузить историю тикетов")
-        console.error("Error loading ticket history:", err)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchTicketHistory()
+    updateHistory()
   }, [])
 
   const handleFileLine = (ticket) => {
@@ -77,51 +65,54 @@ export const AccountModal = ({
     return str
   }
 
+  const updateHistory = async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      await fetchTicketHistory()
+    } catch (err) {
+      setError("Не удалось загрузить историю тикетов")
+      console.error("Error loading ticket history:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className={`accModal ${animate ? "animate" : ""}`}>
       <div className="titleBlockAccModal">
-        <Link to="/account/info" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("info")
-            }}
-            className={
-              accountSection === "info"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            О нас
-          </div>
-        </Link>
-        <Link to="/account/help" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("help")
-            }}
-            className={
-              accountSection === "help"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            Помощь
-          </div>
-        </Link>
-        <Link to="/account" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("main")
-            }}
-            className={
-              accountSection === "main" || accountSection === "result"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            Работа с документом
-          </div>
-        </Link>
+        <div
+          onClick={() => {
+            setAccountSection("info")
+          }}
+          className={
+            accountSection === "info" ? "titleAccModalActive" : "titleAccModal"
+          }
+        >
+          О нас
+        </div>
+        <div
+          onClick={() => {
+            setAccountSection("help")
+          }}
+          className={
+            accountSection === "help" ? "titleAccModalActive" : "titleAccModal"
+          }
+        >
+          Помощь
+        </div>
+        <div
+          onClick={() => {
+            setAccountSection("main")
+          }}
+          className={
+            accountSection === "main" || accountSection === "result"
+              ? "titleAccModalActive"
+              : "titleAccModal"
+          }
+        >
+          Работа с документом
+        </div>
       </div>
       <svg
         width="227"
@@ -159,44 +150,39 @@ export const AccountModal = ({
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
             {filterHistory.map((ticket) => (
-              <Link
-                to="/account/result"
-                style={{ textDecoration: "none" }}
+              <div
+                className="fileLineAccModal"
                 key={ticket.id}
+                onClick={() => handleFileLine(ticket)}
               >
-                <div
-                  className="fileLineAccModal"
-                  onClick={() => handleFileLine(ticket)}
-                >
-                  <div className="fileAccModal">
-                    {truncateString(ticket.document_id || "Без названия", 16)}
-                  </div>
-                  <svg
-                    style={{ marginRight: "25px" }}
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                  </svg>
+                <div className="fileAccModal">
+                  {truncateString(ticket.document_id || "Без названия", 16)}
                 </div>
-              </Link>
+                <svg
+                  style={{ marginRight: "25px" }}
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                  <path
+                    d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                  <path
+                    d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                </svg>
+              </div>
             ))}
           </div>
         </div>

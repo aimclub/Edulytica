@@ -1,4 +1,3 @@
-from fastapi import Request
 from httpx import AsyncClient
 
 
@@ -7,7 +6,7 @@ class RagClient:
         self._http_client = http_client
         self._base_url = base_url
 
-    async def enrich_prompt(self) -> str:
+    async def enrich_prompt(self, prompt: str) -> str:
         """
         Обогащаем промт...
         """

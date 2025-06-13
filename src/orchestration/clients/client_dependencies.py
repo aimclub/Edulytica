@@ -18,15 +18,3 @@ def get_rag_client(request: Request) -> RagClient:
 
 def get_state_manager(request: Request) -> StateManager:
     return StateManager(redis_client=request.app.state.redis_client)
-
-
-def get_orchestrator(
-    state_manager: StateManager = Depends(get_state_manager),
-    kafka_producer: KafkaProducer = Depends(get_kafka_producer),
-    rag_client: RagClient = Depends(get_rag_client)
-) -> Orchestrator:
-    return Orchestrator(
-        state_manager=state_manager,
-        kafka_producer=kafka_producer,
-        rag_client=rag_client
-    )

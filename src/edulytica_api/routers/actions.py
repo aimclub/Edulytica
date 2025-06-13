@@ -49,7 +49,8 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 async def new_ticket(
     auth_data: dict = Depends(access_token_auth),
     file: UploadFile = File(...),
-    event_id: UUID = Body(..., embed=True),
+    event_id: UUID = Body(...),
+    mega_task_id: str = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
@@ -62,6 +63,7 @@ async def new_ticket(
         auth_data (dict): Authenticated user data.
         file (UploadFile): Uploaded PDF or DOCX file.
         event_id (UUID): ID of the associated event (standard or custom).
+        mega_task_id (str): ID of mega task
         session (AsyncSession): Database session.
 
     Returns:
@@ -71,6 +73,11 @@ async def new_ticket(
         HTTPException: For invalid event ID, unsupported file type, or internal errors.
     """
     try:
+        if mega_task_id != "1":
+            return HTTPException(
+                status_code=HTTP_400_BAD_REQUEST, detail=f"Unknown megatask id {mega_task_id}"
+            )
+
         custom_event = None
         event = await EventCrud.get_by_id(session=session, record_id=event_id)
         if not event:
@@ -160,6 +167,48 @@ async def new_ticket(
         raise http_exc
     except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.get("/get_events"))
+async def get_events(
+    auth_data: dict = Depends(access_token_auth),
+    session: AsyncSession = Depends(get_session),
+):
+    """
+    Retrieves a list of all events available to the user.
+    Includes both standard and custom events.
+    Args:
+        auth_data (dict): Authenticated user data.
+        session (AsyncSession): Database session.
+    Returns:
+        dict: List of events with their IDs and names.
+    Raises:
+        HTTPException: If an internal server error occurs.
+    """
+    try:
+        standard_events = await EventCrud.get_all(session=session)
+        standard_events_list = [
+            {"id": event.id, "name": event.name, "type": "standard"}
+            for event in standard_events
+        ]
+
+        custom_events = await CustomEventCrud.get_filtered_by_params(
+            session=session, user_id=auth_data["user"].id
+        )
+        custom_events_list = [
+            {"id": event.id, "name": event.name, "type": "custom"}
+            for event in custom_events
+        ]
+
+        all_events = standard_events_list + custom_events_list
+
+        return {"detail": "Events were found", "events": all_events}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f"500 ERR: {_e}"
+        )
 
 
 @api_logs(actions_router.get("/get_event_id"))

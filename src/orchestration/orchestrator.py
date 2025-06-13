@@ -4,7 +4,7 @@ from typing import Dict, Any, Union
 import asyncio
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
-from src.orchestration.clients.state_manager import StateManager
+from src.orchestration.clients.state_manager import StateManager, Statuses
 
 
 class Orchestrator:
@@ -12,7 +12,13 @@ class Orchestrator:
     Скелет класса Оркестратора
     """
 
-    TASKS: Dict[int, Dict[int, Dict[str, Dict[str, Any]]]] = {
+    MODELS_ID: Dict[str, str] = {
+        "1": "qwen",
+        "2": "vikhr",
+        "3": "any"
+    }
+
+    TASKS: Dict[str, Dict[str, Dict[str, Dict[str, Any]]]] = {
         "1": {
             "1": {
                 "1.1": {"dependencies": [], "use_rag": True, "model": "2"},
@@ -73,8 +79,8 @@ class Orchestrator:
 
         "2": {
             "2": {
-                "2.1": {"dependencies": [], "use_rag": False, "model": "4"},
-                "2.2": {"dependencies": ["2.1"], "use_rag": False, "model": "4"},
+                "2.1": {"dependencies": [], "use_rag": False, "model": "Unknown"},
+                "2.2": {"dependencies": ["2.1"], "use_rag": False, "model": "Unknown"},
             }
         },
 
@@ -83,26 +89,30 @@ class Orchestrator:
     }
 
     BASE_DIR = os.path.dirname(__file__)
-    PROMPTS_DIRS = {
-        1: os.path.join(BASE_DIR, "prompts", "prompts1"),
-        2: os.path.join(BASE_DIR, "prompts", "prompts2"),
-        3: os.path.join(BASE_DIR, "prompts", "prompts3"),
+    PROMPTS_DIRS: Dict[str, str] = {
+        "1": os.path.join(BASE_DIR, "prompts", "prompts1"),
+        "2": os.path.join(BASE_DIR, "prompts", "prompts2"),
+        "3": os.path.join(BASE_DIR, "prompts", "prompts3"),
     }
 
     def __init__(
             self,
             state_manager: StateManager,
             kafka_producer: KafkaProducer,
-            rag_client: RagClient
+            rag_client: RagClient,
+            mega_task_id: str
     ):
         self.state_manager = state_manager
         self.kafka_producer = kafka_producer
         self.rag_client = rag_client
+        if mega_task_id not in self.TASKS:
+            raise ValueError(f"Unknown megatask id {mega_task_id}")
+        else:
+            self.mega_task_id = mega_task_id
 
     async def run_pipeline(
             self,
             ticket_id: Union[str, uuid.UUID],
-            mega_task_id: str,
             document_text: str
     ):
         """
@@ -112,9 +122,19 @@ class Orchestrator:
             * Инициализируем состояние задач в StateManager
             * Запускаем выполнение мегазадачи
         """
-        await self.state_manager.init_ticket(ticket_id, mega_task_id)
-        subtasks = self.TASKS[mega_task_id]
-        await self._run_mega_task(ticket_id, subtasks, document_text)
+        dependencies = self.TASKS[self.mega_task_id]
+
+        await self.state_manager.create_ticket(
+            ticket_id=ticket_id,
+            mega_task_id=self.mega_task_id,
+            dependencies=dependencies
+        )
+
+        await self._run_mega_task(
+            ticket_id=ticket_id,
+            dependencies=dependencies,
+            document_text=document_text
+        )
 
     async def _run_mega_task(
             self,
@@ -129,14 +149,13 @@ class Orchestrator:
         tasks_list = []
         for task_id, subtasks in dependencies.items():
             tasks_list.append(
-                self._run_task(ticket_id, task_id, subtasks, document_text)
+                self._run_task(ticket_id, subtasks, document_text)
             )
         await asyncio.gather(*tasks_list)
 
     async def _run_task(
             self,
             ticket_id: Union[str, uuid.UUID],
-            task_id: str,
             subtasks: Dict[str, Dict[str, any]],
             document_text: str
     ):
@@ -145,14 +164,14 @@ class Orchestrator:
             Не запускаем тут зависимые задачи !!!
             Это будет делать триггер-функция в консьюмере Кафки
         """
-        initial = [
-            sid for sid, meta in subtasks.items()
-            if meta["dependencies"] == []
-        ]
-        await asyncio.gather(*[
-            self._execute_subtask(ticket_id, sid, document_text)
-            for sid in initial
-        ])
+        initial_subtasks = []
+        for subtask_id, details in subtasks.items():
+            if not details["dependencies"]:
+                initial_subtasks.append(
+                    self._execute_subtask(ticket_id, subtask_id, document_text)
+                )
+
+        await asyncio.gather(*initial_subtasks)
 
     async def _execute_subtask(
             self,
@@ -167,23 +186,32 @@ class Orchestrator:
             * Получаем детали, обогащаем промт в Rag (если нужно)
             * Отправляем задачу в Kafka
         """
-        prompt = self._get_prompt_text(subtask_id)
-        await self.state_manager.update_status(ticket_id, subtask_id, "started")
 
-        use_rag = False
+        # TODO Что делать с document_text
 
-        mega = subtask_id.split(".")[0]
-        for mt, tasks in self.TASKS[mega].items():
-            if subtask_id in tasks:
-                use_rag = tasks[subtask_id]["use_rag"]
-                model = tasks[subtask_id]["model"]
-                break
-        if use_rag:
-            prompt = await self.rag_client.enrich(prompt)
+        await self.state_manager.update_subtask(ticket_id, subtask_id, Statuses.STATUS_IN_PROGRESS)
 
-        await self._send_to_kafka(ticket_id, prompt, model)
+        task_id = subtask_id.split('.')[0]
+        subtask_details = self.TASKS.get(self.mega_task_id, {}).get(task_id, {}).get(subtask_id)
 
-        await self.state_manager.update_status(ticket_id, subtask_id, "queued")
+        if not subtask_details:
+            raise Exception(f"Details for subtask {subtask_id} not found.")
+
+        prompt_text = self._get_prompt_text(subtask_id)
+        if not prompt_text:
+            print(f"Prompt for subtask {subtask_id} not found.")
+            return
+
+        if subtask_details.get("use_rag"):
+            enriched_prompt = await self.rag_client.enrich_prompt(prompt_text)
+        else:
+            enriched_prompt = prompt_text
+
+        await self._send_to_kafka(
+            ticket_id=str(ticket_id),
+            prompt=enriched_prompt,
+            model_id=subtask_details["model"]
+        )
 
     def _get_prompt_text(self, subtask_id: str) -> Union[str, None]:
         """
@@ -191,8 +219,7 @@ class Orchestrator:
             Так как нам нужно подставлять что-то в промты советую их переписать через {params}
             И потом подставлять значения через .format(**kwargs)
         """
-        mega = subtask_id.split(".")[0]
-        path = os.path.join(self.PROMPTS_DIRS[mega], f"{subtask_id}.txt")
+        path = os.path.join(self.PROMPTS_DIRS[self.mega_task_id], f"{subtask_id}.txt")
         try:
             with open(path, encoding="utf-8") as f:
                 return f.read()
@@ -203,14 +230,17 @@ class Orchestrator:
             self,
             ticket_id: Union[str, uuid.UUID],
             prompt: str,
-            model: str
+            model_id: str
     ):
         """
-        Формируем и отправляем сообщение с задачей в топик Kafka.
+        Формируем и отправляем сообщение с задачей в топики Kafka.
         """
         message = {
             "ticket_id": str(ticket_id),
             "prompt": prompt
         }
 
-        await self.kafka_producer.send_and_wait(f"llm_tasks.{model}", message)
+        if model_id in self.MODELS_ID:
+            await self.kafka_producer.send_and_wait(f"llm_tasks.{self.MODELS_ID[model_id]}", message)
+        else:
+            raise ValueError(f"Unknown model with id {model_id}")

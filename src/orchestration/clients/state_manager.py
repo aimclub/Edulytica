@@ -1,7 +1,6 @@
 import json
 import uuid
 from enum import Enum
-from fastapi import Request
 from typing import Dict, Any, List, Union
 from redis.asyncio import Redis
 
@@ -46,7 +45,7 @@ class StateManager:
     async def create_ticket(
             self,
             ticket_id: Union[str, uuid.UUID],
-            mega_task_id: int,
+            mega_task_id: str,
             dependencies: Dict[str, Dict[str, Dict[str, any]]]
     ):
         key = self._get_ticket_key(ticket_id)

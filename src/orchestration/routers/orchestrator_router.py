@@ -1,6 +1,10 @@
 import uuid
 from fastapi import APIRouter, Body, BackgroundTasks, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
+
+from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.database import get_session
 from src.orchestration.clients.client_dependencies import get_state_manager, get_kafka_producer, \
     get_rag_client
 from src.orchestration.clients.kafka_producer import KafkaProducer
@@ -20,14 +24,18 @@ async def run_ticket_handler(
         document_text: str = Body(...),
         state_manager: StateManager = Depends(get_state_manager),
         kafka_producer: KafkaProducer = Depends(get_kafka_producer),
-        rag_client: RagClient = Depends(get_rag_client)
+        rag_client: RagClient = Depends(get_rag_client),
+        session: AsyncSession = Depends(get_session)
 ):
     try:
+        event_name = await TicketCrud.get_event_name_for_ticket(session=session, ticket_id=ticket_id)
+
         orchestrator = Orchestrator(
             state_manager=state_manager,
             kafka_producer=kafka_producer,
             rag_client=rag_client,
-            mega_task_id=mega_task_id
+            mega_task_id=mega_task_id,
+            event_name=event_name
         )
 
         background_tasks.add_task(

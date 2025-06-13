@@ -2,6 +2,8 @@ import os
 import uuid
 from typing import Dict, Any, Union
 import asyncio
+
+from src.common.database.crud.tickets_crud import TicketCrud
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
@@ -100,11 +102,13 @@ class Orchestrator:
             state_manager: StateManager,
             kafka_producer: KafkaProducer,
             rag_client: RagClient,
-            mega_task_id: str
+            mega_task_id: str,
+            event_name: str = None
     ):
         self.state_manager = state_manager
         self.kafka_producer = kafka_producer
         self.rag_client = rag_client
+        self.event_name = event_name
         if mega_task_id not in self.TASKS:
             raise ValueError(f"Unknown megatask id {mega_task_id}")
         else:
@@ -188,7 +192,7 @@ class Orchestrator:
         """
 
         # TODO Что делать с document_text
-
+        # TODO Получить event_name через БД
         await self.state_manager.update_subtask(ticket_id, subtask_id, Statuses.STATUS_IN_PROGRESS)
 
         task_id = subtask_id.split('.')[0]
@@ -202,8 +206,12 @@ class Orchestrator:
             print(f"Prompt for subtask {subtask_id} not found.")
             return
 
-        if subtask_details.get("use_rag"):
-            enriched_prompt = await self.rag_client.enrich_prompt(prompt_text)
+        if subtask_details.get("use_rag") and self.event_name:
+            enriched_prompt = await self.rag_client.enrich_prompt(
+                original_prompt=prompt_text,
+                document_text=document_text,
+                event_name=self.event_name
+            )
         else:
             enriched_prompt = prompt_text
 

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
-import { Link } from "react-router-dom"
 import { ticketService } from "../../services/ticket.service"
 
 /**
@@ -27,8 +26,8 @@ export const AddFile = ({
   const [eventModal, setEventModal] = useState(false)
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState(null)
 
   // Устанавливаем режим "рецензирование" по умолчанию при монтировании компонента
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import "./eventModal.scss"
 import { ticketService } from "../../services/ticket.service"
 
@@ -19,6 +19,18 @@ export const EventModal = ({
   const [filterEvent, setFilterEvent] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [events, setEvents] = useState([])
+
+  const filterData = useCallback(() => {
+    if (!searchTermEvent) {
+      setFilterEvent(events)
+      return
+    }
+    const results = events.filter((item) => {
+      return item.name.toLowerCase().includes(searchTermEvent.toLowerCase())
+    })
+    setFilterEvent(results)
+  }, [searchTermEvent, events])
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -26,6 +38,7 @@ export const EventModal = ({
         setIsLoading(true)
         setError(null)
         const eventsList = await ticketService.getEvents()
+        setEvents(eventsList)
         setFilterEvent(eventsList)
       } catch (error) {
         setError("Ошибка при загрузке мероприятий")
@@ -39,18 +52,10 @@ export const EventModal = ({
   }, [])
 
   useEffect(() => {
-    const filterData = () => {
-      if (!searchTermEvent) {
-        return
-      }
-      const results = filterEvent.filter((item) => {
-        return item.name.toLowerCase().includes(searchTermEvent.toLowerCase())
-      })
-      setFilterEvent(results)
+    if (events) {
+      filterData()
     }
-
-    filterData()
-  }, [searchTermEvent])
+  }, [events, filterData])
 
   const handleSearchChange = (event) => {
     setSearchTermEvent(event.target.value)

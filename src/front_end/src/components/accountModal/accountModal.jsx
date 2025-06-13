@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import "./accountModal.scss"
-import { Link } from "react-router-dom"
-import { ticketService } from "../../services/ticket.service"
 
 /**
  *
@@ -23,8 +21,8 @@ export const AccountModal = ({
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState(null)
+  const [, setIsLoading] = useState(false)
+  const [, setError] = useState(null)
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 50)
@@ -47,9 +45,22 @@ export const AccountModal = ({
     filterData()
   }, [searchTerm, tickets])
 
+  const updateHistory = useCallback(async () => {
+    setIsLoading(true)
+    setError(null)
+    try {
+      await fetchTicketHistory()
+    } catch (err) {
+      setError("Не удалось загрузить историю тикетов")
+      console.error("Error loading ticket history:", err)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [fetchTicketHistory])
+
   useEffect(() => {
     updateHistory()
-  }, [])
+  }, [updateHistory])
 
   const handleFileLine = (ticket) => {
     setAccountSection("result")
@@ -63,19 +74,6 @@ export const AccountModal = ({
       return str.substring(0, maxLength) + "..."
     }
     return str
-  }
-
-  const updateHistory = async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
-      await fetchTicketHistory()
-    } catch (err) {
-      setError("Не удалось загрузить историю тикетов")
-      console.error("Error loading ticket history:", err)
-    } finally {
-      setIsLoading(false)
-    }
   }
 
   return (

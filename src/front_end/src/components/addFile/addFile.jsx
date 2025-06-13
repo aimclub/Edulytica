@@ -26,7 +26,6 @@ export const AddFile = ({
   const [eventModal, setEventModal] = useState(false)
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
-  const [, setIsLoading] = useState(false)
   const [, setError] = useState(null)
 
   // Устанавливаем режим "рецензирование" по умолчанию при монтировании компонента

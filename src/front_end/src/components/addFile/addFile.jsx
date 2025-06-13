@@ -97,9 +97,6 @@ export const AddFile = ({
 
   const handleAddFileSvg = useCallback(async () => {
     try {
-      setIsLoading(true)
-      setError(null)
-
       const fileParam = selectedParams.find((param) => param.type === "file")
       const eventParam = selectedParams.find((param) => param.type === "event")
 
@@ -113,7 +110,12 @@ export const AddFile = ({
       }
 
       const { event_id } = await ticketService.getEventId(eventParam.name)
-      const { ticket_id } = await ticketService.createNewTicket(file, event_id)
+      const mega_task_id = mode === "рецензирование" ? "1" : "2"
+      const { ticket_id } = await ticketService.createNewTicket(
+        file,
+        event_id,
+        mega_task_id
+      )
       await fetchTicketHistory()
       setSelectedParams((prev) =>
         prev.map((param) =>
@@ -124,9 +126,7 @@ export const AddFile = ({
       setAccountSection("result")
       resetParams()
     } catch (error) {
-      setError(error.message || "Произошла ошибка при создании тикета")
-    } finally {
-      setIsLoading(false)
+      console.error(error.message || "Произошла ошибка при создании тикета")
     }
   }, [
     setAccountSection,
@@ -134,6 +134,7 @@ export const AddFile = ({
     selectedParams,
     setSelectedParams,
     fetchTicketHistory,
+    mode,
   ])
 
   const sortedParams = useMemo(

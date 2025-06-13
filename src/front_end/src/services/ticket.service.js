@@ -36,13 +36,15 @@ class TicketService {
    * Создает новый тикет
    * @param {File} file - Загруженный файл
    * @param {string} eventId - ID мероприятия
+   * @param {string} mega_task_id - ID мега-задачи (1 для рецензирования, 2 для анализа)
    * @returns {Promise<{ticket_id: string}>} ID созданного тикета
    */
-  async createNewTicket(file, eventId) {
+  async createNewTicket(file, eventId, mega_task_id) {
     try {
       const formData = new FormData()
       formData.append("file", file)
       formData.append("event_id", eventId)
+      formData.append("mega_task_id", mega_task_id)
 
       const response = await $api.post("/actions/new_ticket", formData, {
         headers: {

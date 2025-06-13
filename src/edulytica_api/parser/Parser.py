@@ -100,7 +100,7 @@ class Parser:
         """
         struct = []
         potentially_damage = False
-        
+
         try:
             with pdfplumber.open(self.path) as pdf:
                 for page in pdf.pages:
@@ -111,7 +111,7 @@ class Parser:
         except Exception as e:
             potentially_damage = True
             print(f"Error parsing PDF: {e}")
-            
+
         return struct, potentially_damage
 
     def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id,
@@ -128,7 +128,7 @@ class Parser:
                     if page_text:
                         text.append(page_text.strip())
                 return text if list_view else '\n'.join(text)
-        
+
         tree = ET.parse(os.path.join(self._temp_dir, 'word', 'document.xml'))
         root = tree.getroot()
 

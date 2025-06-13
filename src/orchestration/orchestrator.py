@@ -215,6 +215,7 @@ class Orchestrator:
 
         await self._send_to_kafka(
             ticket_id=str(ticket_id),
+            subtask_id=subtask_id,
             prompt=enriched_prompt,
             model_id=subtask_details["model"]
         )
@@ -235,6 +236,7 @@ class Orchestrator:
     async def _send_to_kafka(
             self,
             ticket_id: Union[str, uuid.UUID],
+            subtask_id: str,
             prompt: str,
             model_id: str
     ):
@@ -243,7 +245,8 @@ class Orchestrator:
         """
         message = {
             "ticket_id": str(ticket_id),
-            "prompt": prompt
+            "subtask_id": subtask_id,
+            "prompt": prompt,
         }
 
         if model_id in self.MODELS_ID:

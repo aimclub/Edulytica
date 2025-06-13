@@ -2,17 +2,15 @@ import asyncio
 import json
 import os
 import uuid
+from typing import Dict, Any
+
 from confluent_kafka import Consumer, KafkaError, Producer
 from dotenv import load_dotenv
 from src.llm.model_pipeline import ModelPipeline
 from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
 from src.llm.vikhr.vikhr_nemo_instruct_pipeline import VikhrNemoInstructPipeline
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
-from src.common.database.database import get_session
-from src.common.database.crud.ticket_status_crud import TicketStatusCrud
-from src.common.database.crud.tickets_crud import TicketCrud
-from src.common.utils.default_enums import TicketStatusDefault
-
+from src.orchestration.clients.state_manager import Statuses
 
 load_dotenv()
 MODEL_TYPE = os.environ.get("MODEL_TYPE")
@@ -38,41 +36,70 @@ consumer = Consumer({
 consumer.subscribe([KAFKA_INCOMING_TOPIC, "llm_tasks.any"])
 
 
-# TODO Переделать под сохранение результатов в Kafka
+def delivery_report(err, msg):
+    """ Called once for each message produced to indicate delivery result. """
+    if err is not None:
+        print(f'[{PREFIX}] Message delivery failed: {err}')
+    else:
+        print(f'[{PREFIX}] Message delivered to {msg.topic()} [{msg.partition()}]')
+
+
+def send_to_kafka(
+        result_message: Dict[str, Any]
+):
+    producer.produce(
+        KAFKA_RESULT_TOPIC,
+        value=json.dumps(result_message).encode('utf-8'),
+        callback=delivery_report
+    )
+
+    producer.flush()
+
+
 async def process_ticket(message_data: dict):
     """
         Expected message format:
         {
-            "ticket_id": ticket's UUID,
-            "prompt": str
+            "ticket_id": "...",
+            "subtask_id": "...",
+            "document_text": "..."
         }
         """
     try:
-        ticket_id = uuid.UUID(message_data['ticket_id'])
-        prompt = str(message_data['prompt'])
-
-        async for session in get_session():
-            status = await TicketStatusCrud.get_filtered_by_params(session=session,
-                                                                   name=TicketStatusDefault.IN_PROGRESS.value)
-            await TicketCrud.update(session=session, record_id=ticket_id, ticket_status_id=status[0].id)
-            print(f"[{PREFIX}] Ticket {ticket_id} -> IN_PROGRESS")
-
-            result = llm_model([prompt])
-            result_data = {
-                "ticket_id": ticket_id,
-                "result": result[0]
-            }
-
-            status = await TicketStatusCrud.get_filtered_by_params(session=session,
-                                                                   name=TicketStatusDefault.COMPLETED.value)
-            await TicketCrud.update(session=session, record_id=ticket_id, ticket_status_id=status[0].id)
-            await send_to_orchestrator(result_data)
-            print(f"[{PREFIX}] Ticket {ticket_id} -> COMPLETED")
-    except KeyError as e:
-        print(f"[{PREFIX}] Missing required field in message: {e}")
+        ticket_id = message_data['ticket_id']
+        subtask_id = message_data['subtask_id']
+        prompt = message_data['prompt']
+    except KeyError as _ke:
+        print(f"[{PREFIX}] Missing required field in message: {_ke}")
         raise
+    try:
+        print(f"[{PREFIX}] Ticket {ticket_id} -> IN_PROGRESS")
+        in_progress_message = {
+            "ticket_id": ticket_id,
+            "subtask_id": subtask_id,
+            "status": Statuses.STATUS_IN_PROGRESS.value
+        }
+        send_to_kafka(in_progress_message)
+
+        result_text = llm_model([prompt])[0]
+
+        result_message = {
+            "ticket_id": ticket_id,
+            "subtask_id": subtask_id,
+            "status": Statuses.STATUS_COMPLETED.value,
+            "result": result_text
+        }
+        send_to_kafka(result_message)
+
+        print(f"[{PREFIX}] Result for subtask {subtask_id} sent to orchestrator.")
     except Exception as e:
         print(f"[{PREFIX}] Error processing model request: {e}")
+        error_message = {
+            "ticket_id": str(ticket_id),
+            "subtask_id": subtask_id,
+            "status": Statuses.STATUS_FAILED.value,
+        }
+        send_to_kafka(error_message)
         raise
 
 
@@ -94,14 +121,9 @@ async def kafka_loop():
                 await process_ticket(message_data)
                 consumer.commit(msg)
             except Exception as e:
-                print(f"[Kafka | ModelWorker] Failed to process message: {e}")
+                print(f"[{PREFIX}] Failed to process message: {e}")
     except KeyboardInterrupt:
         print(f"[{PREFIX}] Received interrupt signal")
     finally:
         print(f"[{PREFIX}] Closing consumer...")
         consumer.close()
-
-
-async def send_to_orchestrator(result_data: dict):
-    # TODO: Реализовать отправку в оркестратор
-    pass

@@ -34,7 +34,6 @@ class Statuses(str, Enum):
     STATUS_FAILED = "FAILED"
 
 
-# TODO Добавить обработку ошибок
 class StateManager:
     def __init__(self, redis_client: Redis):
         self._redis = redis_client

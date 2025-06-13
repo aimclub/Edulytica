@@ -2,8 +2,6 @@ import os
 import uuid
 from typing import Dict, Any, Union
 import asyncio
-
-from src.common.database.crud.tickets_crud import TicketCrud
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses

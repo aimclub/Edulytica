@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 import uuid
-from confluent_kafka import Consumer, KafkaError
+from confluent_kafka import Consumer, KafkaError, Producer
 from dotenv import load_dotenv
 from src.llm.model_pipeline import ModelPipeline
 from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
@@ -18,6 +18,7 @@ load_dotenv()
 MODEL_TYPE = os.environ.get("MODEL_TYPE")
 PREFIX = f'Kafka | ModelWorker: {MODEL_TYPE}'
 KAFKA_INCOMING_TOPIC = f'llm_tasks.{MODEL_TYPE}'
+KAFKA_RESULT_TOPIC = 'llm_tasks.result'
 llm_model: ModelPipeline = None
 if MODEL_TYPE == 'qwen':
     llm_model = QwenInstructPipeline()
@@ -27,14 +28,13 @@ else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
 
 
+producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
 consumer = Consumer({
     'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
     'group.id': KAFKA_GROUP_ID,
     'auto.offset.reset': 'earliest',
     'enable.auto.commit': False
 })
-
-# Подписываемся еще и на любые
 consumer.subscribe([KAFKA_INCOMING_TOPIC, "llm_tasks.any"])
 
 

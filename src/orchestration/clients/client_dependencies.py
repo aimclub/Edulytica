@@ -1,8 +1,7 @@
-from fastapi import Request, Depends
+from fastapi import Request
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.state_manager import StateManager
-from src.orchestration.orchestrator import Orchestrator
 
 
 def get_kafka_producer(request: Request) -> KafkaProducer:

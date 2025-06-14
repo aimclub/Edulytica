@@ -18,11 +18,13 @@ class Orchestrator:
         "3": "any"
     }
 
+    # TODO Неправильные зависимости, исправить
+    # TODO Переделать Оркестратор под последовательное выполнение задач
     TASKS: Dict[str, Dict[str, Dict[str, Dict[str, Any]]]] = {
         "1": {
             "1": {
-                "1.1": {"dependencies": [], "use_rag": True, "model": "2"},
-                "1.2": {"dependencies": ["1.1"], "use_rag": True, "model": "3"},
+                "1.1": {"dependencies": [], "use_rag": False, "model": "2"},
+                "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
                 "1.3": {"dependencies": ["1.2"], "use_rag": True, "model": "3"},
             },
             "2": {
@@ -54,11 +56,11 @@ class Orchestrator:
                 "7.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "7.2": {"dependencies": ["7.1"], "use_rag": False, "model": "3"},
             },
-            "8": {
-                "8.1": {"dependencies": [], "use_rag": False, "model": "3"},
-                "8.2": {"dependencies": ["8.1"], "use_rag": False, "model": "3"},
-                "8.3": {"dependencies": ["8.2"], "use_rag": False, "model": "3"},
-            },
+            # "8": {
+            #     "8.1": {"dependencies": [], "use_rag": False, "model": "3"},
+            #     "8.2": {"dependencies": ["8.1"], "use_rag": False, "model": "3"},
+            #     "8.3": {"dependencies": ["8.2"], "use_rag": False, "model": "3"},
+            # },
             "9": {
                 "9.1": {"dependencies": [], "use_rag": True, "model": "1"},
                 "9.2": {"dependencies": ["9.1"], "use_rag": True, "model": "2"},
@@ -69,7 +71,7 @@ class Orchestrator:
             },
             "11": {
                 "11.1": {"dependencies": [], "use_rag": True, "model": "3"},
-                "11.2": {"dependencies": ["11.1"], "use_rag": True, "model": "3"},
+                "11.2": {"dependencies": ["11.1"], "use_rag": False, "model": "3"},
                 "11.3": {"dependencies": ["11.2"], "use_rag": True, "model": "3"},
             },
             "12": {

@@ -175,6 +175,23 @@ async def new_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
+@api_logs(actions_router.get('/get_ticket_status'))
+async def get_ticket_status(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Query(...),
+    session: AsyncSession = Depends(get_session)
+):
+    try:
+        ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_id)
+        ticket_status = await TicketStatusCrud.get_by_id(session=session, record_id=ticket.ticket_status_id)
+
+        return {'detail': ticket_status.name}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
 @api_logs(actions_router.get("/get_events"))
 async def get_events(
     auth_data: dict = Depends(access_token_auth),

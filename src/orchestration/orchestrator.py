@@ -25,7 +25,7 @@ class Orchestrator:
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
-                "1.3": {"dependencies": ["1.2"], "use_rag": True, "model": "3"},
+                "1.3": {"dependencies": ["1.1", "1.2"], "use_rag": True, "model": "3"},
             },
             "2": {
                 "2.1": {"dependencies": [], "use_rag": False, "model": "1"},
@@ -34,27 +34,27 @@ class Orchestrator:
             "3": {
                 "3.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "3.2": {"dependencies": ["3.1"], "use_rag": False, "model": "2"},
-                "3.3": {"dependencies": ["3.2"], "use_rag": False, "model": "3"},
+                "3.3": {"dependencies": ["3.1", "3.2"], "use_rag": False, "model": "3"},
             },
             "4": {
                 "4.1": {"dependencies": [], "use_rag": False, "model": "1"},
-                "4.2": {"dependencies": ["4.1"], "use_rag": False, "model": "3"},
+                "4.2": {"dependencies": ["2.1", "4.1"], "use_rag": False, "model": "3"},
             },
             "5": {
                 "5.1": {"dependencies": [], "use_rag": False, "model": "1"},
-                "5.2": {"dependencies": ["5.1"], "use_rag": False, "model": "1"},
-                "5.3": {"dependencies": ["5.2"], "use_rag": False, "model": "3"},
+                "5.2": {"dependencies": ["5.1","3.1"], "use_rag": False, "model": "1"},
+                "5.3": {"dependencies": ["5.1", "5.2", "2.1", "4.1"], "use_rag": False, "model": "3"},
             },
             "6": {
                 "6.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "6.2": {"dependencies": ["6.1"], "use_rag": False, "model": "3"},
-                "6.3": {"dependencies": ["6.2"], "use_rag": False, "model": "1"},
-                "6.4": {"dependencies": ["6.3"], "use_rag": False, "model": "3"},
-                "6.5": {"dependencies": ["6.4"], "use_rag": False, "model": "3"},
+                "6.3": {"dependencies": [], "use_rag": False, "model": "1"},
+                "6.4": {"dependencies": ["6.1", "6.2"], "use_rag": False, "model": "3"},
+                "6.5": {"dependencies": [], "use_rag": False, "model": "3"},
             },
             "7": {
                 "7.1": {"dependencies": [], "use_rag": False, "model": "3"},
-                "7.2": {"dependencies": ["7.1"], "use_rag": False, "model": "3"},
+                "7.2": {"dependencies": ["7.1", "1.2", "2.1"], "use_rag": False, "model": "3"},
             },
             # "8": {
             #     "8.1": {"dependencies": [], "use_rag": False, "model": "3"},
@@ -62,20 +62,20 @@ class Orchestrator:
             #     "8.3": {"dependencies": ["8.2"], "use_rag": False, "model": "3"},
             # },
             "9": {
-                "9.1": {"dependencies": [], "use_rag": True, "model": "1"},
-                "9.2": {"dependencies": ["9.1"], "use_rag": True, "model": "2"},
-                "9.3": {"dependencies": ["9.2"], "use_rag": True, "model": "3"},
+                "9.1": {"dependencies": ["10.1"], "use_rag": True, "model": "1"},
+                "9.2": {"dependencies": [], "use_rag": False, "model": "2"},
+                "9.3": {"dependencies": ["9.1", "9.2"], "use_rag": False, "model": "3"},
             },
             "10": {
                 "10.1": {"dependencies": [], "use_rag": True, "model": "2"},
             },
             "11": {
-                "11.1": {"dependencies": [], "use_rag": True, "model": "3"},
-                "11.2": {"dependencies": ["11.1"], "use_rag": False, "model": "3"},
-                "11.3": {"dependencies": ["11.2"], "use_rag": True, "model": "3"},
+                "11.1": {"dependencies": ["2.2", "5.3"], "use_rag": True, "model": "3"},
+                "11.2": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3"], "use_rag": False, "model": "3"},
+                "11.3": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3"], "use_rag": False, "model": "3"},
             },
             "12": {
-                "12.1": {"dependencies": [], "use_rag": True, "model": "2"},
+                "12.1": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3", "11.1", "11.2", "11.3"], "use_rag": True, "model": "2"},
             },
         },
 

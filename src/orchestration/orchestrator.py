@@ -50,7 +50,7 @@ class Orchestrator:
                 "6.2": {"dependencies": ["6.1"], "use_rag": False, "model": "3"},
                 "6.3": {"dependencies": [], "use_rag": False, "model": "1"},
                 "6.4": {"dependencies": ["6.1", "6.2"], "use_rag": False, "model": "3"},
-                "6.5": {"dependencies": [], "use_rag": False, "model": "3"},
+                "6.5": {"dependencies": ["6.1", "6.2", "6.3", "6.4"], "use_rag": False, "model": "3"},
             },
             "7": {
                 "7.1": {"dependencies": [], "use_rag": False, "model": "3"},

@@ -18,6 +18,7 @@ Routes:
 
 import os
 import uuid
+from io import BytesIO
 from pathlib import Path
 from uuid import UUID
 import httpx
@@ -175,6 +176,64 @@ async def new_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
+@api_logs(actions_router.post("/parse_file_text"))
+async def parse_file_text(
+        auth_data: dict = Depends(access_token_auth),
+        file: UploadFile = File(...),
+):
+    """
+    Extracts text content from an uploaded PDF or DOCX file.
+
+    This is a universal endpoint that can parse any supported file format
+    and return its text content. Useful for extracting text from original documents,
+    summaries, reports, or any other file type that may be added in the future.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        file (UploadFile): Uploaded PDF or DOCX file to parse.
+
+    Returns:
+        dict: Extracted text content and file metadata.
+
+    Raises:
+        HTTPException: For unsupported file type or text extraction errors.
+    """
+    try:
+        if file.content_type not in [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ]:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Invalid file type, only PDF or DOCX supported'
+            )
+
+        try:
+            file_content = await file.read()
+            file_like = BytesIO(file_content)
+            parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
+
+            document_text = " ".join(parsed_data.get('other_text', []))
+            if not document_text:
+                raise ValueError("Parser could not extract text from the document.")
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f"Failed to parse the document: {e}"
+            )
+
+        return {'detail': 'Text was parsed', 'text': document_text}
+
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
+
+
 @api_logs(actions_router.get('/get_ticket_status'))
 async def get_ticket_status(
     auth_data: dict = Depends(access_token_auth),
@@ -185,7 +244,7 @@ async def get_ticket_status(
         ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_id)
         ticket_status = await TicketStatusCrud.get_by_id(session=session, record_id=ticket.ticket_status_id)
 
-        return {'detail': ticket_status.name}
+        return {'detail': 'Ticket status was found', 'status': ticket_status.name}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

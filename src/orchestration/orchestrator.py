@@ -42,7 +42,7 @@ class Orchestrator:
             },
             "5": {
                 "5.1": {"dependencies": [], "use_rag": False, "model": "1"},
-                "5.2": {"dependencies": ["5.1","3.1"], "use_rag": False, "model": "1"},
+                "5.2": {"dependencies": ["5.1", "3.1"], "use_rag": False, "model": "1"},
                 "5.3": {"dependencies": ["5.1", "5.2", "2.1", "4.1"], "use_rag": False, "model": "3"},
             },
             "6": {

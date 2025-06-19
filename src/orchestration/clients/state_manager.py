@@ -12,7 +12,7 @@ Key: "ticket:uuid-uuid"
     {
         "mega_task_id": "1",
         "status": "IN_PROGRESS",
-        "dependencies": 
+        "dependencies":
         "{
             "1":
                 {
@@ -94,7 +94,8 @@ class StateManager:
         fields_to_get = [f"subtask:{sid}:status" for sid in subtask_ids]
         statuses = await self._redis.hmget(key, fields_to_get)
 
-        return {sid: status.decode('utf-8') if status else None for sid, status in zip(subtask_ids, statuses)}
+        return {sid: status.decode('utf-8') if status else None for sid,
+                status in zip(subtask_ids, statuses)}
 
     async def find_unlocked_subtasks(
             self,

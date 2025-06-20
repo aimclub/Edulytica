@@ -2,6 +2,9 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
 import { ticketService } from "../../services/ticket.service"
+import { useNavigate } from "react-router-dom"
+import { useDispatch } from "react-redux"
+import { createTicket } from "../../store/ticketSlice"
 
 /**
  * Компонент для прикрепления и работы с файлом.
@@ -11,6 +14,7 @@ import { ticketService } from "../../services/ticket.service"
  * @param {Function} props.setSelectedParams - Функция для обновления массива выбранных параметров.
  * @param {Function} props.setFileResult - Функция для установки имени загруженного файла.
  * @param {Function} props.fetchTicketHistory - Функция для получения истории тикетов.
+ * @param {Function} props.onTicketCreated - Функция для обработки создания тикета.
  * @returns {JSX.Element} - Элемент интерфейса для работы с файлом.
  */
 
@@ -18,11 +22,12 @@ export const AddFile = ({
   setAccountSection,
   selectedParams,
   setSelectedParams,
-  setFileResult,
   setAddEventModal,
-  event,
   fetchTicketHistory,
+  onTicketCreated,
 }) => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [eventModal, setEventModal] = useState(false)
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
@@ -69,8 +74,6 @@ export const AddFile = ({
         { type: "file", name: fileName },
         ...prev.filter((param) => param.type !== "file"),
       ])
-
-      setFileResult(fileName)
     } else {
       setError("Пожалуйста, выберите .pdf или .docx файл")
     }
@@ -110,30 +113,28 @@ export const AddFile = ({
 
       const { event_id } = await ticketService.getEventId(eventParam.name)
       const mega_task_id = mode === "рецензирование" ? "1" : "2"
-      const { ticket_id } = await ticketService.createNewTicket(
-        file,
-        event_id,
-        mega_task_id
-      )
+
+      // Создаем тикет через Redux Thunk
+      await dispatch(createTicket(file, event_id, mega_task_id))
+
       await fetchTicketHistory()
-      setSelectedParams((prev) =>
-        prev.map((param) =>
-          param.type === "file" ? { ...param, ticketId: ticket_id } : param
-        )
-      )
 
       setAccountSection("result")
+      // Переход на страницу результата
+      navigate(`/account/result`)
       resetParams()
     } catch (error) {
       console.error(error.message || "Произошла ошибка при создании тикета")
+      setError(error.message)
     }
   }, [
     setAccountSection,
     resetParams,
     selectedParams,
-    setSelectedParams,
     fetchTicketHistory,
     mode,
+    navigate,
+    dispatch,
   ])
 
   const sortedParams = useMemo(
@@ -341,7 +342,6 @@ export const AddFile = ({
             }
             closeModal={openEventModal}
             setAddEventModal={setAddEventModal}
-            event={event}
           />
         )}
       </div>

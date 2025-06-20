@@ -51,6 +51,7 @@ class TicketService {
           "Content-Type": "multipart/form-data",
         },
       })
+
       return response.data
     } catch (error) {
       console.error("Error creating new ticket:", error)
@@ -159,6 +160,44 @@ class TicketService {
       return response.data
     } catch (error) {
       console.error("Error sharing ticket:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Получает статус тикета
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<Object>} Статус тикета
+   */
+  async getTicketStatus(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_ticket_status", {
+        params: { ticket_id: ticketId },
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error getting ticket status:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Парсит файл через /actions/parse_file_text
+   * @param {Blob|File} file - Файл для парсинга
+   * @returns {Promise<string>} Текст, распарсенный с бэкенда
+   */
+  async parseFileText(file) {
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const response = await $api.post("/actions/parse_file_text", formData, {
+        headers: {
+          "Content-Type": "application/pdf",
+        },
+      })
+      return response.data.text
+    } catch (error) {
+      console.error("Error parsing file text:", error)
       throw error
     }
   }

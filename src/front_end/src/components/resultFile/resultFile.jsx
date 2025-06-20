@@ -1,48 +1,43 @@
 import { useEffect, useRef, useState } from "react"
 import "./resultFile.scss"
-import texts from "./text.js"
 import { motion } from "framer-motion"
+import { useDispatch } from "react-redux"
+import { fetchTicketFiles } from "../../store/ticketSlice"
 /**
  * Компонент отображает результат работы над файлом,содержимое файла и позволяет переключаться между его разделами(суммаризация, рецензирование).
  *
  * @param {Object} props - Свойства компонента.
  * @param {string} props.fileName - Имя файла, данные которого отображаются.
+ * @param {Object} props.ticketData - Данные о тикете, включая статус.
  */
 
-export const ResultFile = ({ fileName }) => {
+export const ResultFile = ({ fileName, ticketData }) => {
+  const dispatch = useDispatch()
   /** Состояние активного раздела */
   const [activeSectionResult, setActiveSectionResult] = useState(1)
-
-  /**  Состояние загрузки */
-  const [loading, setLoading] = useState(true)
 
   /** Состояние, указывающее, есть ли прокрутка */
   const [isScrollable, setIsScrollable] = useState(true)
   const scrollRef = useRef(null)
   // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
   const [key, setKey] = useState(0)
+
+  const files = ticketData?.files || {}
+
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
   }, [fileName])
 
+  // Эффект для загрузки файлов, если тикет уже выполнен
   useEffect(() => {
-    if (texts[fileName] && texts[fileName].text1) {
-      // Если данные есть, устанавливаем загрузку в false
-      setLoading(false)
-    } else {
-      // Если данных нет, начинаем ждать
-      const intervalId = setInterval(() => {
-        if (texts[fileName] && texts[fileName].text1) {
-          // Если данные появились, устанавливаем загрузку в false и очищаем интервал
-          setLoading(false)
-          clearInterval(intervalId)
-        }
-      }, 500)
-
-      // Очищаем интервал при размонтировании компонента
-      return () => clearInterval(intervalId)
+    if (
+      ticketData?.status === "Completed" &&
+      ticketData?.ticketId &&
+      !ticketData.files
+    ) {
+      dispatch(fetchTicketFiles(ticketData.ticketId))
     }
-  }, [fileName])
+  }, [ticketData?.status, ticketData?.ticketId, ticketData?.files, dispatch])
 
   useEffect(() => {
     const checkScrollable = () => {
@@ -52,20 +47,36 @@ export const ResultFile = ({ fileName }) => {
         )
       }
     }
-
     checkScrollable()
     window.addEventListener("resize", checkScrollable)
-
     return () => window.removeEventListener("resize", checkScrollable)
   }, [activeSectionResult])
 
   // Функция для получения контента на основе активной секции
   const getTextContent = () => {
-    if (!texts[fileName]) return "Данные не найдены..."
-    if (activeSectionResult === 3) return texts[fileName].text3
-    if (activeSectionResult === 2) return texts[fileName].text2
-    return texts[fileName].text1
+    // Если тикет в процессе обработки, всегда показывать статус
+    if (
+      ticketData &&
+      (ticketData.status === "Created" || ticketData.status === "In progress")
+    ) {
+      return `Статус: ${ticketData.status}`
+    }
+
+    // Если статус 'Completed', но файлы еще не загружены
+    if (!files) {
+      if (ticketData?.status === "Completed") {
+        return `Статус: ${ticketData.status}`
+      }
+      return "Загрузка..."
+    }
+
+    // Если файлы загружены (статус 'Completed')
+    // if (activeSectionResult === 3) return files.result || ""
+    // if (activeSectionResult === 2) return files.summary || ""
+    if (activeSectionResult === 2) return files.result || ""
+    return files.file || ""
   }
+
   return (
     <motion.div
       key={key}
@@ -74,11 +85,7 @@ export const ResultFile = ({ fileName }) => {
       exit={{ opacity: 0.3 }}
       transition={{ duration: 0.5 }}
     >
-      {loading ? (
-        <div className="resultFile">
-          <div className="textLoadingResultFile">Загрузка...</div>
-        </div>
-      ) : (
+      {
         <div className="resultFile">
           <div className="titleResultFile">{fileName}</div>
           <div className="blockResultFile">
@@ -94,7 +101,7 @@ export const ResultFile = ({ fileName }) => {
                 >
                   Исходный документ
                 </div>
-                <div
+                {/* <div
                   className={
                     activeSectionResult === 2
                       ? "sectionHeaderContainerResultFileActive"
@@ -103,16 +110,17 @@ export const ResultFile = ({ fileName }) => {
                   onClick={() => setActiveSectionResult(2)}
                 >
                   Суммаризация
-                </div>
+                </div> */}
                 <div
                   className={
-                    activeSectionResult === 3
+                    activeSectionResult === 2
                       ? "sectionHeaderContainerResultFileActive"
                       : "sectionHeaderContainerResultFile"
                   }
-                  onClick={() => setActiveSectionResult(3)}
+                  onClick={() => setActiveSectionResult(2)}
                 >
-                  Рецензирование
+                  {/* Рецензирование */}
+                  Результат
                 </div>
               </div>
               <div className="textContResultFile">
@@ -128,27 +136,29 @@ export const ResultFile = ({ fileName }) => {
                 </div>
               </div>
             </div>
-            <div className="btnBottomResultFile">
-              <svg
-                width="25"
-                height="25"
-                viewBox="0 0 25 25"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
-                  stroke="#89AAFF"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              Скачать
-            </div>
+            {activeSectionResult === 2 && (
+              <div className="btnBottomResultFile">
+                <svg
+                  width="25"
+                  height="25"
+                  viewBox="0 0 25 25"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                    stroke="#89AAFF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                Скачать
+              </div>
+            )}
           </div>
         </div>
-      )}
+      }
     </motion.div>
   )
 }

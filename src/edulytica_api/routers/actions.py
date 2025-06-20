@@ -18,13 +18,14 @@ Routes:
 
 import os
 import uuid
-import traceback
+from io import BytesIO
 from pathlib import Path
 from uuid import UUID
+import httpx
 from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.document_summary_crud import DocumentSummaryCrud
@@ -37,8 +38,8 @@ from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import get_session
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
+from src.edulytica_api.dependencies import get_http_client
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
-from src.edulytica_api.celery.tasks import get_llm_purpose_result
 
 actions_router = APIRouter(prefix="/actions")
 ROOT_DIR = Path(__file__).resolve().parents[2]
@@ -48,8 +49,10 @@ ROOT_DIR = Path(__file__).resolve().parents[2]
 async def new_ticket(
     auth_data: dict = Depends(access_token_auth),
     file: UploadFile = File(...),
-    event_id: UUID = Body(..., embed=True),
-    session: AsyncSession = Depends(get_session)
+    event_id: UUID = Body(...),
+    mega_task_id: str = Body(...),
+    session: AsyncSession = Depends(get_session),
+    http_client: httpx.AsyncClient = Depends(get_http_client)
 ):
     """
     Creates a new ticket by uploading a document and associating it with an event.
@@ -61,7 +64,9 @@ async def new_ticket(
         auth_data (dict): Authenticated user data.
         file (UploadFile): Uploaded PDF or DOCX file.
         event_id (UUID): ID of the associated event (standard or custom).
+        mega_task_id (str): ID of mega task
         session (AsyncSession): Database session.
+        http_client (AsyncClient): Async HTTP Client
 
     Returns:
         dict: Success message and ticket ID.
@@ -70,6 +75,11 @@ async def new_ticket(
         HTTPException: For invalid event ID, unsupported file type, or internal errors.
     """
     try:
+        if mega_task_id != "1":
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST, detail=f"Unknown megatask id {mega_task_id}"
+            )
+
         custom_event = None
         event = await EventCrud.get_by_id(session=session, record_id=event_id)
         if not event:
@@ -92,19 +102,31 @@ async def new_ticket(
 
         file_dir = os.path.join(ROOT_DIR, 'app_files', 'document', f'{auth_data["user"].id}')
         os.makedirs(file_dir, exist_ok=True)
+        saved_file_path = os.path.join(file_dir, f'{file_id}.{file_extension}')
 
         file_path = os.path.join(
             'app_files', 'document', f'{auth_data["user"].id}', f'{file_id}.{file_extension}'
         )
-        with open(os.path.join(ROOT_DIR, file_path), 'wb') as f:
+        with open(saved_file_path, 'wb') as f:
             f.write(await file.read())
+
+        try:
+            with open(saved_file_path, 'rb') as f:
+                parsed_data = get_structural_paragraphs(f, filename=file.filename)
+
+            document_text = " ".join(parsed_data.get('other_text', []))
+            if not document_text:
+                raise ValueError("Parser could not extract text from the document.")
+
+        except Exception as _e:
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=f"Failed to parse the document: {_e}")
 
         await DocumentCrud.create(
             session=session, user_id=auth_data['user'].id, file_path=file_path, id=file_id
         )
 
         ticket_status = await TicketStatusCrud.get_filtered_by_params(
-            session=session, name=TicketStatusDefault.IN_PROGRESS.value
+            session=session, name=TicketStatusDefault.CREATED.value
         )
         ticket_type = await TicketTypeCrud.get_filtered_by_params(
             session=session, name=TicketTypeDefault.ACHIEVABILITY.value
@@ -123,21 +145,109 @@ async def new_ticket(
             ticket_data['custom_event_id'] = custom_event.id
         ticket = await TicketCrud.create(**ticket_data)
 
-        data = get_structural_paragraphs(file.file)
-        toc = data.get('table_of_content', [])
-        if toc and toc[0].get('text'):
-            intro = " ".join(toc[0]['text'])
-        else:
-            intro = ""
-        main_text = " ".join(data.get('other_text', []))
-        # get_llm_purpose_result.delay(intro=intro, main_text=main_text,
-        #                              user_id=auth_data['user'].id, ticket_id=ticket.id)
+        orchestrator_payload = {
+            "ticket_id": str(ticket.id),
+            "mega_task_id": mega_task_id,
+            "document_text": document_text
+        }
 
-        return {'detail': 'Ticket has been created', 'ticket_id': ticket.id}
+        try:
+            response = await http_client.post('http://edulytica_orchestration:10001/orchestrate/run_ticket',
+                                              json=orchestrator_payload, timeout=30.0)
+            response.raise_for_status()
+        except httpx.RequestError as _re:
+            raise HTTPException(
+                status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Orchestration service is unavailable {_re}"
+            )
+        except httpx.HTTPStatusError as _hse:
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Orchestrator failed to start task: {_hse.response.text}"
+            )
+
+        return JSONResponse(
+            status_code=202,
+            content={'detail': 'Ticket has been created and sent for processing', 'ticket_id': str(ticket.id)}
+        )
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover
-        print(traceback.format_exc())
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.post("/parse_file_text"))
+async def parse_file_text(
+        auth_data: dict = Depends(access_token_auth),
+        file: UploadFile = File(...),
+):
+    """
+    Extracts text content from an uploaded PDF or DOCX file.
+
+    This is a universal endpoint that can parse any supported file format
+    and return its text content. Useful for extracting text from original documents,
+    summaries, reports, or any other file type that may be added in the future.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        file (UploadFile): Uploaded PDF or DOCX file to parse.
+
+    Returns:
+        dict: Extracted text content and file metadata.
+
+    Raises:
+        HTTPException: For unsupported file type or text extraction errors.
+    """
+    try:
+        if file.content_type not in [
+            'application/pdf',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ]:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Invalid file type, only PDF or DOCX supported'
+            )
+
+        try:
+            file_content = await file.read()
+            file_like = BytesIO(file_content)
+            parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
+
+            document_text = " ".join(parsed_data.get('other_text', []))
+            if not document_text:
+                raise ValueError("Parser could not extract text from the document.")
+
+        except Exception as e:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f"Failed to parse the document: {e}"
+            )
+
+        return {'detail': 'Text was parsed', 'text': document_text}
+
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(
+            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f'500 ERR: {_e}'
+        )
+
+
+@api_logs(actions_router.get('/get_ticket_status'))
+async def get_ticket_status(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Query(...),
+    session: AsyncSession = Depends(get_session)
+):
+    try:
+        ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_id)
+        ticket_status = await TicketStatusCrud.get_by_id(session=session, record_id=ticket.ticket_status_id)
+
+        return {'detail': 'Ticket status was found', 'status': ticket_status.name}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -149,14 +259,11 @@ async def get_events(
     """
     Retrieves a list of all events available to the user.
     Includes both standard and custom events.
-
     Args:
         auth_data (dict): Authenticated user data.
         session (AsyncSession): Database session.
-
     Returns:
         dict: List of events with their IDs and names.
-
     Raises:
         HTTPException: If an internal server error occurs.
     """
@@ -178,9 +285,9 @@ async def get_events(
         all_events = standard_events_list + custom_events_list
 
         return {"detail": "Events were found", "events": all_events}
-    except HTTPException as http_exc:
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e:
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f"500 ERR: {_e}"
         )

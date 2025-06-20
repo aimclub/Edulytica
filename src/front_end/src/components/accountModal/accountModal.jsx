@@ -1,5 +1,7 @@
 import { useEffect, useState, useCallback } from "react"
 import "./accountModal.scss"
+import { useDispatch } from "react-redux"
+import { fetchTicket } from "../../store/ticketSlice"
 
 /**
  *
@@ -9,20 +11,20 @@ import "./accountModal.scss"
  * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
  * @param {array} props.tickets - Массив тикетов.
  * @param {function} props.fetchTicketHistory - Функция для получения истории тикетов.
+ * @param {object} props.currentTicket - Текущий тикет.
  */
 
 export const AccountModal = ({
   setAccountSection,
   accountSection,
-  setFileResult,
   tickets,
   fetchTicketHistory,
+  currentTicket,
 }) => {
+  const dispatch = useDispatch()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
-  const [, setIsLoading] = useState(false)
-  const [, setError] = useState(null)
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 50)
@@ -45,26 +47,46 @@ export const AccountModal = ({
     filterData()
   }, [searchTerm, tickets])
 
-  const updateHistory = useCallback(async () => {
-    setIsLoading(true)
-    setError(null)
-    try {
+  // Создаем функцию для начальной загрузки
+  const initialTicketLoad = useCallback(async () => {
+    if (tickets.length === 0) {
+      // Проверяем, есть ли уже данные
       await fetchTicketHistory()
-    } catch (err) {
-      setError("Не удалось загрузить историю тикетов")
-      console.error("Error loading ticket history:", err)
-    } finally {
-      setIsLoading(false)
     }
-  }, [fetchTicketHistory])
+  }, [tickets.length, fetchTicketHistory])
 
+  // Используем для начальной загрузки
   useEffect(() => {
-    updateHistory()
-  }, [updateHistory])
+    initialTicketLoad()
+  }, [initialTicketLoad])
+
+  // Принудительно обновлять историю тикетов при открытии секции 'main' или 'result'
+  useEffect(() => {
+    if (accountSection === "main" || accountSection === "result") {
+      fetchTicketHistory()
+    }
+  }, [accountSection]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Удаляем documentId из URL, если мы не в секции 'result'
+  useEffect(() => {
+    if (accountSection !== "result") {
+      const searchParams = new URLSearchParams(window.location.search)
+      if (searchParams.has("documentId")) {
+        searchParams.delete("documentId")
+        const newUrl = searchParams.toString()
+          ? `?${searchParams.toString()}`
+          : window.location.pathname
+        window.history.replaceState(null, "", newUrl)
+      }
+    }
+  }, [accountSection])
 
   const handleFileLine = (ticket) => {
     setAccountSection("result")
-    setFileResult(ticket.document_id)
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.set("documentId", ticket.document_id)
+    window.history.replaceState(null, "", `?${searchParams.toString()}`)
+    dispatch(fetchTicket(ticket.id))
   }
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -149,7 +171,13 @@ export const AccountModal = ({
           <div className="containerScrollFileAccModal">
             {filterHistory.map((ticket) => (
               <div
-                className="fileLineAccModal"
+                className={`fileLineAccModal ${
+                  accountSection === "result" &&
+                  currentTicket &&
+                  ticket.id === currentTicket.ticketId
+                    ? "activeTicket"
+                    : ""
+                }`}
                 key={ticket.id}
                 onClick={() => handleFileLine(ticket)}
               >

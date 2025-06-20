@@ -76,6 +76,7 @@ const AppRoutes = ({
             setProfileModal={setProfileModal}
             accountSection={accountSection}
             setAccountSection={setAccountSection}
+            isAuth={isAuth}
           />
         }
       />

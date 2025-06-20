@@ -99,6 +99,26 @@
     border: 1px solid #91d5ff;
     border-radius: 4px;
   }
+
+  .ticketStatus {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f7ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .statusLabel {
+      font-weight: 500;
+      color: #4a4a4a;
+    }
+
+    .statusValue {
+      color: #89aaff;
+      font-weight: 600;
+    }
+  }
 }
 .addFileTopCont {
   display: flex;
@@ -173,6 +193,6 @@
     min-width: 0;
     padding-bottom: 8px;
     margin-left: 30px;
-    padding-left: 30px;
+    padding-left: 128px;
   }
 }

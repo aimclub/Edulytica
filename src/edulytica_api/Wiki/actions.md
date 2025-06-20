@@ -10,6 +10,7 @@
 
 * **file**: UploadFile
 * **event_id**: uuid
+* **mega_task_id**: str
 
 Return:
 1. 200 Ok

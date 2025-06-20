@@ -119,7 +119,9 @@ async def new_ticket(
                 raise ValueError("Parser could not extract text from the document.")
 
         except Exception as _e:
-            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=f"Failed to parse the document: {_e}")
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f"Failed to parse the document: {_e}")
 
         await DocumentCrud.create(
             session=session, user_id=auth_data['user'].id, file_path=file_path, id=file_id
@@ -168,8 +170,10 @@ async def new_ticket(
 
         return JSONResponse(
             status_code=202,
-            content={'detail': 'Ticket has been created and sent for processing', 'ticket_id': str(ticket.id)}
-        )
+            content={
+                'detail': 'Ticket has been created and sent for processing',
+                'ticket_id': str(
+                    ticket.id)})
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

@@ -19,6 +19,7 @@ class Parser:
         _temp_dir (str): The path to a temporary directory for storing unpacked DOCX files.
         file_type (str): The detected type of the file ('docx' or 'pdf').
     """
+
     def __init__(self, path: Union[str, IO[bytes]], filename: str = None):
         self.path = path
         self.filename = filename
@@ -108,7 +109,6 @@ class Parser:
             print(f"Ошибка парсинга PDF: {e}")
         return struct, potentially_damaged
 
-
     def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id, list_view: bool = True):
         """
         Extracts all text content located between two specified bookmarks (anchors) in a DOCX file.
@@ -129,7 +129,8 @@ class Parser:
                 break
             if check:
                 text.append(self._parse_text_from_anchor(p))
-            if anchor_id and p.findall(f'.//{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{anchor_id}"]'):
+            if anchor_id and p.findall(
+                    f'.//{{{schemas.w}}}bookmarkStart[@{{{schemas.w}}}name="{anchor_id}"]'):
                 check = True
         return text if list_view else '\n'.join(text)
 

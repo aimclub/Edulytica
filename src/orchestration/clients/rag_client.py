@@ -38,7 +38,8 @@ class RagClient:
             return enriched_prompt
 
         except HTTPStatusError as _hse:
-            print(f"RAG service returned an HTTP error: {_hse.response.status_code} - {_hse.response.text}")
+            print(
+                f"RAG service returned an HTTP error: {_hse.response.status_code} - {_hse.response.text}")
             return original_prompt
         except Exception as _e:
             print(f"An unexpected error occurred during RAG call: {_e}")

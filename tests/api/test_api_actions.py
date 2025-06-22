@@ -1,69 +1,88 @@
 import uuid
 import pytest
 from unittest.mock import AsyncMock, patch, MagicMock, mock_open
+from starlette.status import HTTP_202_ACCEPTED
 from src.edulytica_api.app import app
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.actions.os.makedirs")
-@patch("builtins.open", new_callable=mock_open)
-@patch("src.edulytica_api.routers.actions.EventCrud.get_by_id")
-@patch("src.edulytica_api.routers.actions.CustomEventCrud.get_by_id")
-@patch("src.edulytica_api.routers.actions.DocumentCrud.get_by_id")
-@patch("src.edulytica_api.routers.actions.DocumentCrud.create")
-@patch("src.edulytica_api.routers.actions.TicketStatusCrud.get_filtered_by_params")
-@patch("src.edulytica_api.routers.actions.TicketTypeCrud.get_filtered_by_params")
-@patch("src.edulytica_api.routers.actions.TicketCrud.create")
 @patch("src.edulytica_api.routers.actions.get_structural_paragraphs")
-@patch("src.edulytica_api.routers.actions.get_llm_purpose_result.delay")
+@patch("src.edulytica_api.routers.actions.TicketCrud.create")
+@patch("src.edulytica_api.routers.actions.TicketTypeCrud.get_filtered_by_params")
+@patch("src.edulytica_api.routers.actions.TicketStatusCrud.get_filtered_by_params")
+@patch("src.edulytica_api.routers.actions.DocumentCrud.create")
+@patch("src.edulytica_api.routers.actions.DocumentCrud.get_by_id")
+@patch("src.edulytica_api.routers.actions.CustomEventCrud.get_by_id")
+@patch("src.edulytica_api.routers.actions.EventCrud.get_by_id")
+@patch("builtins.open", new_callable=mock_open)
+@patch("src.edulytica_api.routers.actions.os.makedirs")
 def test_new_ticket_success(
-    mock_llm_task,
-    mock_get_paragraphs,
-    mock_ticket_create,
-    mock_type,
-    mock_status,
-    mock_doc_create,
-    mock_doc_get,
-    mock_custom_event,
-    mock_event,
-    mock_file_open,
-    mock_makedirs,
-    client
+        mock_makedirs,
+        mock_open_file,
+        mock_event_get,
+        mock_custom_event_get,
+        mock_doc_get,
+        mock_doc_create,
+        mock_status,
+        mock_type,
+        mock_ticket_create,
+        mock_get_paragraphs,
+        client,
+        mock_http_client
 ):
-    mock_event.return_value = AsyncMock(id=uuid.uuid4())
-    mock_custom_event.return_value = None
+    mock_event_get.return_value = MagicMock(id=uuid.uuid4())
+    mock_custom_event_get.return_value = None
     mock_doc_get.return_value = None
-    mock_status.return_value = [AsyncMock(id=1)]
-    mock_type.return_value = [AsyncMock(id=1)]
-    mock_ticket_create.return_value = AsyncMock(id=123)
-    mock_get_paragraphs.return_value = {
-        "table_of_content": [{"text": ["Intro"]}],
-        "other_text": ["Main"]
+    mock_status.return_value = [MagicMock(id=uuid.uuid4())]
+    mock_type.return_value = [MagicMock(id=uuid.uuid4())]
+    mock_ticket_create.return_value = MagicMock(id=uuid.uuid4())
+    mock_get_paragraphs.return_value = {"other_text": ["some parsed text"]}
+    mock_http_client.post = AsyncMock()
+    mock_response = AsyncMock()
+    mock_response.raise_for_status = AsyncMock()
+    mock_response.status_code = 200
+    mock_response.text = '{"status": "ok"}'
+    mock_http_client.post.return_value = mock_response
+
+    file_data = b"dummy file content"
+    files = {
+        "file": ("test.docx", file_data, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
+    data = {
+        "event_id": str(uuid.uuid4()),
+        "mega_task_id": "1",
     }
 
-    file_content = b"dummy file content"
     response = client(app).post(
         "/actions/new_ticket",
-        files={"file": ("test.pdf", file_content, "application/pdf")},
-        data={"event_id": str(uuid.uuid4())}
+        data=data,
+        files=files
     )
 
-    assert response.status_code == 200
+    assert response.status_code == HTTP_202_ACCEPTED
     assert "ticket_id" in response.json()
+    mock_http_client.post.assert_awaited_once()
 
 
 @pytest.mark.asyncio
 @patch("src.edulytica_api.routers.actions.EventCrud.get_by_id")
 @patch("src.edulytica_api.routers.actions.CustomEventCrud.get_by_id")
-def test_new_ticket_invalid_event(mock_custom_event, mock_event, client):
-    mock_event.return_value = None
-    mock_custom_event.return_value = None
+def test_new_ticket_invalid_event(
+    mock_custom_event_get,
+    mock_event_get,
+    client,
+    mock_http_client
+):
+    mock_event_get.return_value = None
+    mock_custom_event_get.return_value = None
 
-    file_content = b"dummy file content"
+    files = {
+        "file": ("test.docx", b"content", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
+    data = {"event_id": str(uuid.uuid4()), "mega_task_id": "1"}
+
     response = client(app).post(
         "/actions/new_ticket",
-        files={"file": ("test.pdf", file_content, "application/pdf")},
-        data={"event_id": str(uuid.uuid4())}
+        data=data,
+        files=files
     )
 
     assert response.status_code == 400
@@ -71,21 +90,26 @@ def test_new_ticket_invalid_event(mock_custom_event, mock_event, client):
 
 
 @pytest.mark.asyncio
+@pytest.mark.asyncio
 @patch("src.edulytica_api.routers.actions.EventCrud.get_by_id")
-@patch("src.edulytica_api.routers.actions.CustomEventCrud.get_by_id")
-def test_new_ticket_invalid_file_type(mock_custom_event, mock_event, client):
-    mock_event.return_value = AsyncMock(id=uuid.uuid4())
-    mock_custom_event.return_value = None
+def test_new_ticket_invalid_file_type(
+    mock_event_get,
+    client,
+    mock_http_client
+):
+    mock_event_get.return_value = MagicMock(id=uuid.uuid4())
 
-    file_content = b"dummy file content"
+    files = {"file": ("test.txt", b"content", "text/plain")}
+    data = {"event_id": str(uuid.uuid4()), "mega_task_id": "1"}
+
     response = client(app).post(
         "/actions/new_ticket",
-        files={"file": ("test.pdf", file_content, "application/epub+zip")},
-        data={"event_id": str(uuid.uuid4())}
+        data=data,
+        files=files
     )
 
     assert response.status_code == 400
-    assert response.json()["detail"] == "Invalid file type, only PDF or DOCX"
+    assert response.json()["detail"] == 'Invalid file type, only PDF or DOCX'
 
 
 @pytest.mark.asyncio

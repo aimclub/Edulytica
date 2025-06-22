@@ -46,7 +46,10 @@ def test_new_ticket_success(
 
     file_data = b"dummy file content"
     files = {
-        "file": ("test.docx", file_data, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
+        "file": (
+            "test.docx",
+            file_data,
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
     data = {
         "event_id": str(uuid.uuid4()),
         "mega_task_id": "1",
@@ -76,7 +79,10 @@ def test_new_ticket_invalid_event(
     mock_custom_event_get.return_value = None
 
     files = {
-        "file": ("test.docx", b"content", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
+        "file": (
+            "test.docx",
+            b"content",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document")}
     data = {"event_id": str(uuid.uuid4()), "mega_task_id": "1"}
 
     response = client(app).post(

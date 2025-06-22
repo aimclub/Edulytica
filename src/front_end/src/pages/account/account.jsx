@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { AccountModal } from "../../components/accountModal/accountModal"
 import { AddFile } from "../../components/addFile/addFile"
 import { motion } from "framer-motion"
@@ -10,6 +10,12 @@ import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
 import { useSelector, useDispatch } from "react-redux"
 import { fetchUserData } from "../../store/authSlice"
+import {
+  fetchTicket,
+  fetchTicketHistory,
+  setCurrentTicket,
+} from "../../store/ticketSlice"
+import { useLocation } from "react-router-dom"
 
 /**
  *  * Компонент страницы аккаунта пользователя.
@@ -32,20 +38,54 @@ export const Account = ({
   setAccountSection,
   isAuth,
 }) => {
+  const location = useLocation()
   const dispatch = useDispatch()
   const [selectedParams, setSelectedParams] = useState([]) // массив для хранения параметров при отправки документа
-  const [fileResult, setFileResult] = useState("")
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)
 
-  // Получаем данные пользователя из Redux store
+  // Получаем данные из Redux store
   const userData = useSelector((state) => state.auth.currentUser)
-  console.log("Current user data from Redux:", userData)
+  const { currentTicket, tickets } = useSelector((state) => state.ticket)
 
   useEffect(() => {
     dispatch(fetchUserData())
   }, [dispatch])
+
+  // Обновляем секцию аккаунта на основе URL
+  useEffect(() => {
+    const path = location.pathname
+    if (path === "/account/result") {
+      setAccountSection("result")
+      // Получаем documentId из параметров URL
+      const searchParams = new URLSearchParams(location.search)
+      const documentId = searchParams.get("documentId")
+
+      if (documentId && tickets.length > 0) {
+        const foundTicket = tickets.find((t) => t.document_id === documentId)
+        // Диспатчим только если currentTicket не тот же самый
+        if (
+          foundTicket &&
+          (!currentTicket || currentTicket.ticketId !== foundTicket.id)
+        ) {
+          dispatch(fetchTicket(foundTicket.id))
+        }
+      } else if (!currentTicket) {
+        dispatch(fetchTicketHistory()).then((ticketHistory) => {
+          if (ticketHistory && ticketHistory.length > 0) {
+            dispatch(fetchTicket(ticketHistory[0].id))
+          }
+        })
+      }
+    } else if (path === "/account/help") {
+      setAccountSection("help")
+    } else if (path === "/account/info") {
+      setAccountSection("info")
+    } else if (path === "/account") {
+      setAccountSection("main")
+    }
+  }, [location.pathname, location.search, setAccountSection, dispatch]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const [infoProfile, setInfoProfile] = useState({
     name: userData?.name || "...",
@@ -67,15 +107,7 @@ export const Account = ({
     }
   }, [userData])
 
-  const [event, setEvent] = useState([
-    { name: "ППС", info: "Это описание мероприятия ППС" },
-    { name: "КМУ", info: "Это описание мероприятия КМУ" },
-  ])
   const [key, setKey] = useState(0)
-
-  useEffect(() => {
-    console.log(event)
-  }, [event])
 
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
@@ -97,6 +129,23 @@ export const Account = ({
     }
   }, [editingProfileModal])
 
+  const handleTicketCreated = useCallback(
+    (ticketData) => {
+      console.log("Создан тикет:", ticketData)
+      dispatch(setCurrentTicket(ticketData))
+      // Обновляем URL с ID нового тикета
+      const searchParams = new URLSearchParams(window.location.search)
+      searchParams.delete("ticketId")
+      searchParams.set("documentId", ticketData.ticketInfo.document_id)
+      window.history.replaceState(null, "", `?${searchParams.toString()}`)
+    },
+    [dispatch]
+  )
+
+  const handleFetchTicketHistory = useCallback(() => {
+    dispatch(fetchTicketHistory())
+  }, [dispatch])
+
   return (
     <div className="accPage">
       <Header
@@ -109,7 +158,9 @@ export const Account = ({
           <AccountModal
             setAccountSection={setAccountSection}
             accountSection={accountSection}
-            setFileResult={setFileResult}
+            tickets={tickets}
+            fetchTicketHistory={handleFetchTicketHistory}
+            currentTicket={currentTicket}
           />
         ) : null}
         <div className="addFileAccPageAnimate">
@@ -126,16 +177,19 @@ export const Account = ({
                   setAccountSection={setAccountSection}
                   selectedParams={selectedParams}
                   setSelectedParams={setSelectedParams}
-                  setFileResult={setFileResult}
                   setAddEventModal={setAddEventModal}
-                  event={event}
+                  fetchTicketHistory={handleFetchTicketHistory}
+                  onTicketCreated={handleTicketCreated}
                 />
               </div>
             ) : accountSection === "result" ? (
               <div className={`addFileAccPage ${accountModal ? "shift" : ""}`}>
-                <ResultFile fileName={fileResult} />
+                <ResultFile
+                  fileName={currentTicket?.ticketInfo?.document_id || ""}
+                  ticketData={currentTicket}
+                />
               </div>
-            ) : null}{" "}
+            ) : null}
           </motion.div>
         </div>
       </div>
@@ -174,8 +228,7 @@ export const Account = ({
           >
             <AddEvent
               setAddEventModal={setAddEventModal}
-              event={event}
-              setEvent={setEvent}
+              fetchTicketHistory={handleFetchTicketHistory}
             />
           </div>
         </>

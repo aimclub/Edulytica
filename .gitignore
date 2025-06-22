@@ -177,3 +177,4 @@ check_type_coverage.py
 local_check_type_coverage.py
 .DS_Store
 /src/.DS_Store
+app_files/

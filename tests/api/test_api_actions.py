@@ -145,7 +145,7 @@ def test_get_event_id_not_found(mock_custom, mock_event, client):
 @pytest.mark.asyncio
 @patch("src.edulytica_api.routers.actions.TicketCrud.get_ticket_by_id_or_shared")
 def test_get_ticket_success(mock_get_ticket, client):
-    mock_get_ticket.return_value = ["mock_ticket"]
+    mock_get_ticket.return_value = "mock_ticket"
 
     response = client(app).get("/actions/get_ticket", params={"ticket_id": str(uuid.uuid4())})
     assert response.status_code == 200

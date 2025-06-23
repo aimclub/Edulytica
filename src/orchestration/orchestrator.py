@@ -2,6 +2,10 @@ import os
 import uuid
 from typing import Dict, Any, Union
 import asyncio
+
+import httpx
+
+from src.common.config import INTERNAL_API_SECRET
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
@@ -252,4 +256,25 @@ class Orchestrator:
 
         final_report_text = "\n\n".join(report_parts)
 
-        # TODO: Добавить сохранение на API
+        payload = {
+            "ticket_id": str(ticket_id),
+            "report_text": final_report_text
+        }
+
+        headers = {
+            "X-Internal-Secret": INTERNAL_API_SECRET
+        }
+
+        try:
+            response = await self.rag_client._http_client.post(
+                "http://edulytica_api:8002/internal/upload_report",
+                json=payload,
+                headers=headers,
+                timeout=60.0
+            )
+            response.raise_for_status()
+        except httpx.RequestError as e:
+            await self.state_manager.fail_ticket(ticket_id, "finalization", f"Network error during report upload: {e}")
+        except httpx.HTTPStatusError as e:
+            await self.state_manager.fail_ticket(ticket_id, "finalization",
+                                                 f"API error during report upload: {e.response.text}")

@@ -1,11 +1,12 @@
 from contextlib import asynccontextmanager
 import uvicorn
-from aiokafka import AIOKafkaProducer
+from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
 
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS
 from src.orchestration.routers.orchestrator_router import rt
 
 
@@ -19,11 +20,18 @@ async def lifespan(app: FastAPI):
     kafka_producer = AIOKafkaProducer(
         bootstrap_servers='kafka:9092'
     )
+    kafka_consumer_client = AIOKafkaConsumer(
+        "llm_tasks.result",
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+        group_id="orchestrator_results_group",
+        auto_offset_reset='earliest'
+    )
     http_client = AsyncClient()
 
     try:
         await redis_client.ping()
         await kafka_producer.start()
+        await kafka_consumer_client.start()
 
         app.state.redis_client = redis_client
         app.state.kafka_producer = kafka_producer

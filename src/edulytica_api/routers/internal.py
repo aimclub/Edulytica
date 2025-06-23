@@ -63,10 +63,11 @@ async def upload_report(
             ticket_status_id=completed_status.id
         )
 
-        return {"detail": "Report has been uploaded and ticket is marked as completed", "report_id": report_id}
+        return {
+            "detail": "Report has been uploaded and ticket is marked as completed",
+            "report_id": report_id}
 
     except HTTPException as http_exc:
         raise http_exc
     except Exception as e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
-

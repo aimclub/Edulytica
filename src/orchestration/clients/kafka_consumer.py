@@ -68,7 +68,8 @@ class KafkaConsumer:
                         event_name=context.get('event_name', None)
                     )
                 except ValueError as e:
-                    print(f"CRITICAL ERROR: Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
+                    print(
+                        f"CRITICAL ERROR: Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
                     await self.state_manager.fail_ticket(ticket_id, subtask_id,
                                                          f"Orchestrator instantiation error: {e}")
                     return

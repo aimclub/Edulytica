@@ -241,7 +241,8 @@ class Orchestrator:
             if not subtasks:
                 continue
 
-            last_subtask_id = sorted(subtasks.keys(), key=lambda x: list(map(int, x.split('.'))))[-1]
+            last_subtask_id = sorted(
+                subtasks.keys(), key=lambda x: list(map(int, x.split('.'))))[-1]
             last_subtask_ids.append(last_subtask_id)
 
         final_results = {}

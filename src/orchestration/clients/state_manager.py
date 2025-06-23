@@ -82,6 +82,29 @@ class StateManager:
                 pipe.hset(key, f"subtask:{subtask_id}:result", result)
             await pipe.execute()
 
+    async def get_all_subtask_statuses_for_task(
+            self,
+            ticket_id: Union[str, uuid.UUID],
+            task_id: str
+    ) -> Dict[str, str]:
+        key = self._get_ticket_key(ticket_id)
+        dependencies_bytes = await self._redis.hget(key, "dependencies")
+        if not dependencies_bytes:
+            return {}
+
+        dependencies = json.loads(dependencies_bytes)
+
+        subtasks_for_task = dependencies.get(str(task_id), {})
+        if not subtasks_for_task:
+            return {}
+
+        subtask_ids = subtasks_for_task.keys()
+        fields_to_get = [f"subtask:{sid}:status" for sid in subtask_ids]
+        statuses = await self._redis.hmget(key, fields_to_get)
+
+        return {sid: status.decode('utf-8') if status else None for sid,
+                status in zip(subtask_ids, statuses)}
+
     async def find_unlocked_subtasks(
             self,
             ticket_id: Union[str, uuid.UUID],

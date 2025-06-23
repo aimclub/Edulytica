@@ -135,7 +135,8 @@ class Orchestrator:
             ticket_id=ticket_id,
             mega_task_id=self.mega_task_id,
             dependencies=dependencies,
-            document_text=document_text
+            document_text=document_text,
+            event_name=self.event_name
         )
 
         initial_subtasks_to_run = []
@@ -167,9 +168,6 @@ class Orchestrator:
             * Получаем детали, обогащаем промт в Rag (если нужно)
             * Отправляем задачу в Kafka
         """
-
-        # TODO Что делать с document_text
-        # TODO Получить event_name через БД
         await self.state_manager.update_subtask(ticket_id, subtask_id, Statuses.STATUS_IN_PROGRESS)
 
         task_id = subtask_id.split('.')[0]

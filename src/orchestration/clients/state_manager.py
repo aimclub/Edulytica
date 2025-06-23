@@ -14,6 +14,7 @@ Key: "ticket:uuid-uuid"
         "mega_task_id": "1",
         "status": "IN_PROGRESS",
         "document_text": "Text...",
+        "event_name": "Event 1",
         "dependencies":
         "{
             "1":
@@ -48,7 +49,8 @@ class StateManager:
             ticket_id: Union[str, uuid.UUID],
             mega_task_id: str,
             dependencies: Dict[str, Dict[str, Dict[str, any]]],
-            document_text: str
+            document_text: str,
+            event_name: Optional[str] = None
     ):
         key = self._get_ticket_key(ticket_id)
 
@@ -57,6 +59,8 @@ class StateManager:
             pipe.hset(key, "status", Statuses.STATUS_PENDING.value)
             pipe.hset(key, "document_text", document_text)
             pipe.hset(key, "dependencies", json.dumps(dependencies))
+            if event_name:
+                pipe.hset(key, "event_name", event_name)
 
             for task_id, subtasks in dependencies.items():
                 for subtask_id in subtasks.keys():
@@ -145,6 +149,17 @@ class StateManager:
         if result_bytes:
             return result_bytes.decode('utf-8')
 
+        return None
+
+    async def get_ticket_context(self, ticket_id: Union[str, uuid.UUID]) -> Optional[Dict[str, Any]]:
+        key = self._get_ticket_key(ticket_id)
+        context_data = await self._redis.hmget(key, "mega_task_id", "event_name", "document_text")
+        if all(context_data):
+            return {
+                "mega_task_id": context_data[0].decode('utf-8'),
+                "event_name": context_data[1].decode('utf-8'),
+                "document_text": context_data[2].decode('utf-8')
+            }
         return None
 
     async def get_ticket_dependencies(self, ticket_id: Union[str, uuid.UUID]) -> Optional[Dict[str, Dict[str, Dict[str, Any]]]]:

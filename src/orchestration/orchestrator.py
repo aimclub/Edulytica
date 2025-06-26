@@ -2,9 +2,14 @@ import os
 import uuid
 from typing import Dict, Any, Union
 import asyncio
+
+import httpx
+
+from src.common.config import INTERNAL_API_SECRET
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
+from src.orchestration.prompts.prompts1.prompts import prompts
 
 
 class Orchestrator:
@@ -25,7 +30,7 @@ class Orchestrator:
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
-                "1.3": {"dependencies": ["1.2"], "use_rag": True, "model": "3"},
+                "1.3": {"dependencies": ["1.1", "1.2"], "use_rag": True, "model": "3"},
             },
             "2": {
                 "2.1": {"dependencies": [], "use_rag": False, "model": "1"},
@@ -34,27 +39,27 @@ class Orchestrator:
             "3": {
                 "3.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "3.2": {"dependencies": ["3.1"], "use_rag": False, "model": "2"},
-                "3.3": {"dependencies": ["3.2"], "use_rag": False, "model": "3"},
+                "3.3": {"dependencies": ["3.1", "3.2"], "use_rag": False, "model": "3"},
             },
             "4": {
                 "4.1": {"dependencies": [], "use_rag": False, "model": "1"},
-                "4.2": {"dependencies": ["4.1"], "use_rag": False, "model": "3"},
+                "4.2": {"dependencies": ["2.1", "4.1"], "use_rag": False, "model": "3"},
             },
             "5": {
                 "5.1": {"dependencies": [], "use_rag": False, "model": "1"},
-                "5.2": {"dependencies": ["5.1"], "use_rag": False, "model": "1"},
-                "5.3": {"dependencies": ["5.2"], "use_rag": False, "model": "3"},
+                "5.2": {"dependencies": ["5.1", "3.1"], "use_rag": False, "model": "1"},
+                "5.3": {"dependencies": ["5.1", "5.2", "2.1", "4.1"], "use_rag": False, "model": "3"},
             },
             "6": {
                 "6.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "6.2": {"dependencies": ["6.1"], "use_rag": False, "model": "3"},
-                "6.3": {"dependencies": ["6.2"], "use_rag": False, "model": "1"},
-                "6.4": {"dependencies": ["6.3"], "use_rag": False, "model": "3"},
-                "6.5": {"dependencies": ["6.4"], "use_rag": False, "model": "3"},
+                "6.3": {"dependencies": [], "use_rag": False, "model": "1"},
+                "6.4": {"dependencies": ["6.1", "6.2"], "use_rag": False, "model": "3"},
+                "6.5": {"dependencies": ["6.1", "6.2", "6.3", "6.4"], "use_rag": False, "model": "3"},
             },
             "7": {
                 "7.1": {"dependencies": [], "use_rag": False, "model": "3"},
-                "7.2": {"dependencies": ["7.1"], "use_rag": False, "model": "3"},
+                "7.2": {"dependencies": ["7.1", "1.2", "2.1"], "use_rag": False, "model": "3"},
             },
             # "8": {
             #     "8.1": {"dependencies": [], "use_rag": False, "model": "3"},
@@ -62,20 +67,20 @@ class Orchestrator:
             #     "8.3": {"dependencies": ["8.2"], "use_rag": False, "model": "3"},
             # },
             "9": {
-                "9.1": {"dependencies": [], "use_rag": True, "model": "1"},
-                "9.2": {"dependencies": ["9.1"], "use_rag": True, "model": "2"},
-                "9.3": {"dependencies": ["9.2"], "use_rag": True, "model": "3"},
+                "9.1": {"dependencies": ["10.1"], "use_rag": True, "model": "1"},
+                "9.2": {"dependencies": [], "use_rag": False, "model": "2"},
+                "9.3": {"dependencies": ["9.1", "9.2"], "use_rag": False, "model": "3"},
             },
             "10": {
                 "10.1": {"dependencies": [], "use_rag": True, "model": "2"},
             },
             "11": {
-                "11.1": {"dependencies": [], "use_rag": True, "model": "3"},
-                "11.2": {"dependencies": ["11.1"], "use_rag": False, "model": "3"},
-                "11.3": {"dependencies": ["11.2"], "use_rag": True, "model": "3"},
+                "11.1": {"dependencies": ["2.2", "5.3"], "use_rag": True, "model": "3"},
+                "11.2": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3"], "use_rag": False, "model": "3"},
+                "11.3": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3"], "use_rag": False, "model": "3"},
             },
             "12": {
-                "12.1": {"dependencies": [], "use_rag": True, "model": "2"},
+                "12.1": {"dependencies": ["1.3", "2.2", "3.3", "4.2", "5.3", "6.5", "7.2", "9.3", "11.1", "11.2", "11.3"], "use_rag": True, "model": "2"},
             },
         },
 
@@ -115,67 +120,44 @@ class Orchestrator:
             self.mega_task_id = mega_task_id
 
     async def run_pipeline(
-            self,
-            ticket_id: Union[str, uuid.UUID],
-            document_text: str
+            self, ticket_id: Union[str, uuid.UUID], document_text: str
     ):
         """
-            Метод находит мегазадачу и запускает ее выполнение.
+        Главная точка входа для запуска процесса оркестрации.
 
-            * Получаем задачи
-            * Инициализируем состояние задач в StateManager
-            * Запускаем выполнение мегазадачи
+        1. Находит структуру зависимостей для текущей мегазадачи.
+        2. Инициализирует состояние тикета в StateManager.
+        3. Находит ВСЕ подзадачи без зависимостей во всей мегазадаче.
+        4. Запускает их параллельное выполнение.
         """
-        dependencies = self.TASKS[self.mega_task_id]
+        dependencies = self.TASKS.get(self.mega_task_id)
+        if not dependencies:
+            print(f"Error: No dependencies found for mega_task_id {self.mega_task_id}")
+            return
 
         await self.state_manager.create_ticket(
             ticket_id=ticket_id,
             mega_task_id=self.mega_task_id,
-            dependencies=dependencies
-        )
-
-        await self._run_mega_task(
-            ticket_id=ticket_id,
             dependencies=dependencies,
-            document_text=document_text
+            document_text=document_text,
+            event_name=self.event_name
         )
 
-    async def _run_mega_task(
-            self,
-            ticket_id: Union[str, uuid.UUID],
-            dependencies: Dict[str, Dict[str, Dict[str, any]]],
-            document_text: str
-    ):
-        """
-            Запускаем параллельное выполнение всех задач внутри мегазадачи через _run_task
-            Посмотри asyncio.gather
-        """
-        tasks_list = []
+        initial_subtasks_to_run = []
         for task_id, subtasks in dependencies.items():
-            tasks_list.append(
-                self._run_task(ticket_id, subtasks, document_text)
-            )
-        await asyncio.gather(*tasks_list)
+            for subtask_id, details in subtasks.items():
+                if not details.get("dependencies"):
+                    initial_subtasks_to_run.append(subtask_id)
 
-    async def _run_task(
-            self,
-            ticket_id: Union[str, uuid.UUID],
-            subtasks: Dict[str, Dict[str, any]],
-            document_text: str
-    ):
-        """
-            Обрабатываем одну задачу, запуская ее начальные подзадачи, у которых нет зависимостей (Тоже asyncio.gather)
-            Не запускаем тут зависимые задачи !!!
-            Это будет делать триггер-функция в консьюмере Кафки
-        """
-        initial_subtasks = []
-        for subtask_id, details in subtasks.items():
-            if not details["dependencies"]:
-                initial_subtasks.append(
-                    self._execute_subtask(ticket_id, subtask_id, document_text)
-                )
+        print(f"Found {len(initial_subtasks_to_run)} initial subtasks to run: {initial_subtasks_to_run}")
 
-        await asyncio.gather(*initial_subtasks)
+        execution_tasks = [
+            self._execute_subtask(ticket_id, subtask_id, document_text)
+            for subtask_id in initial_subtasks_to_run
+        ]
+
+        if execution_tasks:
+            await asyncio.gather(*execution_tasks)
 
     async def _execute_subtask(
             self,
@@ -190,9 +172,6 @@ class Orchestrator:
             * Получаем детали, обогащаем промт в Rag (если нужно)
             * Отправляем задачу в Kafka
         """
-
-        # TODO Что делать с document_text
-        # TODO Получить event_name через БД
         await self.state_manager.update_subtask(ticket_id, subtask_id, Statuses.STATUS_IN_PROGRESS)
 
         task_id = subtask_id.split('.')[0]
@@ -201,7 +180,15 @@ class Orchestrator:
         if not subtask_details:
             raise Exception(f"Details for subtask {subtask_id} not found.")
 
-        prompt_text = self._get_prompt_text(subtask_id)
+        prompt_format = {
+            "document_text": document_text
+        }
+        for subtask_dep_id in subtask_details.get('dependencies', []):
+            prompt_format[str(subtask_dep_id)] = await self.state_manager.get_subtask_result(
+                ticket_id=ticket_id, subtask_id=subtask_dep_id
+            )
+
+        prompt_text = self._get_base_prompt_text(subtask_id).format(**prompt_format)
         if not prompt_text:
             print(f"Prompt for subtask {subtask_id} not found.")
             return
@@ -222,18 +209,8 @@ class Orchestrator:
             model_id=subtask_details["model"]
         )
 
-    def _get_prompt_text(self, subtask_id: str) -> Union[str, None]:
-        """
-            Тут получаем текст промта.
-            Так как нам нужно подставлять что-то в промты советую их переписать через {params}
-            И потом подставлять значения через .format(**kwargs)
-        """
-        path = os.path.join(self.PROMPTS_DIRS[self.mega_task_id], f"{subtask_id}.txt")
-        try:
-            with open(path, encoding="utf-8") as f:
-                return f.read()
-        except FileNotFoundError:
-            return None
+    def _get_base_prompt_text(self, subtask_id: str) -> Union[str, None]:
+        return prompts.get(subtask_id, "")
 
     async def _send_to_kafka(
             self,
@@ -255,3 +232,50 @@ class Orchestrator:
             await self.kafka_producer.send_and_wait(f"llm_tasks.{self.MODELS_ID[model_id]}", message)
         else:
             raise ValueError(f"Unknown model with id {model_id}")
+
+    async def finalize_report(self, ticket_id: Union[str, uuid.UUID]):
+        dependencies = await self.state_manager.get_ticket_dependencies(ticket_id)
+        last_subtask_ids = []
+        for task_id in sorted(dependencies.keys(), key=int):
+            subtasks = dependencies[task_id]
+            if not subtasks:
+                continue
+
+            last_subtask_id = sorted(
+                subtasks.keys(), key=lambda x: list(map(int, x.split('.'))))[-1]
+            last_subtask_ids.append(last_subtask_id)
+
+        final_results = {}
+        for subtask_id in last_subtask_ids:
+            result = await self.state_manager.get_subtask_result(ticket_id, subtask_id)
+            final_results[subtask_id] = result or f"Результат для подзадачи {subtask_id} отсутствует."
+
+        report_parts = []
+        for subtask_id, result_text in sorted(final_results.items(),
+                                              key=lambda item: list(map(int, item[0].split('.')))):
+            report_parts.append(result_text)
+
+        final_report_text = "\n\n".join(report_parts)
+
+        payload = {
+            "ticket_id": str(ticket_id),
+            "report_text": final_report_text
+        }
+
+        headers = {
+            "X-Internal-Secret": INTERNAL_API_SECRET
+        }
+
+        try:
+            response = await self.rag_client._http_client.post(
+                "http://edulytica_api:8002/internal/upload_report",
+                json=payload,
+                headers=headers,
+                timeout=60.0
+            )
+            response.raise_for_status()
+        except httpx.RequestError as e:
+            await self.state_manager.fail_ticket(ticket_id, "finalization", f"Network error during report upload: {e}")
+        except httpx.HTTPStatusError as e:
+            await self.state_manager.fail_ticket(ticket_id, "finalization",
+                                                 f"API error during report upload: {e.response.text}")

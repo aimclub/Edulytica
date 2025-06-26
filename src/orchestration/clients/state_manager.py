@@ -1,9 +1,10 @@
 import json
 import uuid
 from enum import Enum
-from typing import Dict, Any, List, Union
+from typing import Dict, Any, List, Union, Optional
 from redis.asyncio import Redis
 
+from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 
 """
 DATAS EXAMPLE:
@@ -12,6 +13,8 @@ Key: "ticket:uuid-uuid"
     {
         "mega_task_id": "1",
         "status": "IN_PROGRESS",
+        "document_text": "Text...",
+        "event_name": "Event 1",
         "dependencies":
         "{
             "1":
@@ -45,14 +48,19 @@ class StateManager:
             self,
             ticket_id: Union[str, uuid.UUID],
             mega_task_id: str,
-            dependencies: Dict[str, Dict[str, Dict[str, any]]]
+            dependencies: Dict[str, Dict[str, Dict[str, any]]],
+            document_text: str,
+            event_name: Optional[str] = None
     ):
         key = self._get_ticket_key(ticket_id)
 
         async with self._redis.pipeline(transaction=True) as pipe:
             pipe.hset(key, "mega_task_id", mega_task_id)
             pipe.hset(key, "status", Statuses.STATUS_PENDING.value)
+            pipe.hset(key, "document_text", document_text)
             pipe.hset(key, "dependencies", json.dumps(dependencies))
+            if event_name:
+                pipe.hset(key, "event_name", event_name)
 
             for task_id, subtasks in dependencies.items():
                 for subtask_id in subtasks.keys():
@@ -137,12 +145,98 @@ class StateManager:
 
         return unlocked
 
-    async def get_final_results(self, ticket_id: str) -> Dict[str, Any]:
+    async def get_document_text(self, ticket_id: Union[str, uuid.UUID]) -> Optional[str]:
+        """Получает исходный текст документа для указанного тикета."""
         key = self._get_ticket_key(ticket_id)
-        all_data = await self._redis.hgetall(key)
-        results = {}
-        for k, v in all_data.items():
-            key_str = k.decode('utf-8')
-            if key_str.endswith(":result"):
-                results[key_str] = v.decode('utf-8')
-        return results
+        text_bytes = await self._redis.hget(key, "document_text")
+        return text_bytes.decode('utf-8') if text_bytes else None
+
+    async def get_subtask_details(self, ticket_id: Union[str, uuid.UUID], subtask_id: str) -> Optional[Dict[str, Any]]:
+        """Получает детали для конкретной подзадачи."""
+        key = self._get_ticket_key(ticket_id)
+        dependencies_bytes = await self._redis.hget(key, "dependencies")
+        if not dependencies_bytes:
+            return None
+
+        dependencies: Dict[str, Dict[str, Dict[str, any]]] = json.loads(dependencies_bytes)
+        task_id = subtask_id.split('.')[0]
+
+        return dependencies.get(task_id, {}).get(subtask_id)
+
+    async def get_subtask_result(self, ticket_id: Union[str, uuid.UUID], subtask_id: str) -> Optional[str]:
+        key = self._get_ticket_key(ticket_id)
+
+        result_field = f"subtask:{subtask_id}:result"
+        result_bytes = await self._redis.hget(key, result_field)
+
+        if result_bytes:
+            return result_bytes.decode('utf-8')
+
+        return None
+
+    async def get_ticket_context(self, ticket_id: Union[str, uuid.UUID]) -> Optional[Dict[str, Any]]:
+        key = self._get_ticket_key(ticket_id)
+        context_data = await self._redis.hmget(key, "mega_task_id", "event_name", "document_text")
+        if all(context_data):
+            return {
+                "mega_task_id": context_data[0].decode('utf-8'),
+                "event_name": context_data[1].decode('utf-8'),
+                "document_text": context_data[2].decode('utf-8')
+            }
+        return None
+
+    async def get_ticket_dependencies(self, ticket_id: Union[str, uuid.UUID]) -> Optional[Dict[str, Dict[str, Dict[str, Any]]]]:
+        key = self._get_ticket_key(ticket_id)
+        dependencies_bytes = await self._redis.hget(key, "dependencies")
+
+        if dependencies_bytes:
+            return json.loads(dependencies_bytes)
+
+        return None
+
+    async def check_and_update_ticket_status(self, ticket_id: Union[str, uuid.UUID]) -> bool:
+        """
+        Проверяет, все ли подзадачи завершены. Если да - обновляет общий статус тикета.
+        :return: True, если тикет завершен, иначе False.
+        """
+        key = self._get_ticket_key(ticket_id)
+        dependencies_bytes = await self._redis.hget(key, "dependencies")
+        if not dependencies_bytes:
+            return False
+
+        dependencies: Dict[str, Dict[str, Dict[str, any]]] = json.loads(dependencies_bytes)
+        all_subtask_keys = [
+            f"subtask:{sub_id}:status"
+            for task in dependencies.values()
+            for sub_id in task.keys()
+        ]
+
+        if not all_subtask_keys:
+            await self._redis.hset(key, "status", Statuses.STATUS_COMPLETED.value)
+            return True
+
+        statuses = await self._redis.hmget(key, all_subtask_keys)
+        is_complete = all(
+            status and status.decode('utf-8') == Statuses.STATUS_COMPLETED.value
+            for status in statuses
+        )
+
+        if is_complete:
+            await self._redis.hset(key, "status", Statuses.STATUS_COMPLETED.value)
+            return True
+        return False
+
+    async def fail_ticket(
+            self,
+            ticket_id: Union[str, uuid.UUID],
+            subtask_id: str,
+            error_message: str
+    ):
+        key = self._get_ticket_key(ticket_id)
+
+        async with self._redis.pipeline(transaction=True) as pipe:
+            pipe.hset(key, "status", Statuses.STATUS_FAILED.value)
+            pipe.hset(key, f"subtask:{subtask_id}:status", Statuses.STATUS_FAILED.value)
+            pipe.hset(key, "failure_reason", error_message)
+
+            await pipe.execute()

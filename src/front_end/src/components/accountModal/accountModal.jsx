@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import "./accountModal.scss"
-import { Link } from "react-router-dom"
-import { ticketService } from "../../services/ticket.service"
+import { useDispatch } from "react-redux"
+import { fetchTicket } from "../../store/ticketSlice"
 
 /**
  *
@@ -9,19 +9,22 @@ import { ticketService } from "../../services/ticket.service"
  * @param {function} props.setAccountSection - Функция для установки текущей секции аккаунта.
  * @param {string} props.accountSection - Текущая секция аккаунта ("main", "result", "info", "help").
  * @param {function} props.setFileResult - Функция для установки имени выбранного файла, по которому далее открываем результаты работы.
+ * @param {array} props.tickets - Массив тикетов.
+ * @param {function} props.fetchTicketHistory - Функция для получения истории тикетов.
+ * @param {object} props.currentTicket - Текущий тикет.
  */
 
 export const AccountModal = ({
   setAccountSection,
   accountSection,
-  setFileResult,
+  tickets,
+  fetchTicketHistory,
+  currentTicket,
 }) => {
+  const dispatch = useDispatch()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
-  const [tickets, setTickets] = useState([])
-  const [, setIsLoading] = useState(false)
-  const [, setError] = useState(null)
 
   useEffect(() => {
     setTimeout(() => setAnimate(true), 50)
@@ -44,28 +47,46 @@ export const AccountModal = ({
     filterData()
   }, [searchTerm, tickets])
 
+  // Создаем функцию для начальной загрузки
+  const initialTicketLoad = useCallback(async () => {
+    if (tickets.length === 0) {
+      // Проверяем, есть ли уже данные
+      await fetchTicketHistory()
+    }
+  }, [tickets.length, fetchTicketHistory])
+
+  // Используем для начальной загрузки
   useEffect(() => {
-    const fetchTicketHistory = async () => {
-      setIsLoading(true)
-      setError(null)
-      try {
-        const ticketHistory = await ticketService.getTicketHistory()
-        setTickets(ticketHistory)
-        setFilterHistory(ticketHistory)
-      } catch (err) {
-        setError("Не удалось загрузить историю тикетов")
-        console.error("Error loading ticket history:", err)
-      } finally {
-        setIsLoading(false)
+    initialTicketLoad()
+  }, [initialTicketLoad])
+
+  // Принудительно обновлять историю тикетов при открытии секции 'main' или 'result'
+  useEffect(() => {
+    if (accountSection === "main" || accountSection === "result") {
+      fetchTicketHistory()
+    }
+  }, [accountSection]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Удаляем documentId из URL, если мы не в секции 'result'
+  useEffect(() => {
+    if (accountSection !== "result") {
+      const searchParams = new URLSearchParams(window.location.search)
+      if (searchParams.has("documentId")) {
+        searchParams.delete("documentId")
+        const newUrl = searchParams.toString()
+          ? `?${searchParams.toString()}`
+          : window.location.pathname
+        window.history.replaceState(null, "", newUrl)
       }
     }
-
-    fetchTicketHistory()
-  }, [])
+  }, [accountSection])
 
   const handleFileLine = (ticket) => {
     setAccountSection("result")
-    setFileResult(ticket.document_id)
+    const searchParams = new URLSearchParams(window.location.search)
+    searchParams.set("documentId", ticket.document_id)
+    window.history.replaceState(null, "", `?${searchParams.toString()}`)
+    dispatch(fetchTicket(ticket.id))
   }
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value)
@@ -80,48 +101,38 @@ export const AccountModal = ({
   return (
     <div className={`accModal ${animate ? "animate" : ""}`}>
       <div className="titleBlockAccModal">
-        <Link to="/account/info" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("info")
-            }}
-            className={
-              accountSection === "info"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            О нас
-          </div>
-        </Link>
-        <Link to="/account/help" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("help")
-            }}
-            className={
-              accountSection === "help"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            Помощь
-          </div>
-        </Link>
-        <Link to="/account" style={{ textDecoration: "none" }}>
-          <div
-            onClick={() => {
-              setAccountSection("main")
-            }}
-            className={
-              accountSection === "main" || accountSection === "result"
-                ? "titleAccModalActive"
-                : "titleAccModal"
-            }
-          >
-            Работа с документом
-          </div>
-        </Link>
+        <div
+          onClick={() => {
+            setAccountSection("info")
+          }}
+          className={
+            accountSection === "info" ? "titleAccModalActive" : "titleAccModal"
+          }
+        >
+          О нас
+        </div>
+        <div
+          onClick={() => {
+            setAccountSection("help")
+          }}
+          className={
+            accountSection === "help" ? "titleAccModalActive" : "titleAccModal"
+          }
+        >
+          Помощь
+        </div>
+        <div
+          onClick={() => {
+            setAccountSection("main")
+          }}
+          className={
+            accountSection === "main" || accountSection === "result"
+              ? "titleAccModalActive"
+              : "titleAccModal"
+          }
+        >
+          Работа с документом
+        </div>
       </div>
       <svg
         width="227"
@@ -159,44 +170,45 @@ export const AccountModal = ({
         <div className="containerFileAccModal">
           <div className="containerScrollFileAccModal">
             {filterHistory.map((ticket) => (
-              <Link
-                to="/account/result"
-                style={{ textDecoration: "none" }}
+              <div
+                className={`fileLineAccModal ${
+                  accountSection === "result" &&
+                  currentTicket &&
+                  ticket.id === currentTicket.ticketId
+                    ? "activeTicket"
+                    : ""
+                }`}
                 key={ticket.id}
+                onClick={() => handleFileLine(ticket)}
               >
-                <div
-                  className="fileLineAccModal"
-                  onClick={() => handleFileLine(ticket)}
-                >
-                  <div className="fileAccModal">
-                    {truncateString(ticket.document_id || "Без названия", 16)}
-                  </div>
-                  <svg
-                    style={{ marginRight: "25px" }}
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                  </svg>
+                <div className="fileAccModal">
+                  {truncateString(ticket.document_id || "Без названия", 16)}
                 </div>
-              </Link>
+                <svg
+                  style={{ marginRight: "25px" }}
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                  <path
+                    d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                  <path
+                    d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
+                    stroke="#BEBABA"
+                    strokeWidth="0.5"
+                  />
+                </svg>
+              </div>
             ))}
           </div>
         </div>

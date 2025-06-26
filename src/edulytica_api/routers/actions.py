@@ -365,7 +365,7 @@ async def get_ticket(
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
                                 detail='Ticket doesn\'t exist or you\'re not ticket creator')
 
-        return {'detail': 'Ticket was found', 'ticket': ticket[0]}
+        return {'detail': 'Ticket was found', 'ticket': ticket}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

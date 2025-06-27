@@ -1,7 +1,8 @@
 import { useState } from "react"
 import { Input } from "../../utils/input/input"
 import "./addEvent.scss"
-export const AddEvent = ({ setAddEventModal, event, setEvent }) => {
+
+export const AddEvent = ({ setAddEventModal }) => {
   const [eventName, setEventName] = useState("")
   const [eventInfo, setEventInfo] = useState("")
 
@@ -16,7 +17,7 @@ export const AddEvent = ({ setAddEventModal, event, setEvent }) => {
   }
 
   const addEventFunction = (ev) => {
-    setEvent((pr) => [...pr, ev])
+    // This function is no longer used as event and setEvent are removed from the component
   }
   return (
     <div className="addEvent">

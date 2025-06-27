@@ -110,22 +110,22 @@ services:
     networks:
       - edulytica_network
 
-#  edulytica_orchestration:
-#    container_name: "EdulyticaOrchestration"
-#    build:
-#      context: .
-#      dockerfile: ./src/orchestration/Dockerfile
-#    volumes:
-#      - ./src:/app/src
-#      - ./src/common:/app/src/common
-#    ports:
-#      - "10001:10001"
-#    depends_on:
-#      - edulytica_db
-#    env_file:
-#      - ./.env
-#    networks:
-#      - edulytica_network
+  edulytica_orchestration:
+    container_name: "EdulyticaOrchestration"
+    build:
+      context: .
+      dockerfile: ./src/orchestration/Dockerfile
+    volumes:
+      - ./src:/app/src
+      - ./src/common:/app/src/common
+    ports:
+      - "10001:10001"
+    depends_on:
+      - edulytica_db
+    env_file:
+      - ./.env
+    networks:
+      - edulytica_network
 
   edulytica_rag:
     container_name: "EdulyticaRag"

@@ -1,12 +1,29 @@
+from contextlib import asynccontextmanager
+
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from httpx import AsyncClient
+
 from src.edulytica_api.routers.account import account_router
 from src.edulytica_api.routers.actions import actions_router
+from src.edulytica_api.routers.internal import internal_router
 from src.edulytica_api.routers.norm_services import normocontrol_router
 
 
-app = FastAPI()
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    http_client = AsyncClient()
+
+    try:
+        app.state.http_client = http_client
+
+        yield
+    finally:
+        await http_client.aclose()
+
+
+app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost",
     "http://localhost:3000",
@@ -36,6 +53,7 @@ app.add_middleware(
 app.include_router(normocontrol_router)
 app.include_router(account_router)
 app.include_router(actions_router)
+app.include_router(internal_router)
 
 
 if __name__ == "__main__":

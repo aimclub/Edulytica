@@ -82,6 +82,13 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+
+  &.activeTicket {
+    .fileAccModal {
+      color: #89aaff;
+      font-weight: 500;
+    }
+  }
 }
 .containerFileAccModal {
   display: flex;

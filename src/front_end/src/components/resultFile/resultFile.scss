@@ -92,6 +92,28 @@
   align-items: center;
   justify-content: center;
   margin-top: 54px;
+
+  .ticketStatus {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f7ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 786px;
+    width: 100%;
+
+    .statusLabel {
+      font-weight: 500;
+      color: #4a4a4a;
+    }
+
+    .statusValue {
+      color: #89aaff;
+      font-weight: 600;
+    }
+  }
 }
 .btnBottomResultFile {
   font-family: "SF Pro Display";

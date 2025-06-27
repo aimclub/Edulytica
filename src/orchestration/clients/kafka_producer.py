@@ -1,7 +1,6 @@
 import json
 from typing import Dict, Any
 from aiokafka import AIOKafkaProducer
-from fastapi import Request
 
 
 class KafkaProducer:

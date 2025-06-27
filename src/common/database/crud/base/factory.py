@@ -53,7 +53,7 @@ class CrudFactory:
             Schema | None: The retrieved record as a Pydantic model or None if not found.
         """
         res = await session.execute(select(cls.base_model).where(cls.base_model.id == record_id))
-        obj = res.scalar_one()
+        obj = res.scalar_one_or_none()
         return cls.get_schema.model_validate(obj) if obj else None
 
     @classmethod

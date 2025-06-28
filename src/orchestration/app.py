@@ -6,13 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
-
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS
 from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.state_manager import StateManager
-from src.orchestration.orchestrator import Orchestrator
 from src.orchestration.routers.orchestrator_router import rt
 
 

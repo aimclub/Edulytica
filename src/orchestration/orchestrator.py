@@ -2,9 +2,7 @@ import os
 import uuid
 from typing import Dict, Any, Union
 import asyncio
-
 import httpx
-
 from src.common.config import INTERNAL_API_SECRET
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
@@ -13,18 +11,12 @@ from src.orchestration.prompts.prompts1.prompts import prompts
 
 
 class Orchestrator:
-    """
-    Скелет класса Оркестратора
-    """
-
     MODELS_ID: Dict[str, str] = {
         "1": "qwen",
         "2": "vikhr",
         "3": "any"
     }
 
-    # TODO Неправильные зависимости, исправить
-    # TODO Переделать Оркестратор под последовательное выполнение задач
     TASKS: Dict[str, Dict[str, Dict[str, Dict[str, Any]]]] = {
         "1": {
             "1": {

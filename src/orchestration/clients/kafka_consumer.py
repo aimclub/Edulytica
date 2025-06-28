@@ -1,9 +1,6 @@
 import asyncio
 import json
-from json import JSONDecodeError
-
 from aiokafka import AIOKafkaConsumer
-
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.state_manager import StateManager, Statuses

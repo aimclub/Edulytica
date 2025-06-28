@@ -21,7 +21,7 @@ services:
     ports:
       - "6379:6379"
     networks:
-      - uraraka_network
+      - edulytica_network
 
   edulytica_gateway:
     image: nginx:1.27.4-alpine

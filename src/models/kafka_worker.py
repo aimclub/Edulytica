@@ -1,9 +1,7 @@
 import asyncio
 import json
 import os
-import uuid
 from typing import Dict, Any
-
 from confluent_kafka import Consumer, KafkaError, Producer
 from dotenv import load_dotenv
 from src.llm.model_pipeline import ModelPipeline

@@ -4,7 +4,6 @@ from enum import Enum
 from typing import Dict, Any, List, Union, Optional
 from redis.asyncio import Redis
 
-from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 
 """
 DATAS EXAMPLE:

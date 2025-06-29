@@ -14,6 +14,6 @@ ENV PYTHONPATH=/app
 
 COPY . .
 COPY src/common /app/src/common
-COPY src/LLM /app/src/LLM
+COPY src/llm /app/src/llm
 
 CMD ["python", "src/models/app.py"]

@@ -3,7 +3,7 @@ import uuid
 from typing import Dict, Any, Union
 import asyncio
 import httpx
-from src.common.config import INTERNAL_API_SECRET
+from src.common.config import INTERNAL_API_SECRET, API_PORT
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
@@ -260,7 +260,7 @@ class Orchestrator:
 
         try:
             response = await self.rag_client._http_client.post(
-                "http://edulytica_api:8002/internal/upload_report",
+                f"http://edulytica_api:{API_PORT}/internal/upload_report",
                 json=payload,
                 headers=headers,
                 timeout=60.0

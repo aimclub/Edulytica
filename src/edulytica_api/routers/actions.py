@@ -27,6 +27,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
 from src.common.auth.auth_bearer import access_token_auth
+from src.common.config import ORCHESTRATOR_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.document_summary_crud import DocumentSummaryCrud
 from src.common.database.crud.event_crud import EventCrud
@@ -154,7 +155,8 @@ async def new_ticket(
         }
 
         try:
-            response = await http_client.post('http://edulytica_orchestration:10001/orchestrate/run_ticket',
+            response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
+                                              f'/orchestrate/run_ticket',
                                               json=orchestrator_payload, timeout=30.0)
             response.raise_for_status()
         except httpx.RequestError as _re:

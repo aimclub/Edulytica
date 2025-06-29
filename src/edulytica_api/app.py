@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
 
+from src.common.config import API_PORT
 from src.edulytica_api.routers.account import account_router
 from src.edulytica_api.routers.actions import actions_router
 from src.edulytica_api.routers.internal import internal_router
@@ -57,4 +58,4 @@ app.include_router(internal_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8002)
+    uvicorn.run(app, host="localhost", port=API_PORT)

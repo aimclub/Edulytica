@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
-from src.common.config import KAFKA_BOOTSTRAP_SERVERS
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT
 from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
@@ -99,4 +99,4 @@ app.include_router(rt)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=10001)
+    uvicorn.run(app, host="0.0.0.0", port=ORCHESTRATOR_PORT)

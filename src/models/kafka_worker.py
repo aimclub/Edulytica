@@ -15,13 +15,13 @@ MODEL_TYPE = os.environ.get("MODEL_TYPE")
 PREFIX = f'Kafka | ModelWorker: {MODEL_TYPE}'
 KAFKA_INCOMING_TOPIC = f'llm_tasks.{MODEL_TYPE}'
 KAFKA_RESULT_TOPIC = 'llm_tasks.result'
-llm_model: ModelPipeline = None
-if MODEL_TYPE == 'qwen':
-    llm_model = QwenInstructPipeline()
-elif MODEL_TYPE == 'vikhr':
-    llm_model = VikhrNemoInstructPipeline()
-else:
-    raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
+# llm_model: ModelPipeline = None
+# if MODEL_TYPE == 'qwen':
+#     llm_model = QwenInstructPipeline()
+# elif MODEL_TYPE == 'vikhr':
+#     llm_model = VikhrNemoInstructPipeline()
+# else:
+#     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
 
 
 producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
@@ -79,7 +79,8 @@ async def process_ticket(message_data: dict):
         }
         send_to_kafka(in_progress_message)
 
-        result_text = llm_model([prompt])[0]
+        # result_text = llm_model([prompt])[0]
+        result_text = f'Result text for ticket ID({ticket_id}) with subtask ID({subtask_id})'
 
         result_message = {
             "ticket_id": ticket_id,

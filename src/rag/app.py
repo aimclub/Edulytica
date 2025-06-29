@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers.rag import rag_router
-
+from src.common.config import RAG_PORT
 
 app = FastAPI()
 origins = [
@@ -35,4 +35,4 @@ app.include_router(rag_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=10002)
+    uvicorn.run(app, host="localhost", port=RAG_PORT)

@@ -15,7 +15,7 @@ services:
       - edulytica_network
 
   edulytica_redis:
-    container_name: "edulytica_redis"
+    container_name: "EdulyticaRedis"
     image: redis:7-alpine
     restart: always
     ports:
@@ -24,6 +24,7 @@ services:
       - edulytica_network
 
   edulytica_gateway:
+    container_name: "EdulyticaGateway"
     image: nginx:1.27.4-alpine
     ports:
       - "80:80"
@@ -33,6 +34,8 @@ services:
       - edulytica_api
       - edulytica_auth
       - edulytica_rag
+    networks:
+      - edulytica_network
 
   edulytica_api:
     container_name: "EdulyticaAPI"
@@ -121,7 +124,10 @@ services:
     ports:
       - "${ORCHESTRATOR_PORT}:${ORCHESTRATOR_PORT}"
     depends_on:
-      - edulytica_db
+      edulytica_db:
+        condition: service_started
+      kafka:
+        condition: service_healthy
     env_file:
       - ./.env
     networks:
@@ -172,18 +178,24 @@ services:
 
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
-    container_name: zookeeper
+    container_name: "EdulyticaZookeeper"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "echo 'ruok' | nc -w 2 localhost 2181 | grep imok" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     networks:
       - edulytica_network
 
   kafka:
     image: confluentinc/cp-kafka:7.6.0
-    container_name: kafka
+    container_name: "EdulyticaKafka"
     depends_on:
-      - zookeeper
+      zookeeper:
+        condition: service_healthy
     ports:
       - "${KAFKA_PORT}:${KAFKA_PORT}"
     environment:
@@ -194,12 +206,18 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: [ "CMD", "kafka-brokers", "--bootstrap-server", "localhost:9092", "--list" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 40s
     networks:
       - edulytica_network
 
   kafka_ui:
     image: provectuslabs/kafka-ui:latest
-    container_name: kafka-ui
+    container_name: "EdulyticaKafkaUI"
     ports:
       - "8081:8080"
     depends_on:

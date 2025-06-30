@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers.rag import rag_router
+from src.rag.routers.rag import rag_router
 from src.common.config import RAG_PORT
 
 app = FastAPI()

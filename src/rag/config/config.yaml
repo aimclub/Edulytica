@@ -1,6 +1,6 @@
 # Chroma
-host: localhost
-port: 8080
+host: edulytica_chromadb
+port: 5000
 collections_file: all_collections.json
 embedding_model: BAAI/bge-m3
 

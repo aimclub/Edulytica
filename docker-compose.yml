@@ -168,7 +168,7 @@ services:
     volumes:
       - ./chromadb:/chroma/chroma
     ports:
-      - "${CHROMA_PORT}:${CHROMA_PORT}"
+      - "${CHROMA_PORT}:8000"
     environment:
       - IS_PERSISTENT=TRUE
       - PERSIST_DIRECTORY=/chroma/chroma # this is the default path, change it as needed

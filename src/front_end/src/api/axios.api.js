@@ -8,7 +8,7 @@ import axios from "axios"
  * - headers: установка Content-Type для JSON
  */
 
-export const API_URL = process.env.REACT_APP_API_URL || "http://localhost:80"
+export const API_URL = process.env.REACT_APP_API_URL || "http://10.22.8.250:18080"
 
 const $api = axios.create({
   baseURL: API_URL,

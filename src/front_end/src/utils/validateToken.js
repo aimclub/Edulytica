@@ -5,7 +5,7 @@
  * 1. Проверяет наличие токена в Redux store
  * 2. При наличии токена делает запрос на обновление токена доступа
  * 3. При успешном обновлении сохраняет новый токен и обновляет состояние авторизации
- * 4. При неудаче выполняет выход пользователя из системы
+ * 4. При неудаче выполняет выход пользователя из системы и редирект на главную
  *
  * @module validateToken
  */
@@ -13,7 +13,8 @@
 import axios from "axios"
 import { API_URL } from "../api/axios.api"
 import store from "../store/store"
-import { loginUser, logoutUser } from "../store/authSlice"
+import { loginUser } from "../store/authSlice"
+import { forceLogout } from "./authUtils"
 
 // Try to refresh access token; on success dispatch loginUser, otherwise logout
 export async function validateToken() {
@@ -27,7 +28,8 @@ export async function validateToken() {
     store.dispatch(loginUser({ token: resp.data.access_token }))
     return true
   } catch {
-    store.dispatch(logoutUser())
+    // Используем утилиту для принудительного logout
+    await forceLogout("Токен доступа истек")
     return false
   }
 }

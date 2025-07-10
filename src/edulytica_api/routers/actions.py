@@ -27,7 +27,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
 from src.common.auth.auth_bearer import access_token_auth
-from src.common.config import ORCHESTRATOR_PORT
+from src.common.config import ORCHESTRATOR_PORT, RAG_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.document_summary_crud import DocumentSummaryCrud
 from src.common.database.crud.event_crud import EventCrud
@@ -37,6 +37,7 @@ from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.ticket_type_crud import TicketTypeCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import get_session
+from src.common.utils.chroma_utils import is_valid_chroma_collection_name
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
 from src.edulytica_api.dependencies import get_http_client
@@ -238,6 +239,55 @@ async def parse_file_text(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
         )
+
+
+@api_logs(actions_router.post('/add_custom_event'))
+async def add_custom_event(
+    auth_data: dict = Depends(access_token_auth),
+    event_name: str = Body(...),
+    description: str = Body(...),
+    session: AsyncSession = Depends(get_session),
+    http_client: httpx.AsyncClient = Depends(get_http_client)
+):
+    try:
+        if is_valid_chroma_collection_name(event_name):
+            event = await EventCrud.get_filtered_by_param(session=session, name=event_name)
+            custom_event = await CustomEventCrud.get_filtered_by_param(session=session, name=event_name)
+
+            if event or custom_event:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail=f'Event with name {event_name} already exists.'
+                )
+
+            try:
+                rag_payload = {
+                    "text": description,
+                    "event_name": event_name
+                }
+                response = await http_client.post(f'http://edulytica_rag:{RAG_PORT}'
+                                                  f'/rag/upload_text',
+                                                  json=rag_payload, timeout=30.0)
+                response.raise_for_status()
+                await CustomEventCrud.create(
+                    session=session,
+                    name=event_name,
+                    user_id=auth_data['user'].id
+                )
+            except httpx.RequestError as _re:
+                raise HTTPException(
+                    status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=f"RAG service is unavailable {_re}"
+                )
+        else:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Invalid event name specified. Only latin characters, numbers, and ._- are allowed.'
+            )
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
 @api_logs(actions_router.get('/get_ticket_status'))

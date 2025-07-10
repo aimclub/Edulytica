@@ -182,9 +182,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
-      ZOO_4LW_COMMANDS_WHITELIST: "srvr, ruok, conf, stat"
+      KAFKA_ZOOKEEPER_4LW_COMMANDS_WHITELIST: "srvr,mntr"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "echo 'ruok' | nc -w 2 localhost 2181 | grep imok" ]
+      test: ["CMD", "sh", "-c", "echo 'srvr' | nc -w 2 localhost 2181 | grep -q 'Mode:'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -208,7 +208,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: [ "CMD", "kafka-brokers", "--bootstrap-server", "localhost:9092", "--list" ]
+      test: [ "CMD", "sh", "-c", "kafka-topics --bootstrap-server localhost:9092 --list | grep -q ." ]
       interval: 15s
       timeout: 10s
       retries: 10

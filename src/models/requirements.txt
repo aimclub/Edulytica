@@ -7,3 +7,5 @@ aiohttp==3.9.5
 python-dotenv==1.0.1
 transformers==4.51.0
 torch==2.2.2
+numpy==1.26.4
+redis==5.2.1

@@ -208,7 +208,7 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "kafka-topics --bootstrap-server localhost:9092 --list | grep -q ." ]
+      test: ["CMD", "sh", "-c", "kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 | grep -q 'clusterId:'"]
       interval: 15s
       timeout: 10s
       retries: 10

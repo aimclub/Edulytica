@@ -44,7 +44,6 @@ services:
       dockerfile: ./src/edulytica_api/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
@@ -61,7 +60,6 @@ services:
       dockerfile: ./src/auth/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${AUTH_PORT}:${AUTH_PORT}"
     depends_on:
@@ -78,8 +76,6 @@ services:
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
-      - ./src/LLM:/app/src/LLM
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
     depends_on:
@@ -101,8 +97,6 @@ services:
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
-      - ./src/LLM:/app/src/LLM
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
     depends_on:
@@ -124,7 +118,6 @@ services:
       dockerfile: ./src/orchestration/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${ORCHESTRATOR_PORT}:${ORCHESTRATOR_PORT}"
     depends_on:
@@ -144,7 +137,6 @@ services:
       dockerfile: ./src/rag/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${RAG_PORT}:${RAG_PORT}"
     depends_on:

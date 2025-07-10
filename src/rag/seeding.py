@@ -1,9 +1,12 @@
+import os
+
 from src.common.database.database import get_session
 from src.common.database.crud.event_crud import EventCrud
 from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
 
 
-EXCEL_FILE_PATH = './data/Specification.xlsx'
+BASE_DIR = os.path.dirname(__file__)
+EXCEL_FILE_PATH = os.path.join(BASE_DIR, "data", "Specification.xlsx")
 chroma_manager = ChromaDBManager()
 EVENTS_CONFIG = {
     'КМУ': 'kmu',

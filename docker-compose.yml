@@ -83,8 +83,10 @@ services:
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
     depends_on:
-      - kafka
-      - edulytica_db
+      kafka:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -104,8 +106,10 @@ services:
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
     depends_on:
-      - kafka
-      - edulytica_db
+      kafka:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -202,17 +206,18 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
     healthcheck:
-      test: ["CMD", "sh", "-c", "kafka-cluster.sh cluster-id --bootstrap-server localhost:9092 | grep -q 'clusterId:'"]
+      test: ["CMD", "sh", "-c", "kafka-cluster.sh cluster-id --bootstrap-server kafka:9092 | grep -q 'clusterId:'"]
       interval: 15s
       timeout: 10s
       retries: 10
-      start_period: 40s
+      start_period: 100s
     networks:
       - edulytica_network
 

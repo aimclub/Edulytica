@@ -3,7 +3,7 @@ from src.common.database.crud.event_crud import EventCrud
 from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
 
 
-EXCEL_FILE_PATH = 'data/Specification.xlsx'
+EXCEL_FILE_PATH = './data/Specification.xlsx'
 chroma_manager = ChromaDBManager()
 EVENTS_CONFIG = {
     'КМУ': 'kmu',

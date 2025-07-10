@@ -12,7 +12,6 @@ RUN pip install -r requirements.txt
 
 ENV PYTHONPATH=/app
 
-COPY . .
 COPY src/common /app/src/common
 COPY src/llm /app/src/llm
 

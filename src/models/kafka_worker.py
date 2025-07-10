@@ -2,7 +2,7 @@ import asyncio
 import json
 import os
 from typing import Dict, Any
-from confluent_kafka import Consumer, KafkaError, Producer
+from confluent_kafka import Consumer, KafkaError, Producer, Message
 from dotenv import load_dotenv
 from src.llm.model_pipeline import ModelPipeline
 from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
@@ -103,16 +103,16 @@ async def process_ticket(message_data: dict):
 
 
 async def kafka_loop():
-    print("[KafkaWorker] Starting...")
+    print(f"[{PREFIX}] Starting...")
     try:
         while True:
-            msg = consumer.poll(timeout=5.0)
+            msg: Message = consumer.poll(timeout=5.0)
             if msg is None:
                 await asyncio.sleep(1)
                 continue
             if msg.error():
                 if msg.error().code() != KafkaError._PARTITION_EOF:
-                    print(f"[Kafka | ModelWorker] Error: {msg.error()}")
+                    print(f"[{PREFIX}] Error: {msg.error()}")
                 continue
 
             try:

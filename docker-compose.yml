@@ -44,7 +44,6 @@ services:
       dockerfile: ./src/edulytica_api/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
@@ -61,7 +60,6 @@ services:
       dockerfile: ./src/auth/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${AUTH_PORT}:${AUTH_PORT}"
     depends_on:
@@ -78,13 +76,13 @@ services:
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
-      - ./src/LLM:/app/src/LLM
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
     depends_on:
-      - kafka
-      - edulytica_db
+      kafka:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -99,13 +97,13 @@ services:
       dockerfile: ./src/models/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
-      - ./src/LLM:/app/src/LLM
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
     depends_on:
-      - kafka
-      - edulytica_db
+      kafka:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_started
     env_file:
       - ./.env
     environment:
@@ -120,7 +118,6 @@ services:
       dockerfile: ./src/orchestration/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${ORCHESTRATOR_PORT}:${ORCHESTRATOR_PORT}"
     depends_on:
@@ -140,7 +137,6 @@ services:
       dockerfile: ./src/rag/Dockerfile
     volumes:
       - ./src:/app/src
-      - ./src/common:/app/src/common
     ports:
       - "${RAG_PORT}:${RAG_PORT}"
     depends_on:
@@ -182,8 +178,9 @@ services:
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_ZOOKEEPER_4LW_COMMANDS_WHITELIST: "srvr,mntr"
     healthcheck:
-      test: [ "CMD", "sh", "-c", "echo 'ruok' | nc -w 2 localhost 2181 | grep imok" ]
+      test: ["CMD", "sh", "-c", "echo 'srvr' | nc -w 2 localhost 2181 | grep -q 'Mode:'"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -201,17 +198,25 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_RETENTION_HOURS: 168
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+
     healthcheck:
-      test: [ "CMD", "kafka-brokers", "--bootstrap-server", "localhost:9092", "--list" ]
-      interval: 15s
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
+      interval: 30s
       timeout: 10s
-      retries: 10
-      start_period: 40s
+      retries: 5
+      start_period: 60s
     networks:
       - edulytica_network
 
@@ -230,3 +235,4 @@ services:
 
 networks:
   edulytica_network:
+    driver: bridge

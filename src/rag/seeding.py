@@ -1,9 +1,11 @@
+import os
 from src.common.database.database import get_session
 from src.common.database.crud.event_crud import EventCrud
 from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
 
 
-EXCEL_FILE_PATH = 'data/Specification.xlsx'
+BASE_DIR = os.path.dirname(__file__)
+EXCEL_FILE_PATH = os.path.join(BASE_DIR, "data", "specification2.xlsx")
 chroma_manager = ChromaDBManager()
 EVENTS_CONFIG = {
     'КМУ': 'kmu',
@@ -37,7 +39,7 @@ async def seed_initial_data():
                     await EventCrud.create(session=session, name=collection_name)
                     print(f"-> Данные для '{sheet_name}' успешно загружены в PostgreSQL.")
                 else:
-                    print(f"Событие {sheet_name} уже существует в ChromaDB")
+                    print(f"Событие {sheet_name} уже существует в PostgreSQL")
             except Exception as e:
                 print(f"❗️ Произошла ошибка при добавлении события '{sheet_name}': {e}")
 

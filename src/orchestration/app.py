@@ -38,17 +38,18 @@ async def lifespan(app: FastAPI):
         await kafka_consumer_client.start()
 
         state_manager = StateManager(redis_client=redis_client)
-        kafka_producer_client = KafkaProducer(producer=kafka_producer_client)
+        kafka_producer = KafkaProducer(producer=kafka_producer_client)
         rag_client = RagClient(http_client=http_client, base_url="http://edulytica_rag:10002")
-
         kafka_consumer = KafkaConsumer(
             consumer=kafka_consumer_client,
             state_manager=state_manager,
-            kafka_producer=kafka_producer_client,
+            kafka_producer=kafka_producer,
             rag_client=rag_client
         )
 
+        app.state.redis_client = redis_client
         app.state.state_manager = state_manager
+        app.state.kafka_producer = kafka_producer_client
         app.state.rag_client = rag_client
         app.state.http_client = http_client
 

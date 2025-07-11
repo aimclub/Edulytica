@@ -6,7 +6,7 @@ from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
 
 
 BASE_DIR = os.path.dirname(__file__)
-EXCEL_FILE_PATH = os.path.join(BASE_DIR, "data", "Specification.xlsx")
+EXCEL_FILE_PATH = os.path.join(BASE_DIR, "data", "specification2.xlsx")
 chroma_manager = ChromaDBManager()
 EVENTS_CONFIG = {
     'КМУ': 'kmu',

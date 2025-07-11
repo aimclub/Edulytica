@@ -198,6 +198,7 @@ export const Account = ({
                   selectedParams={selectedParams}
                   setSelectedParams={setSelectedParams}
                   setAddEventModal={setAddEventModal}
+                  addEventModal={addEventModal}
                   fetchTicketHistory={handleFetchTicketHistory}
                   onTicketCreated={handleTicketCreated}
                 />

@@ -17,7 +17,7 @@ export const AddEvent = ({ setAddEventModal }) => {
       errors.eventName = "Введите название мероприятия"
     }
     if (!eventInfo.trim()) {
-      errors.eventInfo = "Заполните критерии мероприятия"
+      errors.eventInfo = "Заполните описание мероприятия"
     }
     return errors
   }
@@ -33,21 +33,21 @@ export const AddEvent = ({ setAddEventModal }) => {
       await ticketService.addCustomEvent(eventName, eventInfo)
       setAddEventModal(false)
     } catch (err) {
-      let msg = "Ошибка при добавлении мероприятия."
       if (err?.response?.data?.detail) {
-        msg = err.response.data.detail
-      } else if (err?.message) {
-        msg = err.message
+        setFieldErrors({ eventName: err.response.data.detail })
+        setTouched((prev) => ({ ...prev, eventName: true }))
+      } else {
+        let msg = "Ошибка при добавлении мероприятия."
+        if (err?.message) {
+          msg = err.message
+        }
+        setError(msg)
       }
-      setError(msg)
     } finally {
       setLoading(false)
     }
   }
 
-  const addEventFunction = (ev) => {
-    // This function is no longer used as event and setEvent are removed from the component
-  }
   return (
     <div className="addEvent">
       <div className="titleAddEvent">Новое мероприятие</div>

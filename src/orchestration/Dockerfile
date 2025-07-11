@@ -13,4 +13,4 @@ ENV PYTHONPATH=/app
 COPY . .
 COPY src/common /app/src/common
 
-CMD ["uvicorn", "src.orchestration.app:app", "--host", "0.0.0.0", "--port", "10001"]
+CMD ["uvicorn", "src.orchestration.app:app", "--host", "0.0.0.0", "--port", "15001"]

@@ -212,7 +212,7 @@ services:
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
 
     healthcheck:
-      test: [ "CMD", "sh", "-c", "kafka-broker-api-versions --bootstrap-server localhost:9092 | grep -q 'sasl_plaintext'" ]
+      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
       interval: 30s
       timeout: 10s
       retries: 5

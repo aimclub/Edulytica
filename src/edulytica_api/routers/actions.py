@@ -251,8 +251,8 @@ async def add_custom_event(
 ):
     try:
         if is_valid_chroma_collection_name(event_name):
-            event = await EventCrud.get_filtered_by_param(session=session, name=event_name)
-            custom_event = await CustomEventCrud.get_filtered_by_param(session=session, name=event_name)
+            event = await EventCrud.get_filtered_by_params(session=session, name=event_name)
+            custom_event = await CustomEventCrud.get_filtered_by_params(session=session, name=event_name)
 
             if event or custom_event:
                 raise HTTPException(

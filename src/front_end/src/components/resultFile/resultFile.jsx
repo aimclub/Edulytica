@@ -21,6 +21,7 @@ export const ResultFile = ({ fileName, ticketData }) => {
   const scrollRef = useRef(null)
   // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
   const [key, setKey] = useState(0)
+  const [error, setError] = useState("") // Новое состояние для ошибки
 
   const files = ticketData?.files || {}
 
@@ -30,13 +31,34 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   // Эффект для загрузки файлов, если тикет уже выполнен
   useEffect(() => {
-    if (
-      ticketData?.status === "Completed" &&
-      ticketData?.ticketId &&
-      !ticketData.files
-    ) {
-      dispatch(fetchTicketFiles(ticketData.ticketId))
+    const fetchFiles = async () => {
+      if (
+        ticketData?.status === "Completed" &&
+        ticketData?.ticketId &&
+        !ticketData.files
+      ) {
+        try {
+          setError("")
+          await dispatch(fetchTicketFiles(ticketData.ticketId))
+        } catch (err) {
+          let msg = "Ошибка при получении результата."
+          if (err?.response?.data?.detail) {
+            if (err.response.data.detail === "Ticket result not found") {
+              msg = "Результат ещё не готов. Попробуйте позже."
+            } else {
+              msg = err.response.data.detail
+            }
+          } else if (err?.response?.status === 400) {
+            msg = "Результат ещё не готов. Попробуйте позже."
+          } else if (err?.message) {
+            msg = err.message
+          }
+          setError(msg)
+        }
+      }
     }
+    fetchFiles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketData?.status, ticketData?.ticketId, ticketData?.files, dispatch])
 
   useEffect(() => {
@@ -61,7 +83,13 @@ export const ResultFile = ({ fileName, ticketData }) => {
     ) {
       return `Статус: ${ticketData.status}`
     }
-
+    // Если статус Completed и есть ошибка (например, файлы не пришли)
+    if (ticketData?.status === "Completed" && error) {
+      return "Результат ещё не готов. Попробуйте позже."
+    }
+    if (error) {
+      return error
+    }
     // Если статус 'Completed', но файлы еще не загружены
     if (!files) {
       if (ticketData?.status === "Completed") {
@@ -69,10 +97,7 @@ export const ResultFile = ({ fileName, ticketData }) => {
       }
       return "Загрузка..."
     }
-
     // Если файлы загружены (статус 'Completed')
-    // if (activeSectionResult === 3) return files.result || ""
-    // if (activeSectionResult === 2) return files.summary || ""
     if (activeSectionResult === 2) return files.result || ""
     return files.file || ""
   }

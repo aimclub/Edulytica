@@ -201,6 +201,25 @@ class TicketService {
       throw error
     }
   }
+
+  /**
+   * Добавляет новое кастомное мероприятие
+   * @param {string} eventName - Название мероприятия
+   * @param {string} description - Описание/критерии мероприятия
+   * @returns {Promise<Object>} Результат добавления
+   */
+  async addCustomEvent(eventName, description) {
+    try {
+      const response = await $api.post("/actions/add_custom_event", {
+        event_name: eventName,
+        description: description,
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error adding custom event:", error)
+      throw error
+    }
+  }
 }
 
 export const ticketService = new TicketService()

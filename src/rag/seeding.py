@@ -1,5 +1,4 @@
 import os
-
 from src.common.database.database import get_session
 from src.common.database.crud.event_crud import EventCrud
 from src.rag.core.chroma_db.chroma_manager import ChromaDBManager
@@ -19,7 +18,8 @@ EVENTS_CONFIG = {
 
 async def seed_initial_data():
     print("Проверка необходимости инициализации данных...")
-    existing_collections = {collection.name for collection in chroma_manager.chroma_client.list_collections()}
+    existing_collections = {
+        collection.name for collection in chroma_manager.chroma_client.list_collections()}
     print(f"Существующие коллекции в ChromaDB: {existing_collections}")
 
     async for session in get_session():

@@ -23,12 +23,14 @@ export const AddFile = ({
   selectedParams,
   setSelectedParams,
   setAddEventModal,
+  addEventModal, // Добавляем для отслеживания состояния
   fetchTicketHistory,
   onTicketCreated,
 }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [eventModal, setEventModal] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0) // Для перерендеринга EventModal
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
   const [, setError] = useState(null)
@@ -149,6 +151,18 @@ export const AddFile = ({
       selectedParams.some((param) => param.type === "event")
     )
   }, [selectedParams])
+
+  const refreshEventModal = () => {
+    setRefreshKey((prev) => prev + 1)
+  }
+
+  // Отслеживаем изменения addEventModal для обновления списка мероприятий
+  useEffect(() => {
+    if (!addEventModal) {
+      // Если модалка добавления мероприятия закрылась, обновляем список
+      refreshEventModal()
+    }
+  }, [addEventModal])
 
   return (
     <div className="addFile">
@@ -334,6 +348,7 @@ export const AddFile = ({
       <div className="eventModalAddFile">
         {eventModal && (
           <EventModal
+            key={refreshKey} // Принудительный перерендер при изменении ключа
             setSelectedEvent={(event) =>
               setSelectedParams((prev) => [
                 { type: "event", name: event.name, info: event.info },

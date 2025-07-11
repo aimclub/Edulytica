@@ -39,7 +39,7 @@ async def seed_initial_data():
                     await EventCrud.create(session=session, name=collection_name)
                     print(f"-> Данные для '{sheet_name}' успешно загружены в PostgreSQL.")
                 else:
-                    print(f"Событие {sheet_name} уже существует в ChromaDB")
+                    print(f"Событие {sheet_name} уже существует в PostgreSQL")
             except Exception as e:
                 print(f"❗️ Произошла ошибка при добавлении события '{sheet_name}': {e}")
 

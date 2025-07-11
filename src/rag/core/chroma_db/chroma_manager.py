@@ -184,7 +184,7 @@ class ChromaDBManager:
 
             # Process data from Excel
             data = processor.process_excel_data(file_name, sheet_name)
-
+            logger.info(f"{str(data.keys())}")
             # Create or get collection
             self.create_collection(
                 name=collection_name,

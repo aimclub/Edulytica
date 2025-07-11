@@ -13,4 +13,4 @@ ENV PYTHONPATH=/app
 COPY . .
 COPY src/common /app/src/common
 
-CMD ["uvicorn", "src.rag.app:app", "--host", "0.0.0.0", "--port", "10002"]
+CMD ["uvicorn", "src.rag.app:app", "--host", "0.0.0.0", "--port", "15002"]

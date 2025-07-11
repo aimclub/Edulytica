@@ -16,7 +16,8 @@ EVENTS_CONFIG = {
 
 async def seed_initial_data():
     print("Проверка необходимости инициализации данных...")
-    existing_collections = {collection.name for collection in chroma_manager.chroma_client.list_collections()}
+    existing_collections = {
+        collection.name for collection in chroma_manager.chroma_client.list_collections()}
     print(f"Существующие коллекции в ChromaDB: {existing_collections}")
 
     async for session in get_session():

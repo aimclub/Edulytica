@@ -282,8 +282,7 @@ async def add_custom_event(
         else:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
-                detail='Invalid event name specified. Only latin characters, numbers, and ._- are allowed.'
-            )
+                detail='Invalid event name specified. Only latin characters, numbers, and ._- are allowed.')
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

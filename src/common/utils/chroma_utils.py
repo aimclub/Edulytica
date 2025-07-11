@@ -8,7 +8,8 @@ def is_valid_chroma_collection_name(name: str) -> bool:
     if ".." in name:
         return False
 
-    if not (name[0].islower() or name[0].isdigit()) or not (name[-1].islower() or name[-1].isdigit()):
+    if not (name[0].islower() or name[0].isdigit()) or not (
+            name[-1].islower() or name[-1].isdigit()):
         return False
 
     allowed_chars = "abcdefghijklmnopqrstuvwxyz0123456789._-"

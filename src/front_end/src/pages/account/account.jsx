@@ -105,7 +105,7 @@ export const Account = ({
       // Если уходим с result — останавливаем polling
       dispatch(stopPollingForTicket(currentTicket.ticketId))
     }
-  }, [accountSection, currentTicket?.ticketId, currentTicket?.status])
+  }, [accountSection, currentTicket, dispatch])
 
   const [infoProfile, setInfoProfile] = useState({
     name: userData?.name || "...",

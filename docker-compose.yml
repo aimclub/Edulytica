@@ -212,11 +212,11 @@ services:
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
 
     healthcheck:
-      test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
-      interval: 30s
-      timeout: 10s
+      test: [ "CMD", "kafka-zookeeper-shell.sh", "zookeeper:2181", "get", "/brokers/ids/1" ]
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 60s
+      start_period: 20s
     networks:
       - edulytica_network
 

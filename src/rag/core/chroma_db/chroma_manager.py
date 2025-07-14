@@ -25,7 +25,8 @@ class ChromaDBManager:
 
         # Establish connection with ChromaDB
         try:  # pragma: no cover
-            self.chroma_client = chromadb.HttpClient(host=self.host, port=self.port)
+            self.chroma_client = chromadb.HttpClient(host=self.host, port=self.port, settings=chromadb.Settings(allow_reset=True, anonymized_telemetry=False))
+            
             logger.info("Successfully connected to ChromaDB")
         except Exception as e:  # pragma: no cover
             logger.error(f"Failed to connect to ChromaDB: {e}")
@@ -69,20 +70,24 @@ class ChromaDBManager:
         try:  # pragma: no cover
             # Try to get existing collection
             collection = self.chroma_client.get_collection(
-                name=name,
-                embedding_function=self.embedding_function
+                name=name
             )
             logger.info(f"Collection '{name}' already exists.")
+            return collection
         except Exception:  # pragma: no cover
             # If collection does not exist, create a new one
-            collection = self.chroma_client.create_collection(
-                name=name,
-                metadata=metadata,
-                embedding_function=self.embedding_function
-            )
-            logger.info(f"Created new collection '{name}' with metadata: {metadata}")
+            try:
+                collection = self.chroma_client.create_collection(
+                    name=name,
+                    metadata=metadata,
+                    embedding_function=self.embedding_function
+                )
+                logger.info(f"Created new collection '{name}' with metadata: {metadata}")
 
-        return collection  # pragma: no cover
+                return collection  # pragma: no cover
+            except Exception as e:
+                logger.error(f"Error getting or creating collection '{name}': {e}")
+                return None
 
     def get_collection(self, name: str) -> Any:
         """

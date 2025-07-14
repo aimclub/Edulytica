@@ -2,15 +2,15 @@ version: '3.8'
 
 services:
   chroma:
-    image: ghcr.io/chroma-core/chroma:latest
+    image: ghcr.io/chroma-core/chroma:1.0.15
     container_name: chroma-db
     volumes:
       - chroma-data:/chroma/chroma
     ports:
-      - "8080:8080"
+      - "8000:8000"
     environment:
       - CHROMA_HOST=localhost
-      - CHROMA_PORT=8080
+      - CHROMA_PORT=8000
     restart: unless-stopped
 
 volumes:

@@ -8,11 +8,11 @@ BASE_DIR = os.path.dirname(__file__)
 EXCEL_FILE_PATH = os.path.join(BASE_DIR, "data", "specification2.xlsx")
 chroma_manager = ChromaDBManager()
 EVENTS_CONFIG = {
-    'КМУ': 'kmu',
-    'ЭПИ': 'epi',
-    'YSC': 'ysc',
-    'FRUCT': 'fruct',
-    'ППС': 'pps'
+    'КМУ': 'kmu_event',
+    'ЭПИ': 'epi_event',
+    'YSC': 'ysc_event',
+    'FRUCT': 'fruct_event',
+    'ППС': 'pps_event'
 }
 
 

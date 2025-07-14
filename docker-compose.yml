@@ -216,7 +216,7 @@ services:
     volumes:
       - ./chromadb:/chroma/chroma
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
       interval: 15s
       timeout: 10s
       retries: 5
@@ -270,7 +270,7 @@ services:
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
 
     healthcheck:
-      test: [ "CMD", "kafka-topics.sh", "--bootstrap-server", "localhost:9092", "--list" ]
+      test: ["CMD", "nc", "-z", "localhost", "9092"]
       interval: 15s
       timeout: 10s
       retries: 10

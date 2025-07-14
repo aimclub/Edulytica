@@ -9,7 +9,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - CHROMA_HOST=localhost
+      - CHROMA_HOST=edulytica_chromadb
       - CHROMA_PORT=8000
     restart: unless-stopped
 

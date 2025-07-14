@@ -1,8 +1,10 @@
 import asyncio
 import json
 import os
-from typing import Dict, Any
+from typing import Dict, Any, List
 from confluent_kafka import Consumer, KafkaError, Producer, Message
+from confluent_kafka.admin import AdminClient
+from confluent_kafka.cimpl import NewTopic
 from dotenv import load_dotenv
 from src.llm.model_pipeline import ModelPipeline
 from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
@@ -22,16 +24,7 @@ KAFKA_RESULT_TOPIC = 'llm_tasks.result'
 #     llm_model = VikhrNemoInstructPipeline()
 # else:
 #     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
-
-
 producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
-consumer = Consumer({
-    'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
-    'group.id': KAFKA_GROUP_ID,
-    'auto.offset.reset': 'earliest',
-    'enable.auto.commit': False
-})
-consumer.subscribe([KAFKA_INCOMING_TOPIC, "llm_tasks.any"])
 
 
 def delivery_report(err, msg):
@@ -102,8 +95,40 @@ async def process_ticket(message_data: dict):
         raise
 
 
+def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
+    new_topics = [
+        NewTopic(topic, num_partitions=1, replication_factor=1) for topic in topics_to_create
+    ]
+
+    fs = admin_client.create_topics(new_topics, request_timeout=15.0)
+
+    for topic, f in fs.items():
+        try:
+            f.result()
+            print(f"[{PREFIX}] Topic '{topic}' created successfully.")
+        except Exception as e:
+            if 'TOPIC_ALREADY_EXISTS' in str(e):
+                print(f"[{PREFIX}] Topic '{topic}' already exists.")
+            else:
+                print(f"[{PREFIX}] Failed to create topic '{topic}': {e}")
+                raise
+
+
 async def kafka_loop():
     print(f"[{PREFIX}] Starting...")
+
+    admin_client = AdminClient({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
+    create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+
+    print(f"[{PREFIX}] Initializing Kafka clients...")
+    consumer = Consumer({
+        'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
+        'group.id': KAFKA_GROUP_ID,
+        'auto.offset.reset': 'earliest',
+        'enable.auto.commit': False
+    })
+    consumer.subscribe([KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+    print(f"[{PREFIX}] Subscribed to topics. Starting polling loop...")
     try:
         while True:
             msg: Message = consumer.poll(timeout=5.0)

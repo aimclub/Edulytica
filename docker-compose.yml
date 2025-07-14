@@ -117,6 +117,7 @@ services:
       - ./.env
     environment:
       - MODEL_TYPE=qwen
+      - PYTHONUNBUFFERED=1
     networks:
       - edulytica_network
 
@@ -138,6 +139,7 @@ services:
       - ./.env
     environment:
       - MODEL_TYPE=vikhr
+      - PYTHONUNBUFFERED=1
     networks:
       - edulytica_network
 
@@ -268,7 +270,7 @@ services:
       KAFKA_LOG_RETENTION_HOURS: 168
       KAFKA_LOG_SEGMENT_BYTES: 1073741824
       KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
-      KAFKA_CREATE_TOPICS: "llm_tasks.result:1:1,llm_tasks.qwen,llm_tasks.vikhr"
+      KAFKA_CREATE_TOPICS: "llm_tasks.result:1:1,llm_tasks.qwen:1:1,llm_tasks.vikhr:1:1"
 
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "9092"]
@@ -288,7 +290,7 @@ services:
       kafka:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
+      test: [ "CMD-SHELL", "curl http://localhost:8080 || exit 1" ]
       interval: 60s
       timeout: 10s
       retries: 5

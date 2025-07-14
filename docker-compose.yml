@@ -222,7 +222,7 @@ services:
       
   edulytica_chromadb:
     container_name: "EdulyticaChromaDatabase"
-    image: "chromadb/chroma:0.6.3"
+    image: "chromadb/chroma:1.0.15"
     volumes:
       - ./chromadb:/chroma/chroma
     healthcheck:

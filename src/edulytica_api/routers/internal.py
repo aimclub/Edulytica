@@ -15,7 +15,7 @@ from src.common.utils.default_enums import TicketStatusDefault
 from src.common.utils.logger import api_logs
 
 
-ROOT_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parents[3]
 internal_router = APIRouter(prefix="/internal")
 
 

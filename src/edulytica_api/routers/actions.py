@@ -44,7 +44,7 @@ from src.edulytica_api.dependencies import get_http_client
 from src.edulytica_api.parser.Parser import get_structural_paragraphs
 
 actions_router = APIRouter(prefix="/actions")
-ROOT_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parents[3]
 
 
 @api_logs(actions_router.post("/new_ticket"))

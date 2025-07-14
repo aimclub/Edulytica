@@ -11,7 +11,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
     ports:
@@ -25,7 +25,7 @@ services:
     restart: always
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
     ports:
@@ -47,7 +47,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "pgrep nginx || exit 1" ]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 3
     networks:
@@ -67,7 +67,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
-      interval: 15s
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 15s
@@ -90,7 +90,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
-      interval: 15s
+      interval: 60s
       timeout: 5s
       retries: 5
       start_period: 15s
@@ -161,7 +161,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
-      interval: 20s
+      interval: 60s
       timeout: 10s
       retries: 5
       start_period: 20s
@@ -186,10 +186,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
-      interval: 15s
+      interval: 60s
       timeout: 10s
       retries: 5
-      start_period: 15s
+      start_period: 180s
     env_file:
       - ./.env
     networks:
@@ -217,7 +217,7 @@ services:
       - ./chromadb:/chroma/chroma
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
-      interval: 15s
+      interval: 60s
       timeout: 10s
       retries: 5
       start_period: 20s
@@ -239,7 +239,7 @@ services:
       KAFKA_ZOOKEEPER_4LW_COMMANDS_WHITELIST: "srvr,mntr"
     healthcheck:
       test: ["CMD", "sh", "-c", "echo 'srvr' | nc -w 2 localhost 2181 | grep -q 'Mode:'"]
-      interval: 10s
+      interval: 60s
       timeout: 5s
       retries: 5
     networks:
@@ -271,7 +271,7 @@ services:
 
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "9092"]
-      interval: 15s
+      interval: 30s
       timeout: 10s
       retries: 10
       start_period: 40s
@@ -288,9 +288,10 @@ services:
         condition: service_healthy
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8080" ]
-      interval: 30s
+      interval: 60s
       timeout: 10s
       retries: 5
+      start_period: 30s
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092

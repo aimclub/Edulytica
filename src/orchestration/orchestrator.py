@@ -176,9 +176,18 @@ class Orchestrator:
             "document_text": document_text
         }
         for subtask_dep_id in subtask_details.get('dependencies', []):
-            prompt_format[str(subtask_dep_id)] = await self.state_manager.get_subtask_result(
+            prompt_format[str(subtask_dep_id).replace('.', '_')] = await self.state_manager.get_subtask_result(
                 ticket_id=ticket_id, subtask_id=subtask_dep_id
             )
+
+        pf_print = prompt_format
+        pf_print["document_text"] = "TEXT"
+
+        print(f"\n=============\n"
+              f"Для подзадачи {subtask_id}\n"
+              f"Зависимости: {subtask_details.get('dependencies', [])}\n"
+              f"Собранный prompt format: {pf_print}\n"
+              f"\n=============\n")
 
         prompt_text = self._get_base_prompt_text(subtask_id).format(**prompt_format)
         if not prompt_text:

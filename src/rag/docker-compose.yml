@@ -11,7 +11,25 @@ services:
     environment:
       - CHROMA_HOST=edulytica_chromadb
       - CHROMA_PORT=8000
+      - IS_PERSISTENT=TRUE
     restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  edulytica_rag:
+    container_name: "EdulyticaRag"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/app/src
+    ports:
+      - "8001:8001"
+    depends_on: 
+      - chroma
 
 volumes:
   chroma-data:

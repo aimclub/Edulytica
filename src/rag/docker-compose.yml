@@ -19,18 +19,6 @@ services:
       timeout: 10s
       retries: 3
 
-  edulytica_rag:
-    container_name: "EdulyticaRag"
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - ./src:/app/src
-    ports:
-      - "8001:8001"
-    depends_on: 
-      - chroma
-
 volumes:
   chroma-data:
     driver: local 

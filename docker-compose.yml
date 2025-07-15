@@ -160,7 +160,7 @@ services:
       
   edulytica_chromadb:
     container_name: "EdulyticaChromaDatabase"
-    image: "chromadb/chroma:0.6.3"
+    image: ghcr.io/chroma-core/chroma:1.0.15
     volumes:
       - ./chromadb:/chroma/chroma
     ports:

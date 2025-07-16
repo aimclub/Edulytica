@@ -543,14 +543,16 @@ async def get_ticket_result(
             raise HTTPException(status_code=400, detail='Ticket doesn\'t exist')
 
         document_report = await DocumentReportCrud.get_by_id(
-            session=session, record_id=ticket.document_id
+            session=session, record_id=ticket.document_report_id
         )
+
         if not document_report:
-            raise HTTPException(status_code=400, detail='Ticket result not found')
+            raise HTTPException(status_code=400, detail=f'Ticket result not found, document report not found in Database')
 
         file_path = ROOT_DIR / document_report.file_path
+
         if not file_path.exists():
-            raise HTTPException(status_code=400, detail='Ticket result not found')
+            raise HTTPException(status_code=400, detail='Ticket result not found, document report not found in storage')
 
         return FileResponse(
             path=str(file_path),

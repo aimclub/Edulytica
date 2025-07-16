@@ -208,7 +208,8 @@ async def parse_file_text(
     try:
         if file.content_type not in [
             'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
         ]:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
@@ -217,10 +218,17 @@ async def parse_file_text(
 
         try:
             file_content = await file.read()
-            file_like = BytesIO(file_content)
-            parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
 
-            document_text = " ".join(parsed_data.get('other_text', []))
+            if file.content_type == 'text/plain':
+                try:
+                    document_text = file_content.decode('utf-8')
+                except UnicodeDecodeError:
+                    raise ValueError("Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
+            else:
+                file_like = BytesIO(file_content)
+                parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
+                document_text = " ".join(parsed_data.get('other_text', []))
+
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")
 

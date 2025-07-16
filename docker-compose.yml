@@ -60,6 +60,7 @@ services:
       dockerfile: ./src/edulytica_api/Dockerfile
     volumes:
       - ./src:/app/src
+      - api_files:/app/app_files
     ports:
       - "${API_PORT}:${API_PORT}"
     depends_on:
@@ -306,3 +307,6 @@ services:
 networks:
   edulytica_network:
     driver: bridge
+
+volumes:
+  api_files:

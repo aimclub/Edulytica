@@ -452,11 +452,19 @@ async def get_ticket_file(
 
         document = await DocumentCrud.get_by_id(session=session, record_id=ticket.document_id)
         if not document:
-            raise HTTPException(status_code=400, detail='File not found')
+            raise HTTPException(status_code=400, detail='File not found in Database')
 
         file_path = ROOT_DIR / document.file_path
+
+        print("=" * 20)
+        print(f"DEBUG: Calculated ROOT_DIR is: {ROOT_DIR}")
+        print(f"DEBUG: Path from DB is: {document.file_path}")
+        print(f"DEBUG: Final path being checked is: {file_path}")
+        print(f"DEBUG: Does this path exist? {file_path.exists()}")
+        print("=" * 20)
+
         if not file_path.exists():
-            raise HTTPException(status_code=400, detail='File not found')
+            raise HTTPException(status_code=400, detail='File not found in storage')
 
         return FileResponse(
             path=str(file_path),
@@ -550,6 +558,13 @@ async def get_ticket_result(
             raise HTTPException(status_code=400, detail=f'Ticket result not found, document report not found in Database')
 
         file_path = ROOT_DIR / document_report.file_path
+
+        print("=" * 20)
+        print(f"DEBUG: Calculated ROOT_DIR is: {ROOT_DIR}")
+        print(f"DEBUG: Path from DB is: {document_report.file_path}")
+        print(f"DEBUG: Final path being checked is: {file_path}")
+        print(f"DEBUG: Does this path exist? {file_path.exists()}")
+        print("=" * 20)
 
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='Ticket result not found, document report not found in storage')

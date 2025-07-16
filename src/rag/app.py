@@ -1,3 +1,4 @@
+import asyncio
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -10,7 +11,7 @@ from src.rag.seeding import seed_initial_data
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await seed_initial_data()
+    task = asyncio.create_task(seed_initial_data())
     yield
 
 

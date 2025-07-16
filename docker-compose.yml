@@ -197,7 +197,7 @@ services:
       interval: 60s
       timeout: 10s
       retries: 5
-      start_period: 180s
+      start_period: 30s
     env_file:
       - ./.env
     environment:
@@ -226,7 +226,7 @@ services:
     volumes:
       - ./chromadb:/chroma/chroma
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat" ]
+      test: [ "CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000" ]
       interval: 60s
       timeout: 10s
       retries: 5

@@ -163,7 +163,7 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
 
     // Оборачиваем Blobs в File (PDF или DOCX)
     const fileFile = await ensurePdfOrDocxFile(fileBlob, "file.pdf")
-    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result.pdf")
+    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result.txt")
 
     // Парсим файлы через бэкенд
     const [file, result] = await Promise.all([

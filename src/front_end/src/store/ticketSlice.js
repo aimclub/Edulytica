@@ -134,10 +134,8 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
 
     // Вспомогательная функция для гарантии PDF/DOCX
     async function ensurePdfOrDocxFile(blob, baseName) {
-      let extension = "pdf"
       let type = "application/pdf"
       if (blob.type === "application/pdf") {
-        extension = "pdf"
         type = "application/pdf"
         return new File([blob], `${baseName}.pdf`, { type })
       }
@@ -145,7 +143,6 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
         blob.type ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
-        extension = "docx"
         type =
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         return new File([blob], `${baseName}.docx`, { type })

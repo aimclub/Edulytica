@@ -77,7 +77,7 @@ async def new_ticket(
         HTTPException: For invalid event ID, unsupported file type, or internal errors.
     """
     try:
-        if mega_task_id != "1":
+        if mega_task_id not in ["1", "2"]:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST, detail=f"Unknown megatask id {mega_task_id}"
             )
@@ -464,13 +464,6 @@ async def get_ticket_file(
 
         file_path = ROOT_DIR / document.file_path
 
-        print("=" * 20)
-        print(f"DEBUG: Calculated ROOT_DIR is: {ROOT_DIR}")
-        print(f"DEBUG: Path from DB is: {document.file_path}")
-        print(f"DEBUG: Final path being checked is: {file_path}")
-        print(f"DEBUG: Does this path exist? {file_path.exists()}")
-        print("=" * 20)
-
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='File not found in storage')
 
@@ -566,13 +559,6 @@ async def get_ticket_result(
             raise HTTPException(status_code=400, detail=f'Ticket result not found, document report not found in Database')
 
         file_path = ROOT_DIR / document_report.file_path
-
-        print("=" * 20)
-        print(f"DEBUG: Calculated ROOT_DIR is: {ROOT_DIR}")
-        print(f"DEBUG: Path from DB is: {document_report.file_path}")
-        print(f"DEBUG: Final path being checked is: {file_path}")
-        print(f"DEBUG: Does this path exist? {file_path.exists()}")
-        print("=" * 20)
 
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='Ticket result not found, document report not found in storage')

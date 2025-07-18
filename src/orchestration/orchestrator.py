@@ -77,9 +77,9 @@ class Orchestrator:
         },
 
         "2": {
-            "2": {
-                "2.1": {"dependencies": [], "use_rag": False, "model": "Unknown"},
-                "2.2": {"dependencies": ["2.1"], "use_rag": False, "model": "Unknown"},
+            "1": {
+                "1.1": {"dependencies": [], "use_rag": False, "model": "3"},
+                "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
             }
         },
 
@@ -182,12 +182,6 @@ class Orchestrator:
 
         pf_print = prompt_format
         pf_print["document_text"] = "TEXT"
-
-        print(f"\n=============\n"
-              f"Для подзадачи {subtask_id}\n"
-              f"Зависимости: {subtask_details.get('dependencies', [])}\n"
-              f"Собранный prompt format: {pf_print}\n"
-              f"\n=============\n")
 
         prompt_text = self._get_base_prompt_text(subtask_id).format(**prompt_format)
         if not prompt_text:

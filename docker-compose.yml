@@ -109,6 +109,13 @@ services:
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
     volumes:
       - ./src:/app/src
     ports:
@@ -131,6 +138,13 @@ services:
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [ gpu ]
     volumes:
       - ./src:/app/src
     ports:
@@ -198,7 +212,7 @@ services:
       interval: 60s
       timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 60s
     env_file:
       - ./.env
     environment:

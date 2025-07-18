@@ -42,7 +42,9 @@ export const Account = ({
 }) => {
   const location = useLocation()
   const dispatch = useDispatch()
-  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения параметров при отправки документа
+  const [selectedParams, setSelectedParams] = useState([
+    { type: "mode", name: "рецензирование" },
+  ]) // массив для хранения параметров при отправки документа
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)

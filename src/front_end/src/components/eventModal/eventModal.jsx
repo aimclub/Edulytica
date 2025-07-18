@@ -14,7 +14,6 @@ export const EventModal = ({
   setSelectedEvent,
   closeModal,
   setAddEventModal,
-  onEventAdded,
 }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
   const [filterEvent, setFilterEvent] = useState([])
@@ -67,14 +66,6 @@ export const EventModal = ({
     closeModal()
   }
 
-  const handleAddEventClick = () => {
-    setAddEventModal(true)
-    // Передаем функцию обновления в модалку добавления
-    if (onEventAdded) {
-      onEventAdded()
-    }
-  }
-
   const truncateString = (str, maxLength) => {
     if (str.length > maxLength) {
       return str.substring(0, maxLength) + "..."
@@ -86,7 +77,10 @@ export const EventModal = ({
     <div className="eventModal">
       <div className="titleBlockEventModal">
         <div className="titleEventModal">Выберите мероприятие</div>
-        <div className="textAddEventModal" onClick={handleAddEventClick}>
+        <div
+          className="textAddEventModal"
+          onClick={() => setAddEventModal(true)}
+        >
           + добавить своё
         </div>
       </div>

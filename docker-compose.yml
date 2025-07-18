@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 60s
       timeout: 5s
       retries: 5
@@ -24,7 +24,7 @@ services:
     image: redis:7-alpine
     restart: always
     healthcheck:
-      test: [ "CMD", "redis-cli", "ping" ]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 60s
       timeout: 5s
       retries: 5
@@ -46,7 +46,7 @@ services:
       edulytica_auth:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "pgrep nginx || exit 1" ]
+      test: ["CMD-SHELL", "pgrep nginx || exit 1"]
       interval: 60s
       timeout: 5s
       retries: 3
@@ -67,7 +67,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
+      test: ["CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1"]
       interval: 60s
       timeout: 5s
       retries: 5
@@ -92,7 +92,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
+      test: ["CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1"]
       interval: 60s
       timeout: 5s
       retries: 5
@@ -167,7 +167,8 @@ services:
       edulytica_rag:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
+      test:
+        ["CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1"]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -194,7 +195,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
+      test: ["CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1"]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -220,14 +221,15 @@ services:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
     networks:
       - edulytica_network
-      
+
   edulytica_chromadb:
     container_name: "EdulyticaChromaDatabase"
     image: "chromadb/chroma:1.0.15"
     volumes:
       - ./chromadb:/chroma/chroma
     healthcheck:
-      test: [ "CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000" ]
+      test:
+        ["CMD", "/bin/bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000"]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -241,7 +243,7 @@ services:
     networks:
       - edulytica_network
 
-  zookeeper:
+zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     container_name: "EdulyticaZookeeper"
     environment:
@@ -282,8 +284,15 @@ services:
       KAFKA_CREATE_TOPICS: "llm_tasks.result:1:1,llm_tasks.qwen:1:1,llm_tasks.vikhr:1:1"
 
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9092"]
-      interval: 30s
+      test:
+        [
+          "CMD",
+          "kafka-brokers",
+          "--bootstrap-server",
+          "localhost:9092",
+          "--list",
+        ]
+      interval: 15s
       timeout: 10s
       retries: 10
       start_period: 40s
@@ -306,7 +315,3 @@ services:
 
 networks:
   edulytica_network:
-    driver: bridge
-
-volumes:
-  api_files:

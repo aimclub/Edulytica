@@ -223,7 +223,8 @@ async def parse_file_text(
                 try:
                     document_text = file_content.decode('utf-8')
                 except UnicodeDecodeError:
-                    raise ValueError("Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
+                    raise ValueError(
+                        "Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
             else:
                 file_like = BytesIO(file_content)
                 parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
@@ -556,12 +557,16 @@ async def get_ticket_result(
         )
 
         if not document_report:
-            raise HTTPException(status_code=400, detail=f'Ticket result not found, document report not found in Database')
+            raise HTTPException(
+                status_code=400,
+                detail=f'Ticket result not found, document report not found in Database')
 
         file_path = ROOT_DIR / document_report.file_path
 
         if not file_path.exists():
-            raise HTTPException(status_code=400, detail='Ticket result not found, document report not found in storage')
+            raise HTTPException(
+                status_code=400,
+                detail='Ticket result not found, document report not found in storage')
 
         return FileResponse(
             path=str(file_path),

@@ -133,18 +133,23 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
     ])
 
     // Вспомогательная функция для гарантии PDF/DOCX
-    async function ensurePdfOrDocxFile(blob, filename) {
-      // Если это PDF или DOCX — просто обернуть в File
+    async function ensurePdfOrDocxFile(blob, baseName) {
+      let type = "application/pdf"
       if (blob.type === "application/pdf") {
-        return new File([blob], filename, { type: "application/pdf" })
+        type = "application/pdf"
+        return new File([blob], `${baseName}.pdf`, { type })
       }
       if (
         blob.type ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
-        return new File([blob], filename, {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        })
+        type =
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        return new File([blob], `${baseName}.docx`, { type })
+      }
+      // Если это текст и это result — вернуть как txt
+      if (blob.type === "text/plain" && baseName === "result") {
+        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
       }
       // Если это текст — конвертировать в PDF
       if (blob.type === "text/plain") {
@@ -154,16 +159,18 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
         const doc = new jsPDF()
         doc.text(text, 10, 10)
         const pdfBlob = doc.output("blob")
-        return new File([pdfBlob], filename, { type: "application/pdf" })
+        return new File([pdfBlob], `${baseName}.pdf`, {
+          type: "application/pdf",
+        })
       }
       // Для других типов — можно добавить обработку
       // По умолчанию — пробуем как PDF
-      return new File([blob], filename, { type: "application/pdf" })
+      return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
     }
 
     // Оборачиваем Blobs в File (PDF или DOCX)
-    const fileFile = await ensurePdfOrDocxFile(fileBlob, "file.pdf")
-    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result.txt")
+    const fileFile = await ensurePdfOrDocxFile(fileBlob, "file")
+    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result")
 
     // Парсим файлы через бэкенд
     const [file, result] = await Promise.all([

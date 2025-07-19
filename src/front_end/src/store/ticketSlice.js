@@ -134,25 +134,36 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
 
     // Вспомогательная функция для гарантии PDF/DOCX
     async function ensurePdfOrDocxFile(blob, baseName) {
-      let type = "application/pdf"
-      if (blob.type === "application/pdf") {
-        type = "application/pdf"
-        return new File([blob], `${baseName}.pdf`, { type })
+      console.log(
+        `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
+      )
+
+      // Если это текст и это result — вернуть как txt
+      if (blob.type === "text/plain" && baseName === "result") {
+        console.log(`Creating TXT file for ${baseName}`)
+        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
       }
+
+      // Если это PDF
+      if (blob.type === "application/pdf") {
+        console.log(`Creating PDF file for ${baseName}`)
+        return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
+      }
+
+      // Если это DOCX
       if (
         blob.type ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
-        type =
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        return new File([blob], `${baseName}.docx`, { type })
+        console.log(`Creating DOCX file for ${baseName}`)
+        return new File([blob], `${baseName}.docx`, {
+          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        })
       }
-      // Если это текст и это result — вернуть как txt
-      if (blob.type === "text/plain" && baseName === "result") {
-        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
-      }
+
       // Если это текст — конвертировать в PDF
       if (blob.type === "text/plain") {
+        console.log(`Converting text to PDF for ${baseName}`)
         const text = await blob.text()
         // Используем jsPDF для конвертации текста в PDF
         const jsPDF = (await import("jspdf")).jsPDF
@@ -163,8 +174,10 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
           type: "application/pdf",
         })
       }
+
       // Для других типов — можно добавить обработку
       // По умолчанию — пробуем как PDF
+      console.log(`Default case: creating PDF file for ${baseName}`)
       return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
     }
 

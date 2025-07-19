@@ -138,6 +138,23 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
         `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
       )
 
+      // Если это результат и тип octet-stream - попробуем определить как текст
+      if (baseName === "result" && blob.type === "application/octet-stream") {
+        console.log(`Attempting to detect text content for ${baseName}`)
+        try {
+          const text = await blob.text()
+          // Проверяем, что это действительно текст (не бинарные данные)
+          if (text && text.length > 0 && !text.includes("\x00")) {
+            console.log(`Creating TXT file for ${baseName} (detected as text)`)
+            return new File([blob], `${baseName}.txt`, { type: "text/plain" })
+          }
+        } catch (e) {
+          console.log(
+            `Failed to read as text, treating as binary: ${e.message}`
+          )
+        }
+      }
+
       // Если это текст и это result — вернуть как txt
       if (blob.type === "text/plain" && baseName === "result") {
         console.log(`Creating TXT file for ${baseName}`)

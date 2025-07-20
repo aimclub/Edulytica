@@ -9,3 +9,4 @@ torch==2.2.2
 numpy==1.26.4
 redis==5.2.1
 accelerate
+bitsandbytes

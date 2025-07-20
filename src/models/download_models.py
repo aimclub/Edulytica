@@ -1,7 +1,7 @@
 import sys
-from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
-from src.llm.vikhr.vikhr_nemo_instruct_pipeline import VikhrNemoInstructPipeline
 
+from src.llm.qwen import QwenInstruct
+from src.llm.vikhr import VikhrNemoInstruct
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -12,9 +12,9 @@ if __name__ == "__main__":
     print(f"--- Downloading model for type: {model_type} ---")
 
     if model_type == 'qwen':
-        QwenInstructPipeline()
+        QwenInstruct(quantization='8bit')
     elif model_type == 'vikhr':
-        VikhrNemoInstructPipeline()
+        VikhrNemoInstruct(quantization='8bit')
     else:
         print(f"ERROR: Unknown model type: {model_type}")
         sys.exit(1)

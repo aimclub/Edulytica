@@ -6,10 +6,10 @@ from confluent_kafka import Consumer, KafkaError, Producer, Message
 from confluent_kafka.admin import AdminClient
 from confluent_kafka.cimpl import NewTopic
 from dotenv import load_dotenv
-from src.llm.model_pipeline import ModelPipeline
-from src.llm.qwen.qwen_instruct_pipeline import QwenInstructPipeline
-from src.llm.vikhr.vikhr_nemo_instruct_pipeline import VikhrNemoInstructPipeline
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
+from src.llm import ModelInstruct
+from src.llm.qwen import QwenInstruct
+from src.llm.vikhr import VikhrNemoInstruct
 from src.orchestration.clients.state_manager import Statuses
 
 load_dotenv()
@@ -17,11 +17,11 @@ MODEL_TYPE = os.environ.get("MODEL_TYPE")
 PREFIX = f'Kafka | ModelWorker: {MODEL_TYPE}'
 KAFKA_INCOMING_TOPIC = f'llm_tasks.{MODEL_TYPE}'
 KAFKA_RESULT_TOPIC = 'llm_tasks.result'
-llm_model: ModelPipeline = None
+llm_model: ModelInstruct = None
 if MODEL_TYPE == 'qwen':
-    llm_model = QwenInstructPipeline()
+    llm_model = QwenInstruct(quantization='8bit')
 elif MODEL_TYPE == 'vikhr':
-    llm_model = VikhrNemoInstructPipeline()
+    llm_model = VikhrNemoInstruct(quantization='8bit')
 else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
 producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})

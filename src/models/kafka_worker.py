@@ -19,9 +19,9 @@ KAFKA_INCOMING_TOPIC = f'llm_tasks.{MODEL_TYPE}'
 KAFKA_RESULT_TOPIC = 'llm_tasks.result'
 llm_model: ModelInstruct = None
 if MODEL_TYPE == 'qwen':
-    llm_model = QwenInstruct(quantization='8bit')
+    llm_model = QwenInstruct(quantization='4bit')
 elif MODEL_TYPE == 'vikhr':
-    llm_model = VikhrNemoInstruct(quantization='8bit')
+    llm_model = VikhrNemoInstruct(quantization='4bit')
 else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
 producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})

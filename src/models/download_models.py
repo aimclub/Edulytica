@@ -12,9 +12,9 @@ if __name__ == "__main__":
     print(f"--- Downloading model for type: {model_type} ---")
 
     if model_type == 'qwen':
-        QwenInstruct(quantization='8bit')
+        QwenInstruct(quantization='4bit')
     elif model_type == 'vikhr':
-        VikhrNemoInstruct(quantization='8bit')
+        VikhrNemoInstruct(quantization='4bit')
     else:
         print(f"ERROR: Unknown model type: {model_type}")
         sys.exit(1)

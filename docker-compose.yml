@@ -109,6 +109,8 @@ services:
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
+      args:
+        - MODEL_TYPE=qwen
     deploy:
       resources:
         reservations:
@@ -138,6 +140,8 @@ services:
     build:
       context: .
       dockerfile: ./src/models/Dockerfile
+      args:
+        - MODEL_TYPE=vikhr
     deploy:
       resources:
         reservations:

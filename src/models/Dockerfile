@@ -11,15 +11,22 @@ WORKDIR /app
 
 COPY src/models/requirements.txt .
 COPY src/common/requirements_common.txt .
-# COPY src/LLM/requirements_llm.txt .
 
 RUN pip3 install -r requirements_common.txt
 RUN pip3 install -r requirements.txt
-# RUN pip install -r requirements_llm.txt
 
 ENV PYTHONPATH=/app
 
 COPY src/common /app/src/common
 COPY src/llm /app/src/llm
+COPY src/models/download_models.py .
+
+ARG MODEL_TYPE
+RUN python3 download_models.py $MODEL_TYPE
+
+COPY src/models/app.py .
+COPY src/models/kafka_worker.py .
+
+ENV MODEL_TYPE=$MODEL_TYPE
 
 CMD ["python3", "src/models/app.py"]

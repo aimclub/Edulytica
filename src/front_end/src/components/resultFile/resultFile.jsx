@@ -98,9 +98,19 @@ export const ResultFile = ({ fileName, ticketData }) => {
       return "Загрузка..."
     }
     // Если файлы загружены (статус 'Completed')
-    if (activeSectionResult === 2) return files.result || ""
+    if (activeSectionResult === 2) {
+      if (typeof files.result === "string") {
+        return files.result.split("\n")
+      }
+      return files.result || ""
+    }
+    if (typeof files.file === "string") {
+      return files.file.split("\n")
+    }
     return files.file || ""
   }
+
+  const textContent = getTextContent()
 
   return (
     <motion.div
@@ -157,7 +167,16 @@ export const ResultFile = ({ fileName, ticketData }) => {
                   }}
                   ref={scrollRef}
                 >
-                  {getTextContent()}
+                  {Array.isArray(textContent)
+                    ? textContent.map((line, idx) => (
+                        <p
+                          key={idx}
+                          style={{ margin: 0, whiteSpace: "pre-wrap" }}
+                        >
+                          {line}
+                        </p>
+                      ))
+                    : textContent}
                 </div>
               </div>
             </div>

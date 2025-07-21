@@ -70,7 +70,7 @@ class TicketCrud(
             event = await EventCrud.get_by_id(session=session, record_id=ticket.event_id)
             return event.name
         elif ticket.custom_event_id:
-            event = await CustomEventCrud.get_by_id(session=session, record_id=ticket.event_id)
+            event = await CustomEventCrud.get_by_id(session=session, record_id=ticket.custom_event_id)
             return event.name
 
         return None

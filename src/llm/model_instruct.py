@@ -50,6 +50,8 @@ class ModelInstruct(IModel):
         texts = self.apply_chat_template(self.system_prompt, prompts)
         model_inputs = self.tokenizer(texts, return_tensors="pt").to(self.device)
 
+        input_ids_len = model_inputs["input_ids"].shape[-1]
         outputs = self.model.generate(**model_inputs, generation_config=generation_config)
-        response = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        new_tokens = outputs[:, input_ids_len:]
+        response = self.tokenizer.batch_decode(new_tokens, skip_special_tokens=True)
         return response

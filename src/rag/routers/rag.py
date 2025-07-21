@@ -20,11 +20,11 @@ async def upload_text_handler(
     return {"status": "success" if success else "failed", "chunks_uploaded": len(chunks)}
 
 
-@api_logs(rag_router.get('/get_result'))
+@api_logs(rag_router.post('/get_result'))
 async def get_result_handler(
-        text: str = Query(...),
-        event_name: str = Query(...),
-        prompt: str = Query(...)
+        text: str = Body(...),
+        event_name: str = Body(...),
+        prompt: str = Body(...)
 ):
     result = pipeline.pipeline(
         article_text=text,

@@ -14,16 +14,16 @@ class RagClient:
     ) -> str:
         enrich_url = f"{self._base_url}/rag/get_result"
 
-        params = {
+        payload = {
             "prompt": original_prompt,
             "text": document_text,
             "event_name": event_name,
         }
 
         try:
-            response = await self._http_client.get(
+            response = await self._http_client.post(
                 url=enrich_url,
-                params=params,
+                json=payload,
                 timeout=120.0
             )
 

@@ -76,38 +76,50 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   // Функция для получения контента на основе активной секции
   const getTextContent = () => {
-    // Если тикет в процессе обработки, всегда показывать статус
-    if (
-      ticketData &&
-      (ticketData.status === "Created" || ticketData.status === "In progress")
-    ) {
-      return `Статус: ${ticketData.status}`
-    }
-    // Если статус Completed и есть ошибка (например, файлы не пришли)
-    if (ticketData?.status === "Completed" && error) {
-      return "Результат ещё не готов. Попробуйте позже."
-    }
-    if (error) {
-      return error
-    }
-    // Если статус 'Completed', но файлы еще не загружены
-    if (!files) {
-      if (ticketData?.status === "Completed") {
+    // Если тикет в процессе обработки, всегда показывать статус в разделе результата
+    if (activeSectionResult === 2) {
+      if (
+        ticketData &&
+        (ticketData.status === "Created" || ticketData.status === "In progress")
+      ) {
         return `Статус: ${ticketData.status}`
       }
-      return "Загрузка..."
-    }
-    // Если файлы загружены (статус 'Completed')
-    if (activeSectionResult === 2) {
+      // Если статус Completed и есть ошибка (например, файлы не пришли)
+      if (ticketData?.status === "Completed" && error) {
+        return "Результат ещё не готов. Попробуйте позже."
+      }
+      if (error) {
+        return error
+      }
+      // Если статус не Completed или нет результата — выводим сообщение о процессе
+      if (ticketData?.status !== "Completed" || !files.result) {
+        return `Результат ещё не готов. Попробуйте позже.`
+      }
+      // Если результат есть — выводим его
       if (typeof files.result === "string") {
         return files.result.split("\n")
       }
       return files.result || ""
     }
-    if (typeof files.file === "string") {
-      return files.file.split("\n")
+    // Раздел Исходного документа: если есть файл — показываем его
+    if (activeSectionResult === 1) {
+      if (typeof files.file === "string") {
+        return files.file.split("\n")
+      }
+      if (files.file) {
+        return files.file
+      }
+      // Если файла нет, fallback на старую логику
+      if (ticketData?.status === "Completed") {
+        return `Статус: ${ticketData.status}`
+      }
+      if (error) {
+        return error
+      }
+      return "Загрузка..."
     }
-    return files.file || ""
+    // fallback
+    return ""
   }
 
   const textContent = getTextContent()

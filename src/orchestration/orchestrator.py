@@ -180,9 +180,6 @@ class Orchestrator:
                 ticket_id=ticket_id, subtask_id=subtask_dep_id
             )
 
-        pf_print = prompt_format
-        pf_print["document_text"] = "TEXT"
-
         prompt_text = self._get_base_prompt_text(subtask_id).format(**prompt_format)
         if not prompt_text:
             print(f"Prompt for subtask {subtask_id} not found.")

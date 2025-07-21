@@ -17,7 +17,6 @@ RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH=/app
 
-COPY src/common /app/src/common
 COPY src/llm /app/src/llm
 COPY src/models/download_models.py .
 COPY src/exceptions /app/src/exceptions
@@ -25,6 +24,7 @@ COPY src/exceptions /app/src/exceptions
 ARG MODEL_TYPE
 RUN python3 download_models.py $MODEL_TYPE
 
+COPY src/common /app/src/common
 COPY src/models/app.py .
 COPY src/models/kafka_worker.py .
 

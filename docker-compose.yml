@@ -123,6 +123,9 @@ services:
       - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     depends_on:
       edulytica_rag:
         condition: service_started
@@ -157,6 +160,9 @@ services:
       - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     depends_on:
       edulytica_llm_qwen:
         condition: service_started

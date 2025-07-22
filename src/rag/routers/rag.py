@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Body, Query
-from pyreadline3.console import event
-
+from fastapi import APIRouter, Body
 from src.common.utils.logger import api_logs
 from src.rag import RAGPipeline
 

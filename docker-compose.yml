@@ -216,6 +216,7 @@ services:
       dockerfile: ./src/rag/Dockerfile
     volumes:
       - ./src:/app/src
+      - rag_hf_cache:/root/.cache/huggingface
     ports:
       - "${RAG_PORT}:${RAG_PORT}"
     depends_on:
@@ -228,7 +229,7 @@ services:
       interval: 60s
       timeout: 10s
       retries: 5
-      start_period: 60s
+      start_period: 180s
     env_file:
       - ./.env
     environment:
@@ -341,3 +342,4 @@ networks:
 volumes:
   api_files:
   models_hf_cache:
+  rag_hf_cache:

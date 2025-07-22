@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Body, Query
+from pyreadline3.console import event
+
 from src.common.utils.logger import api_logs
 from src.rag import RAGPipeline
 
@@ -13,6 +15,7 @@ async def upload_text_handler(
         event_name: str = Body(...)
 ):
     chunks = pipeline.preprocess_article(text)
+    pipeline.chroma_manager.create_collection(event_name)
     success = pipeline.chroma_manager.add_documents(
         collection_name=event_name,
         documents=chunks,

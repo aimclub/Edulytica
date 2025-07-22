@@ -120,6 +120,7 @@ services:
               capabilities: [gpu]
     volumes:
       - ./src:/app/src
+      - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
     depends_on:
@@ -153,6 +154,7 @@ services:
               capabilities: [ gpu ]
     volumes:
       - ./src:/app/src
+      - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
     depends_on:
@@ -332,3 +334,4 @@ networks:
 
 volumes:
   api_files:
+  models_hf_cache:

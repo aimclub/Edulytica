@@ -56,19 +56,71 @@ const ticketSlice = createSlice({
   },
 })
 
-// Thunk для получения истории тикетов
-export const fetchTicketHistory = () => async (dispatch) => {
-  try {
-    dispatch(setLoading(true))
-    const ticketHistory = await ticketService.getTicketHistory()
-    dispatch(setTickets(ticketHistory))
-    return ticketHistory
-  } catch (error) {
-    dispatch(setError(error.message))
-    throw error
-  } finally {
-    dispatch(setLoading(false))
+// Вспомогательная функция для гарантии PDF/DOCX
+async function ensurePdfOrDocxFile(blob, baseName) {
+  console.log(
+    `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
+  )
+  // Логируем тип blob для отладки
+  console.log(`DEBUG: blob.type = ${blob.type}`)
+
+  // Если это результат и тип octet-stream - попробуем определить как текст
+  if (baseName === "result" && blob.type === "application/octet-stream") {
+    console.log(`Attempting to detect text content for ${baseName}`)
+    try {
+      const text = await blob.text()
+      // Проверяем, что это действительно текст (не бинарные данные)
+      if (text && text.length > 0 && !text.includes("\x00")) {
+        console.log(`Creating TXT file for ${baseName} (detected as text)`)
+        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
+      }
+    } catch (e) {
+      console.log(`Failed to read as text, treating as binary: ${e.message}`)
+    }
   }
+
+  // Если это текст и это result — вернуть как txt
+  if (blob.type === "text/plain" && baseName === "result") {
+    console.log(`Creating TXT file for ${baseName}`)
+    return new File([blob], `${baseName}.txt`, { type: "text/plain" })
+  }
+
+  // Если это PDF
+  if (blob.type === "application/pdf") {
+    console.log(`Creating PDF file for ${baseName}`)
+    return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
+  }
+
+  // Если это DOCX по типу или по baseName и octet-stream
+  if (
+    blob.type ===
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+    (baseName === "file" && blob.type === "application/octet-stream")
+  ) {
+    console.log(`Creating DOCX file for ${baseName}`)
+    return new File([blob], `${baseName}.docx`, {
+      type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    })
+  }
+
+  // Если это текст — конвертировать в PDF
+  if (blob.type === "text/plain") {
+    console.log(`Converting text to PDF for ${baseName}`)
+    const text = await blob.text()
+    // Используем jsPDF для конвертации текста в PDF
+    const jsPDF = (await import("jspdf")).jsPDF
+    const doc = new jsPDF()
+    doc.text(text, 10, 10)
+    const pdfBlob = doc.output("blob")
+    return new File([pdfBlob], `${baseName}.pdf`, {
+      type: "application/pdf",
+    })
+  }
+
+  // Для других типов — можно добавить обработку
+  // По умолчанию — пробуем как PDF
+  console.log(`Default case: creating PDF file for ${baseName}`)
+  return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
 }
 
 // Thunk для получения данных конкретного тикета
@@ -77,10 +129,22 @@ export const fetchTicket = (ticketId) => async (dispatch) => {
     dispatch(setLoading(true))
     const ticketInfo = await ticketService.getTicket(ticketId)
     const ticketStatus = await ticketService.getTicketStatus(ticketId)
+
+    // Сразу получаем файл тикета
+    let file = null
+    try {
+      const fileBlob = await ticketService.getTicketFile(ticketId)
+      const fileFile = await ensurePdfOrDocxFile(fileBlob, "file")
+      file = await ticketService.parseFileText(fileFile)
+    } catch (e) {
+      file = null
+    }
+
     const ticketData = {
       ticketId: ticketInfo.ticket.id,
       ticketInfo: ticketInfo.ticket,
       status: ticketStatus.status,
+      files: { file }, // добавляем file сразу
     }
     dispatch(setCurrentTicket(ticketData))
 
@@ -93,6 +157,21 @@ export const fetchTicket = (ticketId) => async (dispatch) => {
     }
 
     return ticketData
+  } catch (error) {
+    dispatch(setError(error.message))
+    throw error
+  } finally {
+    dispatch(setLoading(false))
+  }
+}
+
+// Thunk для получения истории тикетов
+export const fetchTicketHistory = () => async (dispatch) => {
+  try {
+    dispatch(setLoading(true))
+    const ticketHistory = await ticketService.getTicketHistory()
+    dispatch(setTickets(ticketHistory))
+    return ticketHistory
   } catch (error) {
     dispatch(setError(error.message))
     throw error
@@ -132,72 +211,6 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
       ticketService.getTicketResult(ticketId),
     ])
 
-    // Вспомогательная функция для гарантии PDF/DOCX
-    async function ensurePdfOrDocxFile(blob, baseName) {
-      console.log(
-        `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
-      )
-
-      // Если это результат и тип octet-stream - попробуем определить как текст
-      if (baseName === "result" && blob.type === "application/octet-stream") {
-        console.log(`Attempting to detect text content for ${baseName}`)
-        try {
-          const text = await blob.text()
-          // Проверяем, что это действительно текст (не бинарные данные)
-          if (text && text.length > 0 && !text.includes("\x00")) {
-            console.log(`Creating TXT file for ${baseName} (detected as text)`)
-            return new File([blob], `${baseName}.txt`, { type: "text/plain" })
-          }
-        } catch (e) {
-          console.log(
-            `Failed to read as text, treating as binary: ${e.message}`
-          )
-        }
-      }
-
-      // Если это текст и это result — вернуть как txt
-      if (blob.type === "text/plain" && baseName === "result") {
-        console.log(`Creating TXT file for ${baseName}`)
-        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
-      }
-
-      // Если это PDF
-      if (blob.type === "application/pdf") {
-        console.log(`Creating PDF file for ${baseName}`)
-        return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
-      }
-
-      // Если это DOCX
-      if (
-        blob.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        console.log(`Creating DOCX file for ${baseName}`)
-        return new File([blob], `${baseName}.docx`, {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        })
-      }
-
-      // Если это текст — конвертировать в PDF
-      if (blob.type === "text/plain") {
-        console.log(`Converting text to PDF for ${baseName}`)
-        const text = await blob.text()
-        // Используем jsPDF для конвертации текста в PDF
-        const jsPDF = (await import("jspdf")).jsPDF
-        const doc = new jsPDF()
-        doc.text(text, 10, 10)
-        const pdfBlob = doc.output("blob")
-        return new File([pdfBlob], `${baseName}.pdf`, {
-          type: "application/pdf",
-        })
-      }
-
-      // Для других типов — можно добавить обработку
-      // По умолчанию — пробуем как PDF
-      console.log(`Default case: creating PDF file for ${baseName}`)
-      return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
-    }
-
     // Оборачиваем Blobs в File (PDF или DOCX)
     const fileFile = await ensurePdfOrDocxFile(fileBlob, "file")
     const resultFile = await ensurePdfOrDocxFile(resultBlob, "result")
@@ -214,7 +227,8 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
       setCurrentTicket({
         ...prev,
         files: {
-          file,
+          ...prev?.files,
+          file, // обновляем file (на случай если изменился)
           result,
         },
       })

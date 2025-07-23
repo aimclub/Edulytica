@@ -114,9 +114,9 @@ async def new_ticket(
 
         try:
             with open(saved_file_path, 'rb') as f:
-                parsed_data = get_structural_paragraphs(f, filename=file.filename)
+                parsed_data = fast_parse_text(f, filename=file.filename)
 
-            document_text = " ".join(parsed_data.get('other_text', []))
+            document_text = parsed_data
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")
 

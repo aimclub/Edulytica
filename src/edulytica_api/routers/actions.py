@@ -109,14 +109,16 @@ async def new_ticket(
         file_path = os.path.join(
             'app_files', 'document', f'{auth_data["user"].id}', f'{file_id}.{file_extension}'
         )
+
+        file_content = await file.read()
+
         with open(saved_file_path, 'wb') as f:
-            f.write(await file.read())
+            f.write(file_content)
 
         try:
-            with open(saved_file_path, 'rb') as f:
-                parsed_data = fast_parse_text(f, filename=file.filename)
+            file_stream = BytesIO(file_content)
+            document_text = fast_parse_text(file_stream, filename=file.filename)
 
-            document_text = parsed_data
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")
 

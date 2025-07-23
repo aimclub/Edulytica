@@ -1,6 +1,8 @@
 import os
 import tempfile
 import zipfile
+import fitz
+import docx
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element
 from typing import List, Dict, Union, IO
@@ -233,3 +235,38 @@ def get_structural_paragraphs(file_stream: IO[bytes], filename: str = None) -> D
             'table_of_content': [],
             'other_text': []
         }
+
+
+def fast_parse_text(file_stream: IO[bytes], filename: str) -> str:
+    """
+    Быстро извлекает сырой текст из потока байтов файла PDF или DOCX.
+
+    Args:
+        file_stream (IO[bytes]): Файл в виде потока байтов.
+        filename (str): Оригинальное имя файла для определения типа.
+
+    Returns:
+        str: Извлеченный текст.
+
+    Raises:
+        ValueError: Если тип файла не поддерживается.
+    """
+    file_ext = os.path.splitext(filename.lower())[1]
+
+    if file_ext == ".pdf":
+        text_content = ""
+        with fitz.open(stream=file_stream, filetype="pdf") as doc:
+            for page in doc:
+                text_content += page.get_text()
+        return text_content
+
+    elif file_ext == ".docx":
+        document = docx.Document(file_stream)
+        text_content = [p.text for p in document.paragraphs]
+        return "\n".join(text_content)
+
+    elif file_ext == ".txt":
+        return file_stream.read().decode('utf-8')
+
+    else:
+        raise ValueError(f"Unsupported file type: '{file_ext}'. Only .pdf, .docx, and .txt are supported.")

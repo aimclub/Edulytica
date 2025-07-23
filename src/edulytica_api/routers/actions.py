@@ -41,7 +41,7 @@ from src.common.utils.chroma_utils import is_valid_chroma_collection_name
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
 from src.edulytica_api.dependencies import get_http_client
-from src.edulytica_api.parser.Parser import get_structural_paragraphs
+from src.edulytica_api.parser.Parser import get_structural_paragraphs, fast_parse_text
 
 actions_router = APIRouter(prefix="/actions")
 ROOT_DIR = Path(__file__).resolve().parents[3]
@@ -227,8 +227,7 @@ async def parse_file_text(
                         "Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
             else:
                 file_like = BytesIO(file_content)
-                parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
-                document_text = " ".join(parsed_data.get('other_text', []))
+                document_text = fast_parse_text(file_like, filename=file.filename)
 
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")

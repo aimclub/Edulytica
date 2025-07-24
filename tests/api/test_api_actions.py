@@ -6,7 +6,7 @@ from src.edulytica_api.app import app
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.actions.get_structural_paragraphs")
+@patch("src.edulytica_api.routers.actions.fast_parse_text")
 @patch("src.edulytica_api.routers.actions.TicketCrud.create")
 @patch("src.edulytica_api.routers.actions.TicketTypeCrud.get_filtered_by_params")
 @patch("src.edulytica_api.routers.actions.TicketStatusCrud.get_filtered_by_params")
@@ -26,7 +26,7 @@ def test_new_ticket_success(
         mock_status,
         mock_type,
         mock_ticket_create,
-        mock_get_paragraphs,
+        mock_parse_text,
         client,
         mock_http_client
 ):
@@ -36,7 +36,7 @@ def test_new_ticket_success(
     mock_status.return_value = [MagicMock(id=uuid.uuid4())]
     mock_type.return_value = [MagicMock(id=uuid.uuid4())]
     mock_ticket_create.return_value = MagicMock(id=uuid.uuid4())
-    mock_get_paragraphs.return_value = {"other_text": ["some parsed text"]}
+    mock_parse_text.return_value = "some parsed text"
     mock_http_client.post = AsyncMock()
     mock_response = AsyncMock()
     mock_response.raise_for_status = AsyncMock()

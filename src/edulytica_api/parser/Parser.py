@@ -269,4 +269,5 @@ def fast_parse_text(file_stream: IO[bytes], filename: str) -> str:
         return file_stream.read().decode('utf-8')
 
     else:
-        raise ValueError(f"Unsupported file type: '{file_ext}'. Only .pdf, .docx, and .txt are supported.")
+        raise ValueError(
+            f"Unsupported file type: '{file_ext}'. Only .pdf, .docx, and .txt are supported.")

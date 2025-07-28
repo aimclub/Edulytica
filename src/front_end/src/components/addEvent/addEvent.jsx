@@ -1,24 +1,53 @@
 import { useState } from "react"
 import { Input } from "../../utils/input/input"
 import "./addEvent.scss"
+import { ticketService } from "../../services/ticket.service"
 
 export const AddEvent = ({ setAddEventModal }) => {
   const [eventName, setEventName] = useState("")
   const [eventInfo, setEventInfo] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+  const [fieldErrors, setFieldErrors] = useState({})
+  const [touched, setTouched] = useState({})
 
-  const handleBtnAddEvent = () => {
-    if (!eventName.trim()) return
-    addEventFunction({
-      name: eventName,
-      info: eventInfo,
-    })
-
-    setAddEventModal(false)
+  const validate = () => {
+    const errors = {}
+    if (!eventName.trim()) {
+      errors.eventName = "Введите название мероприятия"
+    }
+    if (!eventInfo.trim()) {
+      errors.eventInfo = "Заполните описание мероприятия"
+    }
+    return errors
   }
 
-  const addEventFunction = (ev) => {
-    // This function is no longer used as event and setEvent are removed from the component
+  const handleBtnAddEvent = async () => {
+    const errors = validate()
+    setFieldErrors(errors)
+    setTouched({ eventName: true, eventInfo: true })
+    if (Object.keys(errors).length > 0) return
+    setLoading(true)
+    setError("")
+    try {
+      await ticketService.addCustomEvent(eventName, eventInfo)
+      setAddEventModal(false)
+    } catch (err) {
+      if (err?.response?.data?.detail) {
+        setFieldErrors({ eventName: err.response.data.detail })
+        setTouched((prev) => ({ ...prev, eventName: true }))
+      } else {
+        let msg = "Ошибка при добавлении мероприятия."
+        if (err?.message) {
+          msg = err.message
+        }
+        setError(msg)
+      }
+    } finally {
+      setLoading(false)
+    }
   }
+
   return (
     <div className="addEvent">
       <div className="titleAddEvent">Новое мероприятие</div>
@@ -30,8 +59,18 @@ export const AddEvent = ({ setAddEventModal }) => {
               type="text"
               placeholder="Введите название мероприятия..."
               value={eventName}
-              onChange={(e) => setEventName(e.target.value)}
+              onChange={(e) => {
+                setEventName(e.target.value)
+                setTouched((prev) => ({ ...prev, eventName: true }))
+                if (fieldErrors.eventName) {
+                  setFieldErrors((prev) => ({ ...prev, eventName: undefined }))
+                }
+              }}
+              disabled={loading}
             />
+            {touched.eventName && fieldErrors.eventName && (
+              <div className="errorTextAddEvent">{fieldErrors.eventName}</div>
+            )}
           </div>
           <div className="blockInputAddEvent">
             <div className="titleInputAddEvent">Критерии</div>
@@ -40,13 +79,27 @@ export const AddEvent = ({ setAddEventModal }) => {
               placeholder="Напишите критерии мероприятия..."
               style={{ height: "90px" }}
               value={eventInfo}
-              onChange={(e) => setEventInfo(e.target.value)}
+              onChange={(e) => {
+                setEventInfo(e.target.value)
+                setTouched((prev) => ({ ...prev, eventInfo: true }))
+                if (fieldErrors.eventInfo) {
+                  setFieldErrors((prev) => ({ ...prev, eventInfo: undefined }))
+                }
+              }}
+              disabled={loading}
             />
+            {touched.eventInfo && fieldErrors.eventInfo && (
+              <div className="errorTextAddEvent">{fieldErrors.eventInfo}</div>
+            )}
           </div>
         </div>
-
-        <button className="btnAddEvent" onClick={handleBtnAddEvent}>
-          Добавить
+        {error && <div className="errorAddEvent">{error}</div>}
+        <button
+          className="btnAddEvent"
+          onClick={handleBtnAddEvent}
+          disabled={loading}
+        >
+          {loading ? "Добавление..." : "Добавить"}
         </button>
       </div>
       <svg
@@ -55,7 +108,8 @@ export const AddEvent = ({ setAddEventModal }) => {
           position: "absolute",
           top: "40px",
           right: "40px",
-          cursor: "pointer",
+          cursor: loading ? "not-allowed" : "pointer",
+          pointerEvents: loading ? "none" : "auto",
         }}
         width="32"
         height="32"

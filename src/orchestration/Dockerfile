@@ -1,5 +1,7 @@
 FROM python:3.11-slim
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
 COPY src/orchestration/requirements.txt .
@@ -13,4 +15,9 @@ ENV PYTHONPATH=/app
 COPY . .
 COPY src/common /app/src/common
 
-CMD ["uvicorn", "src.orchestration.app:app", "--host", "0.0.0.0", "--port", "10001"]
+#COPY src/orchestration/init_kafka.sh /usr/local/bin/init_kafka.sh
+#RUN chmod +x /usr/local/bin/init_kafka.sh
+#
+#CMD ["/usr/local/bin/init_kafka.sh"]
+
+CMD ["uvicorn", "src.orchestration.app:app", "--host", "0.0.0.0", "--port", "15001"]

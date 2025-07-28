@@ -23,41 +23,29 @@ export const AddFile = ({
   selectedParams,
   setSelectedParams,
   setAddEventModal,
+  addEventModal, // Добавляем для отслеживания состояния
   fetchTicketHistory,
   onTicketCreated,
 }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [eventModal, setEventModal] = useState(false)
+  const [refreshKey, setRefreshKey] = useState(0) // Для перерендеринга EventModal
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
   const [, setError] = useState(null)
-
-  // Устанавливаем режим "рецензирование" по умолчанию при монтировании компонента
-  useEffect(() => {
-    setSelectedParams((prev) => {
-      const hasMode = prev.some((param) => param.type === "mode")
-      if (!hasMode) {
-        return [...prev, { type: "mode", name: "рецензирование" }]
-      }
-      return prev
-    })
-  }, [setSelectedParams])
 
   const openEventModal = () => {
     setEventModal((pr) => !pr)
   }
 
   const changeMode = () => {
-    setMode((prevMode) => {
-      const newMode =
-        prevMode === "рецензирование" ? "анализ" : "рецензирование"
-      setSelectedParams((prev) => [
-        { type: "mode", name: newMode },
-        ...prev.filter((param) => param.type !== "mode"),
-      ])
-      return newMode
-    })
+    const newMode = mode === "рецензирование" ? "анализ" : "рецензирование"
+    setMode(newMode)
+    setSelectedParams((prev) => [
+      { type: "mode", name: newMode },
+      ...prev.filter((param) => param.type !== "mode"),
+    ])
   }
 
   const handleFileSelect = (event) => {
@@ -113,6 +101,7 @@ export const AddFile = ({
 
       const { event_id } = await ticketService.getEventId(eventParam.name)
       const mega_task_id = mode === "рецензирование" ? "1" : "2"
+      console.log("mode:", mode, "mega_task_id:", mega_task_id)
 
       // Создаем тикет через Redux Thunk
       await dispatch(createTicket(file, event_id, mega_task_id))
@@ -138,7 +127,7 @@ export const AddFile = ({
   ])
 
   const sortedParams = useMemo(
-    () => selectedParams.sort((a, b) => (a.type === "file" ? -1 : 1)),
+    () => [...selectedParams].sort((a, b) => (a.type === "file" ? -1 : 1)),
     [selectedParams]
   )
 
@@ -149,6 +138,18 @@ export const AddFile = ({
       selectedParams.some((param) => param.type === "event")
     )
   }, [selectedParams])
+
+  const refreshEventModal = () => {
+    setRefreshKey((prev) => prev + 1)
+  }
+
+  // Отслеживаем изменения addEventModal для обновления списка мероприятий
+  useEffect(() => {
+    if (!addEventModal) {
+      // Если модалка добавления мероприятия закрылась, обновляем список
+      refreshEventModal()
+    }
+  }, [addEventModal])
 
   return (
     <div className="addFile">
@@ -334,6 +335,7 @@ export const AddFile = ({
       <div className="eventModalAddFile">
         {eventModal && (
           <EventModal
+            key={refreshKey} // Принудительный перерендер при изменении ключа
             setSelectedEvent={(event) =>
               setSelectedParams((prev) => [
                 { type: "event", name: event.name, info: event.info },

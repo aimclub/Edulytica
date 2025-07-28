@@ -6,7 +6,7 @@ from src.edulytica_api.app import app
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.actions.get_structural_paragraphs")
+@patch("src.edulytica_api.routers.actions.fast_parse_text")
 @patch("src.edulytica_api.routers.actions.TicketCrud.create")
 @patch("src.edulytica_api.routers.actions.TicketTypeCrud.get_filtered_by_params")
 @patch("src.edulytica_api.routers.actions.TicketStatusCrud.get_filtered_by_params")
@@ -26,7 +26,7 @@ def test_new_ticket_success(
         mock_status,
         mock_type,
         mock_ticket_create,
-        mock_get_paragraphs,
+        mock_parse_text,
         client,
         mock_http_client
 ):
@@ -36,7 +36,7 @@ def test_new_ticket_success(
     mock_status.return_value = [MagicMock(id=uuid.uuid4())]
     mock_type.return_value = [MagicMock(id=uuid.uuid4())]
     mock_ticket_create.return_value = MagicMock(id=uuid.uuid4())
-    mock_get_paragraphs.return_value = {"other_text": ["some parsed text"]}
+    mock_parse_text.return_value = "some parsed text"
     mock_http_client.post = AsyncMock()
     mock_response = AsyncMock()
     mock_response.raise_for_status = AsyncMock()
@@ -145,7 +145,7 @@ def test_get_event_id_not_found(mock_custom, mock_event, client):
 @pytest.mark.asyncio
 @patch("src.edulytica_api.routers.actions.TicketCrud.get_ticket_by_id_or_shared")
 def test_get_ticket_success(mock_get_ticket, client):
-    mock_get_ticket.return_value = ["mock_ticket"]
+    mock_get_ticket.return_value = "mock_ticket"
 
     response = client(app).get("/actions/get_ticket", params={"ticket_id": str(uuid.uuid4())})
     assert response.status_code == 200

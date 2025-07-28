@@ -133,37 +133,74 @@ export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
     ])
 
     // Вспомогательная функция для гарантии PDF/DOCX
-    async function ensurePdfOrDocxFile(blob, filename) {
-      // Если это PDF или DOCX — просто обернуть в File
-      if (blob.type === "application/pdf") {
-        return new File([blob], filename, { type: "application/pdf" })
+    async function ensurePdfOrDocxFile(blob, baseName) {
+      console.log(
+        `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
+      )
+
+      // Если это результат и тип octet-stream - попробуем определить как текст
+      if (baseName === "result" && blob.type === "application/octet-stream") {
+        console.log(`Attempting to detect text content for ${baseName}`)
+        try {
+          const text = await blob.text()
+          // Проверяем, что это действительно текст (не бинарные данные)
+          if (text && text.length > 0 && !text.includes("\x00")) {
+            console.log(`Creating TXT file for ${baseName} (detected as text)`)
+            return new File([blob], `${baseName}.txt`, { type: "text/plain" })
+          }
+        } catch (e) {
+          console.log(
+            `Failed to read as text, treating as binary: ${e.message}`
+          )
+        }
       }
+
+      // Если это текст и это result — вернуть как txt
+      if (blob.type === "text/plain" && baseName === "result") {
+        console.log(`Creating TXT file for ${baseName}`)
+        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
+      }
+
+      // Если это PDF
+      if (blob.type === "application/pdf") {
+        console.log(`Creating PDF file for ${baseName}`)
+        return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
+      }
+
+      // Если это DOCX
       if (
         blob.type ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
-        return new File([blob], filename, {
+        console.log(`Creating DOCX file for ${baseName}`)
+        return new File([blob], `${baseName}.docx`, {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         })
       }
+
       // Если это текст — конвертировать в PDF
       if (blob.type === "text/plain") {
+        console.log(`Converting text to PDF for ${baseName}`)
         const text = await blob.text()
         // Используем jsPDF для конвертации текста в PDF
         const jsPDF = (await import("jspdf")).jsPDF
         const doc = new jsPDF()
         doc.text(text, 10, 10)
         const pdfBlob = doc.output("blob")
-        return new File([pdfBlob], filename, { type: "application/pdf" })
+        return new File([pdfBlob], `${baseName}.pdf`, {
+          type: "application/pdf",
+        })
       }
+
       // Для других типов — можно добавить обработку
       // По умолчанию — пробуем как PDF
-      return new File([blob], filename, { type: "application/pdf" })
+      console.log(`Default case: creating PDF file for ${baseName}`)
+      return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
     }
 
     // Оборачиваем Blobs в File (PDF или DOCX)
-    const fileFile = await ensurePdfOrDocxFile(fileBlob, "file.pdf")
-    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result.pdf")
+    const fileFile = await ensurePdfOrDocxFile(fileBlob, "file")
+    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result")
 
     // Парсим файлы через бэкенд
     const [file, result] = await Promise.all([

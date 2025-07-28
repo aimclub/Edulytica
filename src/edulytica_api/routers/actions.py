@@ -27,6 +27,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
 from src.common.auth.auth_bearer import access_token_auth
+from src.common.config import ORCHESTRATOR_PORT, RAG_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.document_summary_crud import DocumentSummaryCrud
 from src.common.database.crud.event_crud import EventCrud
@@ -36,13 +37,14 @@ from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.ticket_type_crud import TicketTypeCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import get_session
+from src.common.utils.chroma_utils import is_valid_chroma_collection_name
 from src.common.utils.default_enums import TicketStatusDefault, TicketTypeDefault
 from src.common.utils.logger import api_logs
 from src.edulytica_api.dependencies import get_http_client
-from src.edulytica_api.parser.Parser import get_structural_paragraphs
+from src.edulytica_api.parser.Parser import get_structural_paragraphs, fast_parse_text
 
 actions_router = APIRouter(prefix="/actions")
-ROOT_DIR = Path(__file__).resolve().parents[2]
+ROOT_DIR = Path(__file__).resolve().parents[3]
 
 
 @api_logs(actions_router.post("/new_ticket"))
@@ -75,7 +77,7 @@ async def new_ticket(
         HTTPException: For invalid event ID, unsupported file type, or internal errors.
     """
     try:
-        if mega_task_id != "1":
+        if mega_task_id not in ["1", "2"]:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST, detail=f"Unknown megatask id {mega_task_id}"
             )
@@ -107,14 +109,16 @@ async def new_ticket(
         file_path = os.path.join(
             'app_files', 'document', f'{auth_data["user"].id}', f'{file_id}.{file_extension}'
         )
+
+        file_content = await file.read()
+
         with open(saved_file_path, 'wb') as f:
-            f.write(await file.read())
+            f.write(file_content)
 
         try:
-            with open(saved_file_path, 'rb') as f:
-                parsed_data = get_structural_paragraphs(f, filename=file.filename)
+            file_stream = BytesIO(file_content)
+            document_text = fast_parse_text(file_stream, filename=file.filename)
 
-            document_text = " ".join(parsed_data.get('other_text', []))
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")
 
@@ -154,7 +158,8 @@ async def new_ticket(
         }
 
         try:
-            response = await http_client.post('http://edulytica_orchestration:10001/orchestrate/run_ticket',
+            response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
+                                              f'/orchestrate/run_ticket',
                                               json=orchestrator_payload, timeout=30.0)
             response.raise_for_status()
         except httpx.RequestError as _re:
@@ -205,7 +210,8 @@ async def parse_file_text(
     try:
         if file.content_type not in [
             'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'text/plain'
         ]:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
@@ -214,10 +220,17 @@ async def parse_file_text(
 
         try:
             file_content = await file.read()
-            file_like = BytesIO(file_content)
-            parsed_data = get_structural_paragraphs(file_like, filename=file.filename)
 
-            document_text = " ".join(parsed_data.get('other_text', []))
+            if file.content_type == 'text/plain':
+                try:
+                    document_text = file_content.decode('utf-8')
+                except UnicodeDecodeError:
+                    raise ValueError(
+                        "Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
+            else:
+                file_like = BytesIO(file_content)
+                document_text = fast_parse_text(file_like, filename=file.filename)
+
             if not document_text:
                 raise ValueError("Parser could not extract text from the document.")
 
@@ -236,6 +249,54 @@ async def parse_file_text(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
         )
+
+
+@api_logs(actions_router.post('/add_custom_event'))
+async def add_custom_event(
+    auth_data: dict = Depends(access_token_auth),
+    event_name: str = Body(...),
+    description: str = Body(...),
+    session: AsyncSession = Depends(get_session),
+    http_client: httpx.AsyncClient = Depends(get_http_client)
+):
+    try:
+        if is_valid_chroma_collection_name(event_name):
+            event = await EventCrud.get_filtered_by_params(session=session, name=event_name)
+            custom_event = await CustomEventCrud.get_filtered_by_params(session=session, name=event_name)
+
+            if event or custom_event:
+                raise HTTPException(
+                    status_code=HTTP_400_BAD_REQUEST,
+                    detail=f'Event with name {event_name} already exists.'
+                )
+
+            try:
+                rag_payload = {
+                    "text": description,
+                    "event_name": event_name
+                }
+                response = await http_client.post(f'http://edulytica_rag:{RAG_PORT}'
+                                                  f'/rag/upload_text',
+                                                  json=rag_payload, timeout=30.0)
+                response.raise_for_status()
+                await CustomEventCrud.create(
+                    session=session,
+                    name=event_name,
+                    user_id=auth_data['user'].id
+                )
+            except httpx.RequestError as _re:
+                raise HTTPException(
+                    status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                    detail=f"RAG service is unavailable {_re}"
+                )
+        else:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Invalid event name specified. Only latin characters, numbers, and ._- are allowed.')
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
 @api_logs(actions_router.get('/get_ticket_status'))
@@ -365,7 +426,7 @@ async def get_ticket(
             raise HTTPException(status_code=HTTP_400_BAD_REQUEST,
                                 detail='Ticket doesn\'t exist or you\'re not ticket creator')
 
-        return {'detail': 'Ticket was found', 'ticket': ticket[0]}
+        return {'detail': 'Ticket was found', 'ticket': ticket}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover
@@ -401,11 +462,12 @@ async def get_ticket_file(
 
         document = await DocumentCrud.get_by_id(session=session, record_id=ticket.document_id)
         if not document:
-            raise HTTPException(status_code=400, detail='File not found')
+            raise HTTPException(status_code=400, detail='File not found in Database')
 
         file_path = ROOT_DIR / document.file_path
+
         if not file_path.exists():
-            raise HTTPException(status_code=400, detail='File not found')
+            raise HTTPException(status_code=400, detail='File not found in storage')
 
         return FileResponse(
             path=str(file_path),
@@ -492,14 +554,20 @@ async def get_ticket_result(
             raise HTTPException(status_code=400, detail='Ticket doesn\'t exist')
 
         document_report = await DocumentReportCrud.get_by_id(
-            session=session, record_id=ticket.document_id
+            session=session, record_id=ticket.document_report_id
         )
+
         if not document_report:
-            raise HTTPException(status_code=400, detail='Ticket result not found')
+            raise HTTPException(
+                status_code=400,
+                detail=f'Ticket result not found, document report not found in Database')
 
         file_path = ROOT_DIR / document_report.file_path
+
         if not file_path.exists():
-            raise HTTPException(status_code=400, detail='Ticket result not found')
+            raise HTTPException(
+                status_code=400,
+                detail='Ticket result not found, document report not found in storage')
 
         return FileResponse(
             path=str(file_path),

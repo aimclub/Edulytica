@@ -1,0 +1,12 @@
+confluent-kafka==2.10.0
+python-dotenv==1.0.1
+SQLAlchemy==2.0.30
+asyncpg==0.30.0
+pydantic==2.7.2
+aiohttp==3.9.5
+transformers
+torch==2.2.2
+numpy==1.26.4
+redis==5.2.1
+accelerate
+bitsandbytes

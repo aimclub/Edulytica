@@ -21,6 +21,7 @@ export const ResultFile = ({ fileName, ticketData }) => {
   const scrollRef = useRef(null)
   // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
   const [key, setKey] = useState(0)
+  const [error, setError] = useState("") // Новое состояние для ошибки
 
   const files = ticketData?.files || {}
 
@@ -30,13 +31,34 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   // Эффект для загрузки файлов, если тикет уже выполнен
   useEffect(() => {
-    if (
-      ticketData?.status === "Completed" &&
-      ticketData?.ticketId &&
-      !ticketData.files
-    ) {
-      dispatch(fetchTicketFiles(ticketData.ticketId))
+    const fetchFiles = async () => {
+      if (
+        ticketData?.status === "Completed" &&
+        ticketData?.ticketId &&
+        !ticketData.files
+      ) {
+        try {
+          setError("")
+          await dispatch(fetchTicketFiles(ticketData.ticketId))
+        } catch (err) {
+          let msg = "Ошибка при получении результата."
+          if (err?.response?.data?.detail) {
+            if (err.response.data.detail === "Ticket result not found") {
+              msg = "Результат ещё не готов. Попробуйте позже."
+            } else {
+              msg = err.response.data.detail
+            }
+          } else if (err?.response?.status === 400) {
+            msg = "Результат ещё не готов. Попробуйте позже."
+          } else if (err?.message) {
+            msg = err.message
+          }
+          setError(msg)
+        }
+      }
     }
+    fetchFiles()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticketData?.status, ticketData?.ticketId, ticketData?.files, dispatch])
 
   useEffect(() => {
@@ -54,28 +76,53 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   // Функция для получения контента на основе активной секции
   const getTextContent = () => {
-    // Если тикет в процессе обработки, всегда показывать статус
-    if (
-      ticketData &&
-      (ticketData.status === "Created" || ticketData.status === "In progress")
-    ) {
-      return `Статус: ${ticketData.status}`
+    // Если тикет в процессе обработки, всегда показывать статус в разделе результата
+    if (activeSectionResult === 2) {
+      if (
+        ticketData &&
+        (ticketData.status === "Created" || ticketData.status === "In progress")
+      ) {
+        return `Статус: ${ticketData.status}`
+      }
+      // Если статус Completed и есть ошибка (например, файлы не пришли)
+      if (ticketData?.status === "Completed" && error) {
+        return "Результат ещё не готов. Попробуйте позже."
+      }
+      if (error) {
+        return error
+      }
+      // Если статус не Completed или нет результата — выводим сообщение о процессе
+      if (ticketData?.status !== "Completed" || !files.result) {
+        return `Результат ещё не готов. Попробуйте позже.`
+      }
+      // Если результат есть — выводим его
+      if (typeof files.result === "string") {
+        return files.result.split("\n")
+      }
+      return files.result || ""
     }
-
-    // Если статус 'Completed', но файлы еще не загружены
-    if (!files) {
+    // Раздел Исходного документа: если есть файл — показываем его
+    if (activeSectionResult === 1) {
+      if (typeof files.file === "string") {
+        return files.file.split("\n")
+      }
+      if (files.file) {
+        return files.file
+      }
+      // Если файла нет, fallback на старую логику
       if (ticketData?.status === "Completed") {
         return `Статус: ${ticketData.status}`
       }
+      if (error) {
+        return error
+      }
       return "Загрузка..."
     }
-
-    // Если файлы загружены (статус 'Completed')
-    // if (activeSectionResult === 3) return files.result || ""
-    // if (activeSectionResult === 2) return files.summary || ""
-    if (activeSectionResult === 2) return files.result || ""
-    return files.file || ""
+    // fallback
+    return ""
   }
+
+  const textContent = getTextContent()
 
   return (
     <motion.div
@@ -132,7 +179,16 @@ export const ResultFile = ({ fileName, ticketData }) => {
                   }}
                   ref={scrollRef}
                 >
-                  {getTextContent()}
+                  {Array.isArray(textContent)
+                    ? textContent.map((line, idx) => (
+                        <p
+                          key={idx}
+                          style={{ margin: 0, whiteSpace: "pre-wrap" }}
+                        >
+                          {line}
+                        </p>
+                      ))
+                    : textContent}
                 </div>
               </div>
             </div>

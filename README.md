@@ -17,14 +17,17 @@
 ![logo](src/images/logo.png)
 
 ## Description
-The purpose of the application is to automate the analysis of scientific and educational documents in the context of 
-research works using LLM (Large language model, large language models) to reduce the time and intellectual costs of 
-teachers. The result is two LLMs, trained on specially collected data, capable of summarizing the text of a large 
-document and revealing whether the stated goals and objectives of the work have been achieved.
+Edulytica is an open-source framework for evaluating text results of educational and scientific activities based on 
+LLMs, which provides an integrated web application out of the box.
+
+The goal is to provide experts with supporting materials in solving the tasks of reviewing final qualifying papers and 
+articles by young scientists, as well as to reduce the time required for in-depth analysis of works.
 
 ## Features
+- The extraction of goals and objectives from the text of the introduction of final qualifying papers has been implemented;
+- As part of the work with scientific articles, the functionality of forming a primary review has been implemented;
 - Algorithms for summarizing large texts and evaluating the achievement of stated goals and objectives;
-- Fast APP is an application for interacting with trained models;
+- A web application for interacting with features and trained models through a user-friendly interface;
 - Separate models have been trained to [summarize](https://huggingface.co/slavamarcin/saiga_llama3_8b-qdora-4bit_purpose) 
 and [assess the achievability of goals and objectives](https://huggingface.co/slavamarcin/saiga3_8b_Qdora_4bit_sum);
 - Datasets have been prepared for training models, separately for [summarization](https://huggingface.co/datasets/slavamarcin/sum_dataset_v1), 
@@ -33,28 +36,33 @@ separately for [goals and objectives](https://huggingface.co/datasets/slavamarci
 
 ## Installation
 #### 1. Clone the repository 
-```git clone https://github.com/LISA-ITMO/Edulytica.git```
+```git clone https://github.com/aimclub/Edulytica.git```
 
-#### 2. Activate venv
+#### 2. Launch docker containers or follow the instructions starting from point 3
+```docker-compose up --build```
+
+#### 3. Activate venv
 ```source ~/PyProject/Edulytica/api_venv/bin/activate```
 
-#### 3. Install requirements
+#### 4. Install requirements
 ```pip install -r requirements.txt```
 
-#### 4. Start Application
+#### 5. Start Application
 ```python3 src/edulytica_api/app.py```
 
-#### 5. Activate Celery
+#### 6. Activate Celery
 ```celery -A src.edulytica_api.celery.tasks worker --loglevel=info -E -P gevent```
 
-#### 6. Run npm
+#### 7. Run npm
 ```npm start```
 
 #### 7. Run Celery task
 ```celery -A src.edulytica_api.celery.tasks flower```
 
 ## Getting started
-First, you can familiarize yourself with the [examples](https://github.com/LISA-ITMO/Edulytica/tree/development/examples) 
+![example](src/images/example.gif)
+
+First, you can familiarize yourself with the [examples](https://github.com/aimclub/Edulytica/tree/development/examples) 
 in JSON format of the system's responses to the test sample of works.
 
 When you have managed to launch the service, you can send the documents yourself and get acquainted with the results of 
@@ -62,42 +70,30 @@ their verification!
 
 ## Documentation
 Details of the documentation can be found at the links below:
-- **[algorithms](https://github.com/LISA-ITMO/Edulytica/tree/development/src/algorithms)** - part of the task of 
+- **[algorithms](https://github.com/aimclub/Edulytica/tree/development/src/algorithms)** - part of the task of 
 analyzing the text how much it is necessary to change the source text (which is written by AI) so that AI recognition
 systems do not recognize AI in this text;
-- **[data_handling](https://github.com/LISA-ITMO/Edulytica/tree/development/src/data_handling)** - an auxiliary module
+- **[data_handling](https://github.com/aimclub/Edulytica/tree/development/src/data_handling)** - an auxiliary module
 that stores parsers of data and documents for generating datasets;
-- **[edulytica_api](https://github.com/LISA-ITMO/Edulytica/tree/development/src/edulytica_api)** - this module stores 
+- **[edulytica_api](https://github.com/aimclub/Edulytica/tree/development/src/edulytica_api)** - this module stores 
 the source code of the web service;
-- **[extracting_rules](https://github.com/LISA-ITMO/Edulytica/tree/development/src/extracting_rules)** - This module is
+- **[extracting_rules](https://github.com/aimclub/Edulytica/tree/development/src/extracting_rules)** - This module is
 devoted to an experiment with extracting design rules using LLM;
-- **[rag](https://github.com/LISA-ITMO/Edulytica/tree/development/src/rag)** - Package for an experiment with semantic
+- **[rag](https://github.com/aimclub/Edulytica/tree/development/src/rag)** - Package for an experiment with semantic
 search, kNN and the mBERT model are used.
 
-Code documentation is available at [the link](https://lisa-itmo.github.io/Edulytica/index.html).
+Code documentation is available at [the link](https://aimclub.github.io/Edulytica/index.html).
 
 ## Requirements
-For more information, see the file **[requiremets.txt](https://github.com/LISA-ITMO/Edulytica/blob/development/requirements.txt)**.
+For more information, see the file **[requiremets.txt](https://github.com/aimclub/Edulytica/blob/development/requirements.txt)**.
 
 ## Contacts
 Our contacts:
-- Martsinkevich Viacheslav, slavamarcin@yandex.ru;
-- Tereshchenko Vladislav, vlad-tershch@yandex.ru;
-- Aminov Natig, natig.aminov@gmail.com.
+- Tereshchenko Vladislav, vvtereshchenko@itmo.ru.
 
 ## Publications about Edulytica
 We also published several posts devoted to different aspects of the project:
 
 In Russian:
-- [Edulytica: LLM-ассистент для проверки научных работ](https://youtu.be/kDNREVv1IoI?si=lDzHTxTh333EcSaZ) - Scientific Open Source Meetup №8, October 2024.
-
-## Authors
-[Tereshchenko Vladislav](https://github.com/Vl-Tershch)\
-[Martsinkevich Viacheslav](https://github.com/slavamarcin)\
-[Aminov Natig](https://github.com/natigaminov)\
-[Mischenko Maxim](https://github.com/L33tl)\
-[Bogdanov Maxim](https://github.com/exPriceD)\
-[Dvornikov Artem](https://github.com/DvornikovArtem)\
-[Laptev Egor](https://github.com/EgorLaptev)\
-[Sinyukov Lev](https://github.com/MrL013)\
-[Marakulin Andrew](https://github.com/MrMegnis)
+- [Edulytica: LLM-ассистент для проверки научных работ](https://youtu.be/kDNREVv1IoI?si=lDzHTxTh333EcSaZ) - Scientific Open Source Meetup №8, October 2024, 1:05:15 - 1:22:36;
+- [Как мы научили LLM-ассистента рецензировать научные работы студентов ИТМО: вновь о проекте Edulytica](https://vkvideo.ru/video-173944682_456239041) - Scientific Open Source Meetup №10, October 2025, 1:07:30 - 1:34:00.

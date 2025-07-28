@@ -13,7 +13,7 @@ class ModelPipeline(IModel):
 
     def __call__(self, prompts: list, max_new_tokens=512, return_full_text=False):
         """Method for text generation by model.
-        Takes list of prompts and max new tokens and return list with model generated text."""
+        Takes list of prompts1 and max new tokens and return list with model generated text."""
         task = "text-generation"
         self.pipeline = pipeline(
             task,

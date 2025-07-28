@@ -1,8 +1,9 @@
 import React from "react"
-import { Route, Routes } from "react-router-dom"
+import { Route, Routes, Navigate } from "react-router-dom"
 import { Home } from "../pages/home/home.jsx"
 import { Registration } from "../pages/registration/registration.jsx"
 import { Account } from "../pages/account/account.jsx"
+import { ProtectedRoute } from "./ProtectedRoute"
 
 /**
  * Компонент, определяющий маршруты приложения.
@@ -25,71 +26,98 @@ const AppRoutes = ({
 }) => {
   return (
     <Routes>
-      <Route path="/" element={<Home isAuth={isAuth} />} />
+      <Route
+        path="/"
+        element={
+          isAuth ? <Navigate to="/account" replace /> : <Home isAuth={isAuth} />
+        }
+      />
+      {/* Защищенные маршруты аккаунта */}
       <Route
         path="/account"
         element={
-          <Account
-            accountModal={accountModal}
-            setAccountModal={setAccountModal}
-            profileModal={profileModal}
-            setProfileModal={setProfileModal}
-            accountSection={accountSection}
-            setAccountSection={setAccountSection}
-            isAuth={isAuth}
-          />
+          <ProtectedRoute>
+            <Account
+              accountModal={accountModal}
+              setAccountModal={setAccountModal}
+              profileModal={profileModal}
+              setProfileModal={setProfileModal}
+              accountSection={accountSection}
+              setAccountSection={setAccountSection}
+              isAuth={isAuth}
+            />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/account/help"
         element={
-          <Account
-            accountModal={accountModal}
-            setAccountModal={setAccountModal}
-            profileModal={profileModal}
-            setProfileModal={setProfileModal}
-            accountSection={accountSection}
-            setAccountSection={setAccountSection}
-          />
+          <ProtectedRoute>
+            <Account
+              accountModal={accountModal}
+              setAccountModal={setAccountModal}
+              profileModal={profileModal}
+              setProfileModal={setProfileModal}
+              accountSection={accountSection}
+              setAccountSection={setAccountSection}
+            />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/account/info"
         element={
-          <Account
-            accountModal={accountModal}
-            setAccountModal={setAccountModal}
-            profileModal={profileModal}
-            setProfileModal={setProfileModal}
-            accountSection={accountSection}
-            setAccountSection={setAccountSection}
-          />
+          <ProtectedRoute>
+            <Account
+              accountModal={accountModal}
+              setAccountModal={setAccountModal}
+              profileModal={profileModal}
+              setProfileModal={setProfileModal}
+              accountSection={accountSection}
+              setAccountSection={setAccountSection}
+            />
+          </ProtectedRoute>
         }
       />
       <Route
         path="/account/result"
         element={
-          <Account
-            accountModal={accountModal}
-            setAccountModal={setAccountModal}
-            profileModal={profileModal}
-            setProfileModal={setProfileModal}
-            accountSection={accountSection}
-            setAccountSection={setAccountSection}
-            isAuth={isAuth}
-          />
+          <ProtectedRoute>
+            <Account
+              accountModal={accountModal}
+              setAccountModal={setAccountModal}
+              profileModal={profileModal}
+              setProfileModal={setProfileModal}
+              accountSection={accountSection}
+              setAccountSection={setAccountSection}
+              isAuth={isAuth}
+            />
+          </ProtectedRoute>
         }
       />
+      {/* Публичные маршруты с редиректом для авторизованных */}
       <Route
         path="/registration"
         element={
-          <Registration registrationPage="registration" isAuth={isAuth} />
+          isAuth ? (
+            <Navigate to="/account" replace />
+          ) : (
+            <Registration registrationPage="registration" isAuth={isAuth} />
+          )
         }
       />
       <Route
         path="/login"
-        element={<Registration registrationPage="login" isAuth={isAuth} />}
+        element={
+          isAuth ? (
+            <Navigate to="/account" replace />
+          ) : (
+            <Registration registrationPage="login" isAuth={isAuth} />
+          )
+        }
       />
+      {/* Редирект для несуществующих маршрутов */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   )
 }

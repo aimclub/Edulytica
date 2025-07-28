@@ -49,7 +49,9 @@
   display: flex;
   min-width: 700px;
   margin: 30px 44px;
+  flex-direction: column;
   overflow-y: auto;
+  align-items: start;
 }
 
 .textContScrollResultFile::-webkit-scrollbar {

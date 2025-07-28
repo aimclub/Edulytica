@@ -14,6 +14,8 @@ import {
   fetchTicket,
   fetchTicketHistory,
   setCurrentTicket,
+  startPollingForTicket,
+  stopPollingForTicket,
 } from "../../store/ticketSlice"
 import { useLocation } from "react-router-dom"
 
@@ -40,7 +42,9 @@ export const Account = ({
 }) => {
   const location = useLocation()
   const dispatch = useDispatch()
-  const [selectedParams, setSelectedParams] = useState([]) // массив для хранения параметров при отправки документа
+  const [selectedParams, setSelectedParams] = useState([
+    { type: "mode", name: "рецензирование" },
+  ]) // массив для хранения параметров при отправки документа
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)
@@ -86,6 +90,24 @@ export const Account = ({
       setAccountSection("main")
     }
   }, [location.pathname, location.search, setAccountSection, dispatch]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Опрос статуса тикета только если открыт result и статус In progress/Created
+  useEffect(() => {
+    if (
+      accountSection === "result" &&
+      currentTicket &&
+      (currentTicket.status === "In progress" ||
+        currentTicket.status === "Created")
+    ) {
+      dispatch(startPollingForTicket(currentTicket.ticketId))
+      return () => {
+        dispatch(stopPollingForTicket(currentTicket.ticketId))
+      }
+    } else if (currentTicket) {
+      // Если уходим с result — останавливаем polling
+      dispatch(stopPollingForTicket(currentTicket.ticketId))
+    }
+  }, [accountSection, currentTicket, dispatch])
 
   const [infoProfile, setInfoProfile] = useState({
     name: userData?.name || "...",
@@ -178,6 +200,7 @@ export const Account = ({
                   selectedParams={selectedParams}
                   setSelectedParams={setSelectedParams}
                   setAddEventModal={setAddEventModal}
+                  addEventModal={addEventModal}
                   fetchTicketHistory={handleFetchTicketHistory}
                   onTicketCreated={handleTicketCreated}
                 />

@@ -11,6 +11,8 @@ from typing import Optional
 from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.custom_event_crud import CustomEventCrud
+from src.common.database.crud.event_crud import EventCrud
 from src.common.database.models import Ticket
 from src.common.database.schemas import TicketModels
 
@@ -53,3 +55,22 @@ class TicketCrud(
         result = result.scalar_one_or_none()
 
         return TicketModels.Get.model_validate(result) if result else None
+
+    @staticmethod
+    async def get_event_name_for_ticket(
+            session: AsyncSession,
+            ticket_id: uuid.UUID
+    ) -> Optional[str]:
+        ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_id)
+
+        if not ticket or (not ticket.event_id and not ticket.custom_event_id):
+            return None
+
+        if ticket.event_id:
+            event = await EventCrud.get_by_id(session=session, record_id=ticket.event_id)
+            return event.name
+        elif ticket.custom_event_id:
+            event = await CustomEventCrud.get_by_id(session=session, record_id=ticket.custom_event_id)
+            return event.name
+
+        return None

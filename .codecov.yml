@@ -24,3 +24,4 @@ ignore:
   - "src/common/database/crud"
   - "src/common/utils/default_enums.py"
   - "**/app.py"
+  - "src/orchestration"

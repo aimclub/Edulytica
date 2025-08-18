@@ -4,13 +4,13 @@ import pytest
 from fastapi.testclient import TestClient
 from httpx import AsyncClient, Response
 
-from src.auth.app import app
-from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
-from src.common.auth.helpers.utils import get_hashed_password
-from src.common.database.database import get_session, SessionLocal
+from edulytica.auth.app import app
+from edulytica.common.auth.auth_bearer import refresh_token_auth, access_token_auth
+from edulytica.common.auth.helpers.utils import get_hashed_password
+from edulytica.common.database.database import get_session, SessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.edulytica_api.dependencies import get_http_client
+from edulytica.edulytica_api.dependencies import get_http_client
 
 
 async def override_get_session() -> AsyncSession:

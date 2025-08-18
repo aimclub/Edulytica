@@ -1,8 +1,8 @@
 from datetime import datetime, timezone, timedelta
 from unittest.mock import patch, MagicMock
-from src.common.utils.check_code_utils import generate_code
-from src.common.utils.email import send_email
-from src.common.utils.moscow_datetime import set_moscow_timezone, datetime_now_moscow
+from edulytica.common.utils.check_code_utils import generate_code
+from edulytica.common.utils.email import send_email
+from edulytica.common.utils.moscow_datetime import set_moscow_timezone, datetime_now_moscow
 
 
 def test_generate_code():
@@ -50,7 +50,7 @@ def test_datetime_now_moscow():
     assert delta_seconds < 5
 
 
-@patch('src.common.utils.email.smtplib.SMTP')
+@patch('edulytica.common.utils.email.smtplib.SMTP')
 def test_send_email(mock_smtp):
     mock_server = MagicMock()
     mock_smtp.return_value = mock_server

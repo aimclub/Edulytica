@@ -2,7 +2,7 @@ import pytest
 import logging
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
-from src.common.utils.logger import api_logs
+from edulytica.common.utils.logger import api_logs
 
 
 @pytest.fixture

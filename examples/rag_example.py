@@ -1,10 +1,10 @@
 import os
 from dotenv import load_dotenv
-from src.rag.utils.FileParser import FileParser
-from src.rag.utils.TextProcessingUtils import TextProcessingUtils
-from src.rag.semantic_search.SemanticSearcher import SemanticSearcher
-from src.rag.llm.language_model_client import LanguageModelClient
-from src.rag.const import PROMPT_TEMPLATE
+from edulytica.rag.utils.FileParser import FileParser
+from edulytica.rag.utils.TextProcessingUtils import TextProcessingUtils
+from edulytica.rag.semantic_search.SemanticSearcher import SemanticSearcher
+from edulytica.rag.llm.language_model_client import LanguageModelClient
+from edulytica.rag.const import PROMPT_TEMPLATE
 
 
 def ragExample():
@@ -20,7 +20,7 @@ def ragExample():
 
     openai_api_key = os.getenv("OPENAI_API_KEY")
 
-    file_path = '../src/documents/doc.pdf'
+    file_path = '../edulytica/documents/doc.pdf'
     file_parser = FileParser(file_path)
     text_content = file_parser.parse()
 

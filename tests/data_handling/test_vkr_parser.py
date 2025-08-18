@@ -1,13 +1,13 @@
 import unittest
 from unittest.mock import patch, mock_open, MagicMock
 
-from src.data_handling.VKRParser import ParserVKR
+from edulytica.data_handling.VKRParser import ParserVKR
 
 
 class TestParserVKR(unittest.TestCase):
 
-    @patch('src.data_handling.VKRParser.requests.get')
-    @patch('src.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
+    @patch('edulytica.data_handling.VKRParser.requests.get')
+    @patch('edulytica.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
     def test_parse_vkrs_successful(self, mock_open_file, mock_requests_get):
         # Настройка mock объектов
         mock_response = MagicMock()
@@ -17,8 +17,8 @@ class TestParserVKR(unittest.TestCase):
 
         parser = ParserVKR(start_person_id=790, end_person_id=791)
 
-        with patch('src.data_handling.VKRParser.mkdir'):
-            with patch('src.data_handling.VKRParser.open', mock_open(), create=True):
+        with patch('edulytica.data_handling.VKRParser.mkdir'):
+            with patch('edulytica.data_handling.VKRParser.open', mock_open(), create=True):
                 parser.parse_vkrs()
 
         # Проверка вызова requests.get
@@ -26,8 +26,8 @@ class TestParserVKR(unittest.TestCase):
         # 1 раз для каждой персоны + 1 раз для файла
         self.assertEqual(mock_requests_get.call_count, 4)
 
-    @patch('src.data_handling.VKRParser.requests.get')
-    @patch('src.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
+    @patch('edulytica.data_handling.VKRParser.requests.get')
+    @patch('edulytica.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
     def test_parse_vkrs_no_vkr(self, mock_open_file, mock_requests_get):
         # Настройка mock объектов
         mock_response = MagicMock()
@@ -43,8 +43,8 @@ class TestParserVKR(unittest.TestCase):
         self.assertTrue(mock_requests_get.called)
         self.assertEqual(mock_requests_get.call_count, 1)
 
-    @patch('src.data_handling.VKRParser.requests.get')
-    @patch('src.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
+    @patch('edulytica.data_handling.VKRParser.requests.get')
+    @patch('edulytica.data_handling.VKRParser.open', new_callable=mock_open, read_data='790')
     def test_parse_vkrs_with_errors(self, mock_open_file, mock_requests_get):
         # Настройка mock объектов
         mock_response = MagicMock()
@@ -59,7 +59,7 @@ class TestParserVKR(unittest.TestCase):
         self.assertTrue(mock_requests_get.called)
         self.assertEqual(mock_requests_get.call_count, 1)
 
-    @patch('src.data_handling.VKRParser.requests.get')
+    @patch('edulytica.data_handling.VKRParser.requests.get')
     def test_make_request(self, mock_requests_get):
         # Настройка mock объектов
         mock_response = MagicMock()

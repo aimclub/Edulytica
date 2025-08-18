@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import patch
 from fastapi import status
-from src.edulytica_api.app import app
+from edulytica.edulytica_api.app import app
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.account.UserCrud.update")
+@patch("edulytica.edulytica_api.routers.account.UserCrud.update")
 def test_edit_profile_success(mock_update, client):
     response = client(app).post("/account/edit_profile", json={
         "name": "John",
@@ -23,7 +23,7 @@ def test_edit_profile_none_fields(client):
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.account.UserCrud.update")
+@patch("edulytica.edulytica_api.routers.account.UserCrud.update")
 def test_change_password_success(mock_update, client):
     response = client(app).post("/account/change_password", json={
         "old_password": "testpassword",
@@ -36,7 +36,7 @@ def test_change_password_success(mock_update, client):
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.account.verify_password")
+@patch("edulytica.edulytica_api.routers.account.verify_password")
 def test_change_password_wrong_old(mock_verify, client):
     mock_verify.return_value = False
 
@@ -63,7 +63,7 @@ def test_change_password_mismatch(client):
 
 
 @pytest.mark.asyncio
-@patch("src.edulytica_api.routers.account.TicketCrud.get_filtered_by_params")
+@patch("edulytica.edulytica_api.routers.account.TicketCrud.get_filtered_by_params")
 def test_ticket_history_success(mock_get_tickets, client):
     mock_get_tickets.return_value = [{"id": 1, "title": "Ticket A"}]
 

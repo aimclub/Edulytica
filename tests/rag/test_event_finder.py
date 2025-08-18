@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 from unittest.mock import patch, MagicMock
 
-from src.rag.core.event_specifics.event_finder import EventSpecifics
+from edulytica.rag.core.event_specifics.event_finder import EventSpecifics
 
 
 class TestEventSpecifics(unittest.TestCase):

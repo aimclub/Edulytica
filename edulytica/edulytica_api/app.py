@@ -1,0 +1,63 @@
+from contextlib import asynccontextmanager
+
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from httpx import AsyncClient
+
+from edulytica.common.config import API_PORT
+from edulytica.edulytica_api.routers.account import account_router
+from edulytica.edulytica_api.routers.actions import actions_router
+from edulytica.edulytica_api.routers.internal import internal_router
+from edulytica.edulytica_api.routers.norm_services import normocontrol_router
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    http_client = AsyncClient()
+
+    try:
+        app.state.http_client = http_client
+
+        yield
+    finally:
+        await http_client.aclose()
+
+
+app = FastAPI(lifespan=lifespan)
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://10.22.8.250",
+    "http://10.22.8.250:13000"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=[
+        "GET",
+        "POST",
+        "OPTIONS",
+        "DELETE",
+        "PATCH",
+        "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Set-Cookie",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Authorization"],
+)
+
+
+app.include_router(normocontrol_router)
+app.include_router(account_router)
+app.include_router(actions_router)
+app.include_router(internal_router)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=API_PORT)

@@ -2,18 +2,18 @@ import pytest
 from datetime import timedelta
 from unittest.mock import AsyncMock, patch, ANY
 from fastapi import status
-from src.auth.app import app
-from src.common.auth.helpers.utils import get_hashed_password
-from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
-from src.common.utils.moscow_datetime import datetime_now_moscow
+from edulytica.auth.app import app
+from edulytica.common.auth.helpers.utils import get_hashed_password
+from edulytica.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
+from edulytica.common.utils.moscow_datetime import datetime_now_moscow
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.UserRoleCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.UserCrud.create")
-@patch("src.auth.routers.auth.CheckCodeCrud.create")
-@patch("src.auth.routers.auth.send_email")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserRoleCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserCrud.create")
+@patch("edulytica.auth.routers.auth.CheckCodeCrud.create")
+@patch("edulytica.auth.routers.auth.send_email")
 async def test_registration_success(
         mock_send_email,
         mock_check_code_create,
@@ -41,7 +41,7 @@ async def test_registration_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
 async def test_registration_existing_email(mock_user_get, client):
     mock_user_get.side_effect = [[AsyncMock()], []]
 
@@ -57,7 +57,7 @@ async def test_registration_existing_email(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
 async def test_registration_existing_login(mock_user_get, client):
     mock_user_get.side_effect = [[], [AsyncMock()]]
 
@@ -73,7 +73,7 @@ async def test_registration_existing_login(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
 async def test_registration_password_mismatch(mock_user_get, client):
     mock_user_get.side_effect = [[], []]
 
@@ -89,11 +89,11 @@ async def test_registration_password_mismatch(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.CheckCodeCrud.get_recent_code")
-@patch("src.auth.routers.auth.UserCrud.get_by_id")
-@patch("src.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
-@patch("src.auth.routers.auth.UserCrud.update")
-@patch("src.auth.routers.auth.TokenCrud.create")
+@patch("edulytica.auth.routers.auth.CheckCodeCrud.get_recent_code")
+@patch("edulytica.auth.routers.auth.UserCrud.get_by_id")
+@patch("edulytica.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
+@patch("edulytica.auth.routers.auth.UserCrud.update")
+@patch("edulytica.auth.routers.auth.TokenCrud.create")
 def test_check_code_success(
     mock_token_create,
     mock_user_update,
@@ -120,7 +120,7 @@ def test_check_code_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.CheckCodeCrud.get_recent_code")
+@patch("edulytica.auth.routers.auth.CheckCodeCrud.get_recent_code")
 def test_check_code_invalid_code(mock_get_recent_code, client):
     mock_get_recent_code.return_value = None
 
@@ -131,9 +131,9 @@ def test_check_code_invalid_code(mock_get_recent_code, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.CheckCodeCrud.get_recent_code")
-@patch("src.auth.routers.auth.UserCrud.get_by_id")
-@patch("src.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
+@patch("edulytica.auth.routers.auth.CheckCodeCrud.get_recent_code")
+@patch("edulytica.auth.routers.auth.UserCrud.get_by_id")
+@patch("edulytica.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
 def test_check_code_user_exists(
         mock_get_active_user,
         mock_get_by_id,
@@ -155,8 +155,8 @@ def test_check_code_user_exists(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.TokenCrud.create")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.TokenCrud.create")
 def test_login_success(
     mock_token_create,
     mock_user_get,
@@ -182,7 +182,7 @@ def test_login_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
 def test_login_user_not_found(mock_user_get, client):
     mock_user_get.return_value = []
 
@@ -196,8 +196,8 @@ def test_login_user_not_found(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.verify_password")
+@patch("edulytica.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.verify_password")
 def test_login_wrong_password(mock_verify_password, mock_user_get, client):
     mock_user_get.return_value = [
         AsyncMock(id=1, login="user1", email="user@example.com",
@@ -215,8 +215,8 @@ def test_login_wrong_password(mock_verify_password, mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.TokenCrud.create")
+@patch("edulytica.auth.routers.auth.TokenCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.TokenCrud.create")
 def test_get_access_success(mock_token_create, mock_token_get, client):
     mock_token_get.return_value = [
         AsyncMock(
@@ -233,7 +233,7 @@ def test_get_access_success(mock_token_create, mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.TokenCrud.get_filtered_by_params")
 def test_get_access_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 
@@ -245,8 +245,8 @@ def test_get_access_token_not_found(mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.datetime_now_moscow")
+@patch("edulytica.auth.routers.auth.TokenCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.datetime_now_moscow")
 def test_get_access_expired_token(mock_datetime, mock_token_get, client):
     mock_datetime.return_value = datetime_now_moscow()
 
@@ -263,8 +263,8 @@ def test_get_access_expired_token(mock_datetime, mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.routers.auth.TokenCrud.delete")
+@patch("edulytica.auth.routers.auth.TokenCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.TokenCrud.delete")
 def test_logout_success(mock_token_delete, mock_token_get, client):
     mock_token_get.return_value = [AsyncMock(id=42)]
 
@@ -277,7 +277,7 @@ def test_logout_success(mock_token_delete, mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.TokenCrud.get_filtered_by_params")
+@patch("edulytica.auth.routers.auth.TokenCrud.get_filtered_by_params")
 def test_logout_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 

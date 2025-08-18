@@ -1,0 +1,34 @@
+import os
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
+POSTGRES_USER = os.environ.get("POSTGRES_USER")
+POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
+POSTGRES_IP = os.environ.get("POSTGRES_IP")
+POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
+POSTGRES_DB = os.environ.get("POSTGRES_DB")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES"))
+REFRESH_TOKEN_EXPIRE_MINUTES = int(os.environ.get("REFRESH_TOKEN_EXPIRE_MINUTES"))
+ALGORITHM = os.environ.get("ALGORITHM")
+JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
+JWT_REFRESH_SECRET_KEY = os.environ.get("JWT_REFRESH_SECRET_KEY")
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL")
+SENDER_PASSWORD = os.environ.get("SENDER_PASSWORD")
+EMAIL_CODE_EXPIRE_SECONDS = int(os.environ.get("EMAIL_CODE_EXPIRE_SECONDS"))
+KAFKA_BOOTSTRAP_SERVERS = os.environ.get("KAFKA_BOOTSTRAP_SERVERS")
+KAFKA_GROUP_ID = os.environ.get("KAFKA_GROUP_ID")
+INTERNAL_API_SECRET = os.environ.get("INTERNAL_API_SECRET")
+DB_PORT = int(os.environ.get("DB_PORT"))
+REDIS_PORT = int(os.environ.get("REDIS_PORT"))
+API_PORT = int(os.environ.get("API_PORT"))
+AUTH_PORT = int(os.environ.get("AUTH_PORT"))
+LLM_QWEN_PORT = int(os.environ.get("LLM_QWEN_PORT"))
+LLM_VIKHR_PORT = int(os.environ.get("LLM_VIKHR_PORT"))
+ORCHESTRATOR_PORT = int(os.environ.get("ORCHESTRATOR_PORT"))
+RAG_PORT = int(os.environ.get("RAG_PORT"))
+FRONTEND_PORT = int(os.environ.get("FRONTEND_PORT"))
+CHROMA_PORT = int(os.environ.get("CHROMA_PORT"))
+KAFKA_PORT = int(os.environ.get("KAFKA_PORT"))

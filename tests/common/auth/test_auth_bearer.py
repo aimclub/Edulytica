@@ -1,9 +1,9 @@
 import pytest
 from jose import jwt
 from fastapi import HTTPException
-from src.common.auth.auth_bearer import AuthDataGetterFromToken
-from src.common.auth.helpers.utils import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
-from src.common.config import JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, ALGORITHM
+from edulytica.common.auth.auth_bearer import AuthDataGetterFromToken
+from edulytica.common.auth.helpers.utils import ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
+from edulytica.common.config import JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, ALGORITHM
 
 
 class FakeUser:
@@ -42,7 +42,7 @@ async def test_access_token_auth_success(mocker, valid_token, valid_payload):
     mock_session = mocker.MagicMock()
 
     mocker.patch(
-        "src.common.auth.auth_bearer.UserCrud.get_by_id",
+        "edulytica.common.auth.auth_bearer.UserCrud.get_by_id",
         return_value=FakeUser()
     )
 
@@ -86,7 +86,7 @@ async def test_user_not_found_raises_credentials_exception(mocker, valid_token, 
     mock_session = mocker.MagicMock()
 
     mocker.patch(
-        "src.common.auth.auth_bearer.UserCrud.get_by_id",
+        "edulytica.common.auth.auth_bearer.UserCrud.get_by_id",
         return_value=None
     )
 
@@ -104,7 +104,7 @@ async def test_user_inactive_raises_bad_request(mocker, valid_token, valid_paylo
     mock_session = mocker.MagicMock()
 
     mocker.patch(
-        "src.common.auth.auth_bearer.UserCrud.get_by_id",
+        "edulytica.common.auth.auth_bearer.UserCrud.get_by_id",
         return_value=FakeUser(is_active=False)
     )
 

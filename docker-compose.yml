@@ -39,7 +39,7 @@ services:
     ports:
       - "${GATEWAY_PORT}:${GATEWAY_PORT}"
     volumes:
-      - ./src/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./edulytica/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       edulytica_api:
         condition: service_healthy
@@ -57,9 +57,9 @@ services:
     container_name: "EdulyticaAPI"
     build:
       context: .
-      dockerfile: ./src/edulytica_api/Dockerfile
+      dockerfile: ./edulytica/edulytica_api/Dockerfile
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
       - api_files:/app/app_files
     ports:
       - "${API_PORT}:${API_PORT}"
@@ -83,9 +83,9 @@ services:
     container_name: "EdulyticaAuth"
     build:
       context: .
-      dockerfile: ./src/auth/Dockerfile
+      dockerfile: ./edulytica/auth/Dockerfile
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
     ports:
       - "${AUTH_PORT}:${AUTH_PORT}"
     depends_on:
@@ -108,7 +108,7 @@ services:
     container_name: "EdulyticaQwen"
     build:
       context: .
-      dockerfile: ./src/models/Dockerfile
+      dockerfile: ./edulytica/models/Dockerfile
       args:
         - MODEL_TYPE=qwen
     deploy:
@@ -119,7 +119,7 @@ services:
               device_ids: ['0']
               capabilities: [gpu]
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
       - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_QWEN_PORT}:${LLM_QWEN_PORT}"
@@ -145,7 +145,7 @@ services:
     container_name: "EdulyticaVikhr"
     build:
       context: .
-      dockerfile: ./src/models/Dockerfile
+      dockerfile: ./edulytica/models/Dockerfile
       args:
         - MODEL_TYPE=vikhr
     deploy:
@@ -156,7 +156,7 @@ services:
               device_ids: ['1']
               capabilities: [ gpu ]
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
       - models_hf_cache:/root/.cache/huggingface
     ports:
       - "${LLM_VIKHR_PORT}:${LLM_VIKHR_PORT}"
@@ -182,9 +182,9 @@ services:
     container_name: "EdulyticaOrchestration"
     build:
       context: .
-      dockerfile: ./src/orchestration/Dockerfile
+      dockerfile: ./edulytica/orchestration/Dockerfile
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
     ports:
       - "${ORCHESTRATOR_PORT}:${ORCHESTRATOR_PORT}"
     depends_on:
@@ -213,9 +213,9 @@ services:
     container_name: "EdulyticaRag"
     build:
       context: .
-      dockerfile: ./src/rag/Dockerfile
+      dockerfile: ./edulytica/rag/Dockerfile
     volumes:
-      - ./src:/app/src
+      - ./edulytica:/app/edulytica
       - rag_hf_cache:/root/.cache/huggingface
     ports:
       - "${RAG_PORT}:${RAG_PORT}"
@@ -240,7 +240,7 @@ services:
   edulytica_frontend:
     container_name: "EdulyticaFrontend"
     build:
-      context: ./src/front_end
+      context: ./edulytica/front_end
       dockerfile: Dockerfile
     dns:
       - 8.8.8.8

@@ -14,14 +14,14 @@ comment: # this is a top-level key
   hide_project_coverage: false # [true :: only show coverage on the git diff]
 
 ignore:
-  - "src/rag/llm"
-  - "src/rag/semantic_search"
-  - "src/rag/const.py"
-  - "src/rag/extract.py"
-  - "src/extracting_rules"
+  - "edulytica/rag/llm"
+  - "edulytica/rag/semantic_search"
+  - "edulytica/rag/const.py"
+  - "edulytica/rag/extract.py"
+  - "edulytica/extracting_rules"
   - "examples"
-  - "src/front_end"
-  - "src/common/database/crud"
-  - "src/common/utils/default_enums.py"
+  - "edulytica/front_end"
+  - "edulytica/common/database/crud"
+  - "edulytica/common/utils/default_enums.py"
   - "**/app.py"
-  - "src/orchestration"
+  - "edulytica/orchestration"

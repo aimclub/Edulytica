@@ -1,7 +1,5 @@
 import unittest
-import os
-
-from Edulytica.src.rag.core.text_processor.text_processor import TextProcessor
+from Edulytica.edulytica.rag.core.text_processor.text_processor import TextProcessor
 
 
 class TestTextProcessor(unittest.TestCase):

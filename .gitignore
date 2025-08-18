@@ -170,11 +170,11 @@ cython_debug/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
-/src/front_end/node_modules/
-/src/models/init_models.py
+/edulytica/front_end/node_modules/
+/edulytica/models/init_models.py
 task.txt
 check_type_coverage.py
 local_check_type_coverage.py
 .DS_Store
-/src/.DS_Store
+/edulytica/.DS_Store
 app_files/

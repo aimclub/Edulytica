@@ -1,4 +1,4 @@
-from src.data_handling.PDFParser import PDFParser
+from edulytica.data_handling.PDFParser import PDFParser
 
 if __name__ == '__main__':
     pdf_parser = PDFParser()

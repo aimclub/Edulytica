@@ -14,7 +14,7 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-%232088FF?logo=github%20actions&logoColor=white&labelColor=blue&color=blue)
 
 # Edulytica
-![logo](src/images/logo.png)
+![logo](edulytica/images/logo.png)
 
 ## Description
 Edulytica is an open-source framework for evaluating text results of educational and scientific activities based on 
@@ -48,19 +48,19 @@ separately for [goals and objectives](https://huggingface.co/datasets/slavamarci
 ```pip install -r requirements.txt```
 
 #### 5. Start Application
-```python3 src/edulytica_api/app.py```
+```python3 edulytica/edulytica_api/app.py```
 
 #### 6. Activate Celery
-```celery -A src.edulytica_api.celery.tasks worker --loglevel=info -E -P gevent```
+```celery -A edulytica.edulytica_api.celery.tasks worker --loglevel=info -E -P gevent```
 
 #### 7. Run npm
 ```npm start```
 
 #### 7. Run Celery task
-```celery -A src.edulytica_api.celery.tasks flower```
+```celery -A edulytica.edulytica_api.celery.tasks flower```
 
 ## Getting started
-![example](src/images/example.gif)
+![example](edulytica/images/example.gif)
 
 First, you can familiarize yourself with the [examples](https://github.com/aimclub/Edulytica/tree/development/examples) 
 in JSON format of the system's responses to the test sample of works.
@@ -70,16 +70,16 @@ their verification!
 
 ## Documentation
 Details of the documentation can be found at the links below:
-- **[algorithms](https://github.com/aimclub/Edulytica/tree/development/src/algorithms)** - part of the task of 
+- **[algorithms](https://github.com/aimclub/Edulytica/tree/development/edulytica/algorithms)** - part of the task of 
 analyzing the text how much it is necessary to change the source text (which is written by AI) so that AI recognition
 systems do not recognize AI in this text;
-- **[data_handling](https://github.com/aimclub/Edulytica/tree/development/src/data_handling)** - an auxiliary module
+- **[data_handling](https://github.com/aimclub/Edulytica/tree/development/edulytica/data_handling)** - an auxiliary module
 that stores parsers of data and documents for generating datasets;
-- **[edulytica_api](https://github.com/aimclub/Edulytica/tree/development/src/edulytica_api)** - this module stores 
+- **[edulytica_api](https://github.com/aimclub/Edulytica/tree/development/edulytica/edulytica_api)** - this module stores 
 the source code of the web service;
-- **[extracting_rules](https://github.com/aimclub/Edulytica/tree/development/src/extracting_rules)** - This module is
+- **[extracting_rules](https://github.com/aimclub/Edulytica/tree/development/edulytica/extracting_rules)** - This module is
 devoted to an experiment with extracting design rules using LLM;
-- **[rag](https://github.com/aimclub/Edulytica/tree/development/src/rag)** - Package for an experiment with semantic
+- **[rag](https://github.com/aimclub/Edulytica/tree/development/edulytica/rag)** - Package for an experiment with semantic
 search, kNN and the mBERT model are used.
 
 Code documentation is available at [the link](https://aimclub.github.io/Edulytica/index.html).

@@ -4,14 +4,14 @@ from jose import jwt
 from fastapi import Request, HTTPException, FastAPI, Depends
 from fastapi.testclient import TestClient
 from starlette.datastructures import Headers
-from src.common.auth.helpers.utils import (
+from edulytica.common.auth.helpers.utils import (
     get_hashed_password, verify_password,
     create_access_token, create_refresh_token,
     get_expiry, OAuth2PasswordBearerWithCookie,
     ACCESS_TOKEN_TYPE, REFRESH_TOKEN_TYPE
 )
-from src.common.auth.helpers.validators import password_validate
-from src.common.config import JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, ALGORITHM
+from edulytica.common.auth.helpers.validators import password_validate
+from edulytica.common.config import JWT_SECRET_KEY, JWT_REFRESH_SECRET_KEY, ALGORITHM
 
 
 app = FastAPI()

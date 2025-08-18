@@ -1,2 +1,2 @@
-src/edulytica_api/alembic/versions/
-src/front_end
+edulytica/edulytica_api/alembic/versions/
+edulytica/front_end

@@ -1,8 +1,7 @@
 import unittest
-import os
 from unittest.mock import patch, MagicMock
 
-from Edulytica.src.rag.core.prompt_enricher.prompt_enricher import PromptEnricher
+from Edulytica.edulytica.rag.core.prompt_enricher.prompt_enricher import PromptEnricher
 
 
 class TestPromptEnricher(unittest.TestCase):
@@ -12,7 +11,7 @@ class TestPromptEnricher(unittest.TestCase):
         """Set up the test environment"""
         # Create a mock for ConfigLoader
         self.config_loader_patcher = patch(
-            'Edulytica.src.rag.core.prompt_enricher.prompt_enricher.ConfigLoader')
+            'Edulytica.edulytica.rag.core.prompt_enricher.prompt_enricher.ConfigLoader')
         self.mock_config_loader = self.config_loader_patcher.start()
 
         # Configure mock to return a known prefix value

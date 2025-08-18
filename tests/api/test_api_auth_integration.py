@@ -1,7 +1,7 @@
 import uuid
 import pytest
 from unittest.mock import patch
-from src.common.utils.check_code_utils import generate_code
+from edulytica.common.utils.check_code_utils import generate_code
 
 test_user_data = {
     "login": f"testuser_{uuid.uuid4().hex[:8]}",
@@ -13,8 +13,8 @@ static_code = generate_code()
 
 
 @pytest.mark.order(1)
-@patch("src.auth.routers.auth.send_email")
-@patch("src.auth.routers.auth.generate_code")
+@patch("edulytica.auth.routers.auth.send_email")
+@patch("edulytica.auth.routers.auth.generate_code")
 def test_registration_success(mock_generate_code, mock_send_email, integration_client):
     mock_generate_code.return_value = static_code
 

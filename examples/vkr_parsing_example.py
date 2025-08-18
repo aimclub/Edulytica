@@ -1,4 +1,4 @@
-from src.data_handling.VKRParser import ParserVKR
+from edulytica.data_handling.VKRParser import ParserVKR
 
 if __name__ == "__main__":
     """

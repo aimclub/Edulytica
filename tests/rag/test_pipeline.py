@@ -11,7 +11,8 @@ class TestRAGPipeline(unittest.TestCase):
         """Set up the test environment with mocks for all dependencies"""
         # Prepare patches for all components
         self.config_loader_patcher = patch('Edulytica.edulytica.rag.pipeline.ConfigLoader')
-        self.embedding_processor_patcher = patch('Edulytica.edulytica.rag.pipeline.EmbeddingProcessor')
+        self.embedding_processor_patcher = patch(
+            'Edulytica.edulytica.rag.pipeline.EmbeddingProcessor')
         self.text_processor_patcher = patch('Edulytica.edulytica.rag.pipeline.TextProcessor')
         self.chroma_manager_patcher = patch('Edulytica.edulytica.rag.pipeline.ChromaDBManager')
         self.event_specifics_patcher = patch('Edulytica.edulytica.rag.pipeline.EventSpecifics')

@@ -31,20 +31,45 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   const files = ticketData?.files || {}
 
-  // Обработчик клика на кнопку скачать
-  const handleDownload = async () => {
+  // Обработчик клика на кнопку скачать результат
+  const handleDownloadResult = async () => {
     if (!ticketData?.ticketId || isDownloading) return
 
     try {
       setIsDownloading(true)
       await ticketService.downloadResult(ticketData.ticketId)
     } catch (error) {
-      console.error("Ошибка при скачивании:", error)
+      console.error("Ошибка при скачивании результата:", error)
       let errorMessage = "Ошибка при скачивании файла"
 
       if (error?.response?.data?.detail) {
         if (error.response.data.detail.includes("not found")) {
           errorMessage = "Результат ещё не готов. Попробуйте позже."
+        } else {
+          errorMessage = error.response.data.detail
+        }
+      }
+
+      setError(errorMessage)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
+  // Обработчик клика на кнопку скачать исходный документ
+  const handleDownloadDocument = async () => {
+    if (!ticketData?.ticketId || isDownloading) return
+
+    try {
+      setIsDownloading(true)
+      await ticketService.downloadDocument(ticketData.ticketId)
+    } catch (error) {
+      console.error("Ошибка при скачивании документа:", error)
+      let errorMessage = "Ошибка при скачивании файла"
+
+      if (error?.response?.data?.detail) {
+        if (error.response.data.detail.includes("not found")) {
+          errorMessage = "Документ не найден."
         } else {
           errorMessage = error.response.data.detail
         }
@@ -247,13 +272,61 @@ export const ResultFile = ({ fileName, ticketData }) => {
                 </div>
               </div>
             </div>
+            {activeSectionResult === 1 && files.file && (
+              <div
+                className={`btnBottomResultFile ${
+                  isDownloading ? "downloading" : ""
+                }`}
+                onClick={handleDownloadDocument}
+                style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
+              >
+                {isDownloading ? (
+                  <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="spinner"
+                  >
+                    <circle
+                      cx="12.5"
+                      cy="12.5"
+                      r="10"
+                      stroke="#89AAFF"
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="31.416"
+                      strokeDashoffset="31.416"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                      stroke="#89AAFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {isDownloading ? "Скачивание..." : "Скачать"}
+              </div>
+            )}
             {activeSectionResult === 2 &&
               ticketData?.status === "Completed" && (
                 <div
                   className={`btnBottomResultFile ${
                     isDownloading ? "downloading" : ""
                   }`}
-                  onClick={handleDownload}
+                  onClick={handleDownloadResult}
                   style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
                 >
                   {isDownloading ? (

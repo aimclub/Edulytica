@@ -1,5 +1,61 @@
 import $api from "../api/axios.api"
 
+// ====== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ======
+
+function getFilenameFromContentDisposition(cd) {
+  if (!cd) return null
+
+  const star = /filename\*\s*=\s*([^']*)''([^;]+)/i.exec(cd)
+  if (star && star[2]) {
+    try {
+      return decodeURIComponent(star[2])
+    } catch (_) {}
+  }
+
+  const normal = /filename\s*=\s*("?)([^";]+)\1/i.exec(cd)
+  if (normal && normal[2]) return normal[2]
+
+  return null
+}
+
+function getExtensionFromContentType(ct) {
+  if (!ct) return ""
+  const type = ct.toLowerCase()
+
+  if (type.includes("application/pdf")) return ".pdf"
+  if (type.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) return ".docx"
+  if (type.includes("application/msword")) return ".doc"
+  if (type.includes("text/plain")) return ".txt"
+  return ""
+}
+
+function safeFilenameFromHeaders(headers, fallbackBase) {
+  const cd = headers?.["content-disposition"]
+  const ct = headers?.["content-type"]
+
+  const fromCd = getFilenameFromContentDisposition(cd)
+  if (fromCd) return fromCd
+
+  const ext = getExtensionFromContentType(ct) || ""
+  return `${fallbackBase}${ext}`
+}
+
+function downloadBlob(data, headers, fallbackBase) {
+  const ct = headers?.["content-type"] || "application/octet-stream"
+  const filename = safeFilenameFromHeaders(headers, fallbackBase)
+
+  const blob = new Blob([data], { type: ct })
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = filename
+
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
 /**
  * Сервис для работы с тикетами
  */
@@ -159,30 +215,7 @@ class TicketService {
         responseType: "blob",
       })
 
-      // Получаем имя файла из заголовков ответа или используем дефолтное
-      const contentDisposition = response.headers["content-disposition"]
-      let filename = `result_${ticketId}.pdf`
-
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+)"/)
-        if (filenameMatch) {
-          filename = filenameMatch[1]
-        }
-      }
-
-      // Создаем ссылку для скачивания
-      const url = window.URL.createObjectURL(response.data)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = filename
-
-      // Добавляем ссылку в DOM и кликаем по ней
-      document.body.appendChild(link)
-      link.click()
-
-      // Удаляем ссылку
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
+      downloadBlob(response.data, response.headers, `result_${ticketId}`)
     } catch (error) {
       console.error("Error downloading result:", error)
       throw error
@@ -201,30 +234,7 @@ class TicketService {
         responseType: "blob",
       })
 
-      // Получаем имя файла из заголовков ответа или используем дефолтное
-      const contentDisposition = response.headers["content-disposition"]
-      let filename = `document_${ticketId}.pdf`
-
-      if (contentDisposition) {
-        const filenameMatch = contentDisposition.match(/filename="(.+)"/)
-        if (filenameMatch) {
-          filename = filenameMatch[1]
-        }
-      }
-
-      // Создаем ссылку для скачивания
-      const url = window.URL.createObjectURL(response.data)
-      const link = document.createElement("a")
-      link.href = url
-      link.download = filename
-
-      // Добавляем ссылку в DOM и кликаем по ней
-      document.body.appendChild(link)
-      link.click()
-
-      // Удаляем ссылку
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
+      downloadBlob(response.data, response.headers, `document_${ticketId}`)
     } catch (error) {
       console.error("Error downloading document:", error)
       throw error
@@ -276,7 +286,7 @@ class TicketService {
       formData.append("file", file)
       const response = await $api.post("/actions/parse_file_text", formData, {
         headers: {
-          "Content-Type": "application/pdf",
+          "Content-Type": "multipart/form-data",
         },
       })
       return response.data.text

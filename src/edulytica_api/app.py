@@ -50,6 +50,7 @@ app.add_middleware(
         "Access-Control-Allow-Headers",
         "Access-Control-Allow-Origin",
         "Authorization"],
+    expose_headers=["Content-Disposition", "Content-Type"]
 )
 
 

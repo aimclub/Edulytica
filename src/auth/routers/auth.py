@@ -160,7 +160,7 @@ async def check_code_handler(
             record_id=check_code.user_id
         )
 
-        if await UserCrud.get_active_user_by_email_or_login(
+        if await UserCrud.get_active_users_by_email_or_login(
             session=session,
             login=inactive_user.login,
             email=inactive_user.email
@@ -229,10 +229,9 @@ async def login_handler(
         HTTPException: On incorrect credentials or internal errors.
     """
     try:
-        user = await UserCrud.get_filtered_by_params(
+        user = await UserCrud.get_active_user(
             session=session,
-            login=login,
-            is_active=True
+            login=login
         )
 
         if not user or not verify_password(password, user[0].password_hash):

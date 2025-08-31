@@ -25,7 +25,8 @@ import httpx
 from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Query
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE, \
+    HTTP_404_NOT_FOUND
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.config import ORCHESTRATOR_PORT, RAG_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
@@ -185,70 +186,82 @@ async def new_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(actions_router.post("/parse_file_text"))
-async def parse_file_text(
-        auth_data: dict = Depends(access_token_auth),
-        file: UploadFile = File(...),
+@api_logs(actions_router.get("/get_document_text"))
+async def get_document_text(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Query(...),
+    session: AsyncSession = Depends(get_session),
 ):
     """
-    Extracts text content from an uploaded PDF or DOCX file.
-
-    This is a universal endpoint that can parse any supported file format
-    and return its text content. Useful for extracting text from original documents,
-    summaries, reports, or any other file type that may be added in the future.
-
-    Args:
-        auth_data (dict): Authenticated user data.
-        file (UploadFile): Uploaded PDF or DOCX file to parse.
-
-    Returns:
-        dict: Extracted text content and file metadata.
-
-    Raises:
-        HTTPException: For unsupported file type or text extraction errors.
+    Returns parsed text from the original document file of a ticket.
+    If no file or text available, returns empty string.
     """
     try:
-        if file.content_type not in [
-            'application/pdf',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'text/plain'
-        ]:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail='Invalid file type, only PDF or DOCX supported'
-            )
+        ticket = await TicketCrud.get_ticket_by_id_or_shared(
+            session=session, ticket_id=ticket_id, user_id=auth_data["user"].id
+        )
+        if not ticket:
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Ticket not found")
+
+        document = await DocumentCrud.get_by_id(session=session, record_id=ticket.document_id)
+        if not document:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Document not found")
+
+        file_path = ROOT_DIR / document.file_path
+        if not file_path.exists():
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="File not found")
 
         try:
-            file_content = await file.read()
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+            file_like = BytesIO(file_content)
+            text = fast_parse_text(file_like, filename=file_path.name)
+        except Exception:
+            text = ""
 
-            if file.content_type == 'text/plain':
-                try:
-                    document_text = file_content.decode('utf-8')
-                except UnicodeDecodeError:
-                    raise ValueError(
-                        "Failed to decode TXT file. Please ensure it is UTF-8 encoded.")
-            else:
-                file_like = BytesIO(file_content)
-                document_text = fast_parse_text(file_like, filename=file.filename)
-
-            if not document_text:
-                raise ValueError("Parser could not extract text from the document.")
-
-        except Exception as e:
-            raise HTTPException(
-                status_code=HTTP_400_BAD_REQUEST,
-                detail=f"Failed to parse the document: {e}"
-            )
-
-        return {'detail': 'Text was parsed', 'text': document_text}
-
-    except HTTPException as http_exc:  # pragma: no cover
-        raise http_exc
+        return {"detail": "Text extracted", "text": text}
     except Exception as _e:  # pragma: no cover
-        raise HTTPException(
-            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f'500 ERR: {_e}'
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.get("/get_result_text"))
+async def get_result_text(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Query(...),
+    session: AsyncSession = Depends(get_session),
+):
+    """
+    Returns parsed text from the LLM result/report file of a ticket.
+    If no file or text available, returns empty string.
+    """
+    try:
+        ticket = await TicketCrud.get_ticket_by_id_or_shared(
+            session=session, ticket_id=ticket_id, user_id=auth_data["user"].id
         )
+        if not ticket:
+            raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail="Ticket not found")
+
+        document_report = await DocumentReportCrud.get_by_id(
+            session=session, record_id=ticket.document_report_id
+        )
+        if not document_report:
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="Result not found")
+
+        file_path = ROOT_DIR / document_report.file_path
+        if not file_path.exists():
+            raise HTTPException(status_code=HTTP_404_NOT_FOUND, detail="File not found")
+
+        try:
+            with open(file_path, "rb") as f:
+                file_content = f.read()
+            file_like = BytesIO(file_content)
+            text = fast_parse_text(file_like, filename=file_path.name) or ""
+        except Exception:
+            text = ""
+
+        return {"detail": "Text extracted", "text": text}
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
 @api_logs(actions_router.post('/add_custom_event'))

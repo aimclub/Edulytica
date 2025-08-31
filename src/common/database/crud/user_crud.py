@@ -22,7 +22,7 @@ class UserCrud(
     )
 ):
     @staticmethod
-    async def get_active_user_by_email_or_login(
+    async def get_active_users_by_email_or_login(
             session: AsyncSession,
             email: str,
             login: str
@@ -51,3 +51,20 @@ class UserCrud(
         )
 
         return [UserModels.Get.model_validate(x) for x in result.scalars().all()]
+
+    @staticmethod
+    async def get_active_user(
+            session: AsyncSession,
+            login: str
+    ) -> UserModels.Get:
+        result = await session.execute(
+            select(User).where(
+                and_(
+                    or_(User.email == login, User.login == login),
+                    User.is_active.is_(True)
+                )
+            )
+        )
+
+        user = result.scalar_one_or_none()
+        return UserModels.Get.model_validate(user) if user else None

@@ -18,7 +18,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
-from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
+from src.common.auth.auth_bearer import refresh_token_auth
 from src.common.auth.helpers.utils import get_hashed_password, create_access_token, create_refresh_token, get_expiry, \
     verify_password
 from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES

@@ -8,25 +8,25 @@ Classes:
 from typing import List
 from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import User
-from src.common.database.schemas import UserModels
+from src.common.database.schemas.system_schemas import UserGet, UserCreate, UserUpdate
 
 
 class UserCrud(
-    BaseCrudFactory(
-        model=User,
-        update_schema=UserModels.Update,
-        create_schema=UserModels.Create,
-        get_schema=UserModels.Get,
-    )
+    GenericCrud[User, UserGet, UserCreate, UserUpdate]
 ):
+    base_model = User
+    get_schema = UserGet
+    create_schema = UserCreate
+    update_schema = UserUpdate
+
     @staticmethod
     async def get_active_users_by_email_or_login(
             session: AsyncSession,
             email: str,
             login: str
-    ) -> List[UserModels.Get]:
+    ) -> List[UserGet]:
         """
         Retrieves a list of active users filtered by email or login.
 
@@ -39,7 +39,7 @@ class UserCrud(
             login (str): The login name to filter by.
 
         Returns:
-            List[UserModels.Get]: A list of active user models matching the email or login.
+            List[UserGet]: A list of active user models matching the email or login.
         """
         result = await session.execute(
             select(User).where(
@@ -50,13 +50,13 @@ class UserCrud(
             )
         )
 
-        return [UserModels.Get.model_validate(x) for x in result.scalars().all()]
+        return [UserGet.model_validate(x) for x in result.scalars().all()]
 
     @staticmethod
     async def get_active_user(
             session: AsyncSession,
             login: str
-    ) -> UserModels.Get:
+    ) -> UserGet:
         result = await session.execute(
             select(User).where(
                 and_(
@@ -67,4 +67,4 @@ class UserCrud(
         )
 
         user = result.scalar_one_or_none()
-        return UserModels.Get.model_validate(user) if user else None
+        return UserGet.model_validate(user) if user else None

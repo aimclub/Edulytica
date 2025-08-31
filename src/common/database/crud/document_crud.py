@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import Document
-from src.common.database.schemas import DocumentModels
+from src.common.database.schemas.system_schemas import DocumentGet, DocumentCreate, DocumentUpdate
 
 
 class DocumentCrud(
-
-    BaseCrudFactory(
-        model=Document,
-        update_schema=DocumentModels.Update,
-        create_schema=DocumentModels.Create,
-        get_schema=DocumentModels.Get,
-    )
+    GenericCrud[Document, DocumentGet, DocumentCreate, DocumentUpdate]
 ):
-    pass
+    base_model = Document
+    get_schema = DocumentGet
+    create_schema = DocumentCreate
+    update_schema = DocumentUpdate

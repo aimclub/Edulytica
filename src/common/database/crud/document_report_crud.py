@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import DocumentReport
-from src.common.database.schemas import DocumentReportModels
+from src.common.database.schemas.system_schemas import DocumentReportGet, DocumentReportCreate, DocumentReportUpdate
 
 
 class DocumentReportCrud(
-
-    BaseCrudFactory(
-        model=DocumentReport,
-        update_schema=DocumentReportModels.Update,
-        create_schema=DocumentReportModels.Create,
-        get_schema=DocumentReportModels.Get,
-    )
+    GenericCrud[DocumentReport, DocumentReportGet, DocumentReportCreate, DocumentReportUpdate]
 ):
-    pass
+    base_model = DocumentReport
+    get_schema = DocumentReportGet
+    create_schema = DocumentReportCreate
+    update_schema = DocumentReportUpdate

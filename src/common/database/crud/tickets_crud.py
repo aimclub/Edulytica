@@ -10,27 +10,27 @@ import uuid
 from typing import Optional
 from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.common.database.crud.base.factory import BaseCrudFactory
 from src.common.database.crud.custom_event_crud import CustomEventCrud
 from src.common.database.crud.event_crud import EventCrud
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import Ticket
-from src.common.database.schemas import TicketModels
+from src.common.database.schemas.system_schemas import TicketGet, TicketCreate, TicketUpdate
 
 
 class TicketCrud(
-    BaseCrudFactory(
-        model=Ticket,
-        update_schema=TicketModels.Update,
-        create_schema=TicketModels.Create,
-        get_schema=TicketModels.Get,
-    )
+    GenericCrud[Ticket, TicketGet, TicketCreate, TicketUpdate]
 ):
+    base_model = Ticket
+    get_schema = TicketGet
+    create_schema = TicketCreate
+    update_schema = TicketUpdate
+
     @staticmethod
     async def get_ticket_by_id_or_shared(
             session: AsyncSession,
             ticket_id: uuid.UUID,
             user_id: uuid.UUID
-    ) -> Optional[TicketModels.Get]:
+    ) -> Optional[TicketGet]:
         """
         Retrieves a ticket by ID if it belongs to the user or is marked as shared.
 
@@ -40,7 +40,7 @@ class TicketCrud(
             user_id (uuid.UUID): The ID of the user requesting the ticket.
 
         Returns:
-            Optional[TicketModels.Get]: A validated Pydantic model of the ticket
+            Optional[TicketGet]: A validated Pydantic model of the ticket
                                         if found and accessible, or None otherwise.
         """
         result = await session.execute(
@@ -54,7 +54,7 @@ class TicketCrud(
 
         result = result.scalar_one_or_none()
 
-        return TicketModels.Get.model_validate(result) if result else None
+        return TicketGet.model_validate(result) if result else None
 
     @staticmethod
     async def get_event_name_for_ticket(

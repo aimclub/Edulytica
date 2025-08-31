@@ -158,21 +158,21 @@ async def new_ticket(
             "document_text": document_text
         }
 
-        # try:
-        #     response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
-        #                                       f'/orchestrate/run_ticket',
-        #                                       json=orchestrator_payload, timeout=30.0)
-        #     response.raise_for_status()
-        # except httpx.RequestError as _re:
-        #     raise HTTPException(
-        #         status_code=HTTP_503_SERVICE_UNAVAILABLE,
-        #         detail=f"Orchestration service is unavailable {_re}"
-        #     )
-        # except httpx.HTTPStatusError as _hse:
-        #     raise HTTPException(
-        #         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-        #         detail=f"Orchestrator failed to start task: {_hse.response.text}"
-        #     )
+        try:
+            response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
+                                              f'/orchestrate/run_ticket',
+                                              json=orchestrator_payload, timeout=30.0)
+            response.raise_for_status()
+        except httpx.RequestError as _re:
+            raise HTTPException(
+                status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Orchestration service is unavailable {_re}"
+            )
+        except httpx.HTTPStatusError as _hse:
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Orchestrator failed to start task: {_hse.response.text}"
+            )
 
         return JSONResponse(
             status_code=202,
@@ -262,6 +262,7 @@ async def get_result_text(
         return {"detail": "Text extracted", "text": text}
     except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
 
 
 @api_logs(actions_router.post('/add_custom_event'))

@@ -95,12 +95,12 @@ async def test_registration_password_mismatch(mock_user_get, client):
 @patch("src.auth.routers.auth.UserCrud.update")
 @patch("src.auth.routers.auth.TokenCrud.create")
 def test_check_code_success(
-    mock_token_create,
-    mock_user_update,
-    mock_get_active_user,
-    mock_get_by_id,
-    mock_get_recent_code,
-    client
+        mock_token_create,
+        mock_user_update,
+        mock_get_active_user,
+        mock_get_by_id,
+        mock_get_recent_code,
+        client
 ):
     mock_get_recent_code.return_value = AsyncMock(user_id=1)
     mock_get_by_id.return_value = AsyncMock(
@@ -158,14 +158,12 @@ def test_check_code_user_exists(
 @patch("src.auth.routers.auth.UserCrud.get_active_user")
 @patch("src.auth.routers.auth.TokenCrud.create")
 def test_login_success(
-    mock_token_create,
-    mock_user_get,
-    client
+        mock_token_create,
+        mock_user_get,
+        client
 ):
-    mock_user_get.return_value = [
-        AsyncMock(id=1, login="user1", email="user@example.com",
-                  password_hash=get_hashed_password('testpassword'))
-    ]
+    mock_user_get.return_value = AsyncMock(id=1, login="user1", email="user@example.com",
+                                           password_hash=get_hashed_password('testpassword'))
 
     response = client(app).post("/login", json={
         "login": "user1",
@@ -199,10 +197,8 @@ def test_login_user_not_found(mock_user_get, client):
 @patch("src.auth.routers.auth.UserCrud.get_active_user")
 @patch("src.auth.routers.auth.verify_password")
 def test_login_wrong_password(mock_verify_password, mock_user_get, client):
-    mock_user_get.return_value = [
-        AsyncMock(id=1, login="user1", email="user@example.com",
-                  password_hash=get_hashed_password('testpassword'))
-    ]
+    mock_user_get.return_value = AsyncMock(id=1, login="user1", email="user@example.com",
+                                           password_hash=get_hashed_password('testpassword'))
     mock_verify_password.return_value = False
 
     response = client(app).post("/login", json={

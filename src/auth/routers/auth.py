@@ -234,10 +234,6 @@ async def login_handler(
             login=login
         )
 
-        print('DEBUG login_handler ===')
-        print(type(user))
-        print(user)
-
         if not user or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=HTTP_401_UNAUTHORIZED,

@@ -234,19 +234,19 @@ async def login_handler(
             login=login
         )
 
-        if not user or not verify_password(password, user[0].password_hash):
+        if not user or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=HTTP_401_UNAUTHORIZED,
                 detail='Credentials are incorrect'
             )
 
-        access_token = create_access_token(user[0].id)
+        access_token = create_access_token(user.id)
         checker = uuid.uuid4()
-        refresh_token = create_refresh_token(subject=user[0].id, checker=checker)
+        refresh_token = create_refresh_token(subject=user.id, checker=checker)
 
         await TokenCrud.create(
             session=session,
-            user_id=user[0].id,
+            user_id=user.id,
             refresh_token=refresh_token,
             checker=checker
         )

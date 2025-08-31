@@ -5,7 +5,7 @@ Classes:
     UserCrud: Provides CRUD operations for the User model
 """
 
-from typing import List
+from typing import List, Optional
 from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.common.database.crud.base.generic_crud import GenericCrud
@@ -56,7 +56,7 @@ class UserCrud(
     async def get_active_user(
             session: AsyncSession,
             login: str
-    ) -> UserGet:
+    ) -> Optional[UserGet]:
         result = await session.execute(
             select(User).where(
                 and_(

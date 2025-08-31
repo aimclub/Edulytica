@@ -155,7 +155,7 @@ def test_check_code_user_exists(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.routers.auth.UserCrud.get_active_user")
 @patch("src.auth.routers.auth.TokenCrud.create")
 def test_login_success(
     mock_token_create,
@@ -182,7 +182,7 @@ def test_login_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.routers.auth.UserCrud.get_active_user")
 def test_login_user_not_found(mock_user_get, client):
     mock_user_get.return_value = []
 
@@ -196,7 +196,7 @@ def test_login_user_not_found(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.routers.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.routers.auth.UserCrud.get_active_user")
 @patch("src.auth.routers.auth.verify_password")
 def test_login_wrong_password(mock_verify_password, mock_user_get, client):
     mock_user_get.return_value = [

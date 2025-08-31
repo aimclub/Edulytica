@@ -59,7 +59,7 @@ def test_send_email(mock_smtp):
     code = "123456"
     send_email(to_email, code)
 
-    mock_smtp.assert_called_with('smtp.gmail.com', 587)
+    mock_smtp.assert_called_with('smtp.mail.ru', 465)
 
     mock_server.starttls.assert_called_once()
     mock_server.login.assert_called_once()

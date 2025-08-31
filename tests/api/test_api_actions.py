@@ -174,7 +174,7 @@ def test_get_ticket_file_success(mock_doc_get, mock_ticket_get, client, tmp_path
 
     response = client(app).get("/actions/get_ticket_file", params={"ticket_id": str(uuid.uuid4())})
     assert response.status_code == 200
-    assert response.headers["content-type"] == "application/octet-stream"
+    assert response.headers["content-type"] == "application/pdf"
 
 
 @pytest.mark.asyncio

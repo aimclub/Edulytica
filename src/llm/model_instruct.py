@@ -1,3 +1,4 @@
+import torch
 from src.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
 from src.llm import DEFAULT_SYSTEM_PROMPT
@@ -14,7 +15,9 @@ class ModelInstruct(IModel):
             quantization=None,
             bnb_4bit_quant_type="nf4",
             bnb_4bit_use_double_quant=True):
-        """To use quantization model pass argument quantization='4bit' to load in 4bit or quantization='8bit' to load in 8bit"""
+        """To use quantization model pass argument quantization='4bit'
+        to load in 4bit or quantization='8bit' to load in 8bit"""
+
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
         bnb_config = None
 
@@ -28,7 +31,8 @@ class ModelInstruct(IModel):
         elif quantization is not None:
             raise QuantizationException
         self.model = AutoModelForCausalLM.from_pretrained(model_name, device_map=device_map,
-                                                          quantization_config=bnb_config)
+                                                          quantization_config=bnb_config,
+                                                          torch_dtype=torch.float16)
         self.device = self.model.device
         self.system_prompt = system_prompt
         self.chat_template = chat_template

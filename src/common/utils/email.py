@@ -8,7 +8,7 @@ Functions:
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from src.common.config import SENDER_EMAIL, SENDER_PASSWORD
+from src.common.config import SENDER_EMAIL, SENDER_PASSWORD, SMTP_PORT
 
 
 def send_email(to_email, code):
@@ -31,7 +31,7 @@ def send_email(to_email, code):
     body = f'Hello, your confirmation code for registration on the Edulytica platform is: {code}'
     msg.attach(MIMEText(body, 'plain'))
 
-    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server = smtplib.SMTP(SMTP_PORT, SMTP_PORT)
     server.starttls()
     server.login(SENDER_EMAIL, SENDER_PASSWORD)
 

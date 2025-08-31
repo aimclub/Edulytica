@@ -264,7 +264,6 @@ async def get_result_text(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-
 @api_logs(actions_router.post('/add_custom_event'))
 async def add_custom_event(
     auth_data: dict = Depends(access_token_auth),

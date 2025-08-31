@@ -148,6 +148,37 @@ class TicketService {
   }
 
   /**
+   * Скачивает файл результата тикета
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<void>} Скачивает файл
+   */
+  async downloadResult(ticketId) {
+    try {
+      const response = await $api.get("/actions/download_result", {
+        params: { ticket_id: ticketId },
+        responseType: "blob",
+      })
+
+      // Создаем ссылку для скачивания
+      const url = window.URL.createObjectURL(response.data)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = `result_${ticketId}.pdf`
+
+      // Добавляем ссылку в DOM и кликаем по ней
+      document.body.appendChild(link)
+      link.click()
+
+      // Удаляем ссылку
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error downloading result:", error)
+      throw error
+    }
+  }
+
+  /**
    * Изменяет статус публикации тикета
    * @param {string} ticketId - ID тикета
    * @returns {Promise<Object>} Результат операции
@@ -198,6 +229,40 @@ class TicketService {
       return response.data.text
     } catch (error) {
       console.error("Error parsing file text:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Получает текст документа тикета напрямую
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<{detail: string, text: string}>} Текст документа
+   */
+  async getDocumentText(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_document_text", {
+        params: { ticket_id: ticketId },
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error getting document text:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Получает текст результата тикета напрямую
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<{detail: string, text: string}>} Текст результата
+   */
+  async getResultText(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_result_text", {
+        params: { ticket_id: ticketId },
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error getting result text:", error)
       throw error
     }
   }

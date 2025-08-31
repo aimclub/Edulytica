@@ -1,8 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit"
 import { ticketService } from "../services/ticket.service"
 
-// Глобальный объект для хранения активных интервалов опроса
+// Глобальные объекты для хранения активных интервалов опроса
 const activePolls = {}
+const activeDocumentPolls = {}
 
 // Получаем начальное состояние из localStorage или используем дефолтное
 const getInitialState = () => {
@@ -52,6 +53,10 @@ const ticketSlice = createSlice({
         clearInterval(activePolls[ticketId])
         delete activePolls[ticketId]
       })
+      Object.keys(activeDocumentPolls).forEach((ticketId) => {
+        clearInterval(activeDocumentPolls[ticketId])
+        delete activeDocumentPolls[ticketId]
+      })
     },
   },
 })
@@ -83,6 +88,15 @@ export const fetchTicket = (ticketId) => async (dispatch) => {
       status: ticketStatus.status,
     }
     dispatch(setCurrentTicket(ticketData))
+
+    // Загружаем исходный документ сразу
+    try {
+      await dispatch(fetchDocumentText(ticketId))
+    } catch (error) {
+      console.error("Ошибка при загрузке исходного документа:", error)
+      // Если не удалось загрузить сразу, запускаем опрос
+      dispatch(startPollingForDocument(ticketId))
+    }
 
     // Если тикет в обработке, запускаем опрос
     if (
@@ -122,91 +136,82 @@ export const createTicket =
     }
   }
 
+// Загрузка только исходного документа
+export const fetchDocumentText = (ticketId) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading(true))
+
+    const documentResponse = await ticketService.getDocumentText(ticketId)
+    const file = documentResponse.text || ""
+
+    // Обновляем текущий тикет с загруженным исходным документом
+    const prev = getState().ticket.currentTicket
+    dispatch(
+      setCurrentTicket({
+        ...prev,
+        files: {
+          ...prev.files,
+          file,
+        },
+      })
+    )
+
+    // Если документ успешно загружен, останавливаем опрос
+    if (file) {
+      dispatch(stopPollingForDocument(ticketId))
+    }
+
+    return { file }
+  } catch (error) {
+    dispatch(setError(error.message))
+    throw error
+  } finally {
+    dispatch(setLoading(false))
+  }
+}
+
+// Загрузка только результата
+export const fetchResultText = (ticketId) => async (dispatch, getState) => {
+  try {
+    dispatch(setLoading(true))
+
+    const resultResponse = await ticketService.getResultText(ticketId)
+    const result = resultResponse.text || ""
+
+    // Обновляем текущий тикет с загруженным результатом
+    const prev = getState().ticket.currentTicket
+    dispatch(
+      setCurrentTicket({
+        ...prev,
+        files: {
+          ...prev.files,
+          result,
+        },
+      })
+    )
+
+    return { result }
+  } catch (error) {
+    dispatch(setError(error.message))
+    throw error
+  } finally {
+    dispatch(setLoading(false))
+  }
+}
+
+// Загрузка обоих файлов (оставляем для обратной совместимости)
 export const fetchTicketFiles = (ticketId) => async (dispatch, getState) => {
   try {
     dispatch(setLoading(true))
 
-    // Получаем Blobs
-    const [fileBlob, resultBlob] = await Promise.all([
-      ticketService.getTicketFile(ticketId),
-      ticketService.getTicketResult(ticketId),
+    // Получаем текст напрямую с новых эндпоинтов
+    const [documentResponse, resultResponse] = await Promise.all([
+      ticketService.getDocumentText(ticketId),
+      ticketService.getResultText(ticketId),
     ])
 
-    // Вспомогательная функция для гарантии PDF/DOCX
-    async function ensurePdfOrDocxFile(blob, baseName) {
-      console.log(
-        `ensurePdfOrDocxFile called with baseName: ${baseName}, blob.type: ${blob.type}`
-      )
-
-      // Если это результат и тип octet-stream - попробуем определить как текст
-      if (baseName === "result" && blob.type === "application/octet-stream") {
-        console.log(`Attempting to detect text content for ${baseName}`)
-        try {
-          const text = await blob.text()
-          // Проверяем, что это действительно текст (не бинарные данные)
-          if (text && text.length > 0 && !text.includes("\x00")) {
-            console.log(`Creating TXT file for ${baseName} (detected as text)`)
-            return new File([blob], `${baseName}.txt`, { type: "text/plain" })
-          }
-        } catch (e) {
-          console.log(
-            `Failed to read as text, treating as binary: ${e.message}`
-          )
-        }
-      }
-
-      // Если это текст и это result — вернуть как txt
-      if (blob.type === "text/plain" && baseName === "result") {
-        console.log(`Creating TXT file for ${baseName}`)
-        return new File([blob], `${baseName}.txt`, { type: "text/plain" })
-      }
-
-      // Если это PDF
-      if (blob.type === "application/pdf") {
-        console.log(`Creating PDF file for ${baseName}`)
-        return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
-      }
-
-      // Если это DOCX
-      if (
-        blob.type ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        console.log(`Creating DOCX file for ${baseName}`)
-        return new File([blob], `${baseName}.docx`, {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        })
-      }
-
-      // Если это текст — конвертировать в PDF
-      if (blob.type === "text/plain") {
-        console.log(`Converting text to PDF for ${baseName}`)
-        const text = await blob.text()
-        // Используем jsPDF для конвертации текста в PDF
-        const jsPDF = (await import("jspdf")).jsPDF
-        const doc = new jsPDF()
-        doc.text(text, 10, 10)
-        const pdfBlob = doc.output("blob")
-        return new File([pdfBlob], `${baseName}.pdf`, {
-          type: "application/pdf",
-        })
-      }
-
-      // Для других типов — можно добавить обработку
-      // По умолчанию — пробуем как PDF
-      console.log(`Default case: creating PDF file for ${baseName}`)
-      return new File([blob], `${baseName}.pdf`, { type: "application/pdf" })
-    }
-
-    // Оборачиваем Blobs в File (PDF или DOCX)
-    const fileFile = await ensurePdfOrDocxFile(fileBlob, "file")
-    const resultFile = await ensurePdfOrDocxFile(resultBlob, "result")
-
-    // Парсим файлы через бэкенд
-    const [file, result] = await Promise.all([
-      ticketService.parseFileText(fileFile),
-      ticketService.parseFileText(resultFile),
-    ])
+    const file = documentResponse.text || ""
+    const result = resultResponse.text || ""
 
     // Обновляем текущий тикет с загруженными строками
     const prev = getState().ticket.currentTicket
@@ -243,10 +248,10 @@ const pollTicketStatus = (ticketId) => async (dispatch, getState) => {
       )
     }
 
-    // Если обработка завершена, останавливаем опрос и загружаем файлы
+    // Если обработка завершена, останавливаем опрос и загружаем только результат
     if (ticketStatus.status === "Completed") {
       dispatch(stopPollingForTicket(ticketId))
-      dispatch(fetchTicketFiles(ticketId))
+      dispatch(fetchResultText(ticketId))
     }
   } catch (error) {
     console.error(`Ошибка опроса для тикета ${ticketId}:`, error)
@@ -268,6 +273,54 @@ export const stopPollingForTicket = (ticketId) => () => {
   if (activePolls[ticketId]) {
     clearInterval(activePolls[ticketId])
     delete activePolls[ticketId]
+  }
+}
+
+// Функция для опроса исходного документа
+const pollDocumentText = (ticketId) => async (dispatch, getState) => {
+  try {
+    const documentResponse = await ticketService.getDocumentText(ticketId)
+    const file = documentResponse.text || ""
+
+    // Обновляем текущий тикет с загруженным исходным документом
+    const prev = getState().ticket.currentTicket
+    dispatch(
+      setCurrentTicket({
+        ...prev,
+        files: {
+          ...prev.files,
+          file,
+        },
+      })
+    )
+
+    // Если документ успешно загружен, останавливаем опрос
+    if (file) {
+      dispatch(stopPollingForDocument(ticketId))
+    }
+  } catch (error) {
+    console.error(
+      `Ошибка опроса исходного документа для тикета ${ticketId}:`,
+      error
+    )
+    // Не останавливаем опрос при ошибке, продолжаем пытаться
+  }
+}
+
+export const startPollingForDocument = (ticketId) => (dispatch) => {
+  if (activeDocumentPolls[ticketId]) {
+    return // Уже опрашивается
+  }
+  const intervalId = setInterval(() => {
+    dispatch(pollDocumentText(ticketId))
+  }, 2000)
+  activeDocumentPolls[ticketId] = intervalId
+}
+
+export const stopPollingForDocument = (ticketId) => () => {
+  if (activeDocumentPolls[ticketId]) {
+    clearInterval(activeDocumentPolls[ticketId])
+    delete activeDocumentPolls[ticketId]
   }
 }
 

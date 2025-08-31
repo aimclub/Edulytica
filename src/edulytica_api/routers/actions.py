@@ -158,21 +158,21 @@ async def new_ticket(
             "document_text": document_text
         }
 
-        try:
-            response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
-                                              f'/orchestrate/run_ticket',
-                                              json=orchestrator_payload, timeout=30.0)
-            response.raise_for_status()
-        except httpx.RequestError as _re:
-            raise HTTPException(
-                status_code=HTTP_503_SERVICE_UNAVAILABLE,
-                detail=f"Orchestration service is unavailable {_re}"
-            )
-        except httpx.HTTPStatusError as _hse:
-            raise HTTPException(
-                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-                detail=f"Orchestrator failed to start task: {_hse.response.text}"
-            )
+        # try:
+        #     response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
+        #                                       f'/orchestrate/run_ticket',
+        #                                       json=orchestrator_payload, timeout=30.0)
+        #     response.raise_for_status()
+        # except httpx.RequestError as _re:
+        #     raise HTTPException(
+        #         status_code=HTTP_503_SERVICE_UNAVAILABLE,
+        #         detail=f"Orchestration service is unavailable {_re}"
+        #     )
+        # except httpx.HTTPStatusError as _hse:
+        #     raise HTTPException(
+        #         status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+        #         detail=f"Orchestrator failed to start task: {_hse.response.text}"
+        #     )
 
         return JSONResponse(
             status_code=202,
@@ -586,6 +586,62 @@ async def get_ticket_result(
             path=str(file_path),
             media_type='application/octet-stream',
             filename=file_path.name)
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.get("/download_result"))
+async def download_result(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Query(...),
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    Downloads the LLM-generated result file for a ticket with proper filename.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket UUID.
+        session (AsyncSession): Database session.
+
+    Returns:
+        FileResponse: The result file with proper filename.
+
+    Raises:
+        HTTPException: If the report is not found or ticket doesn't exist.
+    """
+    try:
+        ticket = await TicketCrud.get_ticket_by_id_or_shared(
+            session=session, ticket_id=ticket_id, user_id=auth_data['user'].id
+        )
+        if not ticket:
+            raise HTTPException(status_code=400, detail='Ticket doesn\'t exist')
+
+        document_report = await DocumentReportCrud.get_by_id(
+            session=session, record_id=ticket.document_report_id
+        )
+
+        if not document_report:
+            raise HTTPException(
+                status_code=400,
+                detail=f'Ticket result not found, document report not found in Database')
+
+        file_path = ROOT_DIR / document_report.file_path
+
+        if not file_path.exists():
+            raise HTTPException(
+                status_code=400,
+                detail='Ticket result not found, document report not found in storage')
+
+        # Создаем красивое имя файла для скачивания
+        filename = f"result_{ticket_id}.pdf"
+
+        return FileResponse(
+            path=str(file_path),
+            media_type='application/pdf',
+            filename=filename)
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

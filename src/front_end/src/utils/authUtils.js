@@ -29,8 +29,12 @@ export const forceLogout = async () => {
   } catch (error) {
     store.dispatch({ type: "auth/logoutUser" })
   }
-  // Если мы не на главной странице, делаем редирект
-  if (window.location.pathname !== "/") {
+
+  const currentPath = window.location.pathname
+  const authPages = ["/login", "/registration"]
+
+  // Если мы не на главной странице и не на страницах авторизации, делаем редирект
+  if (currentPath !== "/" && !authPages.includes(currentPath)) {
     window.location.href = "/"
   }
 }

@@ -2,7 +2,12 @@ import { useEffect, useRef, useState } from "react"
 import "./resultFile.scss"
 import { motion } from "framer-motion"
 import { useDispatch } from "react-redux"
-import { fetchTicketFiles } from "../../store/ticketSlice"
+import {
+  fetchResultText,
+  startPollingForDocument,
+} from "../../store/ticketSlice"
+import { ticketService } from "../../services/ticket.service"
+
 /**
  * Компонент отображает результат работы над файлом,содержимое файла и позволяет переключаться между его разделами(суммаризация, рецензирование).
  *
@@ -22,24 +27,94 @@ export const ResultFile = ({ fileName, ticketData }) => {
   // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
   const [key, setKey] = useState(0)
   const [error, setError] = useState("") // Новое состояние для ошибки
+  const [isDownloading, setIsDownloading] = useState(false) // Состояние для индикации скачивания
 
   const files = ticketData?.files || {}
+
+  // Обработчик клика на кнопку скачать результат
+  const handleDownloadResult = async () => {
+    if (!ticketData?.ticketId || isDownloading) return
+
+    try {
+      setIsDownloading(true)
+      await ticketService.downloadResult(ticketData.ticketId)
+    } catch (error) {
+      console.error("Ошибка при скачивании результата:", error)
+      let errorMessage = "Ошибка при скачивании файла"
+
+      if (error?.response?.data?.detail) {
+        if (error.response.data.detail.includes("not found")) {
+          errorMessage = "Результат ещё не готов. Попробуйте позже."
+        } else {
+          errorMessage = error.response.data.detail
+        }
+      }
+
+      setError(errorMessage)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
+
+  // Обработчик клика на кнопку скачать исходный документ
+  const handleDownloadDocument = async () => {
+    if (!ticketData?.ticketId || isDownloading) return
+
+    try {
+      setIsDownloading(true)
+      await ticketService.downloadDocument(ticketData.ticketId)
+    } catch (error) {
+      console.error("Ошибка при скачивании документа:", error)
+      let errorMessage = "Ошибка при скачивании файла"
+
+      if (error?.response?.data?.detail) {
+        if (error.response.data.detail.includes("not found")) {
+          errorMessage = "Документ не найден."
+        } else {
+          errorMessage = error.response.data.detail
+        }
+      }
+
+      setError(errorMessage)
+    } finally {
+      setIsDownloading(false)
+    }
+  }
 
   useEffect(() => {
     setKey((prevKey) => prevKey + 1)
   }, [fileName])
 
-  // Эффект для загрузки файлов, если тикет уже выполнен
+  // Эффект для загрузки исходного документа, если его нет
   useEffect(() => {
-    const fetchFiles = async () => {
+    const fetchDocument = async () => {
+      if (ticketData?.ticketId && !ticketData.files?.file) {
+        try {
+          setError("")
+          // Пытаемся загрузить исходный документ
+          // Если не получится, опрос запустится автоматически в fetchTicket
+        } catch (err) {
+          console.error("Ошибка при загрузке исходного документа:", err)
+          // Запускаем опрос при ошибке
+          dispatch(startPollingForDocument(ticketData.ticketId))
+        }
+      }
+    }
+    fetchDocument()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ticketData?.ticketId, ticketData?.files?.file, dispatch])
+
+  // Эффект для загрузки результата, если тикет уже выполнен
+  useEffect(() => {
+    const fetchResult = async () => {
       if (
         ticketData?.status === "Completed" &&
         ticketData?.ticketId &&
-        !ticketData.files
+        !ticketData.files?.result
       ) {
         try {
           setError("")
-          await dispatch(fetchTicketFiles(ticketData.ticketId))
+          await dispatch(fetchResultText(ticketData.ticketId))
         } catch (err) {
           let msg = "Ошибка при получении результата."
           if (err?.response?.data?.detail) {
@@ -57,9 +132,14 @@ export const ResultFile = ({ fileName, ticketData }) => {
         }
       }
     }
-    fetchFiles()
+    fetchResult()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ticketData?.status, ticketData?.ticketId, ticketData?.files, dispatch])
+  }, [
+    ticketData?.status,
+    ticketData?.ticketId,
+    ticketData?.files?.result,
+    dispatch,
+  ])
 
   useEffect(() => {
     const checkScrollable = () => {
@@ -76,32 +156,7 @@ export const ResultFile = ({ fileName, ticketData }) => {
 
   // Функция для получения контента на основе активной секции
   const getTextContent = () => {
-    // Если тикет в процессе обработки, всегда показывать статус в разделе результата
-    if (activeSectionResult === 2) {
-      if (
-        ticketData &&
-        (ticketData.status === "Created" || ticketData.status === "In progress")
-      ) {
-        return `Статус: ${ticketData.status}`
-      }
-      // Если статус Completed и есть ошибка (например, файлы не пришли)
-      if (ticketData?.status === "Completed" && error) {
-        return "Результат ещё не готов. Попробуйте позже."
-      }
-      if (error) {
-        return error
-      }
-      // Если статус не Completed или нет результата — выводим сообщение о процессе
-      if (ticketData?.status !== "Completed" || !files.result) {
-        return `Результат ещё не готов. Попробуйте позже.`
-      }
-      // Если результат есть — выводим его
-      if (typeof files.result === "string") {
-        return files.result.split("\n")
-      }
-      return files.result || ""
-    }
-    // Раздел Исходного документа: если есть файл — показываем его
+    // Раздел Исходного документа: показываем сразу, как только загружен
     if (activeSectionResult === 1) {
       if (typeof files.file === "string") {
         return files.file.split("\n")
@@ -109,15 +164,40 @@ export const ResultFile = ({ fileName, ticketData }) => {
       if (files.file) {
         return files.file
       }
-      // Если файла нет, fallback на старую логику
-      if (ticketData?.status === "Completed") {
-        return `Статус: ${ticketData.status}`
+      return "Загрузка исходного документа..."
+    }
+
+    // Раздел Результата: показываем статус или результат
+    if (activeSectionResult === 2) {
+      // Если тикет в процессе обработки
+      if (
+        ticketData &&
+        (ticketData.status === "Created" || ticketData.status === "In progress")
+      ) {
+        return `Документ в обработке...`
       }
+
+      // Если статус Completed и есть ошибка
+      if (ticketData?.status === "Completed" && error) {
+        return "Ошибка при загрузке результата."
+      }
+
       if (error) {
         return error
       }
-      return "Загрузка..."
+
+      // Если статус Completed, но результата еще нет — загружаем
+      if (!files.result) {
+        return "Загрузка результата..."
+      }
+
+      // Если результат есть — выводим его
+      if (typeof files.result === "string") {
+        return files.result.split("\n")
+      }
+      return files.result || ""
     }
+
     // fallback
     return ""
   }
@@ -192,26 +272,103 @@ export const ResultFile = ({ fileName, ticketData }) => {
                 </div>
               </div>
             </div>
-            {activeSectionResult === 2 && (
-              <div className="btnBottomResultFile">
-                <svg
-                  width="25"
-                  height="25"
-                  viewBox="0 0 25 25"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
-                    stroke="#89AAFF"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-                Скачать
+            {activeSectionResult === 1 && files.file && (
+              <div
+                className={`btnBottomResultFile ${
+                  isDownloading ? "downloading" : ""
+                }`}
+                onClick={handleDownloadDocument}
+                style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
+              >
+                {isDownloading ? (
+                  <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="spinner"
+                  >
+                    <circle
+                      cx="12.5"
+                      cy="12.5"
+                      r="10"
+                      stroke="#89AAFF"
+                      strokeWidth="2"
+                      fill="none"
+                      strokeDasharray="31.416"
+                      strokeDashoffset="31.416"
+                    />
+                  </svg>
+                ) : (
+                  <svg
+                    width="25"
+                    height="25"
+                    viewBox="0 0 25 25"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                      stroke="#89AAFF"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {isDownloading ? "Скачивание..." : "Скачать"}
               </div>
             )}
+            {activeSectionResult === 2 &&
+              ticketData?.status === "Completed" && (
+                <div
+                  className={`btnBottomResultFile ${
+                    isDownloading ? "downloading" : ""
+                  }`}
+                  onClick={handleDownloadResult}
+                  style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
+                >
+                  {isDownloading ? (
+                    <svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 25 25"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="spinner"
+                    >
+                      <circle
+                        cx="12.5"
+                        cy="12.5"
+                        r="10"
+                        stroke="#89AAFF"
+                        strokeWidth="2"
+                        fill="none"
+                        strokeDasharray="31.416"
+                        strokeDashoffset="31.416"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      width="25"
+                      height="25"
+                      viewBox="0 0 25 25"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                        stroke="#89AAFF"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  )}
+                  {isDownloading ? "Скачивание..." : "Скачать"}
+                </div>
+              )}
           </div>
         </div>
       }

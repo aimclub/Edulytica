@@ -1,23 +1,24 @@
 from datetime import datetime
 from typing import Optional
-from pydantic import BaseModel, ConfigDict, UUID4
+from uuid import UUID
+from pydantic import BaseModel, ConfigDict
 
 
-class _UserRoleCreate(BaseModel):
+class UserRoleCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
 
 
-class _UserRoleUpdate(_UserRoleCreate):
-    id: UUID4
+class UserRoleUpdate(UserRoleCreate):
+    id: UUID
 
 
-class _UserRoleGet(_UserRoleUpdate):
+class UserRoleGet(UserRoleUpdate):
     pass
 
 
-class _UserCreate(BaseModel):
+class UserCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     login: str
@@ -26,172 +27,172 @@ class _UserCreate(BaseModel):
     name: Optional[str] = None
     surname: Optional[str] = None
     organization: Optional[str] = None
-    role_id: UUID4
+    role_id: UUID
 
 
-class _UserUpdate(_UserCreate):
-    id: UUID4
+class UserUpdate(UserCreate):
+    id: UUID
     is_active: bool
 
 
-class _UserGet(_UserUpdate):
+class UserGet(UserUpdate):
     created_at: datetime
     updated_at: datetime
 
 
-class _CheckCodeCreate(BaseModel):
+class CheckCodeCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     code: str
-    user_id: UUID4
+    user_id: UUID
 
 
-class _CheckCodeUpdate(_CheckCodeCreate):
-    id: UUID4
+class CheckCodeUpdate(CheckCodeCreate):
+    id: UUID
 
 
-class _CheckCodeGet(_CheckCodeUpdate):
+class CheckCodeGet(CheckCodeUpdate):
     created_at: datetime
 
 
-class _TicketCreate(BaseModel):
+class TicketCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     shared: Optional[bool] = False
-    user_id: UUID4
-    ticket_type_id: Optional[UUID4] = None
-    ticket_status_id: UUID4
-    event_id: Optional[UUID4] = None
-    custom_event_id: Optional[UUID4] = None
-    document_id: UUID4
-    document_summary_id: Optional[UUID4] = None
-    document_report_id: Optional[UUID4] = None
+    user_id: UUID
+    ticket_type_id: Optional[UUID] = None
+    ticket_status_id: UUID
+    event_id: Optional[UUID] = None
+    custom_event_id: Optional[UUID] = None
+    document_id: UUID
+    document_summary_id: Optional[UUID] = None
+    document_report_id: Optional[UUID] = None
 
 
-class _TicketUpdate(_TicketCreate):
-    id: UUID4
+class TicketUpdate(TicketCreate):
+    id: UUID
 
 
-class _TicketGet(_TicketUpdate):
+class TicketGet(TicketUpdate):
     created_at: datetime
 
 
-class _TicketStatusCreate(BaseModel):
+class TicketStatusCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
 
 
-class _TicketStatusUpdate(_TicketStatusCreate):
-    id: UUID4
+class TicketStatusUpdate(TicketStatusCreate):
+    id: UUID
 
 
-class _TicketStatusGet(_TicketStatusUpdate):
+class TicketStatusGet(TicketStatusUpdate):
     pass
 
 
-class _TicketTypeCreate(BaseModel):
+class TicketTypeCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
 
 
-class _TicketTypeUpdate(_TicketTypeCreate):
-    id: UUID4
+class TicketTypeUpdate(TicketTypeCreate):
+    id: UUID
 
 
-class _TicketTypeGet(_TicketTypeUpdate):
+class TicketTypeGet(TicketTypeUpdate):
     pass
 
 
-class _DocumentCreate(BaseModel):
+class DocumentCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Optional[UUID4]
+    id: Optional[UUID]
     file_path: str
-    user_id: UUID4
+    user_id: UUID
 
 
-class _DocumentUpdate(_DocumentCreate):
+class DocumentUpdate(DocumentCreate):
     pass
 
 
-class _DocumentGet(_DocumentUpdate):
+class DocumentGet(DocumentUpdate):
     created_at: datetime
 
 
-class _DocumentSummaryCreate(BaseModel):
+class DocumentSummaryCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Optional[UUID4]
+    id: Optional[UUID]
     file_path: str
 
 
-class _DocumentSummaryUpdate(_DocumentSummaryCreate):
+class DocumentSummaryUpdate(DocumentSummaryCreate):
     pass
 
 
-class _DocumentSummaryGet(_DocumentSummaryUpdate):
+class DocumentSummaryGet(DocumentSummaryUpdate):
     created_at: datetime
 
 
-class _DocumentReportCreate(BaseModel):
+class DocumentReportCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    id: Optional[UUID4]
+    id: Optional[UUID]
     file_path: str
 
 
-class _DocumentReportUpdate(_DocumentReportCreate):
+class DocumentReportUpdate(DocumentReportCreate):
     pass
 
 
-class _DocumentReportGet(_DocumentReportUpdate):
+class DocumentReportGet(DocumentReportUpdate):
     created_at: datetime
 
 
-class _TokenCreate(BaseModel):
+class TokenCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     refresh_token: str
-    checker: UUID4
-    user_id: UUID4
+    checker: UUID
+    user_id: UUID
 
 
-class _TokenUpdate(_TokenCreate):
-    id: UUID4
+class TokenUpdate(TokenCreate):
+    id: UUID
 
 
-class _TokenGet(_TokenUpdate):
+class TokenGet(TokenUpdate):
     created_at: datetime
 
 
-class _EventCreate(BaseModel):
+class EventCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
     description: Optional[str] = None
 
 
-class _EventUpdate(_EventCreate):
-    id: UUID4
+class EventUpdate(EventCreate):
+    id: UUID
 
 
-class _EventGet(_EventUpdate):
+class EventGet(EventUpdate):
     created_at: datetime
 
 
-class _CustomEventCreate(BaseModel):
+class CustomEventCreate(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     name: str
     description: Optional[str] = None
-    user_id: UUID4
+    user_id: UUID
 
 
-class _CustomEventUpdate(_CustomEventCreate):
-    id: UUID4
+class CustomEventUpdate(CustomEventCreate):
+    id: UUID
 
 
-class _CustomEventGet(_CustomEventUpdate):
+class CustomEventGet(CustomEventUpdate):
     created_at: datetime

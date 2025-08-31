@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import CustomEvent
-from src.common.database.schemas import CustomEventModels
+from src.common.database.schemas.system_schemas import CustomEventGet, CustomEventCreate, CustomEventUpdate
 
 
 class CustomEventCrud(
-
-    BaseCrudFactory(
-        model=CustomEvent,
-        update_schema=CustomEventModels.Update,
-        create_schema=CustomEventModels.Create,
-        get_schema=CustomEventModels.Get,
-    )
+    GenericCrud[CustomEvent, CustomEventGet, CustomEventCreate, CustomEventUpdate]
 ):
-    pass
+    base_model = CustomEvent
+    get_schema = CustomEventGet
+    create_schema = CustomEventCreate
+    update_schema = CustomEventUpdate

@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import TicketType
-from src.common.database.schemas import TicketTypeModels
+from src.common.database.schemas.system_schemas import TicketTypeGet, TicketTypeCreate, TicketTypeUpdate
 
 
 class TicketTypeCrud(
-
-    BaseCrudFactory(
-        model=TicketType,
-        update_schema=TicketTypeModels.Update,
-        create_schema=TicketTypeModels.Create,
-        get_schema=TicketTypeModels.Get,
-    )
+    GenericCrud[TicketType, TicketTypeGet, TicketTypeCreate, TicketTypeUpdate]
 ):
-    pass
+    base_model = TicketType
+    get_schema = TicketTypeGet
+    create_schema = TicketTypeCreate
+    update_schema = TicketTypeUpdate

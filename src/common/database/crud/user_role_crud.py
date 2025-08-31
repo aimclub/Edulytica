@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import UserRole
-from src.common.database.schemas import UserRoleModels
+from src.common.database.schemas.system_schemas import UserRoleGet, UserRoleCreate, UserRoleUpdate
 
 
 class UserRoleCrud(
-
-    BaseCrudFactory(
-        model=UserRole,
-        update_schema=UserRoleModels.Update,
-        create_schema=UserRoleModels.Create,
-        get_schema=UserRoleModels.Get,
-    )
+    GenericCrud[UserRole, UserRoleGet, UserRoleCreate, UserRoleUpdate]
 ):
-    pass
+    base_model = UserRole
+    get_schema = UserRoleGet
+    create_schema = UserRoleCreate
+    update_schema = UserRoleUpdate

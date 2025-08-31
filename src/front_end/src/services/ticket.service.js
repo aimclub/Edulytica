@@ -148,6 +148,90 @@ class TicketService {
   }
 
   /**
+   * Скачивает файл результата тикета
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<void>} Скачивает файл
+   */
+  async downloadResult(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_ticket_result", {
+        params: { ticket_id: ticketId },
+        responseType: "blob",
+      })
+
+      // Получаем имя файла из заголовков ответа или используем дефолтное
+      const contentDisposition = response.headers["content-disposition"]
+      let filename = `result_${ticketId}.pdf`
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/)
+        if (filenameMatch) {
+          filename = filenameMatch[1]
+        }
+      }
+
+      // Создаем ссылку для скачивания
+      const url = window.URL.createObjectURL(response.data)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = filename
+
+      // Добавляем ссылку в DOM и кликаем по ней
+      document.body.appendChild(link)
+      link.click()
+
+      // Удаляем ссылку
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error downloading result:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Скачивает исходный файл документа тикета
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<void>} Скачивает файл
+   */
+  async downloadDocument(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_ticket_file", {
+        params: { ticket_id: ticketId },
+        responseType: "blob",
+      })
+
+      // Получаем имя файла из заголовков ответа или используем дефолтное
+      const contentDisposition = response.headers["content-disposition"]
+      let filename = `document_${ticketId}.pdf`
+
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/)
+        if (filenameMatch) {
+          filename = filenameMatch[1]
+        }
+      }
+
+      // Создаем ссылку для скачивания
+      const url = window.URL.createObjectURL(response.data)
+      const link = document.createElement("a")
+      link.href = url
+      link.download = filename
+
+      // Добавляем ссылку в DOM и кликаем по ней
+      document.body.appendChild(link)
+      link.click()
+
+      // Удаляем ссылку
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+    } catch (error) {
+      console.error("Error downloading document:", error)
+      throw error
+    }
+  }
+
+  /**
    * Изменяет статус публикации тикета
    * @param {string} ticketId - ID тикета
    * @returns {Promise<Object>} Результат операции
@@ -198,6 +282,40 @@ class TicketService {
       return response.data.text
     } catch (error) {
       console.error("Error parsing file text:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Получает текст документа тикета напрямую
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<{detail: string, text: string}>} Текст документа
+   */
+  async getDocumentText(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_document_text", {
+        params: { ticket_id: ticketId },
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error getting document text:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Получает текст результата тикета напрямую
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<{detail: string, text: string}>} Текст результата
+   */
+  async getResultText(ticketId) {
+    try {
+      const response = await $api.get("/actions/get_result_text", {
+        params: { ticket_id: ticketId },
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error getting result text:", error)
       throw error
     }
   }

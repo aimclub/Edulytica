@@ -1,15 +1,12 @@
-from src.common.database.crud.base.factory import BaseCrudFactory
+from src.common.database.crud.base.generic_crud import GenericCrud
 from src.common.database.models import Event
-from src.common.database.schemas import EventModels
+from src.common.database.schemas.system_schemas import EventGet, EventCreate, EventUpdate
 
 
 class EventCrud(
-
-    BaseCrudFactory(
-        model=Event,
-        update_schema=EventModels.Update,
-        create_schema=EventModels.Create,
-        get_schema=EventModels.Get,
-    )
+    GenericCrud[Event, EventGet, EventCreate, EventUpdate]
 ):
-    pass
+    base_model = Event
+    get_schema = EventGet
+    create_schema = EventCreate
+    update_schema = EventUpdate

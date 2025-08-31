@@ -18,7 +18,7 @@ from datetime import timedelta
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
-from src.common.auth.auth_bearer import refresh_token_auth, access_token_auth
+from src.common.auth.auth_bearer import refresh_token_auth
 from src.common.auth.helpers.utils import get_hashed_password, create_access_token, create_refresh_token, get_expiry, \
     verify_password
 from src.common.config import REFRESH_TOKEN_EXPIRE_MINUTES
@@ -160,7 +160,7 @@ async def check_code_handler(
             record_id=check_code.user_id
         )
 
-        if await UserCrud.get_active_user_by_email_or_login(
+        if await UserCrud.get_active_users_by_email_or_login(
             session=session,
             login=inactive_user.login,
             email=inactive_user.email
@@ -229,25 +229,24 @@ async def login_handler(
         HTTPException: On incorrect credentials or internal errors.
     """
     try:
-        user = await UserCrud.get_filtered_by_params(
+        user = await UserCrud.get_active_user(
             session=session,
-            login=login,
-            is_active=True
+            login=login
         )
 
-        if not user or not verify_password(password, user[0].password_hash):
+        if not user or not verify_password(password, user.password_hash):
             raise HTTPException(
                 status_code=HTTP_401_UNAUTHORIZED,
                 detail='Credentials are incorrect'
             )
 
-        access_token = create_access_token(user[0].id)
+        access_token = create_access_token(user.id)
         checker = uuid.uuid4()
-        refresh_token = create_refresh_token(subject=user[0].id, checker=checker)
+        refresh_token = create_refresh_token(subject=user.id, checker=checker)
 
         await TokenCrud.create(
             session=session,
-            user_id=user[0].id,
+            user_id=user.id,
             refresh_token=refresh_token,
             checker=checker
         )

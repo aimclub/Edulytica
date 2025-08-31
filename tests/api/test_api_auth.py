@@ -91,7 +91,7 @@ async def test_registration_password_mismatch(mock_user_get, client):
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.CheckCodeCrud.get_recent_code")
 @patch("src.auth.routers.auth.UserCrud.get_by_id")
-@patch("src.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
+@patch("src.auth.routers.auth.UserCrud.get_active_users_by_email_or_login")
 @patch("src.auth.routers.auth.UserCrud.update")
 @patch("src.auth.routers.auth.TokenCrud.create")
 def test_check_code_success(
@@ -133,7 +133,7 @@ def test_check_code_invalid_code(mock_get_recent_code, client):
 @pytest.mark.asyncio
 @patch("src.auth.routers.auth.CheckCodeCrud.get_recent_code")
 @patch("src.auth.routers.auth.UserCrud.get_by_id")
-@patch("src.auth.routers.auth.UserCrud.get_active_user_by_email_or_login")
+@patch("src.auth.routers.auth.UserCrud.get_active_users_by_email_or_login")
 def test_check_code_user_exists(
         mock_get_active_user,
         mock_get_by_id,

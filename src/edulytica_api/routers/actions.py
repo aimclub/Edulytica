@@ -591,6 +591,7 @@ async def get_ticket_result(
     except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
+
 @api_logs(actions_router.post("/ticket_share"))
 async def ticket_share(
     auth_data: dict = Depends(access_token_auth),

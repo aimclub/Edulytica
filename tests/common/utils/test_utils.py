@@ -1,5 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from unittest.mock import patch, MagicMock
+
+from src.common.config import SMTP_SERVER, SMTP_PORT
 from src.common.utils.check_code_utils import generate_code
 from src.common.utils.email import send_email
 from src.common.utils.moscow_datetime import set_moscow_timezone, datetime_now_moscow
@@ -59,7 +61,7 @@ def test_send_email(mock_smtp):
     code = "123456"
     send_email(to_email, code)
 
-    mock_smtp.assert_called_with('smtp.mail.ru', 465)
+    mock_smtp.assert_called_with(SMTP_SERVER, SMTP_PORT)
 
     mock_server.starttls.assert_called_once()
     mock_server.login.assert_called_once()

@@ -19,6 +19,7 @@ Routes:
 import os
 import uuid
 from io import BytesIO
+from mimetypes import guess_type
 from pathlib import Path
 from uuid import UUID
 import httpx
@@ -482,9 +483,11 @@ async def get_ticket_file(
         if not file_path.exists():
             raise HTTPException(status_code=400, detail='File not found in storage')
 
+        mime, _ = guess_type(str(file_path))
+
         return FileResponse(
             path=str(file_path),
-            media_type='application/octet-stream',
+            media_type=mime or 'application/octet-stream',
             filename=file_path.name)
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
@@ -582,9 +585,11 @@ async def get_ticket_result(
                 status_code=400,
                 detail='Ticket result not found, document report not found in storage')
 
+        mime, _ = guess_type(str(file_path))
+
         return FileResponse(
             path=str(file_path),
-            media_type='application/octet-stream',
+            media_type=mime or 'application/octet-stream',
             filename=file_path.name)
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc

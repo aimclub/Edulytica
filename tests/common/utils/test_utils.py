@@ -1,5 +1,7 @@
 from datetime import datetime, timezone, timedelta
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, ANY
+
+from src.common.config import SMTP_SERVER, SMTP_PORT, SENDER_EMAIL, SENDER_PASSWORD
 from src.common.utils.check_code_utils import generate_code
 from src.common.utils.email import send_email
 from src.common.utils.moscow_datetime import set_moscow_timezone, datetime_now_moscow
@@ -50,18 +52,17 @@ def test_datetime_now_moscow():
     assert delta_seconds < 5
 
 
-@patch('src.common.utils.email.smtplib.SMTP')
-def test_send_email(mock_smtp):
+@patch('src.common.utils.email.smtplib.SMTP_SSL')
+def test_send_email_ssl(mock_smtp_ssl):
     mock_server = MagicMock()
-    mock_smtp.return_value = mock_server
+    mock_smtp_ssl.return_value.__enter__.return_value = mock_server
 
     to_email = "email@email.com"
     code = "123456"
+
     send_email(to_email, code)
 
-    mock_smtp.assert_called_with('smtp.gmail.com', 587)
+    mock_smtp_ssl.assert_called_with(SMTP_SERVER, SMTP_PORT, context=ANY, timeout=ANY)
 
-    mock_server.starttls.assert_called_once()
-    mock_server.login.assert_called_once()
+    mock_server.login.assert_called_once_with(SENDER_EMAIL, SENDER_PASSWORD)
     mock_server.sendmail.assert_called_once()
-    mock_server.quit.assert_called_once()

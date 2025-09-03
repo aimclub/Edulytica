@@ -11,8 +11,12 @@ JWT_SECRET_KEY=testjwtsecretkey
 JWT_REFRESH_SECRET_KEY=testjwtrefreshsecretkey
 JWT_PUBLIC_KEY=testjwtpublickey
 JWT_PRIVATE_KEY=testjwtprivatekey
+
+
 SENDER_EMAIL=sender@test.com
 SENDER_PASSWORD=senderpassword
+SMTP_SERVER=smtp.mail.ru
+SMTP_PORT=465
 EMAIL_CODE_EXPIRE_SECONDS=60
 
 KAFKA_BOOTSTRAP_SERVERS=kafka:9092

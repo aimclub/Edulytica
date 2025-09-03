@@ -6,9 +6,11 @@ Functions:
 """
 
 import smtplib
+import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from src.common.config import SENDER_EMAIL, SENDER_PASSWORD
+from email.utils import formataddr
+from src.common.config import SENDER_EMAIL, SENDER_PASSWORD, SMTP_PORT, SMTP_SERVER
 
 
 def send_email(to_email, code):
@@ -24,17 +26,14 @@ def send_email(to_email, code):
         code (str): Confirmation code to be included in the message.
     """
     msg = MIMEMultipart()
-    msg['From'] = SENDER_EMAIL
+    msg['From'] = formataddr(("Edulytica Security", SENDER_EMAIL))
     msg['To'] = to_email
     msg['Subject'] = 'Registration Confirmation Code'
 
     body = f'Hello, your confirmation code for registration on the Edulytica platform is: {code}'
-    msg.attach(MIMEText(body, 'plain'))
+    msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(SENDER_EMAIL, SENDER_PASSWORD)
-
-    text = msg.as_string()
-    server.sendmail(SENDER_EMAIL, to_email, text)
-    server.quit()
+    context = ssl.create_default_context()
+    with smtplib.SMTP_SSL(SMTP_SERVER, SMTP_PORT, context=context, timeout=30) as server:
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.sendmail(SENDER_EMAIL, [to_email], msg.as_string())

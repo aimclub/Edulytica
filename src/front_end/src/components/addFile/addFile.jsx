@@ -104,9 +104,24 @@ export const AddFile = ({
       console.log("mode:", mode, "mega_task_id:", mega_task_id)
 
       // Создаем тикет через Redux Thunk
-      await dispatch(createTicket(file, event_id, mega_task_id))
+      const ticketId = await dispatch(
+        createTicket(file, event_id, mega_task_id)
+      )
 
       await fetchTicketHistory()
+
+      // Получаем данные созданного тикета для уведомления
+      const ticketInfo = await ticketService.getTicket(ticketId)
+      const ticketStatus = await ticketService.getTicketStatus(ticketId)
+      const ticketData = {
+        ticketId: ticketInfo.ticket.id,
+        ticketInfo: ticketInfo.ticket,
+        status: ticketStatus.status,
+      }
+
+      if (onTicketCreated) {
+        await onTicketCreated(ticketData)
+      }
 
       setAccountSection("result")
       // Переход на страницу результата
@@ -123,6 +138,7 @@ export const AddFile = ({
     fetchTicketHistory,
     mode,
     navigate,
+    onTicketCreated,
     dispatch,
   ])
 

@@ -14,9 +14,10 @@ import { ticketService } from "../../services/ticket.service"
  * @param {Object} props - Свойства компонента.
  * @param {string} props.fileName - Имя файла, данные которого отображаются.
  * @param {Object} props.ticketData - Данные о тикете, включая статус.
+ * @param {number} props.resetSection - Ключ для сброса активной секции.
  */
 
-export const ResultFile = ({ fileName, ticketData }) => {
+export const ResultFile = ({ fileName, ticketData, resetSection }) => {
   const dispatch = useDispatch()
   /** Состояние активного раздела */
   const [activeSectionResult, setActiveSectionResult] = useState(1)
@@ -30,6 +31,11 @@ export const ResultFile = ({ fileName, ticketData }) => {
   const [isDownloading, setIsDownloading] = useState(false) // Состояние для индикации скачивания
 
   const files = ticketData?.files || {}
+
+  // Сбрасываем активную секцию при смене тикета
+  useEffect(() => {
+    setActiveSectionResult(1) // Всегда открываем "Исходный документ"
+  }, [resetSection])
 
   // Обработчик клика на кнопку скачать результат
   const handleDownloadResult = async () => {

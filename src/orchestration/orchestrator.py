@@ -7,7 +7,7 @@ from src.common.config import INTERNAL_API_SECRET, API_PORT
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
-from src.orchestration.prompts.prompts1.prompts import prompts
+from src.orchestration.prompts.prompts1.evil_prompts import prompts
 
 
 class Orchestrator:

@@ -8,6 +8,7 @@ from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
 from src.orchestration.prompts.prompts1.evil_prompts import prompts
+from src.orchestration.prompts.prompts2.evil_prompts import prompts2
 
 
 class Orchestrator:
@@ -202,7 +203,11 @@ class Orchestrator:
         )
 
     def _get_base_prompt_text(self, subtask_id: str) -> Union[str, None]:
-        return prompts.get(subtask_id, "")
+        if self.mega_task_id == '1':
+            return prompts.get(subtask_id, "")
+        elif self.mega_task_id == '2':
+            return prompts2.get(subtask_id, "")
+        return ""
 
     async def _send_to_kafka(
             self,

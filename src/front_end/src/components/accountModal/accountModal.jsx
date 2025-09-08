@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import "./accountModal.scss"
 import { useDispatch } from "react-redux"
 import { fetchTicket } from "../../store/ticketSlice"
@@ -20,8 +21,10 @@ export const AccountModal = ({
   tickets,
   fetchTicketHistory,
   currentTicket,
+  onTicketClick,
 }) => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
@@ -87,12 +90,14 @@ export const AccountModal = ({
 
   const handleFileLine = (ticket) => {
     setAccountSection("result")
-    // Обновляем URL на /account/result?documentId=...
-    window.history.pushState(
-      null,
-      "",
-      `/account/result?documentId=${ticket.document_id}`
-    )
+    // Переходим через React Router, чтобы обновился useLocation
+    navigate(`/account/result?documentId=${ticket.document_id}`)
+
+    // Показываем уведомление сразу при клике
+    if (onTicketClick) {
+      onTicketClick(ticket)
+    }
+
     dispatch(fetchTicket(ticket.id))
   }
   const handleSearchChange = (event) => {
@@ -131,7 +136,7 @@ export const AccountModal = ({
         <div
           onClick={() => {
             setAccountSection("main")
-            window.history.pushState(null, "", "/account")
+            navigate("/account")
           }}
           className={
             accountSection === "main" || accountSection === "result"

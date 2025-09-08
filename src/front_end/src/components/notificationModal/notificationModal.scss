@@ -17,6 +17,10 @@
   align-items: flex-start;
   padding: 16px;
   gap: 12px;
+
+  &.error-content {
+    align-items: center;
+  }
 }
 
 .notification-icon {
@@ -51,6 +55,15 @@
   text-shadow: 0 3px 12px 0 #050068;
 }
 
+.error-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  // Без фона и без круга
+}
+
 .notification-text {
   flex: 1;
   min-width: 0;
@@ -60,6 +73,10 @@
   }
 
   &.with-top-margin {
+    margin-top: 10px;
+  }
+
+  &.with-error-margin {
     margin-top: 10px;
   }
 }

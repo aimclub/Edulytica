@@ -61,9 +61,7 @@ export const Account = ({
     visible: false,
     text: "",
   })
-  const [previousTicketId, setPreviousTicketId] = useState(null)
   const [previousUrl, setPreviousUrl] = useState(null)
-  const [shownNotifications, setShownNotifications] = useState(new Set())
   const notificationTimeoutRef = useRef(null)
 
   const userData = useSelector((state) => state.auth.currentUser)
@@ -153,10 +151,12 @@ export const Account = ({
     previousUrl,
   ])
 
+  // Показ статусов будем инициировать по клику в истории тикетов
+
   // Опрос статуса тикета только если открыт result и статус In progress/Created
   useEffect(() => {
     if (
-      accountSection === "result" &&
+      location.pathname === "/account/result" &&
       currentTicket &&
       (currentTicket.status === "In progress" ||
         currentTicket.status === "Created")
@@ -169,87 +169,20 @@ export const Account = ({
       // Если уходим с result — останавливаем polling
       dispatch(stopPollingForTicket(currentTicket.ticketId))
     }
-  }, [accountSection, currentTicket, dispatch])
+  }, [location.pathname, currentTicket, dispatch])
 
-  // Отслеживаем переходы между тикетами для показа соответствующих уведомлений
-  useEffect(() => {
-    // Закрываем уведомления при уходе с тикета
-    if (
-      previousTicketId &&
-      currentTicket &&
-      previousTicketId !== currentTicket.ticketId
-    ) {
-      setNotificationModal({ visible: false, text: "", eta: "" })
-      setResultReadyModal({ visible: false, text: "" })
-    }
-
-    if (
-      location.pathname === "/account/result" &&
-      accountSection === "result" &&
-      currentTicket &&
-      previousTicketId !== currentTicket.ticketId
-    ) {
-      const ticketId = currentTicket.ticketId
-      const notificationKey = `ticket-${ticketId}`
-
-      if (currentTicket.status === "Completed" && currentTicket.files?.result) {
-        if (!shownNotifications.has(notificationKey)) {
-          setTimeout(() => {
-            if (
-              location.pathname === "/account/result" &&
-              accountSection === "result" &&
-              currentTicket?.ticketId === ticketId
-            ) {
-              setResultReadyModal({
-                visible: true,
-                text: "Тикет готов",
-              })
-            }
-          }, 250)
-          setShownNotifications((prev) => new Set([...prev, notificationKey]))
-        }
-      } else if (
-        currentTicket.status === "Created" ||
-        currentTicket.status === "In progress"
-      ) {
-        // Тикет не готов - показываем уведомление каждый раз с задержкой
-        setTimeout(() => {
-          if (
-            location.pathname === "/account/result" &&
-            accountSection === "result" &&
-            currentTicket?.ticketId === ticketId
-          ) {
-            setResultReadyModal({
-              visible: true,
-              text: "Результат еще не готов, ожидайте",
-            })
-          }
-        }, 250)
-      }
-    }
-
-    if (currentTicket?.ticketId) {
-      setPreviousTicketId(currentTicket.ticketId)
-    }
-  }, [
-    location.pathname,
-    accountSection,
-    currentTicket,
-    previousTicketId,
-    shownNotifications,
-  ])
+  // Уведомления по статусу показываются по клику из AccountModal
 
   // Закрываем уведомления при уходе со страницы результата
   useEffect(() => {
-    // Если мы уходим со страницы результата, закрываем уведомления
     if (
-      accountSection !== "result" &&
+      location.pathname !== "/account/result" &&
       (notificationModal.visible || resultReadyModal.visible)
     ) {
       setNotificationModal({ visible: false, text: "", eta: "" })
       setResultReadyModal({ visible: false, text: "" })
     }
-  }, [accountSection, notificationModal.visible, resultReadyModal.visible])
+  }, [location.pathname, notificationModal.visible, resultReadyModal.visible])
 
   const [infoProfile, setInfoProfile] = useState({
     name: userData?.name || "...",
@@ -342,6 +275,34 @@ export const Account = ({
     setResultReadyModal({ visible: false, text: "" })
   }, [])
 
+  // Показ уведомления о статусе при клике в истории тикетов
+  const handleTicketClickNotification = useCallback((ticket) => {
+    if (!ticket) return
+    // Небольшая задержка, чтобы успела примениться смена URL/секции
+    setTimeout(() => {
+      const state = store.getState()
+      const current = state?.ticket?.currentTicket
+      const status = current?.status || ticket.status
+      const hasResult = current?.files?.result || ticket.files?.result
+
+      if (status === "Completed" && hasResult) {
+        setResultReadyModal({ visible: true, text: "Тикет готов" })
+      } else if (status === "Created" || status === "In progress") {
+        setResultReadyModal({
+          visible: true,
+          text: "Результат еще не готов, ожидайте",
+        })
+      } else if (!status) {
+        setResultReadyModal({
+          visible: true,
+          text: "Результат еще не готов, ожидайте",
+        })
+      } else {
+        setResultReadyModal({ visible: false, text: "" })
+      }
+    }, 300)
+  }, [])
+
   return (
     <div className="accPage">
       <Header
@@ -357,6 +318,7 @@ export const Account = ({
             tickets={tickets}
             fetchTicketHistory={handleFetchTicketHistory}
             currentTicket={currentTicket}
+            onTicketClick={handleTicketClickNotification}
           />
         ) : null}
         <div className="addFileAccPageAnimate">

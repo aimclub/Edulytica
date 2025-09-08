@@ -209,14 +209,17 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
   }
 
   const textContent = getTextContent()
+  const contentKey = `${activeSectionResult}-${ticketData?.ticketId || ""}-${
+    fileName || ""
+  }`
 
   return (
     <motion.div
       key={key}
-      initial={{ opacity: 0.3 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0.3 }}
-      transition={{ duration: 0.5 }}
+      initial={{ opacity: 0, y: 12, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: 12, scale: 0.98 }}
+      transition={{ duration: 0.35, ease: "easeOut" }}
     >
       {
         <div className="resultFile">
@@ -257,13 +260,18 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                 </div>
               </div>
               <div className="textContResultFile">
-                <div
+                <motion.div
+                  key={contentKey}
                   className={`textContScrollResultFile`}
                   style={{
                     paddingRight: isScrollable ? "20px" : "0",
                     marginRight: isScrollable ? "35px" : "44px",
+                    willChange: "opacity",
                   }}
                   ref={scrollRef}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
                 >
                   {Array.isArray(textContent)
                     ? textContent.map((line, idx) => (
@@ -275,7 +283,7 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                         </p>
                       ))
                     : textContent}
-                </div>
+                </motion.div>
               </div>
             </div>
             {activeSectionResult === 1 && files.file && (

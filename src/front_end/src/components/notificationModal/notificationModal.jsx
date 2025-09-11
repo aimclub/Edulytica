@@ -103,7 +103,7 @@ export const NotificationModal = ({
         <div
           className={`notification-text ${centered ? "centered" : ""} ${
             text === "Результат еще не готов, ожидайте" ? "with-top-margin" : ""
-          } ${text === "Тикет готов" ? "with-top-margin" : ""} ${
+          } ${text === "Документ обработан!" ? "with-top-margin" : ""} ${
             text.includes("Что-то пошло не так") ? "with-error-margin" : ""
           }`}
         >

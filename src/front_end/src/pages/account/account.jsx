@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import { AccountModal } from "../../components/accountModal/accountModal"
 import { AddFile } from "../../components/addFile/addFile"
 import { motion } from "framer-motion"
@@ -8,7 +8,9 @@ import "./account.scss"
 import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
+import { NotificationModal } from "../../components/notificationModal/notificationModal"
 import { useSelector, useDispatch } from "react-redux"
+import store from "../../store/store"
 import { fetchUserData } from "../../store/authSlice"
 import {
   fetchTicket,
@@ -16,6 +18,8 @@ import {
   setCurrentTicket,
   startPollingForTicket,
   stopPollingForTicket,
+  fetchDocumentText,
+  startPollingForDocument,
 } from "../../store/ticketSlice"
 import { useLocation } from "react-router-dom"
 
@@ -48,8 +52,18 @@ export const Account = ({
   const [editingProfileModal, setEditingProfileModal] = useState(false)
   const [editingProfileAnimation, setEditingProfileAnimation] = useState(false)
   const [addEventModal, setAddEventModal] = useState(false)
+  const [notificationModal, setNotificationModal] = useState({
+    visible: false,
+    text: "",
+    eta: "",
+  })
+  const [resultReadyModal, setResultReadyModal] = useState({
+    visible: false,
+    text: "",
+  })
+  const [previousUrl, setPreviousUrl] = useState(null)
+  const notificationTimeoutRef = useRef(null)
 
-  // Получаем данные из Redux store
   const userData = useSelector((state) => state.auth.currentUser)
   const { currentTicket, tickets } = useSelector((state) => state.ticket)
 
@@ -60,27 +74,67 @@ export const Account = ({
   // Обновляем секцию аккаунта на основе URL
   useEffect(() => {
     const path = location.pathname
+
+    // Закрываем уведомления только при переходе на страницы, отличные от /account/result
+    if (path !== "/account/result") {
+      // Очищаем таймер уведомлений
+      if (notificationTimeoutRef.current) {
+        clearTimeout(notificationTimeoutRef.current)
+        notificationTimeoutRef.current = null
+      }
+      setNotificationModal({ visible: false, text: "", eta: "" })
+      setResultReadyModal({ visible: false, text: "" })
+    }
+
     if (path === "/account/result") {
       setAccountSection("result")
       // Получаем documentId из параметров URL
       const searchParams = new URLSearchParams(location.search)
       const documentId = searchParams.get("documentId")
+      const currentUrl = `${path}?${searchParams.toString()}`
 
-      if (documentId && tickets.length > 0) {
-        const foundTicket = tickets.find((t) => t.document_id === documentId)
-        // Диспатчим только если currentTicket не тот же самый
-        if (
-          foundTicket &&
-          (!currentTicket || currentTicket.ticketId !== foundTicket.id)
-        ) {
-          dispatch(fetchTicket(foundTicket.id))
+      // Закрываем уведомления при переходе между разными результатами
+      if (
+        previousUrl &&
+        previousUrl !== currentUrl &&
+        previousUrl.includes("/account/result")
+      ) {
+        // Очищаем таймер уведомлений
+        if (notificationTimeoutRef.current) {
+          clearTimeout(notificationTimeoutRef.current)
+          notificationTimeoutRef.current = null
         }
-      } else if (!currentTicket) {
-        dispatch(fetchTicketHistory()).then((ticketHistory) => {
-          if (ticketHistory && ticketHistory.length > 0) {
-            dispatch(fetchTicket(ticketHistory[0].id))
+        setNotificationModal({ visible: false, text: "", eta: "" })
+        setResultReadyModal({ visible: false, text: "" })
+      }
+
+      setPreviousUrl(currentUrl)
+
+      if (documentId) {
+        // Получаем актуальные данные из store
+        const state = store.getState()
+        const { tickets: currentTickets, currentTicket: currentTicketState } =
+          state.ticket
+
+        if (currentTickets.length > 0) {
+          const foundTicket = currentTickets.find(
+            (t) => t.document_id === documentId
+          )
+          // Диспатчим только если currentTicket не тот же самый
+          if (
+            foundTicket &&
+            (!currentTicketState ||
+              currentTicketState.ticketId !== foundTicket.id)
+          ) {
+            dispatch(fetchTicket(foundTicket.id))
           }
-        })
+        } else if (!currentTicketState) {
+          dispatch(fetchTicketHistory()).then((ticketHistory) => {
+            if (ticketHistory && ticketHistory.length > 0) {
+              dispatch(fetchTicket(ticketHistory[0].id))
+            }
+          })
+        }
       }
     } else if (path === "/account/help") {
       setAccountSection("help")
@@ -89,12 +143,20 @@ export const Account = ({
     } else if (path === "/account") {
       setAccountSection("main")
     }
-  }, [location.pathname, location.search, setAccountSection, dispatch]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    location.pathname,
+    location.search,
+    setAccountSection,
+    dispatch,
+    previousUrl,
+  ])
+
+  // Показ статусов будем инициировать по клику в истории тикетов
 
   // Опрос статуса тикета только если открыт result и статус In progress/Created
   useEffect(() => {
     if (
-      accountSection === "result" &&
+      location.pathname === "/account/result" &&
       currentTicket &&
       (currentTicket.status === "In progress" ||
         currentTicket.status === "Created")
@@ -107,7 +169,20 @@ export const Account = ({
       // Если уходим с result — останавливаем polling
       dispatch(stopPollingForTicket(currentTicket.ticketId))
     }
-  }, [accountSection, currentTicket, dispatch])
+  }, [location.pathname, currentTicket, dispatch])
+
+  // Уведомления по статусу показываются по клику из AccountModal
+
+  // Закрываем уведомления при уходе со страницы результата
+  useEffect(() => {
+    if (
+      location.pathname !== "/account/result" &&
+      (notificationModal.visible || resultReadyModal.visible)
+    ) {
+      setNotificationModal({ visible: false, text: "", eta: "" })
+      setResultReadyModal({ visible: false, text: "" })
+    }
+  }, [location.pathname, notificationModal.visible, resultReadyModal.visible])
 
   const [infoProfile, setInfoProfile] = useState({
     name: userData?.name || "...",
@@ -152,21 +227,81 @@ export const Account = ({
   }, [editingProfileModal])
 
   const handleTicketCreated = useCallback(
-    (ticketData) => {
+    async (ticketData) => {
       console.log("Создан тикет:", ticketData)
       dispatch(setCurrentTicket(ticketData))
-      // Обновляем URL с ID нового тикета
+
+      // Принудительно загружаем исходный документ для нового тикета
+      try {
+        await dispatch(fetchDocumentText(ticketData.ticketId))
+      } catch (error) {
+        console.error("Ошибка при загрузке исходного документа:", error)
+        // Если не удалось загрузить сразу, запускаем опрос
+        dispatch(startPollingForDocument(ticketData.ticketId))
+      }
+
       const searchParams = new URLSearchParams(window.location.search)
       searchParams.delete("ticketId")
       searchParams.set("documentId", ticketData.ticketInfo.document_id)
       window.history.replaceState(null, "", `?${searchParams.toString()}`)
+
+      const modeItem = selectedParams?.find((p) => p.type === "mode")
+      const modeName = (modeItem?.name || "").toLowerCase()
+      const eta = modeName.includes("анализ")
+        ? "≈ 2 мин"
+        : modeName.includes("реценз")
+        ? "≈ 5 мин"
+        : ""
+      setTimeout(() => {
+        setNotificationModal({
+          visible: true,
+          text: "Ваш запрос принят в обработку",
+          eta,
+        })
+      }, 500)
     },
-    [dispatch]
+    [dispatch, selectedParams]
   )
 
   const handleFetchTicketHistory = useCallback(() => {
     dispatch(fetchTicketHistory())
   }, [dispatch])
+
+  const handleCloseNotification = useCallback(() => {
+    setNotificationModal({ visible: false, text: "", eta: "" })
+  }, [])
+
+  const handleCloseResultReady = useCallback(() => {
+    setResultReadyModal({ visible: false, text: "" })
+  }, [])
+
+  // Показ уведомления о статусе при клике в истории тикетов
+  const handleTicketClickNotification = useCallback((ticket) => {
+    if (!ticket) return
+    // Небольшая задержка, чтобы успела примениться смена URL/секции
+    setTimeout(() => {
+      const state = store.getState()
+      const current = state?.ticket?.currentTicket
+      const status = current?.status || ticket.status
+      const hasResult = current?.files?.result || ticket.files?.result
+
+      if (status === "Completed" && hasResult) {
+        setResultReadyModal({ visible: true, text: "Тикет готов" })
+      } else if (status === "Created" || status === "In progress") {
+        setResultReadyModal({
+          visible: true,
+          text: "Результат еще не готов, ожидайте",
+        })
+      } else if (!status) {
+        setResultReadyModal({
+          visible: true,
+          text: "Результат еще не готов, ожидайте",
+        })
+      } else {
+        setResultReadyModal({ visible: false, text: "" })
+      }
+    }, 300)
+  }, [])
 
   return (
     <div className="accPage">
@@ -183,6 +318,7 @@ export const Account = ({
             tickets={tickets}
             fetchTicketHistory={handleFetchTicketHistory}
             currentTicket={currentTicket}
+            onTicketClick={handleTicketClickNotification}
           />
         ) : null}
         <div className="addFileAccPageAnimate">
@@ -210,6 +346,7 @@ export const Account = ({
                 <ResultFile
                   fileName={currentTicket?.ticketInfo?.document_id || ""}
                   ticketData={currentTicket}
+                  resetSection={currentTicket?.ticketId}
                 />
               </div>
             ) : null}
@@ -256,6 +393,19 @@ export const Account = ({
           </div>
         </>
       )}
+      <NotificationModal
+        visible={notificationModal.visible}
+        text={notificationModal.text}
+        eta={notificationModal.eta}
+        onClose={handleCloseNotification}
+      />
+      <NotificationModal
+        visible={resultReadyModal.visible}
+        text={resultReadyModal.text}
+        eta=""
+        onClose={handleCloseResultReady}
+        centered={resultReadyModal.text === "Результат еще не готов, ожидайте"}
+      />
     </div>
   )
 }

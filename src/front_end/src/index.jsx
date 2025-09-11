@@ -9,27 +9,16 @@ import axios from "axios"
 import { loginUser } from "./store/authSlice"
 import { forceLogout } from "./utils/authUtils"
 
-/**
- * Интерцептор для обработки ответов API.
- *
- * Логика работы:
- * 1. При получении ошибки 401 (Unauthorized):
- *    - Проверяет, не была ли уже попытка повтора запроса
- *    - Делает запрос на обновление токена
- *    - При успехе обновляет токен в store и повторяет исходный запрос
- *    - При неудаче выполняет выход пользователя и редирект на главную
- * 2. При других ошибках - отклоняет промис с ошибкой
- */
+// Lightweight 401 refresh logic remains, errors транслируем в api:error из axios.api.js
 $api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-    // Не обрабатывать 401 для /auth/logout и /auth/get_access
     if (
       error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url.includes("/auth/logout") &&
-      !originalRequest.url.includes("/auth/get_access")
+      !originalRequest?._retry &&
+      !originalRequest?.url?.includes("/auth/logout") &&
+      !originalRequest?.url?.includes("/auth/get_access")
     ) {
       originalRequest._retry = true
       try {
@@ -46,6 +35,45 @@ $api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// Упрощаем: dev-overlay скрыт ниже; общую транслирующую логику держим в axios.api.js
+
+// Hide CRA/Webpack dev overlay to use our custom notification modal
+;(function suppressDevOverlay() {
+  try {
+    const hide = () => {
+      const selectors = [
+        "#webpack-dev-server-client-overlay",
+        "#react-error-overlay",
+        ".webpack-dev-server-overlay",
+      ]
+      selectors.forEach((sel) => {
+        document.querySelectorAll(sel).forEach((el) => {
+          el.style.setProperty("display", "none", "important")
+          el.style.setProperty("visibility", "hidden", "important")
+          el.remove()
+        })
+      })
+    }
+
+    // Initial attempt
+    if (
+      document.readyState === "complete" ||
+      document.readyState === "interactive"
+    ) {
+      hide()
+    } else {
+      window.addEventListener("DOMContentLoaded", hide, { once: true })
+    }
+
+    // Observe future injections
+    const observer = new MutationObserver(hide)
+    observer.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    })
+  } catch (_) {}
+})()
 
 const root = ReactDOM.createRoot(document.getElementById("root"))
 root.render(

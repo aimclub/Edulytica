@@ -39,3 +39,78 @@ $api.interceptors.request.use(
 )
 
 export default $api
+
+/**
+ * Интерцептор запросов для обработки ошибок.
+ */
+$api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    try {
+      const status = error?.response?.status
+      let message = "Ошибка сети. Попробуйте позже."
+
+      // Debug logging
+      console.log("Axios interceptor error:", {
+        status,
+        message: error?.message,
+        response: error?.response,
+        config: error?.config?.url,
+      })
+
+      switch (status) {
+          case 502:
+              message = "Сервер временно недоступен. Попробуйте позже.";
+              break;
+          case 500:
+              message = "Внутренняя ошибка сервера.";
+              break;
+          case 404:
+              message = "Ресурс не найден.";
+              break;
+          case 403:
+              message = "Доступ запрещён.";
+              break;
+          case 401:
+              message = "Необходима авторизация.";
+              break;
+          default:
+              if (error?.message === "Network Error") {
+                  message = "Ошибка сети. Попробуйте позже.";
+              } else if (error?.message && !status) {
+                  message = error.message;
+              }
+            break;
+      }
+
+      const data = error?.response?.data
+      if (data) {
+        const detail = data.detail || data.message || data.error || data.errors
+        let detailText = ""
+        if (typeof detail === "string") {
+          detailText = detail
+        } else if (Array.isArray(detail)) {
+          detailText = detail
+            .map((d) => (typeof d === "string" ? d : JSON.stringify(d)))
+            .join("; ")
+        } else if (typeof detail === "object") {
+          const maybe = detail.msg || detail.detail || detail.message
+          detailText =
+            typeof maybe === "string" ? maybe : JSON.stringify(detail)
+        }
+        if (detailText) {
+          message = `${message}: ${detailText}`
+        }
+      }
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("api:error", { detail: { message } })
+        )
+      }
+    } catch (_) {
+      // no-op
+    }
+    return Promise.reject(error)
+  }
+)

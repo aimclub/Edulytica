@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from "react"
+import { useNavigate } from "react-router-dom"
 import "./accountModal.scss"
 import { useDispatch } from "react-redux"
 import { fetchTicket } from "../../store/ticketSlice"
@@ -20,8 +21,10 @@ export const AccountModal = ({
   tickets,
   fetchTicketHistory,
   currentTicket,
+  onTicketClick,
 }) => {
   const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [searchTerm, setSearchTerm] = useState("")
   const [filterHistory, setFilterHistory] = useState([])
   const [animate, setAnimate] = useState(false)
@@ -69,7 +72,11 @@ export const AccountModal = ({
 
   // Удаляем documentId из URL, если мы не в секции 'result'
   useEffect(() => {
-    if (accountSection !== "result") {
+    // Не трогаем параметр на странице результата (в том числе при refresh)
+    if (
+      accountSection !== "result" &&
+      window.location.pathname !== "/account/result"
+    ) {
       const searchParams = new URLSearchParams(window.location.search)
       if (searchParams.has("documentId")) {
         searchParams.delete("documentId")
@@ -83,9 +90,14 @@ export const AccountModal = ({
 
   const handleFileLine = (ticket) => {
     setAccountSection("result")
-    const searchParams = new URLSearchParams(window.location.search)
-    searchParams.set("documentId", ticket.document_id)
-    window.history.replaceState(null, "", `?${searchParams.toString()}`)
+    // Переходим через React Router, чтобы обновился useLocation
+    navigate(`/account/result?documentId=${ticket.document_id}`)
+
+    // Показываем уведомление сразу при клике
+    if (onTicketClick) {
+      onTicketClick(ticket)
+    }
+
     dispatch(fetchTicket(ticket.id))
   }
   const handleSearchChange = (event) => {
@@ -124,6 +136,7 @@ export const AccountModal = ({
         <div
           onClick={() => {
             setAccountSection("main")
+            navigate("/account")
           }}
           className={
             accountSection === "main" || accountSection === "result"

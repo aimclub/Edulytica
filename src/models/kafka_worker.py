@@ -18,9 +18,11 @@ MODEL_TYPE = os.environ.get("MODEL_TYPE")
 PREFIX = f'Kafka | ModelWorker: {MODEL_TYPE}'
 NAME_IN_TOPIC = 'llm_name.gen'
 NAME_OUT_TOPIC = 'llm_name.result'
+NAME_DLQ_TOPIC = 'llm_name.dlq'
 TASKS_RESULT_TOPIC = 'llm_tasks.result'
 TASKS_IN_TOPIC = f'llm_tasks.{MODEL_TYPE}'
 NORMAL_TOPICS = [TASKS_IN_TOPIC, 'llm_tasks.any']
+
 llm_model: ModelInstruct = None
 if MODEL_TYPE == 'qwen':
     llm_model = QwenInstruct(quantization='4bit')
@@ -28,11 +30,11 @@ elif MODEL_TYPE == 'vikhr':
     llm_model = VikhrNemoInstruct(quantization='4bit')
 else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
+
 producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
 
 
 def delivery_report(err, msg):
-    """ Called once for each message produced to indicate delivery result. """
     if err is not None:
         print(f'[{PREFIX}] Message delivery failed: {err}')
     else:
@@ -49,15 +51,6 @@ def send_json(topic: str, payload: Dict[str, Any]):
 
 
 async def process_llm_task(message_data: dict):
-    """
-    Обычная LLM-задача (старый поток).
-    Ожидаемый формат:
-    {
-        "ticket_id": "...",
-        "subtask_id": "...",
-        "prompt": "..."
-    }
-    """
     try:
         ticket_id = message_data['ticket_id']
         subtask_id = message_data['subtask_id']
@@ -105,41 +98,18 @@ def _postprocess_name(name: str) -> str:
     return (cut if last_space < 40 else cut[:last_space]).rstrip() + "…"
 
 
-async def process_name_task(message_data: dict):
-    """
-    Задача генерации имени (приоритетный поток).
-    Вход:
-    {
-        "ticket_id": "...",
-        "prompt": "..."
-    }
-    Выход в топик llm_name.result:
-    {
-        "ticket_id": "...",
-        "name": "сгенерированное имя"
-    }
-    """
+async def process_name_task(message_data: dict) -> str:
     try:
-        ticket_id = message_data['ticket_id']
+        _ = message_data['ticket_id']
         prompt = message_data['prompt']
     except KeyError as _ke:
         print(f"[{PREFIX}] [NAME] Missing required field in message: {_ke}")
         raise
-
-    try:
-        raw = llm_model([prompt])[0]
-        name = _postprocess_name(raw)
-        if not name:
-            name = "Рецензия"
-
-        send_json(NAME_OUT_TOPIC, {
-            "ticket_id": ticket_id,
-            "name": name
-        })
-        print(f"[{PREFIX}] [NAME] Sent name for ticket {ticket_id} to {NAME_OUT_TOPIC}: {name!r}")
-    except Exception as e:
-        print(f"[{PREFIX}] [NAME] Error generating name for ticket {ticket_id}: {e}")
-        raise
+    raw = llm_model([prompt])[0]
+    name = _postprocess_name(raw)
+    if not name:
+        name = "Рецензия"
+    return name
 
 
 def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
@@ -147,7 +117,6 @@ def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
         NewTopic(topic, num_partitions=1, replication_factor=1) for topic in topics_to_create
     ]
     fs = admin_client.create_topics(new_topics, request_timeout=15.0)
-
     for topic, f in fs.items():
         try:
             f.result()
@@ -206,6 +175,7 @@ async def kafka_loop():
         [
             NAME_IN_TOPIC,
             NAME_OUT_TOPIC,
+            NAME_DLQ_TOPIC,
             TASKS_IN_TOPIC,
             'llm_tasks.any',
             TASKS_RESULT_TOPIC
@@ -225,6 +195,7 @@ async def kafka_loop():
     print(f"[{PREFIX}] Subscribed to topics: {[NAME_IN_TOPIC] + NORMAL_TOPICS}. Starting polling loop...")
 
     global normal_paused
+    last_has_high: Optional[bool] = None
     try:
         while True:
             try:
@@ -233,15 +204,16 @@ async def kafka_loop():
                 print(f"[{PREFIX}] lag check error: {e}")
                 has_high = True
 
-            if has_high and assigned_normal and not normal_paused:
-                print(f"[{PREFIX}] Pausing normal partitions: {assigned_normal}")
-                consumer.pause(assigned_normal)
-                normal_paused = True
-
-            if not has_high and assigned_normal and normal_paused:
-                print(f"[{PREFIX}] Resuming normal partitions: {assigned_normal}")
-                consumer.resume(assigned_normal)
-                normal_paused = False
+            if has_high != last_has_high:
+                if has_high and assigned_normal and not normal_paused:
+                    print(f"[{PREFIX}] Pausing normal partitions: {assigned_normal}")
+                    consumer.pause(assigned_normal)
+                    normal_paused = True
+                if not has_high and assigned_normal and normal_paused:
+                    print(f"[{PREFIX}] Resuming normal partitions: {assigned_normal}")
+                    consumer.resume(assigned_normal)
+                    normal_paused = False
+                last_has_high = has_high
 
             msg: Message = consumer.poll(timeout=1.0)
             if msg is None:
@@ -256,11 +228,22 @@ async def kafka_loop():
                 data = json.loads(msg.value().decode('utf-8'))
 
                 if msg.topic() == NAME_IN_TOPIC:
-                    await process_name_task(data)
-                    consumer.commit(msg)
-                    continue
-                if msg.topic() in NORMAL_TOPICS and topic_lag_exists(consumer, assigned_high):
-                    await asyncio.sleep(0.01)
+                    try:
+                        name = await process_name_task(data)
+                        send_json(NAME_OUT_TOPIC, {
+                            "ticket_id": data["ticket_id"],
+                            "name": name
+                        })
+                        print(f"[{PREFIX}] [NAME] Sent name for ticket {data['ticket_id']} to {NAME_OUT_TOPIC}: {name!r}")
+                    except Exception as e:
+                        print(f"[{PREFIX}] [NAME] Error generating name for ticket {data.get('ticket_id')}: {e}")
+                        send_json(NAME_DLQ_TOPIC, {
+                            "ticket_id": data.get("ticket_id"),
+                            "payload": data,
+                            "error": str(e)
+                        })
+                    finally:
+                        consumer.commit(msg)
                     continue
 
                 await process_llm_task(data)

@@ -9,6 +9,7 @@ from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
 from src.orchestration.prompts.prompts1.prompts import prompts
 from src.orchestration.prompts.prompts2.prompts import prompts2
+from src.orchestration.prompts.prompts_name import prompts_name
 
 
 class Orchestrator:
@@ -20,6 +21,7 @@ class Orchestrator:
 
     TASKS: Dict[str, Dict[str, Dict[str, Dict[str, Any]]]] = {
         "1": {
+            "type_name": "Рецензирование",
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
@@ -78,6 +80,7 @@ class Orchestrator:
         },
 
         "2": {
+            "type_name": "Анализ",
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
@@ -111,6 +114,22 @@ class Orchestrator:
             raise ValueError(f"Unknown megatask id {mega_task_id}")
         else:
             self.mega_task_id = mega_task_id
+
+
+    async def generate_name(
+            self, ticket_id: Union[str, uuid.UUID], document_text: str
+    ):
+        prompt = prompts_name["gen"].format(
+            document_text=document_text,
+            ticket_type=self.TASKS[self.mega_task_id]["type_name"]
+        )
+
+        message = {
+            "ticket_id": str(ticket_id),
+            "prompt": prompt,
+        }
+
+        await self.kafka_producer.send_and_wait(f"llm_name.gen", message)
 
     async def run_pipeline(
             self, ticket_id: Union[str, uuid.UUID], document_text: str
@@ -276,3 +295,31 @@ class Orchestrator:
         except httpx.HTTPStatusError as e:
             await self.state_manager.fail_ticket(ticket_id, "finalization",
                                                  f"API error during report upload: {e.response.text}")
+
+    async def update_ticket_name(self, ticket_id: Union[str, uuid.UUID], name: str):
+        payload = {
+            "ticket_id": str(ticket_id),
+            "name": name
+        }
+
+        headers = {
+            "X-Internal-Secret": INTERNAL_API_SECRET
+        }
+
+        try:
+            response = await self.rag_client._http_client.post(
+                f"http://edulytica_api:{API_PORT}/internal/edit_ticket_name",
+                json=payload,
+                headers=headers,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            print(f"Successfully updated ticket name: ticket_id={ticket_id}, name={name!r}")
+        except httpx.RequestError as e:
+            print(f"Network error during ticket name update for {ticket_id}: {e}")
+        except httpx.HTTPStatusError as e:
+            print(
+                f"API error during ticket name update for {ticket_id}: "
+                f"status={e.response.status_code}, body={e.response.text}"
+            )
+

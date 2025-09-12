@@ -71,3 +71,21 @@ async def upload_report(
         raise http_exc
     except Exception as e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
+
+
+@api_logs(internal_router.post("/edit_ticket_name", dependencies=[Depends(verify_internal_secret)]))
+async def upload_report(
+        ticket_id: uuid.UUID = Body(...),
+        name: str = Body(...),
+        session: AsyncSession = Depends(get_session)
+):
+    try:
+        await TicketCrud.update(session, record_id=ticket_id, name=name)
+        return {
+            "detail": "Ticket name has been edited",
+        }
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
+

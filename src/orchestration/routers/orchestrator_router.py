@@ -39,13 +39,13 @@ async def run_ticket_handler(
         )
 
         background_tasks.add_task(
-            orchestrator.generate_name,
+            orchestrator.run_pipeline,
             ticket_id=ticket_id,
             document_text=document_text
         )
 
         background_tasks.add_task(
-            orchestrator.run_pipeline,
+            orchestrator.generate_name,
             ticket_id=ticket_id,
             document_text=document_text
         )

@@ -27,7 +27,7 @@ from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Q
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE, \
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.config import ORCHESTRATOR_PORT, RAG_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
@@ -142,6 +142,7 @@ async def new_ticket(
 
         ticket_data = {
             'session': session,
+            'name': f'New ticket: {file.filename}',
             'user_id': auth_data['user'].id,
             'ticket_status_id': ticket_status[0].id,
             'ticket_type_id': ticket_type[0].id,
@@ -591,6 +592,41 @@ async def get_ticket_result(
             path=str(file_path),
             media_type=mime or 'application/octet-stream',
             filename=file_path.name)
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.post("/edit_ticket_name"))
+async def edit_ticket_name(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Body(...),
+    name: str = Body(...),
+    session: AsyncSession = Depends(get_session)
+):
+    try:
+        ticket = await TicketCrud.get_by_id(session, record_id=ticket_id)
+
+        if not ticket:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f'Ticket not found')
+
+        if ticket.user_id != auth_data['user'].id:
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail="You're not ticket creator"
+            )
+
+        if len(name) > 60:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Ticket name too long, maximum: 60 characters'
+            )
+
+        await TicketCrud.update(session, record_id=ticket_id, name=name)
+        return {'detail': 'Ticket name has been updated'}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

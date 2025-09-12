@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT
+from src.orchestration.clients.kafka_consumer import KafkaConsumer, KafkaNameConsumer
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT, RAG_PORT
 from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
@@ -24,24 +26,38 @@ async def lifespan(app: FastAPI):
     kafka_producer_client = AIOKafkaProducer(
         bootstrap_servers='kafka:9092'
     )
-    kafka_consumer_client = AIOKafkaConsumer(
+    kafka_consumer_result = AIOKafkaConsumer(
         "llm_tasks.result",
         bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
         group_id="orchestrator_results_group",
         auto_offset_reset='earliest'
     )
+    kafka_consumer_names = AIOKafkaConsumer(
+        "llm_name.result",
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS,
+        group_id="orchestrator_names_group",
+        auto_offset_reset='earliest'
+    )
+
     http_client = AsyncClient()
 
     try:
         await redis_client.ping()
         await kafka_producer_client.start()
-        await kafka_consumer_client.start()
+        await kafka_consumer_result.start()
+        await kafka_consumer_names.start()
 
         state_manager = StateManager(redis_client=redis_client)
         kafka_producer = KafkaProducer(producer=kafka_producer_client)
-        rag_client = RagClient(http_client=http_client, base_url=f"http://edulytica_rag:{RAG_PORT}")
-        kafka_consumer = KafkaConsumer(
-            consumer=kafka_consumer_client,
+        rag_client = RagClient(http_client=http_client, base_url="http://edulytica_rag:10002")
+        result_consumer = KafkaConsumer(
+            consumer=kafka_consumer_result,
+            state_manager=state_manager,
+            kafka_producer=kafka_producer,
+            rag_client=rag_client
+        )
+        names_consumer = KafkaNameConsumer(
+            consumer=kafka_consumer_names,
             state_manager=state_manager,
             kafka_producer=kafka_producer,
             rag_client=rag_client
@@ -53,18 +69,25 @@ async def lifespan(app: FastAPI):
         app.state.rag_client = rag_client
         app.state.http_client = http_client
 
-        consumer_task = asyncio.create_task(kafka_consumer.consume())
+        task_results = asyncio.create_task(result_consumer.consume())
+        task_names = asyncio.create_task(names_consumer.consume())
+        app.state._consumer_tasks = [task_results, task_names]
 
         yield
     finally:
-        if 'consumer_task' in locals() and not consumer_task.done():
-            consumer_task.cancel()
-            try:
-                await consumer_task
-            except asyncio.CancelledError:
-                print("Consumer task successfully cancelled.")
+        tasks = getattr(app.state, "_consumer_tasks", [])
+        for t in tasks:
+            if t and not t.done():
+                t.cancel()
+        for t in tasks:
+            if t:
+                try:
+                    await t
+                except asyncio.CancelledError:
+                    pass
 
-        await kafka_consumer_client.stop()
+        await kafka_consumer_names.stop()
+        await kafka_consumer_results.stop()
         await kafka_producer_client.stop()
         await redis_client.close()
         await http_client.aclose()

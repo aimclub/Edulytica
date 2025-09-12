@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
-from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT, RAG_PORT
 from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
@@ -39,7 +39,7 @@ async def lifespan(app: FastAPI):
 
         state_manager = StateManager(redis_client=redis_client)
         kafka_producer = KafkaProducer(producer=kafka_producer_client)
-        rag_client = RagClient(http_client=http_client, base_url="http://edulytica_rag:10002")
+        rag_client = RagClient(http_client=http_client, base_url=f"http://edulytica_rag:{RAG_PORT}")
         kafka_consumer = KafkaConsumer(
             consumer=kafka_consumer_client,
             state_manager=state_manager,

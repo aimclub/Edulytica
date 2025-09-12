@@ -21,7 +21,6 @@ class Orchestrator:
 
     TASKS: Dict[str, Dict[str, Dict[str, Dict[str, Any]]]] = {
         "1": {
-            "type_name": "Рецензирование",
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "2"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
@@ -80,7 +79,6 @@ class Orchestrator:
         },
 
         "2": {
-            "type_name": "Анализ",
             "1": {
                 "1.1": {"dependencies": [], "use_rag": False, "model": "3"},
                 "1.2": {"dependencies": ["1.1"], "use_rag": False, "model": "3"},
@@ -89,6 +87,11 @@ class Orchestrator:
 
         "3": {
         },
+    }
+
+    TICKET_TYPE_NAME: Dict[str, str] = {
+        "1": "Рецензирование",
+        "2": "Анализ"
     }
 
     BASE_DIR = os.path.dirname(__file__)
@@ -121,7 +124,7 @@ class Orchestrator:
     ):
         prompt = prompts_name["gen"].format(
             document_text=document_text,
-            ticket_type=self.TASKS[self.mega_task_id]["type_name"]
+            ticket_type=self.TICKET_TYPE_NAME[self.mega_task_id]
         )
 
         message = {

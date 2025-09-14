@@ -665,42 +665,13 @@ async def delete_ticket(
                 detail='You aren\'t ticket owner or ticket doesn\'t exist'
             )
 
-        ticket = tickets[0]
-
         try:
-            if ticket.document_id:
-                document = await DocumentCrud.get_by_id(session=session, record_id=ticket.document_id)
-                if document:
-                    file_path = ROOT_DIR / document.file_path
-                    if file_path.exists():
-                        os.remove(file_path)
 
-            if ticket.document_summary_id:
-                document_summary = await DocumentSummaryCrud.get_by_id(
-                    session=session, record_id=ticket.document_summary_id
-                )
-                if document_summary:
-                    file_path = ROOT_DIR / document_summary.file_path
-                    if file_path.exists():
-                        os.remove(file_path)
-
-            if ticket.document_report_id:
-                document_report = await DocumentReportCrud.get_by_id(
-                    session=session, record_id=ticket.document_report_id
-                )
-                if document_report:
-                    file_path = ROOT_DIR / document_report.file_path
-                    if file_path.exists():
-                        os.remove(file_path)
-        except Exception as file_error:
-            print(f"Warning: Error deleting files for ticket {ticket_id}: {file_error}")
-
-        await TicketCrud.delete(session=session, record_id=ticket_id)
 
         return {'detail': 'Ticket has been deleted successfully'}
-    except HTTPException as http_exc:  
+    except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
-    except Exception as _e: 
+    except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
@@ -708,7 +679,8 @@ async def delete_ticket(
 async def ticket_share(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = Body(..., embed=True),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
+    http_client: httpx.AsyncClient = Depends(get_http_client)
 ):
     """
     Toggles the shared status of a ticket owned by the user.
@@ -717,6 +689,7 @@ async def ticket_share(
         auth_data (dict): Authenticated user data.
         ticket_id (UUID): Ticket UUID.
         session (AsyncSession): Database session.
+        http_client (AsyncClient): Async HTTP Client.
 
     Returns:
         dict: Message confirming status change.
@@ -735,13 +708,29 @@ async def ticket_share(
                 detail='You aren\'t ticket owner or ticket doesn\'t exist'
             )
 
-        ticket = tickets[0] 
+        orchestrator_payload = {
+            "ticket_id": str(ticket_id),
+        }
 
-        await TicketCrud.update(
-            session=session, record_id=ticket_id, shared=(not ticket.shared)
-        )
+        try:
+            response = await http_client.delete(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
+                                              f'/orchestrate/delete_ticket',
+                                              json=orchestrator_payload, timeout=30.0)
+            response.raise_for_status()
+        except httpx.RequestError as _re:
+            raise HTTPException(
+                status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Orchestration service is unavailable {_re}"
+            )
+        except httpx.HTTPStatusError as _hse:
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Orchestrator failed to delete ticket: {_hse.response.text}"
+            )
 
-        return {'detail': 'Status has been changed'}
+        await TicketCrud.delete(session, record_id=ticket_id)
+
+        return {'detail': 'Ticket was deleted'}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

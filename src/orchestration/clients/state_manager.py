@@ -43,6 +43,28 @@ class StateManager:
     def _get_ticket_key(self, ticket_id: Union[str, uuid.UUID]) -> str:
         return f"ticket:{ticket_id}"
 
+    def _get_tombstone_key(self, ticket_id: Union[str, uuid.UUID]) -> str:
+        return f"{self._get_ticket_key(ticket_id)}:tombstone"
+
+    async def ticket_exists(self, ticket_id: Union[str, uuid.UUID]) -> bool:
+        return bool(await self._redis.exists(self._get_ticket_key(ticket_id)))
+
+    async def is_deleted(self, ticket_id: Union[str, uuid.UUID]) -> bool:
+        return bool(await self._redis.exists(self._get_tombstone_key(ticket_id)))
+
+    async def delete_ticket(
+            self,
+            ticket_id: Union[str, uuid.UUID],
+            tombstone_ttl_sec: int = 24 * 60 * 60  # 1 day
+    ) -> None:
+        key = self._get_ticket_key(ticket_id)
+        tombstone_key = self._get_tombstone_key(ticket_id)
+
+        async with self._redis.pipeline(transaction=True) as pipe:
+            pipe.delete(key)
+            pipe.set(tombstone_key, 1, ex=tombstone_ttl_sec, nx=True)
+            await pipe.execute()
+
     async def create_ticket(
             self,
             ticket_id: Union[str, uuid.UUID],
@@ -52,8 +74,11 @@ class StateManager:
             event_name: Optional[str] = None
     ):
         key = self._get_ticket_key(ticket_id)
+        tombstone_key = self._get_tombstone_key(ticket_id)
 
         async with self._redis.pipeline(transaction=True) as pipe:
+            pipe.delete(tombstone_key)
+
             pipe.hset(key, "mega_task_id", mega_task_id)
             pipe.hset(key, "status", Statuses.STATUS_PENDING.value)
             pipe.hset(key, "document_text", document_text)
@@ -232,10 +257,12 @@ class StateManager:
             error_message: str
     ):
         key = self._get_ticket_key(ticket_id)
+        if not await self.ticket_exists(ticket_id) or await self.is_deleted(ticket_id):
+            return False
 
         async with self._redis.pipeline(transaction=True) as pipe:
             pipe.hset(key, "status", Statuses.STATUS_FAILED.value)
             pipe.hset(key, f"subtask:{subtask_id}:status", Statuses.STATUS_FAILED.value)
             pipe.hset(key, "failure_reason", error_message)
-
             await pipe.execute()
+        return True

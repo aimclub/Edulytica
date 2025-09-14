@@ -41,7 +41,14 @@ class KafkaConsumer:
             print(f"[Orchestrator][ERROR] Could not parse message, skipping. Error: {e}, Message: {msg.value}")
             return
 
-        await self.state_manager.update_subtask(ticket_id, subtask_id, status, result)
+        if (not await self.state_manager.ticket_exists(ticket_id)) or (await self.state_manager.is_deleted(ticket_id)):
+            print(f"[Orchestrator] Ticket {ticket_id} does not exist or deleted. Dropping subtask result {subtask_id}.")
+            return
+
+        updated = await self.state_manager.update_subtask(ticket_id, subtask_id, status, result)
+        if not updated:
+            print(f"[Orchestrator] Ticket {ticket_id} vanished during update. Skipping.")
+            return
 
         if status == Statuses.STATUS_FAILED:
             error_message = result or "Unknown error from worker."
@@ -79,6 +86,7 @@ class KafkaConsumer:
 
                 if await self.state_manager.check_and_update_ticket_status(ticket_id):
                     await orchestrator.finalize_report(ticket_id)
+
 
 
 class KafkaNameConsumer:

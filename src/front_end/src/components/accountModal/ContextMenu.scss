@@ -1,0 +1,45 @@
+// Глобальное контекстное меню
+.globalContextMenu {
+  position: fixed !important;
+  //   top: 10px !important;
+  //   right: -100px !important;
+  //   left: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  z-index: 99999 !important;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 0 10px 10px 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  min-width: 150px;
+  padding: 4px 0;
+
+  .contextMenuItem {
+    padding: 10px 18px;
+    color: #bebaba;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s ease;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    gap: 8px;
+    font-family: "SF Pro Display";
+
+    &:hover {
+      background-color: #404040;
+    }
+
+    &.deleteItem {
+      color: #981d1f;
+
+      &:hover {
+        background-color: #404040;
+      }
+    }
+
+    svg {
+      flex-shrink: 0;
+    }
+  }
+}

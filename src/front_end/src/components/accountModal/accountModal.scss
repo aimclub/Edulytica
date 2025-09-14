@@ -188,3 +188,47 @@
     padding: 10px;
   }
 }
+
+// Контекстное меню
+.fileLineAccModal {
+  position: relative;
+
+  .contextMenu {
+    position: absolute !important;
+    top: 10px !important;
+    right: -100px !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    background: #2a2a2a;
+    border: 1px solid #404040;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    min-width: 150px;
+    padding: 4px 0;
+    z-index: 9999 !important;
+
+    .contextMenuItem {
+      padding: 8px 16px;
+      color: #ffffff;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.2s ease;
+      display: flex;
+      justify-content: start;
+      align-items: center;
+      gap: 8px;
+      &:hover {
+        background-color: #404040;
+      }
+    }
+  }
+}
+
+.fileLineAccModal svg {
+  transition: stroke 0.2s ease;
+
+  &:hover {
+    stroke: #89aaff !important;
+  }
+}

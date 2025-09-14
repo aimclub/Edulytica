@@ -38,6 +38,15 @@ export const validateAuthorizationPassword = (password) => {
   return null
 }
 
+export const validateTicketName = (name) => {
+  const trimmed = name.trim()
+  if (!trimmed) return "* Обязательное поле"
+  if (trimmed.length < 1) return "* Название не может быть пустым"
+  if (trimmed.length > 60)
+    return "* Название слишком длинное (максимум 60 символов)"
+  return null
+}
+
 //Валидация ошибок от сервера
 const ERROR_TYPES = {
   EMAIL_EXISTS: "User with such email already exists",
@@ -47,6 +56,9 @@ const ERROR_TYPES = {
   INVALID_CODE: "Wrong code",
   OLD_PASSWORD_INCORRECT: "Old password incorrect",
   NEW_PASSWORDS_NOT_MATCH: "New passwords not equal",
+  TICKET_NOT_FOUND: "Ticket not found",
+  NOT_TICKET_CREATOR: "You're not ticket creator",
+  TICKET_NAME_TOO_LONG: "Ticket name too long, maximum: 60 characters",
 }
 
 export const validateBackend = (err) => {
@@ -93,6 +105,21 @@ export const validateBackend = (err) => {
   if (err === ERROR_TYPES.NEW_PASSWORDS_NOT_MATCH) {
     return {
       newPassword1: "* Новые пароли не совпадают",
+    }
+  }
+  if (err === ERROR_TYPES.TICKET_NOT_FOUND) {
+    return {
+      name: "* Тикет не найден",
+    }
+  }
+  if (err === ERROR_TYPES.NOT_TICKET_CREATOR) {
+    return {
+      name: "* Вы не являетесь создателем этого тикета",
+    }
+  }
+  if (err === ERROR_TYPES.TICKET_NAME_TOO_LONG) {
+    return {
+      name: "* Название тикета слишком длинное (максимум 60 символов)",
     }
   }
   return {

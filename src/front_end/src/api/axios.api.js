@@ -59,28 +59,28 @@ $api.interceptors.response.use(
       })
 
       switch (status) {
-          case 502:
-              message = "Сервер временно недоступен. Попробуйте позже.";
-              break;
-          case 500:
-              message = "Внутренняя ошибка сервера.";
-              break;
-          case 404:
-              message = "Ресурс не найден.";
-              break;
-          case 403:
-              message = "Доступ запрещён.";
-              break;
-          case 401:
-              message = "Необходима авторизация.";
-              break;
-          default:
-              if (error?.message === "Network Error") {
-                  message = "Ошибка сети. Попробуйте позже.";
-              } else if (error?.message && !status) {
-                  message = error.message;
-              }
-            break;
+        case 502:
+          message = "Сервер временно недоступен. Попробуйте позже."
+          break
+        case 500:
+          message = "Внутренняя ошибка сервера."
+          break
+        case 404:
+          message = "Ресурс не найден."
+          break
+        case 403:
+          message = "Доступ запрещён."
+          break
+        case 401:
+          message = "Необходима авторизация."
+          break
+        default:
+          if (error?.message === "Network Error") {
+            message = "Ошибка сети. Попробуйте позже."
+          } else if (error?.message && !status) {
+            message = error.message
+          }
+          break
       }
 
       const data = error?.response?.data

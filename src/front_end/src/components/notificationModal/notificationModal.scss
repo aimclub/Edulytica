@@ -1,4 +1,4 @@
-.notification-modal {
+.notificationModal {
   position: fixed;
   top: 20px;
   right: 20px;
@@ -12,22 +12,22 @@
   overflow: hidden;
 }
 
-.notification-content {
+.contentNotificationModal {
   display: flex;
   align-items: flex-start;
-  padding: 16px;
+  padding: 16px 12px 16px 16px;
   gap: 12px;
 
-  &.error-content {
+  &.errorContentNotificationModal {
     align-items: center;
   }
 }
 
-.notification-icon {
+.iconNotificationModal {
   flex-shrink: 0;
 }
 
-.success-icon {
+.successIconNotificationModal {
   width: 40px;
   height: 40px;
   background: #89aaff;
@@ -41,7 +41,7 @@
   text-shadow: 0 3px 12px 0 #050068;
 }
 
-.clock-icon {
+.clockIconNotificationModal {
   width: 40px;
   height: 40px;
   background: #89aaff;
@@ -55,33 +55,50 @@
   text-shadow: 0 3px 12px 0 #050068;
 }
 
-.error-icon {
-  width: 48px;
-  height: 48px;
+.errorIconNotificationModal {
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  // Без фона и без круга
 }
 
-.notification-text {
+.textNotificationModal {
   flex: 1;
   min-width: 0;
 
-  &.centered {
+  &.centeredTextNotificationModal {
     text-align: center;
   }
 
-  &.with-top-margin {
+  &.withTopMarginNotificationModal {
+    margin-top: 4px;
+  }
+
+  &.withErrorMarginNotificationModal {
     margin-top: 10px;
   }
 
-  &.with-error-margin {
+  &.ticketStatusNotificationModal {
+    margin-right: -8px;
     margin-top: 10px;
+    margin-block: 10px;
+  }
+
+  &.resultNotReadyNotificationModal {
+    margin-top: 8px;
+  }
+
+  &.requestAcceptedNotificationModal {
+    margin-top: 0;
+  }
+
+  &.ticketDeletedNotificationModal {
+    margin-top: 8px;
   }
 }
 
-.notification-title {
+.titleNotificationModal {
   margin: 0 0 4px 0;
   font-family: "SF Pro Display";
   font-size: 16px;
@@ -89,9 +106,12 @@
   letter-spacing: -0.03em;
   color: #bebaba;
   line-height: 1.3;
+  word-wrap: break-word;
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 
-.notification-eta {
+.etaNotificationModal {
   margin: 0;
   font-family: "SF Pro Display";
   font-size: 14px;
@@ -101,7 +121,7 @@
   line-height: 1.4;
 }
 
-.notification-close {
+.closeNotificationModal {
   flex-shrink: 0;
   background: none;
   border: none;
@@ -128,7 +148,7 @@
 }
 
 @media (max-width: 768px) {
-  .notification-modal {
+  .notificationModal {
     top: 10px;
     right: 10px;
     left: 10px;
@@ -136,15 +156,15 @@
     min-width: auto;
   }
 
-  .notification-content {
+  .contentNotificationModal {
     padding: 14px;
   }
 
-  .notification-title {
+  .titleNotificationModal {
     font-size: 15px;
   }
 
-  .notification-eta {
+  .etaNotificationModal {
     font-size: 13px;
   }
 }

@@ -16,6 +16,7 @@ import {
   fetchTicket,
   fetchTicketHistory,
   setCurrentTicket,
+  addTicketToHistory,
   startPollingForTicket,
   stopPollingForTicket,
   fetchDocumentText,
@@ -88,9 +89,9 @@ export const Account = ({
 
     if (path === "/account/result") {
       setAccountSection("result")
-      // Получаем documentId из параметров URL
+      // Получаем ticketId из параметров URL
       const searchParams = new URLSearchParams(location.search)
-      const documentId = searchParams.get("documentId")
+      const ticketId = searchParams.get("ticketId")
       const currentUrl = `${path}?${searchParams.toString()}`
 
       // Закрываем уведомления при переходе между разными результатами
@@ -110,16 +111,14 @@ export const Account = ({
 
       setPreviousUrl(currentUrl)
 
-      if (documentId) {
+      if (ticketId) {
         // Получаем актуальные данные из store
         const state = store.getState()
         const { tickets: currentTickets, currentTicket: currentTicketState } =
           state.ticket
 
         if (currentTickets.length > 0) {
-          const foundTicket = currentTickets.find(
-            (t) => t.document_id === documentId
-          )
+          const foundTicket = currentTickets.find((t) => t.id === ticketId)
           // Диспатчим только если currentTicket не тот же самый
           if (
             foundTicket &&
@@ -241,8 +240,7 @@ export const Account = ({
       }
 
       const searchParams = new URLSearchParams(window.location.search)
-      searchParams.delete("ticketId")
-      searchParams.set("documentId", ticketData.ticketInfo.document_id)
+      searchParams.set("ticketId", ticketData.ticketId)
       window.history.replaceState(null, "", `?${searchParams.toString()}`)
 
       const modeItem = selectedParams?.find((p) => p.type === "mode")
@@ -344,7 +342,7 @@ export const Account = ({
             ) : accountSection === "result" ? (
               <div className={`addFileAccPage ${accountModal ? "shift" : ""}`}>
                 <ResultFile
-                  fileName={currentTicket?.ticketInfo?.document_id || ""}
+                  fileName={currentTicket?.ticketInfo?.name || ""}
                   ticketData={currentTicket}
                   resetSection={currentTicket?.ticketId}
                 />

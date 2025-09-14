@@ -13,6 +13,7 @@ Routes:
     GET /actions/get_ticket_file: Downloads the original file attached to the ticket.
     GET /actions/get_ticket_summary: Downloads the LLM-generated document summary.
     GET /actions/get_ticket_result: Downloads the LLM-generated result or report.
+    DELETE /actions/delete_ticket: Deletes a ticket owned by the user.
     POST /actions/ticket_share: Toggles the shared status of a ticket.
 """
 
@@ -633,6 +634,76 @@ async def edit_ticket_name(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
+@api_logs(actions_router.delete("/delete_ticket"))
+async def delete_ticket(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Body(..., embed=True),
+    session: AsyncSession = Depends(get_session)
+):
+    """
+    Deletes a ticket owned by the user.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket UUID.
+        session (AsyncSession): Database session.
+
+    Returns:
+        dict: Message confirming deletion.
+
+    Raises:
+        HTTPException: If the user does not own the ticket, or it does not exist.
+    """
+    try:
+        tickets = await TicketCrud.get_filtered_by_params(
+            session=session, user_id=auth_data['user'].id, id=ticket_id
+        )
+
+        if not tickets or len(tickets) == 0:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='You aren\'t ticket owner or ticket doesn\'t exist'
+            )
+
+        ticket = tickets[0]
+
+        try:
+            if ticket.document_id:
+                document = await DocumentCrud.get_by_id(session=session, record_id=ticket.document_id)
+                if document:
+                    file_path = ROOT_DIR / document.file_path
+                    if file_path.exists():
+                        os.remove(file_path)
+
+            if ticket.document_summary_id:
+                document_summary = await DocumentSummaryCrud.get_by_id(
+                    session=session, record_id=ticket.document_summary_id
+                )
+                if document_summary:
+                    file_path = ROOT_DIR / document_summary.file_path
+                    if file_path.exists():
+                        os.remove(file_path)
+
+            if ticket.document_report_id:
+                document_report = await DocumentReportCrud.get_by_id(
+                    session=session, record_id=ticket.document_report_id
+                )
+                if document_report:
+                    file_path = ROOT_DIR / document_report.file_path
+                    if file_path.exists():
+                        os.remove(file_path)
+        except Exception as file_error:
+            print(f"Warning: Error deleting files for ticket {ticket_id}: {file_error}")
+
+        await TicketCrud.delete(session=session, record_id=ticket_id)
+
+        return {'detail': 'Ticket has been deleted successfully'}
+    except HTTPException as http_exc:  
+        raise http_exc
+    except Exception as _e: 
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
 @api_logs(actions_router.post("/ticket_share"))
 async def ticket_share(
     auth_data: dict = Depends(access_token_auth),
@@ -654,15 +725,17 @@ async def ticket_share(
         HTTPException: If the user does not own the ticket, or it does not exist.
     """
     try:
-        ticket = await TicketCrud.get_filtered_by_params(
+        tickets = await TicketCrud.get_filtered_by_params(
             session=session, user_id=auth_data['user'].id, id=ticket_id
         )
 
-        if not ticket:
+        if not tickets or len(tickets) == 0:
             raise HTTPException(
                 status_code=HTTP_400_BAD_REQUEST,
                 detail='You aren\'t ticket owner or ticket doesn\'t exist'
             )
+
+        ticket = tickets[0] 
 
         await TicketCrud.update(
             session=session, record_id=ticket_id, shared=(not ticket.shared)

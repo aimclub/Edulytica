@@ -61,10 +61,10 @@ async def run_ticket_handler(
         )
 
 
-@rt.delete('/delete_ticket')
+@rt.delete('/tickets/{ticket_id}')
 async def delete_ticket(
-        ticket_id: uuid.UUID = Body(...),
-        state_manager: StateManager = Depends(get_state_manager)
+    ticket_id: uuid.UUID,
+    state_manager: StateManager = Depends(get_state_manager),
 ):
     try:
         await state_manager.delete_ticket(ticket_id=ticket_id)

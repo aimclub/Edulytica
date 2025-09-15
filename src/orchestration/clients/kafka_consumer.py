@@ -1,7 +1,5 @@
 import asyncio
 import json
-from typing import Optional
-
 from aiokafka import AIOKafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient

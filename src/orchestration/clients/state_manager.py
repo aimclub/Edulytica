@@ -3,7 +3,12 @@ import uuid
 from enum import Enum
 from typing import Dict, Any, List, Union, Optional
 from redis.asyncio import Redis
+from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from src.common.database.crud.ticket_status_crud import TicketStatusCrud
+from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.database import SessionLocal
+from src.common.utils.default_enums import TicketStatusDefault
 
 """
 DATAS EXAMPLE:
@@ -37,8 +42,9 @@ class Statuses(str, Enum):
 
 
 class StateManager:
-    def __init__(self, redis_client: Redis):
+    def __init__(self, redis_client: Redis, session_factory: Optional[async_sessionmaker] = SessionLocal):
         self._redis = redis_client
+        self._session_factory = session_factory
 
     def _get_ticket_key(self, ticket_id: Union[str, uuid.UUID]) -> str:
         return f"ticket:{ticket_id}"
@@ -269,4 +275,22 @@ class StateManager:
             pipe.hset(key, f"subtask:{subtask_id}:status", Statuses.STATUS_FAILED.value)
             pipe.hset(key, "failure_reason", error_message)
             await pipe.execute()
+
+        try:
+            if self._session_factory:
+                async with self._session_factory() as session:
+                    status_id = await TicketStatusCrud.get_filtered_by_params(
+                        session,
+                        name=TicketStatusDefault.FAILED.value
+                    )
+                    await TicketCrud.update(
+                        session=session,
+                        record_id=ticket_id,
+                        ticket_status_id=status_id[0].id,
+                    )
+                    await session.commit()
+        except Exception as _e:
+            print(f'[StateManager] Can\'t fail ticket: {_e}')
+            return False
+
         return True

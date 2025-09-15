@@ -16,7 +16,6 @@ import {
   fetchTicket,
   fetchTicketHistory,
   setCurrentTicket,
-  setTickets,
   startPollingForTicket,
   stopPollingForTicket,
   fetchDocumentText,
@@ -64,10 +63,7 @@ export const Account = ({
     text: "",
   })
   const [previousUrl, setPreviousUrl] = useState(null)
-  const isFirstRender = useRef(true)
   const notificationTimeoutRef = useRef(null)
-  const hasNavigatedAway = useRef(false)
-  const isPageRefresh = useRef(false)
 
   const userData = useSelector((state) => state.auth.currentUser)
   const { currentTicket, tickets } = useSelector((state) => state.ticket)
@@ -89,9 +85,7 @@ export const Account = ({
     ).toString()}`
 
     // Определяем, произошел ли переход на другую страницу
-    // Не считаем навигацией обновление страницы
-    const isNavigationAway =
-      previousUrl && previousUrl !== currentUrl && !isPageRefresh.current
+    const isNavigationAway = previousUrl && previousUrl !== currentUrl
 
     // Закрываем уведомления только при переходе на страницы, отличные от /account/result
     if (path !== "/account/result") {
@@ -225,6 +219,8 @@ export const Account = ({
     setAccountSection,
     dispatch,
     previousUrl,
+    navigate,
+    userData?.id,
   ])
 
   // Показ статусов будем инициировать по клику в истории тикетов

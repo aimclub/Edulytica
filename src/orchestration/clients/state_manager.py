@@ -99,12 +99,16 @@ class StateManager:
             status: Statuses,
             result: str = None
     ):
+        if not await self.ticket_exists(ticket_id) or await self.is_deleted(ticket_id):
+            return False
+
         key = self._get_ticket_key(ticket_id)
         async with self._redis.pipeline(transaction=True) as pipe:
             pipe.hset(key, f"subtask:{subtask_id}:status", status.value)
             if result is not None:
                 pipe.hset(key, f"subtask:{subtask_id}:result", result)
             await pipe.execute()
+        return True
 
     async def get_all_subtask_statuses_for_task(
             self,

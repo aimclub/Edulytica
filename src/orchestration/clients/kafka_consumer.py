@@ -36,11 +36,13 @@ class KafkaConsumer:
             status = Statuses(data['status'])
             result = data.get('result')
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"[Orchestrator][ERROR] Could not parse message, skipping. Error: {e}, Message: {msg.value}")
+            print(
+                f"[Orchestrator][ERROR] Could not parse message, skipping. Error: {e}, Message: {msg.value}")
             return
 
         if (not await self.state_manager.ticket_exists(ticket_id)) or (await self.state_manager.is_deleted(ticket_id)):
-            print(f"[Orchestrator] Ticket {ticket_id} does not exist or deleted. Dropping subtask result {subtask_id}.")
+            print(
+                f"[Orchestrator] Ticket {ticket_id} does not exist or deleted. Dropping subtask result {subtask_id}.")
             return
 
         updated = await self.state_manager.update_subtask(ticket_id, subtask_id, status, result)
@@ -71,7 +73,8 @@ class KafkaConsumer:
                         event_name=context.get('event_name', None)
                     )
                 except ValueError as e:
-                    print(f"[CRITICAL] Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
+                    print(
+                        f"[CRITICAL] Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
                     await self.state_manager.fail_ticket(ticket_id, subtask_id, f"Orchestrator instantiation error: {e}")
                     return
 

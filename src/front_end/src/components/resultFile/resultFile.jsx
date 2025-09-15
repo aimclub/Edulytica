@@ -12,7 +12,7 @@ import { ticketService } from "../../services/ticket.service"
  * Компонент отображает результат работы над файлом,содержимое файла и позволяет переключаться между его разделами(суммаризация, рецензирование).
  *
  * @param {Object} props - Свойства компонента.
- * @param {string} props.fileName - Имя файла, данные которого отображаются.
+ * @param {string} props.fileName - Название тикета или имя файла, данные которого отображаются.
  * @param {Object} props.ticketData - Данные о тикете, включая статус.
  * @param {number} props.resetSection - Ключ для сброса активной секции.
  */
@@ -223,7 +223,7 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
     >
       {
         <div className="resultFile">
-          <div className="titleResultFile">{fileName}</div>
+          <div className="titleResultFile">{fileName || "Без названия"}</div>
           <div className="blockResultFile">
             <div className="containerResultFile">
               <div className="headerContainerResultFile">

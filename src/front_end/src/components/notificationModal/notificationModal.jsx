@@ -7,6 +7,7 @@ import "./notificationModal.scss"
  * @param {Object} props - Свойства компонента
  * @param {boolean} props.visible - Видимо ли уведомление
  * @param {string} props.text - Основной текст уведомления
+ * @param {string} props.type - Тип уведомления: 'success', 'error', 'loading'
  * @param {string} props.eta - Примерное время выполнения
  * @param {Function} props.onClose - Функция для закрытия уведомления
  * @param {boolean} props.centered - Центрировать ли текст
@@ -15,25 +16,37 @@ import "./notificationModal.scss"
 export const NotificationModal = ({
   visible,
   text,
+  type = "success",
   eta,
   onClose,
   centered = false,
 }) => {
   const timeoutRef = useRef(null)
+  const onCloseRef = useRef(onClose)
+  const textRef = useRef(text)
+  onCloseRef.current = onClose
+  textRef.current = text
 
   useEffect(() => {
     if (visible) {
+      const isTicketStatus =
+        textRef.current.includes("Тикет") &&
+        textRef.current.includes("для публичного просмотра")
+      const isTicketDeleted = textRef.current.includes("Тикет успешно удален")
+      const timeoutDuration = isTicketStatus || isTicketDeleted ? 8000 : 15000
+
       timeoutRef.current = setTimeout(() => {
-        onClose()
-      }, 15000)
+        onCloseRef.current()
+      }, timeoutDuration)
     }
+
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
         timeoutRef.current = null
       }
     }
-  }, [visible, onClose])
+  }, [visible])
 
   if (!visible) return null
 
@@ -43,26 +56,26 @@ export const NotificationModal = ({
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 100, scale: 0.9 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="notification-modal"
+      className="notificationModal"
       role="status"
       aria-live="polite"
     >
       <div
-        className={`notification-content ${
-          text.includes("Что-то пошло не так") ? "error-content" : ""
+        className={`contentNotificationModal ${
+          type === "error" ? "errorContentNotificationModal" : ""
         }`}
       >
-        <div className="notification-icon">
+        <div className="iconNotificationModal">
           <div
             className={
-              text === "Результат еще не готов, ожидайте"
-                ? "clock-icon"
-                : text.includes("Что-то пошло не так")
-                ? "error-icon"
-                : "success-icon"
+              type === "loading"
+                ? "clockIconNotificationModal"
+                : type === "error"
+                ? "errorIconNotificationModal"
+                : "successIconNotificationModal"
             }
           >
-            {text === "Результат еще не готов, ожидайте" ? (
+            {type === "loading" ? (
               <svg
                 width="20"
                 height="20"
@@ -78,10 +91,10 @@ export const NotificationModal = ({
                   strokeLinejoin="round"
                 />
               </svg>
-            ) : text.includes("Что-то пошло не так") ? (
+            ) : type === "error" ? (
               <svg
-                width="30"
-                height="30"
+                width="20"
+                height="20"
                 viewBox="0 0 48 48"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -101,20 +114,38 @@ export const NotificationModal = ({
         </div>
 
         <div
-          className={`notification-text ${centered ? "centered" : ""} ${
-            text === "Результат еще не готов, ожидайте" ? "with-top-margin" : ""
-          } ${text === "Документ обработан!" ? "with-top-margin" : ""} ${
-            text.includes("Что-то пошло не так") ? "with-error-margin" : ""
+          className={`textNotificationModal ${
+            centered ? "centeredTextNotificationModal" : ""
+          } ${type === "loading" ? "withTopMarginNotificationModal" : ""} ${
+            type === "success" ? "withTopMarginNotificationModal" : ""
+          } ${type === "error" ? "withErrorMarginNotificationModal" : ""} ${
+            text.includes("Тикет") && text.includes("для публичного просмотра")
+              ? "ticketStatusNotificationModal"
+              : ""
+          } ${
+            text.includes("Результат еще не готов, ожидайте")
+              ? "resultNotReadyNotificationModal"
+              : ""
+          } ${
+            text.includes("Ваш запрос принят в обработку")
+              ? "requestAcceptedNotificationModal"
+              : ""
+          } ${
+            text.includes("Тикет успешно удален")
+              ? "ticketDeletedNotificationModal"
+              : ""
           }`}
         >
-          <h3 className="notification-title">{text}</h3>
+          <h3 className="titleNotificationModal">{text}</h3>
           {eta && (
-            <p className="notification-eta">Примерное время ожидания: {eta}</p>
+            <p className="etaNotificationModal">
+              Примерное время ожидания: {eta}
+            </p>
           )}
         </div>
 
         <button
-          className="notification-close"
+          className="closeNotificationModal"
           onClick={() => {
             if (timeoutRef.current) {
               clearTimeout(timeoutRef.current)

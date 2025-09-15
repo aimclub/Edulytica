@@ -23,7 +23,12 @@ function getExtensionFromContentType(ct) {
   const type = ct.toLowerCase()
 
   if (type.includes("application/pdf")) return ".pdf"
-  if (type.includes("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) return ".docx"
+  if (
+    type.includes(
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+  )
+    return ".docx"
   if (type.includes("application/msword")) return ".doc"
   if (type.includes("text/plain")) return ".txt"
   return ""
@@ -345,6 +350,61 @@ class TicketService {
       return response.data
     } catch (error) {
       console.error("Error adding custom event:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Переименовывает тикет
+   * @param {string} ticketId - ID тикета
+   * @param {string} newName - Новое название тикета
+   * @returns {Promise<Object>} Результат переименования
+   */
+  async renameTicket(ticketId, newName) {
+    try {
+      const response = await $api.post("/actions/edit_ticket_name", {
+        ticket_id: ticketId,
+        name: newName,
+      })
+      return response.data
+    } catch (error) {
+      console.error("Error renaming ticket:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Переключает статус публикации тикета (открыть/закрыть)
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<Object>} Результат операции
+   */
+  async toggleTicketShare(ticketId) {
+    try {
+      const response = await $api.post("/actions/ticket_share", {
+        ticket_id: ticketId,
+      })
+      console.log("Response from /actions/ticket_share:", response.data)
+      return response.data
+    } catch (error) {
+      console.error("Error toggling ticket share:", error)
+      throw error
+    }
+  }
+
+  /**
+   * Удаляет тикет
+   * @param {string} ticketId - ID тикета
+   * @returns {Promise<Object>} Результат удаления
+   */
+  async deleteTicket(ticketId) {
+    try {
+      const response = await $api.delete("/actions/delete_ticket", {
+        data: { ticket_id: ticketId },
+      })
+      console.log("Response from /actions/delete_ticket:", response.data)
+      return response.data
+    } catch (error) {
+      console.error("Error deleting ticket:", error)
       throw error
     }
   }

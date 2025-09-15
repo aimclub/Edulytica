@@ -276,3 +276,30 @@ class Orchestrator:
         except httpx.HTTPStatusError as e:
             await self.state_manager.fail_ticket(ticket_id, "finalization",
                                                  f"API error during report upload: {e.response.text}")
+
+    async def update_ticket_name(self, ticket_id: Union[str, uuid.UUID], name: str):
+        payload = {
+            "ticket_id": str(ticket_id),
+            "name": name
+        }
+
+        headers = {
+            "X-Internal-Secret": INTERNAL_API_SECRET
+        }
+
+        try:
+            response = await self.rag_client._http_client.post(
+                f"http://edulytica_api:{API_PORT}/internal/edit_ticket_name",
+                json=payload,
+                headers=headers,
+                timeout=60.0
+            )
+            response.raise_for_status()
+            print(f"Successfully updated ticket name: ticket_id={ticket_id}, name={name!r}")
+        except httpx.RequestError as e:
+            print(f"Network error during ticket name update for {ticket_id}: {e}")
+        except httpx.HTTPStatusError as e:
+            print(
+                f"API error during ticket name update for {ticket_id}: "
+                f"status={e.response.status_code}, body={e.response.text}"
+            )

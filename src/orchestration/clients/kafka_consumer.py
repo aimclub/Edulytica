@@ -23,10 +23,10 @@ class KafkaConsumer:
     async def consume(self):
         try:
             async for msg in self._consumer:
-                print(f"Orchestrator consumed message: {msg.value.decode('utf-8')}")
+                print(f"[Orchestrator] Consumed from llm_tasks.result: {msg.value.decode('utf-8')}")
                 asyncio.create_task(self._process_message(msg))
         finally:
-            print("Orchestrator's Kafka consumer loop stopped.")
+            print("[Orchestrator] Kafka consumer loop (tasks.result) stopped.")
 
     async def _process_message(self, msg):
         try:
@@ -35,12 +35,20 @@ class KafkaConsumer:
             subtask_id = data['subtask_id']
             status = Statuses(data['status'])
             result = data.get('result')
-
         except (json.JSONDecodeError, KeyError, ValueError) as e:
-            print(f"ERROR: Could not parse message, skipping. Error: {e}, Message: {msg.value}")
+            print(
+                f"[Orchestrator][ERROR] Could not parse message, skipping. Error: {e}, Message: {msg.value}")
             return
 
-        await self.state_manager.update_subtask(ticket_id, subtask_id, status, result)
+        if (not await self.state_manager.ticket_exists(ticket_id)) or (await self.state_manager.is_deleted(ticket_id)):
+            print(
+                f"[Orchestrator] Ticket {ticket_id} does not exist or deleted. Dropping subtask result {subtask_id}.")
+            return
+
+        updated = await self.state_manager.update_subtask(ticket_id, subtask_id, status, result)
+        if not updated:
+            print(f"[Orchestrator] Ticket {ticket_id} vanished during update. Skipping.")
+            return
 
         if status == Statuses.STATUS_FAILED:
             error_message = result or "Unknown error from worker."
@@ -66,9 +74,8 @@ class KafkaConsumer:
                     )
                 except ValueError as e:
                     print(
-                        f"CRITICAL ERROR: Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
-                    await self.state_manager.fail_ticket(ticket_id, subtask_id,
-                                                         f"Orchestrator instantiation error: {e}")
+                        f"[CRITICAL] Failed to instantiate Orchestrator for ticket {ticket_id}: {e}")
+                    await self.state_manager.fail_ticket(ticket_id, subtask_id, f"Orchestrator instantiation error: {e}")
                     return
 
                 if unlocked_subtasks:

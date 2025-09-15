@@ -13,6 +13,7 @@ Routes:
     GET /actions/get_ticket_file: Downloads the original file attached to the ticket.
     GET /actions/get_ticket_summary: Downloads the LLM-generated document summary.
     GET /actions/get_ticket_result: Downloads the LLM-generated result or report.
+    DELETE /actions/delete_ticket: Deletes a ticket owned by the user.
     POST /actions/ticket_share: Toggles the shared status of a ticket.
 """
 
@@ -27,7 +28,7 @@ from fastapi import APIRouter, Body, UploadFile, Depends, File, HTTPException, Q
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE, \
-    HTTP_404_NOT_FOUND
+    HTTP_404_NOT_FOUND, HTTP_403_FORBIDDEN
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.config import ORCHESTRATOR_PORT, RAG_PORT
 from src.common.database.crud.document_report_crud import DocumentReportCrud
@@ -142,6 +143,7 @@ async def new_ticket(
 
         ticket_data = {
             'session': session,
+            'name': file.filename if file.filename else 'New ticket',
             'user_id': auth_data['user'].id,
             'ticket_status_id': ticket_status[0].id,
             'ticket_type_id': ticket_type[0].id,
@@ -597,11 +599,105 @@ async def get_ticket_result(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
+@api_logs(actions_router.post("/edit_ticket_name"))
+async def edit_ticket_name(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Body(...),
+    name: str = Body(...),
+    session: AsyncSession = Depends(get_session)
+):
+    try:
+        ticket = await TicketCrud.get_by_id(session, record_id=ticket_id)
+
+        if not ticket:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail=f'Ticket not found')
+
+        if ticket.user_id != auth_data['user'].id:
+            raise HTTPException(
+                status_code=HTTP_403_FORBIDDEN,
+                detail="You're not ticket creator"
+            )
+
+        if len(name) > 60:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='Ticket name too long, maximum: 60 characters'
+            )
+
+        await TicketCrud.update(session, record_id=ticket_id, name=name)
+        return {'detail': 'Ticket name has been updated'}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
+@api_logs(actions_router.delete("/delete_ticket"))
+async def delete_ticket(
+    auth_data: dict = Depends(access_token_auth),
+    ticket_id: UUID = Body(..., embed=True),
+    session: AsyncSession = Depends(get_session),
+    http_client: httpx.AsyncClient = Depends(get_http_client)
+):
+    """
+    Deletes a ticket owned by the user.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket UUID.
+        session (AsyncSession): Database session.
+        http_client (AsyncClient): Async HTTP Client.
+
+    Returns:
+        dict: Message confirming deletion.
+
+    Raises:
+        HTTPException: If the user does not own the ticket, or it does not exist.
+    """
+    try:
+        tickets = await TicketCrud.get_filtered_by_params(
+            session=session, user_id=auth_data['user'].id, id=ticket_id
+        )
+
+        if not tickets or len(tickets) == 0:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='You aren\'t ticket owner or ticket doesn\'t exist'
+            )
+
+        try:
+            response = await http_client.delete(
+                f"http://edulytica_orchestration:{ORCHESTRATOR_PORT}/orchestrate/tickets/{ticket_id}",
+                timeout=30.0
+            )
+            response.raise_for_status()
+        except httpx.RequestError as _re:
+            raise HTTPException(
+                status_code=HTTP_503_SERVICE_UNAVAILABLE,
+                detail=f"Orchestration service is unavailable {_re}"
+            )
+        except httpx.HTTPStatusError as _hse:
+            raise HTTPException(
+                status_code=HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Orchestrator failed to delete ticket: {_hse.response.text}"
+            )
+
+        await TicketCrud.delete(session, record_id=ticket_id)
+
+        return {'detail': 'Ticket was deleted'}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
+
+
 @api_logs(actions_router.post("/ticket_share"))
 async def ticket_share(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = Body(..., embed=True),
-    session: AsyncSession = Depends(get_session)
+    session: AsyncSession = Depends(get_session),
 ):
     """
     Toggles the shared status of a ticket owned by the user.
@@ -629,10 +725,10 @@ async def ticket_share(
             )
 
         await TicketCrud.update(
-            session=session, record_id=ticket_id, shared=(not ticket.shared)
+            session=session, record_id=ticket_id, shared=(not ticket[0].shared)
         )
 
-        return {'detail': 'Status has been changed'}
+        return {'detail': 'Share status has been changed'}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

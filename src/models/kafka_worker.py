@@ -3,8 +3,7 @@ import json
 import os
 from typing import Dict, Any, List
 from confluent_kafka import Consumer, KafkaError, Producer, Message
-from confluent_kafka.admin import AdminClient
-from confluent_kafka.cimpl import NewTopic
+from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.llm import ModelInstruct

@@ -16,7 +16,6 @@ import {
   fetchTicket,
   fetchTicketHistory,
   setCurrentTicket,
-  addTicketToHistory,
   startPollingForTicket,
   stopPollingForTicket,
   fetchDocumentText,

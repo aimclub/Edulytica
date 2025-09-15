@@ -1,5 +1,5 @@
 import { motion } from "framer-motion"
-import { useEffect, useRef, useCallback, useMemo } from "react"
+import { useEffect, useRef } from "react"
 import "./notificationModal.scss"
 
 /**

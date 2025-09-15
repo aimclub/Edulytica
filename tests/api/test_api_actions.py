@@ -256,7 +256,7 @@ def test_ticket_share_success(mock_update, mock_get, client):
 
     response = client(app).post("/actions/ticket_share", json={"ticket_id": str(uuid.uuid4())})
     assert response.status_code == 200
-    assert response.json()["detail"] == "Status has been changed"
+    assert response.json()["detail"] == "Share status has been changed"
 
 
 @pytest.mark.asyncio

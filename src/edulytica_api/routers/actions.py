@@ -143,7 +143,7 @@ async def new_ticket(
 
         ticket_data = {
             'session': session,
-            'name': f'New ticket: {file.filename}',
+            'name': file.filename if file.filename else 'New ticket',
             'user_id': auth_data['user'].id,
             'ticket_status_id': ticket_status[0].id,
             'ticket_type_id': ticket_type[0].id,

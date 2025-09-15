@@ -9,7 +9,6 @@ from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.state_manager import StateManager, Statuses
 from src.orchestration.prompts.prompts1.prompts import prompts
 from src.orchestration.prompts.prompts2.prompts import prompts2
-from src.orchestration.prompts.prompts_name import prompts_name
 
 
 class Orchestrator:
@@ -89,11 +88,6 @@ class Orchestrator:
         },
     }
 
-    TICKET_TYPE_NAME: Dict[str, str] = {
-        "1": "Рецензирование",
-        "2": "Анализ"
-    }
-
     BASE_DIR = os.path.dirname(__file__)
     PROMPTS_DIRS: Dict[str, str] = {
         "1": os.path.join(BASE_DIR, "prompts", "prompts1"),
@@ -117,22 +111,6 @@ class Orchestrator:
             raise ValueError(f"Unknown megatask id {mega_task_id}")
         else:
             self.mega_task_id = mega_task_id
-
-
-    async def generate_name(
-            self, ticket_id: Union[str, uuid.UUID], document_text: str
-    ):
-        prompt = prompts_name["gen"].format(
-            document_text=document_text,
-            ticket_type=self.TICKET_TYPE_NAME[self.mega_task_id]
-        )
-
-        message = {
-            "ticket_id": str(ticket_id),
-            "prompt": prompt,
-        }
-
-        await self.kafka_producer.send_and_wait(f"llm_name.gen", message)
 
     async def run_pipeline(
             self, ticket_id: Union[str, uuid.UUID], document_text: str

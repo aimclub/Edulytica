@@ -42,12 +42,6 @@ async def run_ticket_handler(
             ticket_id=ticket_id,
             document_text=document_text
         )
-
-        background_tasks.add_task(
-            orchestrator.generate_name,
-            ticket_id=ticket_id,
-            document_text=document_text
-        )
     except ValueError as _ve:  # pragma: no cover
         raise HTTPException(
             status_code=HTTP_400_BAD_REQUEST, detail=f"{_ve}"

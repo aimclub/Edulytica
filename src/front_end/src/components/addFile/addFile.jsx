@@ -124,8 +124,7 @@ export const AddFile = ({
       }
 
       setAccountSection("result")
-      // Переход на страницу результата
-      navigate(`/account/result`)
+      navigate(`/account/result?ticketId=${ticketData.ticketId}`)
       resetParams()
     } catch (error) {
       console.error(error.message || "Произошла ошибка при создании тикета")

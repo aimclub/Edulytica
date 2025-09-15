@@ -134,6 +134,8 @@ export const NotificationModal = ({
             text.includes("Тикет успешно удален")
               ? "ticketDeletedNotificationModal"
               : ""
+          } ${
+            text.includes("Тикет готов") ? "ticketReadyNotificationModal" : ""
           }`}
         >
           <h3 className="titleNotificationModal">{text}</h3>

@@ -175,6 +175,11 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
 
     // Раздел Результата: показываем статус или результат
     if (activeSectionResult === 2) {
+      // Статус неудачи
+      if (ticketData && ticketData.status === "Failed") {
+        return "Извините, во время выполнения тикета произошла ошибка. Причина: "
+      }
+
       // Если тикет в процессе обработки
       if (
         ticketData &&
@@ -372,7 +377,7 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                        d="M12.5 9В15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
                         stroke="#89AAFF"
                         strokeWidth="1.5"
                         strokeLinecap="round"

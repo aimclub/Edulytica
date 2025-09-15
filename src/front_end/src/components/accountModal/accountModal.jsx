@@ -421,33 +421,46 @@ export const AccountModal = ({
                 >
                   <div className="fileAccModal">
                     {truncateString(ticket.name || "Без названия", 16)}
+                    {ticket.isTemporary && (
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          color: "#89AAFF",
+                          marginLeft: "4px",
+                        }}
+                      >
+                        (временный)
+                      </span>
+                    )}
                   </div>
-                  <svg
-                    style={{ marginRight: "25px", cursor: "pointer" }}
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    data-ticket-id={ticket.id}
-                    onClick={(e) => handleContextMenuClick(e, ticket)}
-                  >
-                    <path
-                      d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                    <path
-                      d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
-                      stroke="#BEBABA"
-                      strokeWidth="0.5"
-                    />
-                  </svg>
+                  {!ticket.isTemporary && (
+                    <svg
+                      style={{ marginRight: "25px", cursor: "pointer" }}
+                      width="12"
+                      height="12"
+                      viewBox="0 0 12 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      data-ticket-id={ticket.id}
+                      onClick={(e) => handleContextMenuClick(e, ticket)}
+                    >
+                      <path
+                        d="M2.5 5C1.95 5 1.5 5.45 1.5 6C1.5 6.55 1.95 7 2.5 7C3.05 7 3.5 6.55 3.5 6C3.5 5.45 3.05 5 2.5 5Z"
+                        stroke="#BEBABA"
+                        strokeWidth="0.5"
+                      />
+                      <path
+                        d="M9.5 5C8.95 5 8.5 5.45 8.5 6C8.5 6.55 8.95 7 9.5 7C10.05 7 10.5 6.55 10.5 6C10.5 5.45 10.05 5 9.5 5Z"
+                        stroke="#BEBABA"
+                        strokeWidth="0.5"
+                      />
+                      <path
+                        d="M6 5C5.45 5 5 5.45 5 6C5 6.55 5.45 7 6 7C6.55 7 7 6.55 7 6C7 5.45 6.55 5 6 5Z"
+                        stroke="#BEBABA"
+                        strokeWidth="0.5"
+                      />
+                    </svg>
+                  )}
                 </div>
               ))}
             </div>

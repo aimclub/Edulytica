@@ -88,4 +88,3 @@ async def upload_report(
         raise http_exc
     except Exception as e:
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
-

@@ -42,7 +42,10 @@ class Statuses(str, Enum):
 
 
 class StateManager:
-    def __init__(self, redis_client: Redis, session_factory: Optional[async_sessionmaker] = SessionLocal):
+    def __init__(
+            self,
+            redis_client: Redis,
+            session_factory: Optional[async_sessionmaker] = SessionLocal):
         self._redis = redis_client
         self._session_factory = session_factory
 

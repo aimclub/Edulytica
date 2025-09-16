@@ -303,4 +303,3 @@ class Orchestrator:
                 f"API error during ticket name update for {ticket_id}: "
                 f"status={e.response.status_code}, body={e.response.text}"
             )
-

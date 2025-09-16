@@ -12,6 +12,24 @@ export const useErrorHandler = () => {
   const handleError = useCallback((error) => {
     console.error("Error caught by useErrorHandler:", error)
 
+    const message = String(error?.message || "")
+    const shouldSkipNotification =
+      /could not validate credentials/i.test(message) ||
+      /необходима авторизац/i.test(message) ||
+      /ошибка сети/i.test(message) ||
+      /network error/i.test(message) ||
+      /wrong code/i.test(message) ||
+      /попробуйте позже/i.test(message) ||
+      /try again later/i.test(message) ||
+      /validation/i.test(message) ||
+      /валидац/i.test(message)
+
+    if (shouldSkipNotification) {
+      setShowNotification(false)
+      setError(null)
+      return
+    }
+
     setError(error)
     setShowNotification(true)
 

@@ -46,7 +46,7 @@ class TicketCrud(
         result = await session.execute(
             select(Ticket).where(
                 and_(
-                    or_(Ticket.user_id == user_id, Ticket.shared is True),
+                    or_(Ticket.user_id == user_id, Ticket.shared),
                     Ticket.id == ticket_id
                 )
             )

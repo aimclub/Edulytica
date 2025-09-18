@@ -21,7 +21,7 @@ import {
   fetchDocumentText,
   startPollingForDocument,
 } from "../../store/ticketSlice"
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 /**
  *  * Компонент страницы аккаунта пользователя.
@@ -45,6 +45,7 @@ export const Account = ({
   isAuth,
 }) => {
   const location = useLocation()
+  const navigate = useNavigate()
   const dispatch = useDispatch()
   const [selectedParams, setSelectedParams] = useState([
     { type: "mode", name: "рецензирование" },
@@ -71,9 +72,20 @@ export const Account = ({
     dispatch(fetchUserData())
   }, [dispatch])
 
+  // Load ticket history on component mount
+  useEffect(() => {
+    dispatch(fetchTicketHistory())
+  }, [dispatch])
+
   // Обновляем секцию аккаунта на основе URL
   useEffect(() => {
     const path = location.pathname
+    const currentUrl = `${path}?${new URLSearchParams(
+      location.search
+    ).toString()}`
+
+    // Определяем, произошел ли переход на другую страницу
+    const isNavigationAway = previousUrl && previousUrl !== currentUrl
 
     // Закрываем уведомления только при переходе на страницы, отличные от /account/result
     if (path !== "/account/result") {
@@ -94,11 +106,7 @@ export const Account = ({
       const currentUrl = `${path}?${searchParams.toString()}`
 
       // Закрываем уведомления при переходе между разными результатами
-      if (
-        previousUrl &&
-        previousUrl !== currentUrl &&
-        previousUrl.includes("/account/result")
-      ) {
+      if (isNavigationAway && previousUrl.includes("/account/result")) {
         // Очищаем таймер уведомлений
         if (notificationTimeoutRef.current) {
           clearTimeout(notificationTimeoutRef.current)
@@ -116,22 +124,86 @@ export const Account = ({
         const { tickets: currentTickets, currentTicket: currentTicketState } =
           state.ticket
 
-        if (currentTickets.length > 0) {
-          const foundTicket = currentTickets.find((t) => t.id === ticketId)
-          // Диспатчим только если currentTicket не тот же самый
+        // Проверяем, есть ли тикет в истории пользователя
+        const foundTicket = currentTickets.find((t) => t.id === ticketId)
+
+        if (foundTicket) {
+          // Тикет найден в истории - это наш тикет
           if (
-            foundTicket &&
-            (!currentTicketState ||
-              currentTicketState.ticketId !== foundTicket.id)
+            !currentTicketState ||
+            currentTicketState.ticketId !== foundTicket.id
           ) {
-            dispatch(fetchTicket(foundTicket.id))
+            ;(async () => {
+              try {
+                await dispatch(fetchTicket(foundTicket.id))
+              } catch (e) {
+                // Если тикет из истории недоступен - перенаправляем на главную
+                if (
+                  e?.response?.status === 400 ||
+                  e?.response?.status === 403 ||
+                  e?.response?.status === 404 ||
+                  e?.response?.status === 422
+                ) {
+                  navigate("/account", { replace: true })
+                }
+              }
+            })()
           }
-        } else if (!currentTicketState) {
-          dispatch(fetchTicketHistory()).then((ticketHistory) => {
-            if (ticketHistory && ticketHistory.length > 0) {
-              dispatch(fetchTicket(ticketHistory[0].id))
+        } else {
+          // Тикет не найден в истории - это может быть чужой публичный тикет
+          // Пытаемся загрузить его напрямую
+          ;(async () => {
+            try {
+              console.log("Attempting to load ticket:", ticketId)
+              console.log("Current user ID:", userData?.id)
+              const result = await dispatch(fetchTicket(ticketId))
+              if (result && result.ticketId) {
+                // Проверяем, является ли загруженный тикет чужим
+                const ticketData = result.ticketInfo
+                if (ticketData && ticketData.user_id !== userData?.id) {
+                  // Проверяем, нет ли уже такого временного тикета в истории
+                  const existingTempTicket = currentTickets.find(
+                    (t) => t.id === ticketId && t.isTemporary
+                  )
+
+                  if (!existingTempTicket) {
+                    // Это чужой тикет - НЕ добавляем его в историю
+                    // Временный тикет будет только в currentTicket
+                    console.log(
+                      "Temporary ticket loaded, not adding to history:",
+                      ticketData.id
+                    )
+                  } else {
+                  }
+                }
+              }
+            } catch (e) {
+              console.error("Failed to load ticket:", e)
+              console.error("Error details:", {
+                status: e?.response?.status,
+                data: e?.response?.data,
+                message: e?.message,
+              })
+              // Если тикет недоступен - перенаправляем на главную
+              if (
+                e?.response?.status === 400 ||
+                e?.response?.status === 403 ||
+                e?.response?.status === 404 ||
+                e?.response?.status === 422
+              ) {
+                console.warn(
+                  "Ticket is not accessible:",
+                  e?.response?.data?.detail || e.message
+                )
+                // Очищаем URL от неправильного ticketId
+                navigate("/account", { replace: true })
+              } else {
+                console.warn("Ticket loaded but with errors:", e)
+                // Для других ошибок тоже перенаправляем на главную
+                navigate("/account", { replace: true })
+              }
             }
-          })
+          })()
         }
       }
     } else if (path === "/account/help") {
@@ -147,6 +219,8 @@ export const Account = ({
     setAccountSection,
     dispatch,
     previousUrl,
+    navigate,
+    userData?.id,
   ])
 
   // Показ статусов будем инициировать по клику в истории тикетов
@@ -280,9 +354,8 @@ export const Account = ({
       const state = store.getState()
       const current = state?.ticket?.currentTicket
       const status = current?.status || ticket.status
-      const hasResult = current?.files?.result || ticket.files?.result
 
-      if (status === "Completed" && hasResult) {
+      if (status === "Completed") {
         setResultReadyModal({ visible: true, text: "Тикет готов" })
       } else if (status === "Created" || status === "In progress") {
         setResultReadyModal({
@@ -290,10 +363,7 @@ export const Account = ({
           text: "Результат еще не готов, ожидайте",
         })
       } else if (!status) {
-        setResultReadyModal({
-          visible: true,
-          text: "Результат еще не готов, ожидайте",
-        })
+        setResultReadyModal({ visible: false, text: "" })
       } else {
         setResultReadyModal({ visible: false, text: "" })
       }

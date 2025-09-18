@@ -408,6 +408,19 @@ class TicketService {
       throw error
     }
   }
+
+  /**
+   * Отправляет сообщение обратной связи
+   */
+  async sendFeedback(payload) {
+    try {
+      const response = await $api.post("/actions/send_feedback", payload)
+      return response.data
+    } catch (error) {
+      console.error("Error sending feedback:", error)
+      throw error
+    }
+  }
 }
 
 export const ticketService = new TicketService()

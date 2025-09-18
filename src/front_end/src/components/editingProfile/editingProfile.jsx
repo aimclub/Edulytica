@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { Input } from "../../utils/input/input"
 import "./editingProfile.scss"
 import $api from "../../api/axios.api"
 import {
@@ -108,67 +107,56 @@ export const EditingProfile = ({
         <>
           <div className="titleEditingProfile">Профиль</div>
           <div className="containerEditingProfile">
-            <div className="inputContainerEditingProfile">
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">Имя</div>
-                <Input
-                  type="text"
-                  placeholder={
-                    infoProfile.name !== "..." && infoProfile.name !== ""
-                      ? infoProfile.name
-                      : "Введите ваше имя..."
-                  }
-                  name="name"
-                  onChange={handleChangeInfo}
-                />
-              </div>
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">Фамилия</div>
-                <Input
-                  type="text"
-                  placeholder={
-                    infoProfile.surname !== "..." && infoProfile.surname !== ""
-                      ? infoProfile.surname
-                      : "Введите вашу фамилию..."
-                  }
-                  name="surname"
-                  onChange={handleChangeInfo}
-                />
-              </div>
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">Организация</div>
-                <Input
-                  type="text"
-                  placeholder={
-                    infoProfile.organization !== "..." &&
-                    infoProfile.organization !== " "
-                      ? infoProfile.organization
-                      : "Введите вашу организацию..."
-                  }
-                  onChange={handleChangeInfo}
-                  name="organization"
-                />
-              </div>
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">Имя</div>
+              <input
+                type="text"
+                className="inputEditingProfile"
+                placeholder={
+                  infoProfile.name !== "..." && infoProfile.name !== ""
+                    ? infoProfile.name
+                    : "Введите ваше имя..."
+                }
+                name="name"
+                value={localProfile.name}
+                onChange={handleChangeInfo}
+              />
+            </div>
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">Фамилия</div>
+              <input
+                type="text"
+                className="inputEditingProfile"
+                placeholder={
+                  infoProfile.surname !== "..." && infoProfile.surname !== ""
+                    ? infoProfile.surname
+                    : "Введите вашу фамилию..."
+                }
+                name="surname"
+                value={localProfile.surname}
+                onChange={handleChangeInfo}
+              />
+            </div>
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">Организация</div>
+              <input
+                type="text"
+                className="inputEditingProfile"
+                placeholder={
+                  infoProfile.organization !== "..." &&
+                  infoProfile.organization !== " "
+                    ? infoProfile.organization
+                    : "Введите вашу организацию..."
+                }
+                name="organization"
+                value={localProfile.organization}
+                onChange={handleChangeInfo}
+              />
             </div>
             <div
               className="btnBottomEditingProfile"
               onClick={handleEditingProfileModal}
             >
-              <svg
-                width="18"
-                height="19"
-                viewBox="0 0 18 19"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6.83109 4.31C7.48359 4.115 8.20359 3.9875 8.99859 3.9875C12.5911 3.9875 15.5011 6.8975 15.5011 10.49C15.5011 14.0825 12.5911 16.9925 8.99859 16.9925C5.40609 16.9925 2.49609 14.0825 2.49609 10.49C2.49609 9.155 2.90109 7.91 3.59109 6.875M8.06859 2L5.90109 4.49L8.42859 6.335"
-                  stroke="#BEBABA"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
               Изменить
             </div>
           </div>
@@ -176,34 +164,13 @@ export const EditingProfile = ({
             className="passwordResetEditingProfile"
             onClick={() => setOpenEditingProfileModal("password")}
           >
-            Сбросить пароль
-            <svg
-              width="16"
-              height="10"
-              viewBox="0 0 21 15"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M13.2034 14.0228L19.9903 7.83603L13.2228 1.62808M1.00965 7.80637L19.8005 7.83573"
-                stroke="#B4B4B4"
-                strokeWidth="1.75"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            Сбросить пароль →
           </div>
           <svg
             onClick={() => setEditingProfileModal(false)}
-            style={{
-              position: "absolute",
-              top: "40px",
-              right: "40px",
-              cursor: "pointer",
-            }}
-            width="32"
-            height="32"
+            className="closeButtonEditingProfile"
+            width="24"
+            height="24"
             viewBox="0 0 32 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -218,86 +185,73 @@ export const EditingProfile = ({
         <>
           <div className="titleEditingProfile">Сброс пароля</div>
           <div className="containerEditingProfile">
-            <div className="inputContainerEditingProfile">
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">Старый пароль</div>
-                <Input
-                  type="password"
-                  placeholder="Введите старый пароль..."
-                  value={oldPassword}
-                  onChange={(e) => setOldPassword(e.target.value)}
-                />
-                {passwordErrors.oldPassword && (
-                  <div className="errorTextEditingProfile">
-                    {passwordErrors.oldPassword}
-                  </div>
-                )}
-              </div>
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">
-                  Введите новый пароль
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">Старый пароль</div>
+              <input
+                type="password"
+                className="inputEditingProfile"
+                placeholder="Введите старый пароль..."
+                value={oldPassword}
+                onChange={(e) => setOldPassword(e.target.value)}
+              />
+              {passwordErrors.oldPassword && (
+                <div className="errorTextEditingProfile">
+                  {passwordErrors.oldPassword}
                 </div>
-                <Input
-                  type="password"
-                  placeholder="Введите новый пароль..."
-                  value={newPassword1}
-                  onChange={(e) => setNewPassword1(e.target.value)}
-                />
-                {passwordErrors.newPassword1 && (
-                  <div className="errorTextEditingProfile">
-                    {passwordErrors.newPassword1}
-                  </div>
-                )}
+              )}
+            </div>
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">
+                Введите новый пароль
               </div>
-              <div className="blockInputEditingProfile">
-                <div className="titleInputEditingProfile">
-                  Введите повторно новый пароль
+              <input
+                type="password"
+                className="inputEditingProfile"
+                placeholder="Введите новый пароль..."
+                value={newPassword1}
+                onChange={(e) => setNewPassword1(e.target.value)}
+              />
+              {passwordErrors.newPassword1 && (
+                <div className="errorTextEditingProfile">
+                  {passwordErrors.newPassword1}
                 </div>
-                <Input
-                  type="password"
-                  placeholder="Введите повторно новый пароль..."
-                  value={newPassword2}
-                  onChange={(e) => setNewPassword2(e.target.value)}
-                />
-                {passwordErrors.newPassword2 && (
-                  <div className="errorTextEditingProfile">
-                    {passwordErrors.newPassword2}
-                  </div>
-                )}
+              )}
+            </div>
+            <div className="blockInputEditingProfile">
+              <div className="titleInputEditingProfile">
+                Введите повторно новый пароль
               </div>
+              <input
+                type="password"
+                className="inputEditingProfile"
+                placeholder="Введите повторно новый пароль..."
+                value={newPassword2}
+                onChange={(e) => setNewPassword2(e.target.value)}
+              />
+              {passwordErrors.newPassword2 && (
+                <div className="errorTextEditingProfile">
+                  {passwordErrors.newPassword2}
+                </div>
+              )}
             </div>
             <div
               className="btnBottomEditingProfile"
               onClick={handlePasswordReset}
             >
-              <svg
-                width="18"
-                height="19"
-                viewBox="0 0 18 19"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M6.83109 4.31C7.48359 4.115 8.20359 3.9875 8.99859 3.9875C12.5911 3.9875 15.5011 6.8975 15.5011 10.49C15.5011 14.0825 12.5911 16.9925 8.99859 16.9925C5.40609 16.9925 2.49609 14.0825 2.49609 10.49C2.49609 9.155 2.90109 7.91 3.59109 6.875M8.06859 2L5.90109 4.49L8.42859 6.335"
-                  stroke="#BEBABA"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
               Изменить
             </div>
           </div>
+          <div
+            className="passwordResetEditingProfile"
+            onClick={() => setOpenEditingProfileModal("info")}
+          >
+            ← Назад
+          </div>
           <svg
             onClick={() => setEditingProfileModal(false)}
-            style={{
-              position: "absolute",
-              top: "40px",
-              right: "40px",
-              cursor: "pointer",
-            }}
-            width="32"
-            height="32"
+            className="closeButtonEditingProfile"
+            width="24"
+            height="24"
             viewBox="0 0 32 32"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"

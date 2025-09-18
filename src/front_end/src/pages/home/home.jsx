@@ -2,6 +2,7 @@ import { useEffect } from "react"
 import Header from "../../components/header/header"
 import "./home.scss"
 import { motion } from "framer-motion"
+import { FeedbackFab } from "../../components/feedback/feedbackFab"
 /**
  * @param {object} props - Объект с пропсами компонента
  * @param {boolean} props.isAuth - Флаг, указывающий, авторизован ли пользователь
@@ -21,6 +22,7 @@ export const Home = ({ isAuth }) => {
       >
         <div className="blockHome">Edulytica</div>{" "}
       </motion.div>
+      <FeedbackFab />
     </div>
   )
 }

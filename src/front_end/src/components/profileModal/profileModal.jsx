@@ -36,55 +36,60 @@ export const ProfileModal = ({
 
   return (
     <div className="profileModal">
-      <div
-        className="infProfileModal"
-        style={{
-          borderBottom: "1px solid #cbd5e1",
-          paddingBlock: "15px 14px",
-          lineHeight: "143%",
-          paddingLeft: "13px",
-          fontSize: "16px",
-        }}
-      >
-        Мой аккаунт
-      </div>
-      <div className="blockInfProfileModal">
-        <div className="infProfileModal">Имя: {infoProfile.name}</div>
-        <div className="infProfileModal">Фамилия: {infoProfile.surname}</div>
-        <div className="infProfileModal">
-          Имя пользователя: {infoProfile.login}
+      <div className="titleProfileModal">Мой аккаунт</div>
+      <div className="containerProfileModal">
+        <div className="infoSectionProfileModal">
+          <div className="infoItemProfileModal">
+            <span className="infoLabelProfileModal">Имя:</span>
+            <span className="infoValueProfileModal">{infoProfile.name}</span>
+          </div>
+          <div className="infoItemProfileModal">
+            <span className="infoLabelProfileModal">Фамилия:</span>
+            <span className="infoValueProfileModal">{infoProfile.surname}</span>
+          </div>
+          <div className="infoItemProfileModal">
+            <span className="infoLabelProfileModal">Имя пользователя:</span>
+            <span className="infoValueProfileModal">{infoProfile.login}</span>
+          </div>
+          <div className="infoItemProfileModal">
+            <span className="infoLabelProfileModal">Дата рождения:</span>
+            <span className="infoValueProfileModal">
+              {infoProfile.birthDate || "23.09.2006"}
+            </span>
+          </div>
         </div>
-        <div className="infProfileModal">
-          Организация: {infoProfile.organization}
+        <div className="actionsSectionProfileModal">
+          <div
+            className="actionItemProfileModal"
+            onClick={openEditingProfileModal}
+          >
+            <span>Редактировать профиль</span>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M9 18L15 12L9 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <Link to="/" style={{ textDecoration: "none" }}>
+            <div
+              className="actionItemProfileModal logoutActionProfileModal"
+              onClick={logoutHandler}
+            >
+              Выйти из аккаунта
+            </div>
+          </Link>
         </div>
       </div>
-      <div
-        className="infProfileModal"
-        style={{
-          paddingBlock: "14px 4px",
-          lineHeight: "143%",
-          paddingLeft: "13px",
-          cursor: "pointer",
-        }}
-        onClick={openEditingProfileModal}
-      >
-        Редактировать информацию
-      </div>
-      <Link to="/" style={{ textDecoration: "none" }}>
-        <div
-          className="infProfileModal"
-          style={{
-            paddingBlock: "11px 15px",
-            lineHeight: "143%",
-            color: "rgba(239, 68, 68, 1)",
-            paddingLeft: "13px",
-            cursor: "pointer",
-          }}
-          onClick={logoutHandler}
-        >
-          Выйти из аккаунта
-        </div>
-      </Link>
     </div>
   )
 }

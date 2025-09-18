@@ -406,6 +406,9 @@ export const Account = ({
                   addEventModal={addEventModal}
                   fetchTicketHistory={handleFetchTicketHistory}
                   onTicketCreated={handleTicketCreated}
+                  onTicketError={(msg) =>
+                    setNotificationModal({ visible: true, text: msg, eta: "" })
+                  }
                 />
               </div>
             ) : accountSection === "result" ? (

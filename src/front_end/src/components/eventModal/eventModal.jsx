@@ -77,12 +77,15 @@ export const EventModal = ({
     <div className="eventModal">
       <div className="titleBlockEventModal">
         <div className="titleEventModal">Выберите мероприятие</div>
-        <div
-          className="textAddEventModal"
-          onClick={() => setAddEventModal(true)}
-        >
-          + добавить своё
-        </div>
+        {/* Temporarily hidden: add your own event button */}
+        {/**
+         * <div
+         *   className="textAddEventModal"
+         *   onClick={() => setAddEventModal(true)}
+         * >
+         *   + добавить своё
+         * </div>
+         */}
       </div>
       <div className="inputBlockEventModal">
         <svg

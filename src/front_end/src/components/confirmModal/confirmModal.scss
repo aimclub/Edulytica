@@ -1,0 +1,67 @@
+.confirmModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.66);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+}
+
+.confirmModal {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  width: 460px;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 32px 36px 24px 36px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  color: #fff;
+  font-family: "SF Pro Display";
+}
+
+.confirmTitle {
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.03em;
+  margin-bottom: 16px;
+}
+
+.confirmDesc {
+  font-size: 15px;
+  letter-spacing: -0.02em;
+  color: #cfcfcf;
+}
+
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+  width: 100%;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #fff;
+  color: #000;
+  cursor: pointer;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.btn.cancel {
+  background: transparent;
+  border: 1px solid #555;
+  color: #e5e5e5;
+}
+
+.btn.danger {
+  background: #e74c3c;
+  color: #fff;
+}

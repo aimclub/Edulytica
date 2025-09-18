@@ -26,6 +26,7 @@ export const AddFile = ({
   addEventModal, // Добавляем для отслеживания состояния
   fetchTicketHistory,
   onTicketCreated,
+  onTicketError,
 }) => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
@@ -34,6 +35,7 @@ export const AddFile = ({
   const fileInputRef = useRef(null)
   const [mode, setMode] = useState("рецензирование")
   const [, setError] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const openEventModal = () => {
     setEventModal((pr) => !pr)
@@ -86,6 +88,9 @@ export const AddFile = ({
   }, [setAccountSection])
 
   const handleAddFileSvg = useCallback(async () => {
+    if (isSubmitting) {
+      return
+    }
     try {
       const fileParam = selectedParams.find((param) => param.type === "file")
       const eventParam = selectedParams.find((param) => param.type === "event")
@@ -99,38 +104,61 @@ export const AddFile = ({
         throw new Error("Файл не найден")
       }
 
-      const { event_id } = await ticketService.getEventId(eventParam.name)
-      const mega_task_id = mode === "рецензирование" ? "1" : "2"
-      console.log("mode:", mode, "mega_task_id:", mega_task_id)
+      setIsSubmitting(true)
+      setError(null)
 
-      // Создаем тикет через Redux Thunk
-      const ticketId = await dispatch(
-        createTicket(file, event_id, mega_task_id)
-      )
+      const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
-      await fetchTicketHistory()
+      const requestPromise = (async () => {
+        const { event_id } = await ticketService.getEventId(eventParam.name)
+        const mega_task_id = mode === "рецензирование" ? "1" : "2"
+        console.log("mode:", mode, "mega_task_id:", mega_task_id)
 
-      // Получаем данные созданного тикета для уведомления
-      const ticketInfo = await ticketService.getTicket(ticketId)
-      const ticketStatus = await ticketService.getTicketStatus(ticketId)
-      const ticketData = {
-        ticketId: ticketInfo.ticket.id,
-        ticketInfo: ticketInfo.ticket,
-        status: ticketStatus.status,
+        const ticketId = await dispatch(
+          createTicket(file, event_id, mega_task_id)
+        )
+
+        await fetchTicketHistory()
+
+        const ticketInfo = await ticketService.getTicket(ticketId)
+        const ticketStatus = await ticketService.getTicketStatus(ticketId)
+        return {
+          ticketId: ticketInfo.ticket.id,
+          ticketInfo: ticketInfo.ticket,
+          status: ticketStatus.status,
+        }
+      })()
+
+      const [reqResult] = await Promise.allSettled([
+        requestPromise,
+        delay(5000),
+      ])
+
+      if (reqResult.status === "fulfilled") {
+        const ticketData = reqResult.value
+        if (onTicketCreated) {
+          await onTicketCreated(ticketData)
+        }
+        setAccountSection("result")
+        navigate(`/account/result?ticketId=${ticketData.ticketId}`)
+        resetParams()
+      } else {
+        resetParams()
+        throw (
+          reqResult.reason || new Error("Произошла ошибка при создании тикета")
+        )
       }
-
-      if (onTicketCreated) {
-        await onTicketCreated(ticketData)
-      }
-
-      setAccountSection("result")
-      navigate(`/account/result?ticketId=${ticketData.ticketId}`)
-      resetParams()
     } catch (error) {
-      console.error(error.message || "Произошла ошибка при создании тикета")
-      setError(error.message)
+      console.error(error?.message || "Произошла ошибка при создании тикета")
+      setError(error?.message || "Произошла ошибка при создании тикета")
+      if (onTicketError) {
+        onTicketError("Тикет не создан. Произошла ошибка")
+      }
+    } finally {
+      setIsSubmitting(false)
     }
   }, [
+    isSubmitting,
     setAccountSection,
     resetParams,
     selectedParams,
@@ -138,6 +166,7 @@ export const AddFile = ({
     mode,
     navigate,
     onTicketCreated,
+    onTicketError,
     dispatch,
   ])
 
@@ -306,33 +335,73 @@ export const AddFile = ({
               </div>
             </div>
             {hasRequiredParams ? (
-              <svg
-                onClick={handleAddFileSvg}
-                className="svgParameterBtnAddFile2"
-                width="18"
-                height="18"
-                viewBox="0 0 18 18"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13.5542 7.1775L9.00172 2.625L4.44922 7.1775M9.00172 15.375V2.7525"
-                  stroke="#303030"
-                  strokeWidth="1.75"
-                  strokeMiterlimit="10"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+              isSubmitting ? (
+                <svg
+                  className="svgParameterBtnAddFile2"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 50 50"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ pointerEvents: "none", opacity: 0.8 }}
+                >
+                  <circle
+                    cx="25"
+                    cy="25"
+                    r="20"
+                    stroke="#303030"
+                    strokeWidth="5"
+                    strokeOpacity="0.2"
+                  />
+                  <path
+                    d="M45 25a20 20 0 0 1-20 20"
+                    stroke="#303030"
+                    strokeWidth="5"
+                  >
+                    <animateTransform
+                      attributeName="transform"
+                      type="rotate"
+                      from="0 25 25"
+                      to="360 25 25"
+                      dur="1s"
+                      repeatCount="indefinite"
+                    />
+                  </path>
+                </svg>
+              ) : (
+                <svg
+                  onClick={handleAddFileSvg}
+                  className="svgParameterBtnAddFile2"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  style={{ cursor: "pointer" }}
+                >
+                  <path
+                    d="M13.5542 7.1775L9.00172 2.625L4.44922 7.1775M9.00172 15.375V2.7525"
+                    stroke="#303030"
+                    strokeWidth="1.75"
+                    strokeMiterlimit="10"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              )
             ) : (
               <svg
-                onClick={handleAddFileSvg}
+                onClick={isSubmitting ? undefined : handleAddFileSvg}
                 width="18"
                 className="svgParameterBtnAddFile"
                 height="18"
                 viewBox="0 0 18 18"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
+                style={{
+                  opacity: isSubmitting ? 0.6 : 1,
+                  pointerEvents: isSubmitting ? "none" : "auto",
+                }}
               >
                 <path
                   d="M13.5542 7.1775L9.00172 2.625L4.44922 7.1775M9.00172 15.375V2.7525"

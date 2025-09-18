@@ -295,27 +295,33 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                 onClick={handleDownloadDocument}
                 style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
               >
-                {isDownloading ? (
-                  <svg
-                    width="25"
-                    height="25"
-                    viewBox="0 0 25 25"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="spinner"
-                  >
-                    <circle
-                      cx="12.5"
-                      cy="12.5"
-                      r="10"
-                      stroke="#89AAFF"
-                      strokeWidth="2"
-                      fill="none"
-                      strokeDasharray="31.416"
-                      strokeDashoffset="31.416"
-                    />
-                  </svg>
-                ) : (
+                <svg
+                  width="25"
+                  height="25"
+                  viewBox="0 0 25 25"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12.5 9V15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
+                    stroke="#89AAFF"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+                {isDownloading ? "Скачивание..." : "Скачать"}
+              </div>
+            )}
+            {activeSectionResult === 2 &&
+              ticketData?.status === "Completed" && (
+                <div
+                  className={`btnBottomResultFile ${
+                    isDownloading ? "downloading" : ""
+                  }`}
+                  onClick={handleDownloadResult}
+                  style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
+                >
                   <svg
                     width="25"
                     height="25"
@@ -331,56 +337,6 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                       strokeLinejoin="round"
                     />
                   </svg>
-                )}
-                {isDownloading ? "Скачивание..." : "Скачать"}
-              </div>
-            )}
-            {activeSectionResult === 2 &&
-              ticketData?.status === "Completed" && (
-                <div
-                  className={`btnBottomResultFile ${
-                    isDownloading ? "downloading" : ""
-                  }`}
-                  onClick={handleDownloadResult}
-                  style={{ cursor: isDownloading ? "not-allowed" : "pointer" }}
-                >
-                  {isDownloading ? (
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 25 25"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="spinner"
-                    >
-                      <circle
-                        cx="12.5"
-                        cy="12.5"
-                        r="10"
-                        stroke="#89AAFF"
-                        strokeWidth="2"
-                        fill="none"
-                        strokeDasharray="31.416"
-                        strokeDashoffset="31.416"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      width="25"
-                      height="25"
-                      viewBox="0 0 25 25"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M12.5 9В15M9.5 13L12.5 16L15.5 13M22.5 12.5C22.5 18.0228 18.0228 22.5 12.5 22.5C6.97715 22.5 2.5 18.0228 2.5 12.5C2.5 6.97715 6.97715 2.5 12.5 2.5C18.0228 2.5 22.5 6.97715 22.5 12.5Z"
-                        stroke="#89AAFF"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  )}
                   {isDownloading ? "Скачивание..." : "Скачать"}
                 </div>
               )}

@@ -47,6 +47,34 @@ export const validateTicketName = (name) => {
   return null
 }
 
+export const validateFeedbackName = (name) => {
+  const trimmed = name.trim()
+  if (!trimmed) return "* Обязательное поле"
+  if (trimmed.length < 2) return "* Имя слишком короткое"
+  if (trimmed.length > 100)
+    return "* Имя слишком длинное (максимум 100 символов)"
+  return null
+}
+
+export const validateFeedbackEmail = (email) => {
+  const trimmed = email.trim()
+  if (!trimmed) return "* Обязательное поле"
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "* Некорректный email"
+  if (trimmed.length > 100)
+    return "* Email слишком длинный (максимум 100 символов)"
+  return null
+}
+
+export const validateFeedbackMessage = (message) => {
+  const trimmed = message.trim()
+  if (!trimmed) return "* Обязательное поле"
+  if (trimmed.length < 10)
+    return "* Сообщение слишком короткое (минимум 10 символов)"
+  if (trimmed.length > 3000)
+    return "* Сообщение слишком длинное (максимум 3000 символов)"
+  return null
+}
+
 //Валидация ошибок от сервера
 const ERROR_TYPES = {
   EMAIL_EXISTS: "User with such email already exists",
@@ -59,6 +87,12 @@ const ERROR_TYPES = {
   TICKET_NOT_FOUND: "Ticket not found",
   NOT_TICKET_CREATOR: "You're not ticket creator",
   TICKET_NAME_TOO_LONG: "Ticket name too long, maximum: 60 characters",
+  FEEDBACK_NAME_TOO_LONG: "The name is too long, maximum 100 characters",
+  FEEDBACK_EMAIL_TOO_LONG: "The email is too long, maximum 100 characters",
+  FEEDBACK_TEXT_TOO_LONG: "The text is too long, maximum 3000 characters",
+  TELEGRAM_API_UNAVAILABLE: "Telegram API is unavailable",
+  TELEGRAM_API_ERROR: "Telegram API error",
+  TELEGRAM_RETURNED_ERROR: "Telegram returned an error",
 }
 
 export const validateBackend = (err) => {
@@ -120,6 +154,36 @@ export const validateBackend = (err) => {
   if (err === ERROR_TYPES.TICKET_NAME_TOO_LONG) {
     return {
       name: "* Название тикета слишком длинное (максимум 60 символов)",
+    }
+  }
+  if (err === ERROR_TYPES.FEEDBACK_NAME_TOO_LONG) {
+    return {
+      name: "* Имя слишком длинное (максимум 100 символов)",
+    }
+  }
+  if (err === ERROR_TYPES.FEEDBACK_EMAIL_TOO_LONG) {
+    return {
+      email: "* Email слишком длинный (максимум 100 символов)",
+    }
+  }
+  if (err === ERROR_TYPES.FEEDBACK_TEXT_TOO_LONG) {
+    return {
+      message: "* Сообщение слишком длинное (максимум 3000 символов)",
+    }
+  }
+  if (err && err.includes("Telegram API is unavailable")) {
+    return {
+      general: "* Сервис временно недоступен. Попробуйте позже.",
+    }
+  }
+  if (err && err.includes("Telegram API error")) {
+    return {
+      general: "* Ошибка сервиса. Попробуйте позже.",
+    }
+  }
+  if (err && err.includes("Telegram returned an error")) {
+    return {
+      general: "* Ошибка отправки сообщения. Попробуйте позже.",
     }
   }
   return {

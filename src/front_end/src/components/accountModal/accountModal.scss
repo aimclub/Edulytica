@@ -104,6 +104,9 @@
   height: 100%;
   margin-left: 15px;
   margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 
   &::-webkit-scrollbar {
     width: 5px; /* Ширина скроллбара */

@@ -9,6 +9,7 @@ import { ResultFile } from "../../components/resultFile/resultFile"
 import { EditingProfile } from "../../components/editingProfile/editingProfile"
 import { AddEvent } from "../../components/addEvent/addEvent"
 import { NotificationModal } from "../../components/notificationModal/notificationModal"
+import { FeedbackFab } from "../../components/feedback/feedbackFab"
 import { useSelector, useDispatch } from "react-redux"
 import store from "../../store/store"
 import { fetchUserData } from "../../store/authSlice"
@@ -476,6 +477,7 @@ export const Account = ({
         onClose={handleCloseResultReady}
         centered={resultReadyModal.text === "Результат еще не готов, ожидайте"}
       />
+      <FeedbackFab />
     </div>
   )
 }

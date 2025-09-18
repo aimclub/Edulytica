@@ -1,34 +1,93 @@
-.infProfileModal {
+.titleProfileModal {
   font-family: "SF Pro Display";
   font-weight: 600;
-  font-size: 14px;
-  line-height: 100%;
+  font-size: 16px;
   color: #fff;
-  width: calc(100% - 13px);
+  padding: 12px 16px;
+  border-bottom: 1px solid #404040;
+  background: #2a2a2a;
+  border-radius: 8px 8px 0 0;
 }
-.blockInfProfileModal {
+
+.containerProfileModal {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  align-items: start;
-  justify-content: center;
-  padding-block: 15px 15px;
-  border-bottom: 1px solid #cbd5e1;
-  padding-left: 13px;
-  width: calc(100% - 13px);
+  width: 100%;
 }
+
+.infoSectionProfileModal {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #404040;
+}
+
+.infoItemProfileModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.4;
+  display: flex;
+  gap: 4px;
+}
+
+.infoLabelProfileModal {
+  color: #b4b4b4;
+}
+
+.infoValueProfileModal {
+  color: #fff;
+}
+
+.actionsSectionProfileModal {
+  display: flex;
+  flex-direction: column;
+}
+
+.actionItemProfileModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 14px;
+  color: #fff;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #404040;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  &:last-child {
+    border-bottom: none;
+    border-radius: 0 0 8px 8px;
+  }
+
+  &:hover {
+    background-color: #3a3a3a;
+  }
+}
+
+.logoutActionProfileModal {
+  color: #ff6b6b;
+
+  &:hover {
+    background-color: rgba(255, 107, 107, 0.1);
+  }
+}
+
 .profileModal {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  align-items: start;
-  box-shadow: 3px 5px 4px 0 rgba(32, 32, 32, 0.36), -2px 4px 4px 0 #1c1c1cf1;
-  background: #303030;
-  border: 1px solid #303030;
-  border-radius: 6px;
-  width: 288px;
-  z-index: 10;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  width: 280px;
   position: fixed;
   top: 79px;
   right: 50px;
+  z-index: 10000;
+  overflow: hidden;
 }

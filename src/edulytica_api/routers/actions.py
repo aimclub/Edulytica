@@ -761,6 +761,24 @@ async def send_feedback_to_telegram(
             500: Misconfiguration or Telegram API error.
     """
     try:
+        if len(payload.name) > 100:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='The name is too long, maximum 100 characters'
+            )
+
+        if len(str(payload.email)) > 100:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='The email is too long, maximum 100 characters'
+            )
+
+        if len(payload.text) > 3000:
+            raise HTTPException(
+                status_code=HTTP_400_BAD_REQUEST,
+                detail='The text is too long, maximum 3000 characters'
+            )
+
         msg = (
             f"ФИО: {emv2(payload.name.strip())}\n"
             f"email: `{payload.email}`\n\n"
@@ -770,10 +788,12 @@ async def send_feedback_to_telegram(
         url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
         body = {
             "chat_id": CHAT_ID,
-            "message_thread_id": CHAT_THREAD_ID,
             "text": msg,
             "parse_mode": "MarkdownV2",
         }
+
+        if CHAT_THREAD_ID > 0:
+            body["message_thread_id"] = CHAT_THREAD_ID
 
         try:
             resp = await http_client.post(url, json=body, timeout=30.0)
@@ -796,7 +816,7 @@ async def send_feedback_to_telegram(
                 detail=f"Telegram returned an error: {data.get('description')}"
             )
 
-        return {"detail": "Feedback sent", "message_id": data["result"].get("message_id")}
+        return {"detail": "Feedback sent"}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

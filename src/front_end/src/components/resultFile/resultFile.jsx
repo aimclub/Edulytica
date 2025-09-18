@@ -23,7 +23,7 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
   const [activeSectionResult, setActiveSectionResult] = useState(1)
 
   /** Состояние, указывающее, есть ли прокрутка */
-  const [isScrollable, setIsScrollable] = useState(true)
+  const [, setIsScrollable] = useState(true)
   const scrollRef = useRef(null)
   // Состояние для ключа анимации, чтобы при изменении registrationPage происходила анимация
   const [key, setKey] = useState(0)
@@ -268,11 +268,7 @@ export const ResultFile = ({ fileName, ticketData, resetSection }) => {
                 <motion.div
                   key={contentKey}
                   className={`textContScrollResultFile`}
-                  style={{
-                    paddingRight: isScrollable ? "20px" : "0",
-                    marginRight: isScrollable ? "35px" : "44px",
-                    willChange: "opacity",
-                  }}
+                  style={{ willChange: "opacity" }}
                   ref={scrollRef}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

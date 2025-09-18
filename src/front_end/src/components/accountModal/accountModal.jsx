@@ -7,6 +7,7 @@ import { ContextMenu } from "./ContextMenu"
 import { RenameTicketModal } from "../renameTicketModal/renameTicketModal"
 import { NotificationModal } from "../notificationModal/notificationModal"
 import { ticketService } from "../../services/ticket.service"
+import { ConfirmModal } from "../confirmModal/confirmModal"
 
 /**
  *
@@ -46,6 +47,10 @@ export const AccountModal = ({
     visible: false,
     text: "",
     eta: "",
+  })
+  const [confirmDelete, setConfirmDelete] = useState({
+    visible: false,
+    id: null,
   })
   const scrollContainerRef = useRef(null)
 
@@ -212,7 +217,7 @@ export const AccountModal = ({
         handleToggleTicketShare(ticketId)
         break
       case "delete":
-        handleDeleteTicket(ticketId)
+        setConfirmDelete({ visible: true, id: ticketId })
         break
       default:
         break
@@ -502,6 +507,18 @@ export const AccountModal = ({
         type={notificationModal.type}
         eta={notificationModal.eta}
         onClose={closeNotification}
+      />
+
+      <ConfirmModal
+        visible={confirmDelete.visible}
+        title="Удаление тикета"
+        description="Вы уверены, что хотите удалить тикет?"
+        onCancel={() => setConfirmDelete({ visible: false, id: null })}
+        onConfirm={async () => {
+          const id = confirmDelete.id
+          setConfirmDelete({ visible: false, id: null })
+          await handleDeleteTicket(id)
+        }}
       />
     </>
   )

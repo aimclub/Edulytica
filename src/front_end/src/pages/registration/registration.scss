@@ -1,12 +1,11 @@
 .registrationPage {
   width: 100%;
-  height: calc(100vh - 16px);
+  height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: start;
   align-items: center;
   gap: 25px;
-  margin-top: -8px;
 }
 .blockLeftRegistrationPage {
   display: flex;

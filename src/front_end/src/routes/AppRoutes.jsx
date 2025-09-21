@@ -60,10 +60,12 @@ const AppRoutes = ({
               setProfileModal={setProfileModal}
               accountSection={accountSection}
               setAccountSection={setAccountSection}
+              isAuth={isAuth}
             />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/account/info"
         element={
@@ -75,6 +77,7 @@ const AppRoutes = ({
               setProfileModal={setProfileModal}
               accountSection={accountSection}
               setAccountSection={setAccountSection}
+              isAuth={isAuth}
             />
           </ProtectedRoute>
         }

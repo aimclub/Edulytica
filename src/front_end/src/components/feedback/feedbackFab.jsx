@@ -1,10 +1,12 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { FeedbackModal } from "./feedbackModal"
+import { FeedbackNotification } from "./feedbackNotification"
 import { ticketService } from "../../services/ticket.service"
 import "./feedbackModal.scss"
 
 export const FeedbackFab = () => {
   const [open, setOpen] = useState(false)
+  const [showNotification, setShowNotification] = useState(false)
 
   const handleSubmit = useCallback(async (payload) => {
     try {
@@ -14,12 +16,33 @@ export const FeedbackFab = () => {
     }
   }, [])
 
+  useEffect(() => {
+    const hasSeenNotification = localStorage.getItem("feedbackNotificationSeen")
+
+    if (!hasSeenNotification) {
+      const timer = setTimeout(() => {
+        setShowNotification(true)
+      }, 1000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  const handleNotificationClose = useCallback(() => {
+    setShowNotification(false)
+    localStorage.setItem("feedbackNotificationSeen", "true")
+  }, [])
+
   return (
     <>
       <button
         className="feedbackFabButton"
         aria-label="Обратная связь"
-        onClick={() => setOpen(true)}
+        onClick={() => {
+          setOpen(true)
+          setShowNotification(false)
+          localStorage.setItem("feedbackNotificationSeen", "true")
+        }}
         title="Обратная связь"
       >
         <svg
@@ -29,16 +52,16 @@ export const FeedbackFab = () => {
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
-            d="M12 3c-4.97 0-9 3.58-9 8 0 2.04.86 3.9 2.29 5.32L4 21l4.83-1.3C10.18 20.55 11.07 21 12 21c4.97 0 9-3.58 9-8s-4.03-10-9-10Zm-4 8h8m-8 3h5m3-6H8"
-            stroke="#EAEAEA"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"
+            fill="#EAEAEA"
           />
         </svg>
       </button>
       {open && (
         <FeedbackModal onClose={() => setOpen(false)} onSubmit={handleSubmit} />
+      )}
+      {showNotification && (
+        <FeedbackNotification onClose={handleNotificationClose} />
       )}
     </>
   )

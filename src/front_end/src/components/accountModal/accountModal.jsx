@@ -339,6 +339,7 @@ export const AccountModal = ({
           <div
             onClick={() => {
               setAccountSection("info")
+              navigate("/account/info")
             }}
             className={
               accountSection === "info"
@@ -351,6 +352,7 @@ export const AccountModal = ({
           <div
             onClick={() => {
               setAccountSection("help")
+              navigate("/account/help")
             }}
             className={
               accountSection === "help"

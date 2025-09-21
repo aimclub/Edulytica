@@ -52,9 +52,9 @@ export const ProfileModal = ({
             <span className="infoValueProfileModal">{infoProfile.login}</span>
           </div>
           <div className="infoItemProfileModal">
-            <span className="infoLabelProfileModal">Дата рождения:</span>
+            <span className="infoLabelProfileModal">Организация:</span>
             <span className="infoValueProfileModal">
-              {infoProfile.birthDate || "23.09.2006"}
+              {infoProfile.organization}
             </span>
           </div>
         </div>

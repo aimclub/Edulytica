@@ -181,7 +181,7 @@ export const RegistrationForm = ({ registrationPage, isAuth }) => {
   return (
     <>
       {loginModal === "login" ? (
-        <div className="registrationForm">
+        <div className="registrationForm login">
           <div className="titleRegistrationForm">Вход</div>
           <div className="containerRegistrationForm">
             <div className="inputContainerRegistrationForm">
@@ -339,17 +339,19 @@ export const RegistrationForm = ({ registrationPage, isAuth }) => {
                 <div className="titleInputRegistrationForm">
                   Повторите пароль
                 </div>
-                <Input
-                  type="password"
-                  value={repeatPassword}
-                  onChange={(e) => setRepeatPassword(e.target.value)}
-                  placeholder="Введите повторно пароль..."
-                />
-                {errors.repeatPassword && (
-                  <div className="errorTextRegistrationForm">
-                    {errors.repeatPassword}
-                  </div>
-                )}
+                <div className="blockValidationInputRegistrationForm">
+                  <Input
+                    type="password"
+                    value={repeatPassword}
+                    onChange={(e) => setRepeatPassword(e.target.value)}
+                    placeholder="Введите повторно пароль..."
+                  />
+                  {errors.repeatPassword && (
+                    <div className="errorTextRegistrationForm">
+                      {errors.repeatPassword}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="blockBtnRegistrationForm">

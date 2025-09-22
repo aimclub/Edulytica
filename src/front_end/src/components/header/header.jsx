@@ -1,5 +1,5 @@
 import { useState } from "react"
-import logo from "../../assets/images/logo.svg"
+import logo from "../../assets/images/logo.png"
 import "./header.scss"
 import { Link } from "react-router-dom"
 
@@ -30,7 +30,7 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
       {!isAuth ? (
         <>
           <div className="logoHeader">
-            <img src={logo} alt="logo" />
+            <img src={logo} alt="logo" className="logoHeaderImg" />
           </div>
           <div className="btnContainerHeader" style={{ marginTop: "18px" }}>
             <Link to="/login" style={{ textDecoration: "none" }}>
@@ -44,7 +44,7 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
       ) : (
         <>
           <div className="logoAuthorized" onClick={handleClickLogo}>
-            <img src={logo} alt="logo" />
+            <img src={logo} alt="logo" className="logoHeaderImg" />
             {!openModalInformation ? (
               <svg
                 width="24"

@@ -1,15 +1,15 @@
 .inputContainerRegistrationForm {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
   align-items: start;
-  max-width: 437px;
+  max-width: 500px;
   width: 100%;
 }
 .blockInputRegistrationForm {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   align-items: start;
   width: 100%;
 }
@@ -33,30 +33,30 @@
   font-family: "SF Pro Display";
 }
 .btnRegistrationForm {
-  border-radius: 8px;
-  padding: 5px 16px;
-  max-width: 437px;
+  border-radius: 9px;
+  padding: 9px 32px;
+  max-width: 500px;
   width: 100%;
   font-family: "SF Pro Display";
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 171%;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 1.4;
   color: #000;
   background: #fff;
   outline: none;
   border: none;
   width: 100%;
   cursor: pointer;
-  transition: 0.5s;
+  transition: all 0.3s ease;
 }
 .btnRegistrationForm:hover {
-  background-color: rgb(235, 237, 254);
-  box-shadow: 0 4px 4px 0 #07017f;
+  background-color: #f0f0f0;
+  transform: translateY(-1px);
 }
 .blockBtnRegistrationForm {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 16px;
   width: 100%;
   align-items: center;
   width: 100%;
@@ -65,17 +65,22 @@
   font-family: "SF Pro Display";
   font-weight: 500;
   font-size: 14px;
-  line-height: 171%;
-  color: #808080;
+  line-height: 1.4;
+  color: #b0b0b0;
   cursor: pointer;
+  transition: color 0.2s ease;
+}
+.textBtnRegistrationForm:hover {
+  color: #e0e0e0;
 }
 .titleRegistrationForm {
   font-weight: 700;
   font-family: "SF Pro Display";
-  font-size: 46px;
+  font-size: 34px;
   letter-spacing: -0.03em;
   text-align: center;
   color: #fff;
+  margin-bottom: 8px;
 }
 
 .containerRegistrationForm {
@@ -84,23 +89,25 @@
   gap: 24px;
   align-items: start;
   width: 100%;
-  max-width: 437px;
+  max-width: 500px;
 }
 .registrationForm {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 16px;
   align-items: start;
   justify-content: center;
-  background: #141414;
-  border: 1px solid #000;
-  border-radius: 30px;
-  box-shadow: 6px 10px 16px 0 rgba(1, 72, 255, 0.69),
-    4px 5px 7px 0 rgba(66, 119, 255, 0.7);
-  padding: 88px 113px 64px 113px;
-  min-width: calc(663px - 270px);
+  background: #1a1a1a;
+  border: 1px solid #3a3a3a;
+  border-radius: 28px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(59, 130, 246, 0.2);
+  padding: 50px 80px;
+  min-width: 400px;
   width: fit-content;
   margin-top: -30px;
+  &.login {
+    margin-top: 30px;
+  }
 }
 
 .messageContRegistrationForm {
@@ -121,8 +128,8 @@
   font-family: "SF Pro Display";
   font-weight: 500;
   font-size: 14px;
-  line-height: 100%;
-  color: #b4b4b4;
+  line-height: 1.4;
+  color: #b0b0b0;
 }
 .switchContRegistrationForm {
   display: flex;
@@ -132,54 +139,84 @@
   margin-block: -6px;
 }
 
-@media (max-height: 800px) {
-  .titleRegistrationForm {
-    font-size: 40px;
-  }
+@media (min-height: 872px) {
   .registrationForm {
-    gap: 13px;
-    padding: 55px 90px 50px 90px;
-    min-width: calc(663px - 320px);
-    margin-top: -20px;
-  }
-  .input {
-    border-radius: 8px;
-    padding: 8px 0px 8px 18px;
-    font-size: 12px;
-  }
-  .input::placeholder {
-    font-size: 12px;
+    margin-top: 0px;
   }
 }
-
-@media (max-height: 688px) {
+@media (max-height: 834px) {
   .titleRegistrationForm {
-    font-size: 38px;
+    font-size: 30px;
   }
   .registrationForm {
-    gap: 12px;
-    padding: 50px 80px 45px 80px;
-    min-width: calc(663px - 350px);
-    margin-top: -20px;
+    padding: 50px 65px 35px 65px;
+    margin-top: -30px;
   }
-  .input {
-    border-radius: 8px;
-    padding: 8px 0px 8px 18px;
-    font-size: 12px;
+  .containerRegistrationForm {
+    max-width: 400px;
   }
-  .input::placeholder {
-    font-size: 12px;
-  }
-  .blockBtnRegistrationForm {
-    gap: 8px;
-  }
-  .textBtnRegistrationForm {
-    font-size: 12px;
+
+  .titleInputRegistrationForm {
+    font-size: 17px;
   }
   .blockInputRegistrationForm {
-    gap: 4px;
+    gap: 6px;
+  }
+  .input {
+    width: calc(100% - 36px);
+    height: 36px;
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  .input::placeholder {
+    font-size: 14px;
+  }
+  .btnRegistrationForm {
+    border-radius: 9px;
+    padding: 8px 32px;
+    font-size: 14px;
+  }
+  .containerRegistrationForm {
+    gap: 24px;
+  }
+}
+@media (max-height: 732px) {
+  .titleRegistrationForm {
+    font-size: 28px;
+  }
+  .registrationForm {
+    padding: 45px 60px 35px 60px;
+    margin-top: -30px;
+    min-width: 375px;
+  }
+  .containerRegistrationForm {
+    gap: 20px;
+    max-width: 375px;
   }
   .titleInputRegistrationForm {
     font-size: 15px;
+  }
+  .blockInputRegistrationForm {
+    gap: 5px;
+  }
+  .input {
+    width: calc(100% - 36px);
+    height: 32px;
+    font-size: 12px;
+    border-radius: 8px;
+  }
+  .input::placeholder {
+    font-size: 12px;
+  }
+  .btnRegistrationForm {
+    border-radius: 9px;
+    padding: 8px 32px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 1196px) {
+  .registrationForm {
+    padding-inline: 60px;
+    min-width: 380px;
   }
 }

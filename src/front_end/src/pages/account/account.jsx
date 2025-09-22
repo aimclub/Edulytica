@@ -23,6 +23,7 @@ import {
   startPollingForDocument,
 } from "../../store/ticketSlice"
 import { useLocation, useNavigate } from "react-router-dom"
+import { UnderConstruction } from "../../components/underConstruction/underConstruction"
 
 /**
  *  * Компонент страницы аккаунта пользователя.
@@ -419,6 +420,14 @@ export const Account = ({
                   ticketData={currentTicket}
                   resetSection={currentTicket?.ticketId}
                 />
+              </div>
+            ) : accountSection === "help" ? (
+              <div className={`addFileAccPage ${accountModal ? "shift" : ""}`}>
+                <UnderConstruction label="help" />
+              </div>
+            ) : accountSection === "info" ? (
+              <div className={`addFileAccPage ${accountModal ? "shift" : ""}`}>
+                <UnderConstruction label="info" />
               </div>
             ) : null}
           </motion.div>

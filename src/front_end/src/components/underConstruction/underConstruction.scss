@@ -1,0 +1,26 @@
+.ucBlock {
+  height: 100%;
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  text-align: center;
+  margin-top: 240px;
+}
+
+.ucBlock__icon {
+  width: 72px;
+  height: 72px;
+  opacity: 0.7;
+}
+
+.ucBlock__text {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 30px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #868686;
+}

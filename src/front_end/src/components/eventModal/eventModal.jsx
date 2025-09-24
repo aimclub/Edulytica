@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from "react"
 import "./eventModal.scss"
 import { ticketService } from "../../services/ticket.service"
+import eventDescriptions from "./eventDescriptions.json"
+import { EventInfoModal } from "./eventInfoModal"
 
 /**
  * Компонент модального окна для выбора мероприятия.
@@ -14,12 +16,18 @@ export const EventModal = ({
   setSelectedEvent,
   closeModal,
   setAddEventModal,
+  onShowEventInfo,
 }) => {
   const [searchTermEvent, setSearchTermEvent] = useState("")
   const [filterEvent, setFilterEvent] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [events, setEvents] = useState([])
+  const [infoModal, setInfoModal] = useState({
+    visible: false,
+    title: "",
+    description: "",
+  })
 
   const filterData = useCallback(() => {
     if (!searchTermEvent) {
@@ -64,6 +72,19 @@ export const EventModal = ({
   const handleEventSelect = (event) => {
     setSelectedEvent(event)
     closeModal()
+  }
+
+  const openEventInfo = (ev) => {
+    const key = ev?.name
+    const fallbackTitle = key || "Мероприятие"
+    const descriptionFromJson = key && eventDescriptions[key]?.description
+    const titleFromJson = key && eventDescriptions[key]?.title
+    const description =
+      ev?.info ||
+      descriptionFromJson ||
+      "Описание для данного мероприятия пока отсутствует."
+    const title = titleFromJson || fallbackTitle
+    setInfoModal({ visible: true, title, description })
   }
 
   const truncateString = (str, maxLength) => {
@@ -117,17 +138,46 @@ export const EventModal = ({
             <div className="lineBlockEventModal">{error}</div>
           ) : (
             filterEvent.map((ev) => (
-              <div
-                key={ev.id}
-                className="lineBlockEventModal"
-                onClick={() => handleEventSelect(ev)}
-              >
-                {truncateString(ev.name, 13)}
+              <div key={ev.id} className="lineBlockEventModal">
+                <div className="lineBlockEventModalRow">
+                  <div
+                    onClick={() => handleEventSelect(ev)}
+                    style={{ flex: "1 1 auto" }}
+                  >
+                    {truncateString(ev.name, 13)}
+                  </div>
+                  <svg
+                    className="eventInfoSvgButton"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      openEventInfo(ev)
+                    }}
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10Zm0-13a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Zm-1.25 8.5h2.5v-7h-2.5v7Z"
+                      fill="#bebaba"
+                    />
+                  </svg>
+                </div>
               </div>
             ))
           )}
         </div>
       </div>
+      {infoModal.visible && (
+        <EventInfoModal
+          title={infoModal.title}
+          description={infoModal.description}
+          onClose={() =>
+            setInfoModal({ visible: false, title: "", description: "" })
+          }
+        />
+      )}
     </div>
   )
 }

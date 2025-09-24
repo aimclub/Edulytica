@@ -74,6 +74,19 @@
     color: #90aaed;
   }
 }
+.lineBlockEventModalRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.eventInfoSvgButton {
+  flex: 0 0 auto;
+  cursor: pointer;
+  padding-top: 1px;
+  padding-left: -2px;
+}
 .blockEventModalScroll {
   overflow-y: scroll;
   height: 100%;
@@ -128,4 +141,12 @@
   border: 1px solid #676767;
   border-radius: 3px 12px 12px 12px;
   position: relative;
+}
+.eventInfoDescription {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 150%;
+  color: #bebaba;
+  white-space: pre-wrap;
 }

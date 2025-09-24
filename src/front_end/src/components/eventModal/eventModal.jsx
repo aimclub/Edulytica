@@ -140,12 +140,6 @@ export const EventModal = ({
             filterEvent.map((ev) => (
               <div key={ev.id} className="lineBlockEventModal">
                 <div className="lineBlockEventModalRow">
-                  <div
-                    onClick={() => handleEventSelect(ev)}
-                    style={{ flex: "1 1 auto" }}
-                  >
-                    {truncateString(ev.name, 13)}
-                  </div>
                   <svg
                     className="eventInfoSvgButton"
                     onClick={(e) => {
@@ -163,6 +157,12 @@ export const EventModal = ({
                       fill="#bebaba"
                     />
                   </svg>
+                  <div
+                    onClick={() => handleEventSelect(ev)}
+                    style={{ flex: "1 1 auto" }}
+                  >
+                    {truncateString(ev.name, 13)}
+                  </div>
                 </div>
               </div>
             ))

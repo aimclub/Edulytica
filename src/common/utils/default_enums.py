@@ -14,3 +14,10 @@ class TicketStatusDefault(str, Enum):
 
 class TicketTypeDefault(str, Enum):
     ACHIEVABILITY = 'Достижимость'
+
+
+class SubtaskStatuses(str, Enum):
+    STATUS_PENDING = "PENDING"
+    STATUS_IN_PROGRESS = "IN_PROGRESS"
+    STATUS_COMPLETED = "COMPLETED"
+    STATUS_FAILED = "FAILED"

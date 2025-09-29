@@ -6,10 +6,11 @@ from confluent_kafka import Consumer, KafkaError, Producer, Message
 from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
 from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
+from src.common.utils.default_enums import SubtaskStatuses
 from src.llm import ModelInstruct
 from src.llm.qwen import QwenInstruct
 from src.llm.vikhr import VikhrNemoInstruct
-from src.orchestration.clients.state_manager import Statuses
+
 
 load_dotenv()
 MODEL_TYPE = os.environ.get("MODEL_TYPE")
@@ -67,7 +68,7 @@ async def process_ticket(message_data: dict):
         in_progress_message = {
             "ticket_id": ticket_id,
             "subtask_id": subtask_id,
-            "status": Statuses.STATUS_IN_PROGRESS.value
+            "status": SubtaskStatuses.STATUS_IN_PROGRESS.value
         }
         send_to_kafka(in_progress_message)
 
@@ -76,7 +77,7 @@ async def process_ticket(message_data: dict):
         result_message = {
             "ticket_id": ticket_id,
             "subtask_id": subtask_id,
-            "status": Statuses.STATUS_COMPLETED.value,
+            "status": SubtaskStatuses.STATUS_COMPLETED.value,
             "result": result_text
         }
         send_to_kafka(result_message)
@@ -87,7 +88,7 @@ async def process_ticket(message_data: dict):
         error_message = {
             "ticket_id": str(ticket_id),
             "subtask_id": subtask_id,
-            "status": Statuses.STATUS_FAILED.value,
+            "status": SubtaskStatuses.STATUS_FAILED.value,
         }
         send_to_kafka(error_message)
         raise

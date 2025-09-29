@@ -32,7 +32,7 @@ articles by young scientists, as well as to reduce the time required for in-dept
 and [assess the achievability of goals and objectives](https://huggingface.co/slavamarcin/saiga3_8b_Qdora_4bit_sum);
 - Datasets have been prepared for training models, separately for [summarization](https://huggingface.co/datasets/slavamarcin/sum_dataset_v1), 
 separately for [goals and objectives](https://huggingface.co/datasets/slavamarcin/purpose_dataset_v1).
-> Please help us improve this project, share your feedback with [opening issue](https://github.com/LISA-ITMO/Edulytica/issues)!
+> Please help us improve this project, share your feedback with [opening issue](https://github.com/aimclub/Edulytica/issues)!
 
 ## Installation
 #### 1. Clone the repository 
@@ -67,6 +67,24 @@ in JSON format of the system's responses to the test sample of works.
 
 When you have managed to launch the service, you can send the documents yourself and get acquainted with the results of 
 their verification!
+
+## Events inside the web application
+As part of working with RAG technology, the specifics of the following measures are taken into account when generating 
+a response from the system:
+1. kmu_event - suitable for articles by undergraduates and graduate students of junior courses submitted to open 
+university conferences of young scientists, language - Russian;
+2. epi_event - suitable for "adult" articles in the field of economics, management in organizational systems and 
+related fields, language - Russian;
+3. ysc_event is suitable for articles by young scientists that are submitted to Web of Science or Scopus journals, 
+conferences with the publication of works in Web of Science or Scopus publications on advanced computer science, 
+including artificial intelligence, language - English;
+4. fruct_event - suitable for articles by young scientists that are submitted to Web of Science or Scopus journals, 
+conferences with the publication of papers in Web of Science or Scopus publications on computer science (may include 
+work in the field of applied artificial intelligence), language - English;
+5. pps_event - suitable for articles by students, graduate students, and young teachers submitted to open university 
+educational and methodological conferences, the language is Russian.
+
+Choosing an event at the stage of sending a document is **mandatory** and affects the quality of the response generated.
 
 ## Documentation
 Details of the documentation can be found at the links below:

@@ -1,0 +1,35 @@
+upstream auth_service {
+  server ${AUTH_SERVICE_HOST}:${AUTH_SERVICE_PORT};
+}
+
+upstream api_service {
+  server ${API_SERVICE_HOST}:${API_SERVICE_PORT};
+}
+
+server {
+  listen ${GATEWAY_PORT};
+  
+  location /auth/ {
+    proxy_pass http://auth_service/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+  
+  location /account/ {
+    proxy_pass http://api_service/account/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+  
+  location /actions/ {
+    proxy_pass http://api_service/actions/;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+  }
+}

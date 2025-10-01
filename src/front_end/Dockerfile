@@ -1,6 +1,7 @@
 FROM node:20-alpine
 
 WORKDIR /app
+ENV REACT_APP_API_URL=${REACT_APP_API_URL}
 
 COPY . .
 

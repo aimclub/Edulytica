@@ -5,7 +5,7 @@ from typing import Dict, Any, List
 from confluent_kafka import Consumer, KafkaError, Producer, Message
 from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
-from src.common.config import KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
+from src.common.config import LLM_KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.common.utils.default_enums import SubtaskStatuses
 from src.llm import ModelInstruct
 from src.llm.qwen import QwenInstruct
@@ -24,7 +24,7 @@ elif MODEL_TYPE == 'vikhr':
     llm_model = VikhrNemoInstruct(quantization='4bit')
 else:
     raise ValueError(f'[{PREFIX}]: Unknown model type: {MODEL_TYPE}')
-producer = Producer({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
+producer = Producer({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
 
 
 def delivery_report(err, msg):
@@ -116,12 +116,12 @@ def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
 async def kafka_loop():
     print(f"[{PREFIX}] Starting...")
 
-    admin_client = AdminClient({'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS})
+    admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
     create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
 
     print(f"[{PREFIX}] Initializing Kafka clients...")
     consumer = Consumer({
-        'bootstrap.servers': KAFKA_BOOTSTRAP_SERVERS,
+        'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS,
         'group.id': KAFKA_GROUP_ID,
         'auto.offset.reset': 'earliest',
         'enable.auto.commit': False

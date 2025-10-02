@@ -50,13 +50,22 @@ export const NotificationModal = ({
 
   if (!visible) return null
 
+  const isWideMessage =
+    typeof text === "string" &&
+    (text.includes("Максимальный допустимый размер") ||
+      text.includes("превышает 50") ||
+      text.includes("Выбор мероприятия обязателен") ||
+      text.includes("загрузите файл в формате PDF."))
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 100, scale: 0.9 }}
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, x: 100, scale: 0.9 }}
       transition={{ duration: 0.3, ease: "easeOut" }}
-      className="notificationModal"
+      className={`notificationModal ${
+        isWideMessage ? "wideNotificationModal" : ""
+      }`}
       role="status"
       aria-live="polite"
     >
@@ -118,7 +127,9 @@ export const NotificationModal = ({
             centered ? "centeredTextNotificationModal" : ""
           } ${type === "loading" ? "withTopMarginNotificationModal" : ""} ${
             type === "success" ? "withTopMarginNotificationModal" : ""
-          } ${type === "error" ? "withErrorMarginNotificationModal" : ""} ${
+          } ${isWideMessage ? "wideNotificationModal" : ""} ${
+            type === "error" ? "withErrorMarginNotificationModal" : ""
+          } ${
             text.includes("Тикет") && text.includes("для публичного просмотра")
               ? "ticketStatusNotificationModal"
               : ""
@@ -136,7 +147,8 @@ export const NotificationModal = ({
               : ""
           } ${
             text.includes("Тикет готов") ? "ticketReadyNotificationModal" : ""
-          }`}
+          } 
+         }`}
         >
           <h3 className="titleNotificationModal">{text}</h3>
           {eta && (

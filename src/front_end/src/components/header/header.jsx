@@ -1,7 +1,7 @@
-import { useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import logo from "../../assets/images/logo.png"
 import "./header.scss"
-import { Link } from "react-router-dom"
+import { Link, useLocation } from "react-router-dom"
 
 /**
  * @param {object} props - Объект с пропсами компонента
@@ -11,19 +11,126 @@ import { Link } from "react-router-dom"
  * @returns {JSX.Element} верхний блок страницы, изменяющийся при авторизации
  */
 const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
-  // Хранит состояние открытия/закрытия левого модального окна c историей документов
   const [openModalInformation, setOpenModalInformation] = useState(true)
+  const [isInfoBlockExpanded, setIsInfoBlockExpanded] = useState(false)
+  const location = useLocation()
+  const [infoBlockStyle, setInfoBlockStyle] = useState({})
+  const [isInfoBlockReady, setIsInfoBlockReady] = useState(false)
 
-  //Скрытие/открытие левого модального окна c историей документов
   const handleClickLogo = () => {
     setOpenModalInformation((pr) => !pr)
     setAccountModal((pr) => !pr)
   }
 
-  //Скрытие/открытие модального окна c информацией о профиле
   const handleSvgAccount = () => {
     setProfileModal((pr) => !pr)
   }
+
+  const isAccountPage = location?.pathname?.startsWith("/account")
+  const toggleInfoBlock = () => setIsInfoBlockExpanded((p) => !p)
+
+  const computeAndSetInfoBlock = useCallback(() => {
+    const target =
+      document.querySelector(".blockAddFile") ||
+      document.querySelector(".addFileTopCont")
+    const el = document.querySelector(".infoBlock")
+    if (!el) return
+
+    const rect = target ? target.getBoundingClientRect() : null
+    const baseWidth = rect
+      ? Math.max(rect.width - 160, 360)
+      : Math.min(window.innerWidth - 40, 760)
+
+    let leftPx = 0
+    let widthPx = baseWidth
+    let transformValue = "none"
+
+    if (!openModalInformation) {
+      widthPx = Math.min(baseWidth, window.innerWidth - 40)
+      if (window.innerWidth < 1335) {
+        if (window.innerWidth > 1000) {
+          leftPx = "55%"
+          transformValue = "translateX(-50%)"
+        } else {
+          leftPx = "58%"
+          transformValue = "translateX(-50%)"
+        }
+      } else {
+        leftPx = rect ? rect.left + (rect.width - widthPx) / 2 : 50
+      }
+    } else if (rect) {
+      leftPx = rect.left + (rect.width - widthPx) / 2
+    }
+
+    setInfoBlockStyle({
+      left: typeof leftPx === "number" ? `${leftPx}px` : leftPx,
+      width: `${widthPx}px`,
+      transform: transformValue,
+    })
+    setIsInfoBlockReady(true)
+  }, [openModalInformation])
+
+  useEffect(() => {
+    if (!isAccountPage) return
+
+    let frameId
+
+    const handleResize = () => {
+      if (frameId) cancelAnimationFrame(frameId)
+      frameId = requestAnimationFrame(computeAndSetInfoBlock)
+    }
+
+    const timeout = setTimeout(computeAndSetInfoBlock, 0)
+    window.addEventListener("resize", handleResize)
+
+    return () => {
+      clearTimeout(timeout)
+      window.removeEventListener("resize", handleResize)
+      if (frameId) cancelAnimationFrame(frameId)
+    }
+  }, [isAccountPage, computeAndSetInfoBlock])
+
+  useEffect(() => {
+    if (!isAccountPage) return
+
+    const timeouts = [0, 120, 260, 500].map((t) =>
+      setTimeout(() => computeAndSetInfoBlock(), t)
+    )
+
+    const target =
+      document.querySelector(".blockAddFile") ||
+      document.querySelector(".addFileTopCont")
+    const ro = target ? new ResizeObserver(computeAndSetInfoBlock) : null
+    const headerEl = document.querySelector(".header")
+    const roHeader = headerEl
+      ? new ResizeObserver(computeAndSetInfoBlock)
+      : null
+    if (ro && target) ro.observe(target)
+    if (roHeader && headerEl) roHeader.observe(headerEl)
+
+    const mo = new MutationObserver(computeAndSetInfoBlock)
+    mo.observe(document.body, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+    })
+
+    const onScroll = () => computeAndSetInfoBlock()
+    window.addEventListener("scroll", onScroll, { passive: true })
+
+    return () => {
+      timeouts.forEach(clearTimeout)
+      if (ro) ro.disconnect()
+      if (roHeader) roHeader.disconnect()
+      mo.disconnect()
+      window.removeEventListener("scroll", onScroll)
+    }
+  }, [isAccountPage, computeAndSetInfoBlock])
+
+  useEffect(() => {
+    if (!isAccountPage) return
+    requestAnimationFrame(computeAndSetInfoBlock)
+  }, [isAccountPage, computeAndSetInfoBlock])
 
   return (
     <div className="header">
@@ -81,7 +188,7 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
           </div>
           <div
             className="svgAccount"
-            style={{ marginTop: "18px" }}
+            style={{ marginTop: "24px" }}
             onClick={handleSvgAccount}
           >
             <svg
@@ -107,6 +214,63 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
               />
             </svg>
           </div>
+
+          {isAccountPage && (
+            <div
+              className={`infoBlock ${isInfoBlockReady ? "ready" : ""} ${
+                openModalInformation ? "aligned" : ""
+              } ${isInfoBlockExpanded ? "expanded" : "collapsed"}`}
+              style={infoBlockStyle}
+            >
+              <button
+                type="button"
+                className="infoBlockContent"
+                onClick={toggleInfoBlock}
+                aria-expanded={isInfoBlockExpanded}
+              >
+                <div className="infoBlockText">
+                  <p>
+                    Обращаем ваше внимание: сервис работает с документами
+                    формата PDF, размер которых не должен превышать 50 мегабайт.
+                  </p>
+                  <p className="infoBlockSecond">
+                    При выборе мероприятия вы можете ознакомиться с
+                    дополнительной информацией о каждом из них. Выбор
+                    мероприятия является обязательным условием при отправке
+                    запроса!
+                  </p>
+                  <p className="infoBlockThird">
+                    В настоящее время сервис находится в разработке, поэтому
+                    периодически могут возникать ошибки. В случае их появления,
+                    пожалуйста, сообщите нам о них, заполнив форму в правом
+                    нижнем углу и указав подробную информацию, чтобы мы могли
+                    сделать наш инструмент лучше.
+                  </p>
+                </div>
+
+                <svg
+                  className={`infoBlockToggle ${
+                    isInfoBlockExpanded ? "expanded" : ""
+                  }`}
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path
+                    d="M4 6L8 10L12 6"
+                    stroke="#bebaba"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          )}
         </>
       )}
     </div>

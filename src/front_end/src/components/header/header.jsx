@@ -23,8 +23,6 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
     setProfileModal((pr) => !pr)
   }
 
-  const isAccountPage = location?.pathname?.startsWith("/account")
-
   return (
     <div className="header">
       {!isAuth ? (

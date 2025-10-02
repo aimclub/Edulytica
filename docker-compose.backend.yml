@@ -204,7 +204,7 @@ services:
     container_name: "EdulyticaKafkaUI"
     image: provectuslabs/kafka-ui:latest
     ports:
-      - "8081:8080"
+      - "${KAFKA_UI_PORT}:8080"
     depends_on:
       kafka:
         condition: service_healthy

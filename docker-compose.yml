@@ -15,7 +15,7 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_EXTERNAL_PORT}:5432"
     networks:
       - edulytica_network
 

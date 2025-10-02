@@ -65,7 +65,7 @@ export const AddFile = ({
       // Дополнительная проверка размера для PDF
       if (file.size > 50 * 1024 * 1024) {
         setNotificationText(
-          "Размер файла превышает 50\u00A0МБ. Максимальный допустимый размер — 50\u00A0МБ."
+          "Размер файла превышает 50\u00A0МБ.\nМаксимальный допустимый размер — 50\u00A0МБ."
         )
         setNotificationType("error")
         setNotificationVisible(true)

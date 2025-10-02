@@ -1,7 +1,7 @@
 import { useState } from "react"
 import logo from "../../assets/images/logo.png"
 import "./header.scss"
-import { Link, useLocation } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 /**
  * @param {object} props - Объект с пропсами компонента
@@ -12,7 +12,6 @@ import { Link, useLocation } from "react-router-dom"
  */
 const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
   const [openModalInformation, setOpenModalInformation] = useState(true)
-  const location = useLocation()
 
   const handleClickLogo = () => {
     setOpenModalInformation((pr) => !pr)

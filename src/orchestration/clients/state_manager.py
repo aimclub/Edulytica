@@ -88,7 +88,8 @@ class StateManager:
 
             for task_id, subtasks in dependencies.items():
                 for subtask_id in subtasks.keys():
-                    pipe.hset(key, f"subtask:{subtask_id}:status", SubtaskStatuses.STATUS_PENDING.value)
+                    pipe.hset(key, f"subtask:{subtask_id}:status",
+                              SubtaskStatuses.STATUS_PENDING.value)
 
             await pipe.execute()
 
@@ -164,7 +165,8 @@ class StateManager:
                     dep_statuses_values = await self._redis.hmget(key, dep_status_keys)
 
                     for status in dep_statuses_values:
-                        if not status or status.decode('utf-8') != SubtaskStatuses.STATUS_COMPLETED.value:
+                        if not status or status.decode(
+                                'utf-8') != SubtaskStatuses.STATUS_COMPLETED.value:
                             all_deps_completed = False
                             break
 

@@ -214,6 +214,23 @@ services:
     networks:
       - edulytica_network
 
+  edulytica_backup:
+    container_name: "EdulyticaBackup"
+    build:
+      context: .
+      dockerfile: ./src/backup/Dockerfile
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      - TZ=Europe/Moscow
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      edulytica_db:
+        condition: service_healthy
+    networks:
+      - edulytica_network
+
 networks:
   edulytica_network:
     driver: bridge

@@ -3,6 +3,8 @@ import uuid
 from typing import Dict, Any, List, Union, Optional
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
+
+from src.common.config import TICKET_TTL_SEC
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import SessionLocal
@@ -91,6 +93,7 @@ class StateManager:
                     pipe.hset(key, f"subtask:{subtask_id}:status",
                               SubtaskStatuses.STATUS_PENDING.value)
 
+            pipe.expire(key, TICKET_TTL_SEC)
             await pipe.execute()
 
     async def update_subtask(

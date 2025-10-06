@@ -219,6 +219,8 @@ services:
     build:
       context: .
       dockerfile: ./src/backup/Dockerfile
+    volumes:
+      - api_files:/api_files:ro
     restart: unless-stopped
     env_file:
       - ./.env

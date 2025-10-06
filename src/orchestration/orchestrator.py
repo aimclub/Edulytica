@@ -6,7 +6,7 @@ import httpx
 from src.common.config import INTERNAL_API_SECRET, API_PORT
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.kafka_producer import KafkaProducer
-from src.orchestration.clients.state_manager import StateManager, Statuses
+from src.orchestration.clients.state_manager import StateManager, SubtaskStatuses
 from src.orchestration.prompts.prompts1.prompts import prompts
 from src.orchestration.prompts.prompts2.prompts import prompts2
 
@@ -165,7 +165,7 @@ class Orchestrator:
             * Получаем детали, обогащаем промт в Rag (если нужно)
             * Отправляем задачу в Kafka
         """
-        await self.state_manager.update_subtask(ticket_id, subtask_id, Statuses.STATUS_IN_PROGRESS)
+        await self.state_manager.update_subtask(ticket_id, subtask_id, SubtaskStatuses.STATUS_IN_PROGRESS)
 
         task_id = subtask_id.split('.')[0]
         subtask_details = self.TASKS.get(self.mega_task_id, {}).get(task_id, {}).get(subtask_id)

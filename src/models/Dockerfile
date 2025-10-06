@@ -25,8 +25,7 @@ ARG MODEL_TYPE
 RUN python3 download_models.py $MODEL_TYPE
 
 COPY src/common /app/src/common
-COPY src/models/app.py .
-COPY src/models/kafka_worker.py .
+COPY src/models /app/src/models
 
 ENV MODEL_TYPE=$MODEL_TYPE
 

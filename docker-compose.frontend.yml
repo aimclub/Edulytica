@@ -1,0 +1,43 @@
+version: "3.9"
+
+services:
+  edulytica_gateway:
+    container_name: "EdulyticaGateway"
+    image: nginx:1.27.4-alpine
+    ports:
+      - "${GATEWAY_PORT}:${GATEWAY_PORT}"
+    environment:
+      AUTH_SERVICE_HOST: "${AUTH_SERVICE_HOST}"
+      API_SERVICE_HOST: "${API_SERVICE_HOST}"
+      AUTH_SERVICE_PORT: "${AUTH_PORT}"
+      API_SERVICE_PORT: "${API_PORT}"
+      GATEWAY_PORT: "${GATEWAY_PORT}"
+    volumes:
+      - ./src/gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./src/gateway/default.conf.template:/etc/nginx/templates/default.conf.template:ro
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pgrep nginx || exit 1" ]
+      interval: 60s
+      timeout: 5s
+      retries: 3
+
+
+  edulytica_frontend:
+    container_name: "EdulyticaFrontend"
+    build:
+      context: ./src/front_end
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    env_file:
+      - ./.env
+    dns:
+      - 8.8.8.8
+    restart: always
+    ports:
+      - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+
+networks:
+  default:
+    driver: bridge

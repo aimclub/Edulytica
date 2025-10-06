@@ -2,16 +2,18 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from src.auth.routers.auth import auth_router
-from src.common.config import AUTH_PORT
+from src.common.config import AUTH_PORT, ALLOWED_ORIGINS
 
 app = FastAPI()
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://10.22.8.250",
-    "http://10.22.8.250:13000"
+    "http://127.0.0.1:3000"
 ]
+
+for origin in ALLOWED_ORIGINS:
+    if origin not in origins:
+        origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,4 +39,4 @@ app.include_router(auth_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=AUTH_PORT)
+    uvicorn.run(app, host="0.0.0.0", port=AUTH_PORT)

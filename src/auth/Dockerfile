@@ -15,4 +15,4 @@ ENV PYTHONPATH=/app
 COPY . .
 COPY src/common /app/src/common
 
-CMD ["uvicorn", "src.auth.app:app", "--host", "0.0.0.0", "--port", "8001"]
+CMD ["python","-m","src.auth.app"]

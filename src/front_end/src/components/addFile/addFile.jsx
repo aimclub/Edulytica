@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from "react"
 import "./addFile.scss"
 import { EventModal } from "../eventModal/eventModal"
+import { NotificationModal } from "../notificationModal/notificationModal"
 import { ticketService } from "../../services/ticket.service"
 import { useNavigate } from "react-router-dom"
 import { useDispatch } from "react-redux"
@@ -36,6 +37,9 @@ export const AddFile = ({
   const [mode, setMode] = useState("рецензирование")
   const [, setError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [notificationVisible, setNotificationVisible] = useState(false)
+  const [notificationText, setNotificationText] = useState("")
+  const [notificationType, setNotificationType] = useState("error")
 
   const openEventModal = () => {
     setEventModal((pr) => !pr)
@@ -58,6 +62,27 @@ export const AddFile = ({
         file.type ===
           "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
     ) {
+      // Дополнительная проверка размера для PDF
+      if (file.size > 50 * 1024 * 1024) {
+        setNotificationText(
+          "Размер файла превышает 50\u00A0МБ.\nМаксимальный допустимый размер — 50\u00A0МБ."
+        )
+        setNotificationType("error")
+        setNotificationVisible(true)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = null
+        }
+        return
+      }
+      if (file.type !== "application/pdf") {
+        setNotificationText("Пожалуйста, загрузите файл в формате PDF.")
+        setNotificationType("error")
+        setNotificationVisible(true)
+        if (fileInputRef.current) {
+          fileInputRef.current.value = null
+        }
+        return
+      }
       const fileName = file.name
       console.log("Загруженный файл:", fileName)
       setSelectedParams((prev) => [
@@ -94,6 +119,16 @@ export const AddFile = ({
     try {
       const fileParam = selectedParams.find((param) => param.type === "file")
       const eventParam = selectedParams.find((param) => param.type === "event")
+
+      // Если файл выбран, но мероприятие не выбрано — показываем уведомление и выходим
+      if (fileParam && !eventParam) {
+        setNotificationText(
+          "Выбор мероприятия обязателен. Пожалуйста, укажите мероприятие перед отправкой."
+        )
+        setNotificationType("error")
+        setNotificationVisible(true)
+        return
+      }
 
       if (!fileParam || !eventParam) {
         throw new Error("Необходимо выбрать файл и мероприятие")
@@ -435,6 +470,13 @@ export const AddFile = ({
           />
         )}
       </div>
+      <NotificationModal
+        visible={notificationVisible}
+        text={notificationText}
+        type={notificationType}
+        onClose={() => setNotificationVisible(false)}
+        centered
+      />
     </div>
   )
 }

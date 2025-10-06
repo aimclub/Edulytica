@@ -1,14 +1,14 @@
 import json
 import uuid
-from enum import Enum
 from typing import Dict, Any, List, Union, Optional
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
+from src.common.config import TICKET_TTL_SEC
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
 from src.common.database.crud.tickets_crud import TicketCrud
 from src.common.database.database import SessionLocal
-from src.common.utils.default_enums import TicketStatusDefault
+from src.common.utils.default_enums import TicketStatusDefault, SubtaskStatuses
 
 """
 DATAS EXAMPLE:
@@ -32,13 +32,6 @@ Key: "ticket:uuid-uuid"
         "subtask:1.2:status": "IN_PROGRESS"
     }
 """
-
-
-class Statuses(str, Enum):
-    STATUS_PENDING = "PENDING"
-    STATUS_IN_PROGRESS = "IN_PROGRESS"
-    STATUS_COMPLETED = "COMPLETED"
-    STATUS_FAILED = "FAILED"
 
 
 class StateManager:
@@ -89,7 +82,7 @@ class StateManager:
             pipe.delete(tombstone_key)
 
             pipe.hset(key, "mega_task_id", mega_task_id)
-            pipe.hset(key, "status", Statuses.STATUS_PENDING.value)
+            pipe.hset(key, "status", SubtaskStatuses.STATUS_PENDING.value)
             pipe.hset(key, "document_text", document_text)
             pipe.hset(key, "dependencies", json.dumps(dependencies))
             if event_name:
@@ -97,15 +90,17 @@ class StateManager:
 
             for task_id, subtasks in dependencies.items():
                 for subtask_id in subtasks.keys():
-                    pipe.hset(key, f"subtask:{subtask_id}:status", Statuses.STATUS_PENDING.value)
+                    pipe.hset(key, f"subtask:{subtask_id}:status",
+                              SubtaskStatuses.STATUS_PENDING.value)
 
+            pipe.expire(key, TICKET_TTL_SEC)
             await pipe.execute()
 
     async def update_subtask(
             self,
             ticket_id: Union[str, uuid.UUID],
             subtask_id: str,
-            status: Statuses,
+            status: SubtaskStatuses,
             result: str = None
     ):
         if not await self.ticket_exists(ticket_id) or await self.is_deleted(ticket_id):
@@ -173,7 +168,8 @@ class StateManager:
                     dep_statuses_values = await self._redis.hmget(key, dep_status_keys)
 
                     for status in dep_statuses_values:
-                        if not status or status.decode('utf-8') != Statuses.STATUS_COMPLETED.value:
+                        if not status or status.decode(
+                                'utf-8') != SubtaskStatuses.STATUS_COMPLETED.value:
                             all_deps_completed = False
                             break
 
@@ -249,17 +245,17 @@ class StateManager:
         ]
 
         if not all_subtask_keys:
-            await self._redis.hset(key, "status", Statuses.STATUS_COMPLETED.value)
+            await self._redis.hset(key, "status", SubtaskStatuses.STATUS_COMPLETED.value)
             return True
 
         statuses = await self._redis.hmget(key, all_subtask_keys)
         is_complete = all(
-            status and status.decode('utf-8') == Statuses.STATUS_COMPLETED.value
+            status and status.decode('utf-8') == SubtaskStatuses.STATUS_COMPLETED.value
             for status in statuses
         )
 
         if is_complete:
-            await self._redis.hset(key, "status", Statuses.STATUS_COMPLETED.value)
+            await self._redis.hset(key, "status", SubtaskStatuses.STATUS_COMPLETED.value)
             return True
         return False
 
@@ -274,8 +270,8 @@ class StateManager:
             return False
 
         async with self._redis.pipeline(transaction=True) as pipe:
-            pipe.hset(key, "status", Statuses.STATUS_FAILED.value)
-            pipe.hset(key, f"subtask:{subtask_id}:status", Statuses.STATUS_FAILED.value)
+            pipe.hset(key, "status", SubtaskStatuses.STATUS_FAILED.value)
+            pipe.hset(key, f"subtask:{subtask_id}:status", SubtaskStatuses.STATUS_FAILED.value)
             pipe.hset(key, "failure_reason", error_message)
             await pipe.execute()
 

@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+  edulytica_llm_qwen:
+    container_name: "EdulyticaQwen"
+    build:
+      context: .
+      dockerfile: ./src/models/Dockerfile
+      args:
+        - MODEL_TYPE=qwen
+    command: ["python3", "src/models/app.py"]
+    runtime: nvidia
+    volumes:
+      - models_hf_cache:/root/.cache/huggingface
+    env_file:
+      - ./.env
+    environment:
+      - MODEL_TYPE=qwen
+      - PYTHONUNBUFFERED=1
+      - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
+      - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    restart: unless-stopped
+    network_mode: host
+
+  edulytica_llm_vikhr:
+    container_name: "EdulyticaVikhr"
+    build:
+      context: .
+      dockerfile: ./src/models/Dockerfile
+      args:
+        - MODEL_TYPE=vikhr
+    command: ["python3", "src/models/app.py"]
+    runtime: nvidia
+    volumes:
+      - models_hf_cache:/root/.cache/huggingface
+    env_file:
+      - ./.env
+    environment:
+      - MODEL_TYPE=vikhr
+      - PYTHONUNBUFFERED=1
+      - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
+      - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
+      - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    restart: unless-stopped
+    network_mode: host
+
+volumes:
+  models_hf_cache:

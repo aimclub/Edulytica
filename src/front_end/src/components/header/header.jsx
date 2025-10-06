@@ -11,16 +11,13 @@ import { Link } from "react-router-dom"
  * @returns {JSX.Element} верхний блок страницы, изменяющийся при авторизации
  */
 const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
-  // Хранит состояние открытия/закрытия левого модального окна c историей документов
   const [openModalInformation, setOpenModalInformation] = useState(true)
 
-  //Скрытие/открытие левого модального окна c историей документов
   const handleClickLogo = () => {
     setOpenModalInformation((pr) => !pr)
     setAccountModal((pr) => !pr)
   }
 
-  //Скрытие/открытие модального окна c информацией о профиле
   const handleSvgAccount = () => {
     setProfileModal((pr) => !pr)
   }
@@ -81,7 +78,7 @@ const Header = ({ isAuth, setAccountModal, setProfileModal }) => {
           </div>
           <div
             className="svgAccount"
-            style={{ marginTop: "18px" }}
+            style={{ marginTop: "24px" }}
             onClick={handleSvgAccount}
           >
             <svg

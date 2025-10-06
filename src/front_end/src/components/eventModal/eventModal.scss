@@ -150,3 +150,8 @@
   color: #bebaba;
   white-space: pre-wrap;
 }
+@media (max-height: 855px) {
+  .blockEventModal {
+    max-height: 100px;
+  }
+}

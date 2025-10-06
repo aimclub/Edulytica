@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import redis.asyncio as redis
 from httpx import AsyncClient
-from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT, RAG_PORT
+from src.common.config import KAFKA_BOOTSTRAP_SERVERS, ORCHESTRATOR_PORT, RAG_PORT, ALLOWED_ORIGINS
 from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
@@ -22,7 +22,7 @@ async def lifespan(app: FastAPI):
         decode_responses=False
     )
     kafka_producer_client = AIOKafkaProducer(
-        bootstrap_servers='kafka:9092'
+        bootstrap_servers=KAFKA_BOOTSTRAP_SERVERS
     )
     kafka_consumer_client = AIOKafkaConsumer(
         "llm_tasks.result",
@@ -73,10 +73,12 @@ app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://10.22.8.250",
-    "http://10.22.8.250:13000"
+    "http://127.0.0.1:3000"
 ]
+
+for origin in ALLOWED_ORIGINS:
+    if origin not in origins:
+        origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,

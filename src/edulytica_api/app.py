@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
 
-from src.common.config import API_PORT
+from src.common.config import API_PORT, ALLOWED_ORIGINS
 from src.edulytica_api.routers.account import account_router
 from src.edulytica_api.routers.actions import actions_router
 from src.edulytica_api.routers.internal import internal_router
@@ -28,10 +28,12 @@ app = FastAPI(lifespan=lifespan)
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    "http://127.0.0.1:3000",
-    "http://10.22.8.250",
-    "http://10.22.8.250:13000"
+    "http://127.0.0.1:3000"
 ]
+
+for origin in ALLOWED_ORIGINS:
+    if origin not in origins:
+        origins.append(origin)
 
 app.add_middleware(
     CORSMiddleware,
@@ -61,4 +63,4 @@ app.include_router(internal_router)
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=API_PORT)
+    uvicorn.run(app, host="0.0.0.0", port=API_PORT)

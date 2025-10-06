@@ -5,6 +5,13 @@
   letter-spacing: -0.03em;
   text-align: center;
   color: #fff;
+  position: relative;
+  z-index: 1;
+  transition: margin-top 320ms ease;
+}
+
+.infoBlock.expanded ~ .titleAddFile {
+  margin-top: -60px;
 }
 .textBlockAddFile {
   font-family: "SF Pro Display";
@@ -129,11 +136,18 @@
   margin-top: 154px;
   max-width: 786px;
   width: 100%;
+  transition: margin-top 320ms ease;
 }
+
+.addFileTopCont.infoBlockExpanded {
+  margin-top: 290px;
+}
+
 .eventModalAddFile {
   margin-left: 111px;
   margin-top: -12px;
-  z-index: 20px;
+  z-index: 100;
+  position: relative;
 }
 .paramBlockAddFile {
   display: flex;
@@ -194,5 +208,22 @@
     padding-bottom: 8px;
     margin-left: 30px;
     padding-left: 128px;
+  }
+}
+
+@media (max-height: 855px) {
+  .addFileTopCont {
+    margin-top: 180px;
+  }
+  .addFileTopCont.infoBlockExpanded {
+    margin-top: 240px;
+  }
+}
+@media (max-height: 745px) {
+  .addFileTopCont {
+    margin-top: 150px;
+  }
+  .addFileTopCont.infoBlockExpanded {
+    margin-top: 210px;
   }
 }

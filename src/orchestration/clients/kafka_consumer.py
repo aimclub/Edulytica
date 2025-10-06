@@ -3,7 +3,7 @@ import json
 from aiokafka import AIOKafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
-from src.orchestration.clients.state_manager import StateManager, Statuses
+from src.orchestration.clients.state_manager import StateManager, SubtaskStatuses
 from src.orchestration.orchestrator import Orchestrator
 
 
@@ -33,7 +33,7 @@ class KafkaConsumer:
             data = json.loads(msg.value.decode('utf-8'))
             ticket_id = data['ticket_id']
             subtask_id = data['subtask_id']
-            status = Statuses(data['status'])
+            status = SubtaskStatuses(data['status'])
             result = data.get('result')
         except (json.JSONDecodeError, KeyError, ValueError) as e:
             print(
@@ -50,12 +50,12 @@ class KafkaConsumer:
             print(f"[Orchestrator] Ticket {ticket_id} vanished during update. Skipping.")
             return
 
-        if status == Statuses.STATUS_FAILED:
+        if status == SubtaskStatuses.STATUS_FAILED:
             error_message = result or "Unknown error from worker."
             await self.state_manager.fail_ticket(ticket_id, subtask_id, error_message)
             return
 
-        if status == Statuses.STATUS_COMPLETED:
+        if status == SubtaskStatuses.STATUS_COMPLETED:
             unlocked_subtasks = await self.state_manager.find_unlocked_subtasks(ticket_id, subtask_id)
 
             if unlocked_subtasks or await self.state_manager.check_and_update_ticket_status(ticket_id):

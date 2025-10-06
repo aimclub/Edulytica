@@ -20,4 +20,4 @@ COPY src/common /app/src/common
 #
 #CMD ["/usr/local/bin/init_kafka.sh"]
 
-CMD ["uvicorn", "src.orchestration.app:app", "--host", "0.0.0.0", "--port", "15001"]
+CMD ["python","-m","src.orchestration.app"]

@@ -1,0 +1,20 @@
+{
+"application_area": "Scopus is applied in the fields of science, technology, medicine, social science and arts and humanities.",
+"structural_elements": 
+    {
+    "Introduction": ["Scopus overview", "Content Selection & Advisory Board", "Purpose and scope"],
+    "Coverage of source types": ["Serial source types", "Non-serial sources", "Other sources"],
+    "Coverage of metadata": ["Document types", "Abstracts", "Keywords and Index terms", "Cited references", "Affiliation data", "Author profiles", "ORCID integration", "Other metadata"],
+    "Coverage of sources (dating back to 1970)": ["Scopus title list", "Scopus title evaluation", "Global coverage", "Subject area coverage", "Complete coverage", "MEDLINE coverage"],
+    "Processing of Scopus content": []  
+    },
+"design_rules": 
+    {
+    "texts": {"font_size": "10 pt", "font_type": "Arial"}, 
+    "titles": {"font_size": "16 pt", "font_type": "Arial", "color": "Black"},
+    "subtitles": {"font_size": "12 pt", "font_type": "Arial", "color": "Black"},
+    "graphs_and_tables": {"color_scheme": "Monochrome", "line_thickness": "1 pt"},
+    "margin_and_padding": {"top": "2.54 cm", "bottom": "2.54 cm", "left": "3.17 cm", "right": "3.17 cm"},
+    "line_spacing": {"spacing": "single"}
+    }
+}

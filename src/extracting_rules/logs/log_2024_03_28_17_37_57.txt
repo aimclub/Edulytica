@@ -1,0 +1,32 @@
+{
+ "params": ["overview", "source_types", "metadata", "source_coverage", "data_processing"],
+ "elements": [
+     {"element": "title", "description": "brief title describing the content"},
+     {"element": "introduction", "description": "brief background about Scopus"},
+     {"element": "source_type", "description": "classification of sources"},
+     {"element": "metadata", "description": "data providing detailed information about other data"},
+     {"element": "source_coverage", "description": "range or extent of the content available"},
+     {"element": "data_processing", "description": "method of manipulating and refining raw data"}
+ ],
+ "gost_params": {
+     "overview": {
+         "description": "Scopus is a citation database of literature, enabling users to track, analyze, and visualize research. It has over 21,500 titles from more than 5,000 international publishers, providing extensive research outputs.",
+         "establishment_date": "November 2004",
+         "mode_of_access": "digital"
+     },
+     "source_types": {
+         "description": "Sources include over 21,500 peer-reviewed journals, trade publications, book series, conference papers, patents, etc."
+     },
+     "metadata": {
+         "description": "Metadata components like document types, keywords, index terms are covered in Scopus.",
+         "total_records": "60 million"
+     },
+     "source_coverage": {
+         "description": "Coverage of sources extends back to 1970, with global and subject area coverage.",
+         "start_period": "1970"
+     },
+     "data_processing": {
+         "description": "This section indicates the method employed in processing Scopus content."
+     }
+ }
+}

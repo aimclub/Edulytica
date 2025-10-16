@@ -1,0 +1,113 @@
+{
+  "params": [
+    "font_size",
+    "font_type",
+    "paper_color",
+    "paper_format",
+    "line_spacing",
+    "page",
+    "page_length",
+    "author_name_requirement",
+    "publication_type",
+    "ISSN_requirement",
+    "ISBN_requirement",
+    "source_title",
+    "document_type",
+    "chapter_level_indexing",
+    "serial_publications",
+    "non_serial_source",
+    "secondary_documents",
+    "patent_records",
+    "records_back_to_year",
+    "references_percent",
+    "yearly_records_added",
+    "items_pre_1996",
+    "items_post_1995",
+    "conference_coverage",
+    "conference_papers",
+    "trade_journals",
+    "book_series",
+    "monographs",
+    "trade_journal_items",
+    "serial_or_non_serial",
+    "conference_material",
+    "engineering_publishers",
+    "book_series_physical_formats",
+    "book_oriented_disciplines",
+    "book_series_publication_frequency",
+    "monographic_publication",
+    "title_list",
+    "citations"
+  ],
+  "elements": [
+    {
+      "element": "Journal",
+      "description": "Serial publications that form the bulk of the content in Scopus. Can have various physical formats like print, electronic etc."
+    },
+    {
+      "element": "Trade Journals",
+      "description": "Specific industry-focused publications, usually magazine type of periodicals. These could contain articles of scientific relevance."
+    },
+    {
+      "element": "Book Series",
+      "description": "Serial publications that have an overall series title, an ISSN, and in which every volume and/or issue in the series is also a book with an ISBN."
+    },
+    {
+      "element": "Conference Material",
+      "description": "Conference material enters Scopus in two different ways: as a special issue of a regular journal, or as a dedicated conference proceeding."
+    },
+    {
+      "element": "Non-Serial Sources",
+      "description": "A publication with an ISBN unless it is a report, part of a book series, proceeding (non-serial) or patent."
+    },
+    {
+      "element": "Secondary Documents",
+      "description": "Other sources like books and older journal articles cited in Scopus core records but are not themselves indexed in Scopus."
+    },
+    {
+      "element": "Patents",
+      "description": "Patent records derived from various patent offices available in Scopus."
+    }
+  ],
+  "gost_params": {
+    "Journal": {
+      "publication_type": "Serial",
+      "ISSN_requirement": "Yes",
+      "physical_formats": [
+        "Print",
+        "Electronic"
+      ]
+    },
+    "Trade Journals": {
+      "publication_type": "Serial",
+      "ISSN_requirement": "Yes",
+      "industry_focus": "Yes"
+    },
+    "Book Series": {
+      "publication_type": "Serial",
+      "ISSN_requirement": "Yes",
+      "ISBN_requirement": "Yes",
+      "physical_formats": [
+        "Print",
+        "Electronic"
+      ]
+    },
+    "Conference Material": {
+      "publication_type": "Special issue of a regular journal or dedicated conference proceeding",
+      "ISSN_requirement": "Maybe, depends on the method of entry"
+    },
+    "Non-Serial Sources": {
+      "publication_type": "Non-serial",
+      "ISBN_requirement": "Yes",
+      "exclusion_criteria": ["report", "part of a book series", "proceeding (non-serial)", "patent"]
+    },
+    "Secondary Documents": {
+      "publication_type": "Non-core",
+      "origin": "Cited in Scopus core records but not indexed in Scopus"
+    },
+    "Patents": {
+      "publication_type": "Patent records",
+      "origin": "Derived from various patent offices"
+    }
+  }
+}

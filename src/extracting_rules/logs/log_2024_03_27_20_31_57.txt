@@ -1,0 +1,43 @@
+{ 
+"params": ["Introduction","Coverage of source types","Coverage of metadata","Coverage of sources","Processing of Scopus content"],
+"elements": [
+    {"element": "Scopus", "description": "It is the largest abstract and citation database of peer-reviewed literature, featuring smart tools to track, analyze and visualize research."},
+    {"element": "Publishers", "description": "Over 5,000 international publishers are indexed in Scopus."},
+    {"element": "Titles", "description": "Over 21,500 titles with more than 21,500 peer-reviewed journals are present."},
+    {"element": "Trade publications", "description": "360 trade publications are present."},
+    {"element": "Book Series", "description": "Over 530 book series are available."},
+    {"element": "Conference papers", "description": "Over 7.2 million conference papers from over 83,000 worldwide events."},
+    {"element": "Articles-in-Press", "description": "Articles-in-Press from over 5,000 journals."},
+    {"element": "Books", "description": "More than 116,000 books with 120,000 expected by early 2016 and 10,000 added each year thereafter."},
+    {"element": "Records", "description": "Over 60 million records."},
+    {"element": "Patents", "description": "More than 27 million patent records from five patent offices."}
+    ],
+"gost_params": {
+    "Scopus":{ 
+        "overview": "launched in November 2004 and delivers the most comprehensive overview of the world’s research output in the fields of science, technology, medicine, social science and arts and humanities.",
+        "publishers": "More than 5,000 are indexed.",
+        "titles": "Over 21,500 that includes over 21,500 peer-reviewed journals (including 4,200 full open access journals).",
+        "trade publications": "360 are indexed in Scopus.",
+        "book series": "More than 530 are available.",
+        "conference papers": "Over 7.2 million conference papers from over 83,000 worldwide events.",
+        "Articles-in-Press": "Available from more than 5,000 journals.",
+        "Books": "More than 116,000 books expected to grow by 10,000 each year.",
+        "Records": "More than 60 million records.",
+        "Patents": "Scopus has more than 27 million patent records from five patent offices."},
+    "Introduction": {
+        "content": "Scopus – an overview, Content Selection & Advisory Board, Purpose and scope."
+    },
+    "Coverage of source types": {
+        "content": "Serial source types, Non-serial sources, Other sources."
+    },
+    "Coverage of metadata": {
+        "content": "Document types, Abstracts, Keywords and index terms, Cited references, Affiliation data, Author profiles, ORCID integration, Other metadata."
+    },
+    "Coverage of sources": {
+        "content": "Coverage dating back to 1970, Scopus title list, Scopus title evaluation, Global coverage, Subject area coverage, Complete coverage, MEDLINE coverage."
+    },
+    "Processing of Scopus content": {
+        "content": "no content specified."
+    }
+   }
+}

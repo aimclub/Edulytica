@@ -1,0 +1,62 @@
+.loginButtonHeader {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 21px;
+  line-height: 57%;
+  letter-spacing: -0.03em;
+  color: #212121;
+  background: #fff;
+  border-radius: 22px;
+  max-width: 140px;
+  border-radius: 22px;
+  padding: 15px 40.5px 14px 41.5px;
+}
+.registrationButtonHeader {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  color: #fff;
+  border: 1px solid #424242;
+  border-radius: 19px;
+  padding: 9px 16px 10px 16px;
+}
+.btnContainerHeader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  width: calc(100% - 100px);
+  padding-inline: 50px;
+}
+.logoAuthorized {
+  display: flex;
+  justify-content: center;
+  align-items: end;
+  gap: 11px;
+}
+.svgAccount {
+  border-radius: 100px;
+  padding: 8px;
+  width: 28px;
+  height: 28px;
+  background: #f1f5f9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  margin-top: 4px;
+}
+.logoHeader {
+  max-width: 192px;
+  margin-top: 14px;
+}
+.logoHeaderImg {
+  max-width: 200px;
+  margin-top: 14px;
+}

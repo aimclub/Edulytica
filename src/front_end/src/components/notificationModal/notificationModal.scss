@@ -1,0 +1,186 @@
+.notificationModal {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+  max-width: 400px;
+  min-width: 320px;
+  background: #212121;
+  border-radius: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 1.75px solid #8e8e8e;
+  overflow: hidden;
+}
+
+.wideNotificationModal {
+  max-width: 420px;
+  min-width: 420px;
+}
+
+.contentNotificationModal {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 44px 14px 12px;
+  gap: 10px;
+
+  &.errorContentNotificationModal {
+    align-items: center;
+  }
+}
+
+.iconNotificationModal {
+  flex-shrink: 0;
+}
+
+.successIconNotificationModal,
+.clockIconNotificationModal {
+  width: 40px;
+  height: 40px;
+  background: #89aaff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: #fff;
+  font-weight: bold;
+  text-shadow: 0 3px 12px 0 #050068;
+}
+
+.errorIconNotificationModal {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.textNotificationModal {
+  flex: 1;
+  min-width: 0;
+
+  &.centeredTextNotificationModal {
+    text-align: center;
+  }
+
+  &.withTopMarginNotificationModal {
+    margin-top: 4px;
+  }
+
+  &.withErrorMarginNotificationModal {
+    margin-top: 10px;
+  }
+
+  &.ticketStatusNotificationModal {
+    margin-right: -8px;
+    margin-top: 10px;
+    margin-block: 10px;
+  }
+
+  &.resultNotReadyNotificationModal {
+    margin-top: 8px;
+  }
+
+  &.requestAcceptedNotificationModal {
+    margin-top: 0;
+  }
+
+  &.ticketDeletedNotificationModal {
+    margin-top: 8px;
+  }
+
+  &.ticketReadyNotificationModal {
+    margin-top: 8px;
+  }
+
+  &.wideNotificationModal {
+    margin-top: 12px;
+    margin-left: -12px;
+    font-size: 13px;
+    white-space: pre-line;
+  }
+
+  &.pdfFormatNotificationModal {
+    margin-top: 8px;
+    font-size: 13px;
+    margin-left: -8px;
+  }
+}
+
+.titleNotificationModal {
+  margin: 0 0 4px 0;
+  font-family: "SF Pro Display";
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+  line-height: 1.28;
+  word-wrap: break-word;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.etaNotificationModal {
+  margin: 0;
+  font-family: "SF Pro Display";
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  color: #8f8f8f;
+  line-height: 1.4;
+}
+
+.closeNotificationModal {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #8f8f8f;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: #434343;
+    color: #bebaba;
+  }
+
+  &:active {
+    background: #676767;
+  }
+}
+
+@media (max-width: 768px) {
+  .notificationModal {
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    max-width: none;
+    min-width: auto;
+  }
+
+  .contentNotificationModal {
+    padding: 14px;
+  }
+
+  .titleNotificationModal {
+    font-size: 15px;
+  }
+
+  .etaNotificationModal {
+    font-size: 13px;
+  }
+}

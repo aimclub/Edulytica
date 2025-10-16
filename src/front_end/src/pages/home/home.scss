@@ -1,0 +1,448 @@
+.homePage {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.homePage::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(64, 64, 64, 0.3) 0%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+.heroSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 40px 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.heroContent {
+  flex: 1;
+  max-width: 1100px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 80px;
+  padding: 60px 20px 0 20px;
+}
+
+.heroTitle {
+  font-family: "SF Pro Display";
+  font-weight: 700;
+  font-size: 45px;
+  line-height: 1.15;
+  color: #ffffff;
+  margin: 0 0 24px 0;
+  letter-spacing: -0.03em;
+  text-align: center;
+  max-width: 1100px;
+}
+
+.heroSubtitle {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 38px;
+  line-height: 1.25;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: -14px 0 20px 0;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.heroDescription {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 21px;
+  line-height: 1.6;
+  color: #c0c0c0;
+  margin: 0 0 60px 0;
+  max-width: 800px;
+  text-align: center;
+}
+
+.ctaButton {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 1.2rem;
+  padding: 18px 36px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.ctaButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.ctaButton:hover::before {
+  left: 100%;
+}
+
+.ctaButton:hover {
+  box-shadow: 0 15px 50px rgba(59, 130, 246, 0.5);
+  transform: translateY(-3px);
+}
+
+.heroVisual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  margin-top: auto;
+}
+
+.macbookContainer {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 800px;
+  bottom: 0;
+  margin-bottom: -200px;
+}
+
+.macbookImage {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  filter: drop-shadow(0 20px 60px rgba(0, 0, 0, 0.6));
+}
+
+@media (min-width: 1400px) and (min-height: 900px) {
+  .heroTitle {
+    font-size: 45px;
+  }
+  .heroSubtitle {
+    font-size: 42px;
+  }
+  .heroDescription {
+    font-size: 22px;
+    margin-top: -10px;
+  }
+  .macbookImage {
+    max-width: 900px;
+  }
+  .macbookContainer {
+    max-width: 900px;
+    margin-bottom: -220px;
+  }
+}
+
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .heroContent {
+    max-width: 1000px;
+  }
+  .heroTitle {
+    font-size: 42px;
+    max-width: 1000px;
+  }
+  .heroSubtitle {
+    font-size: 36px;
+  }
+  .heroDescription {
+    font-size: 22px;
+  }
+  .macbookImage {
+    max-width: 750px;
+  }
+  .macbookContainer {
+    max-width: 750px;
+    margin-bottom: -180px;
+  }
+}
+
+@media (max-width: 1199px) and (min-width: 992px) {
+  .heroContent {
+    max-width: 900px;
+    padding: 50px 20px 0 20px;
+    margin-bottom: 100px;
+  }
+  .heroTitle {
+    font-size: 38px;
+    max-width: 900px;
+  }
+  .heroSubtitle {
+    font-size: 33px;
+    margin: -15px 0 20px 0;
+  }
+  .heroDescription {
+    font-size: 20px;
+    margin: 0 0 50px 0;
+  }
+  .macbookImage {
+    max-width: 700px;
+  }
+  .macbookContainer {
+    max-width: 700px;
+    margin-bottom: -170px;
+  }
+}
+
+@media (max-width: 991px) and (min-width: 768px) {
+  .heroContent {
+    max-width: 800px;
+    padding: 40px 20px 0 20px;
+    margin-bottom: 120px;
+  }
+  .heroTitle {
+    font-size: 32px;
+    max-width: 800px;
+  }
+  .heroSubtitle {
+    font-size: 28px;
+    margin: -12px 0 18px 0;
+  }
+  .heroDescription {
+    font-size: 18px;
+    margin: 0 0 40px 0;
+  }
+  .macbookImage {
+    max-width: 600px;
+  }
+  .macbookContainer {
+    max-width: 600px;
+    margin-bottom: -150px;
+  }
+}
+
+@media (max-width: 767px) {
+  .heroSection {
+    padding: 20px 15px;
+  }
+  .heroContent {
+    max-width: 100%;
+    padding: 30px 10px 0 10px;
+    margin-bottom: 100px;
+  }
+  .heroTitle {
+    font-size: 28px;
+    line-height: 1.2;
+    max-width: 100%;
+  }
+  .heroSubtitle {
+    font-size: 24px;
+    margin: -10px 0 15px 0;
+  }
+  .heroDescription {
+    font-size: 16px;
+    margin: 0 0 30px 0;
+  }
+  .ctaButton {
+    font-size: 1.1rem;
+    padding: 16px 32px;
+  }
+  .macbookImage {
+    max-width: 500px;
+  }
+  .macbookContainer {
+    max-width: 500px;
+    margin-bottom: -120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroContent {
+    padding: 20px 5px 0 5px;
+  }
+  .heroTitle {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+  .heroSubtitle {
+    font-size: 20px;
+    margin: -8px 0 12px 0;
+  }
+  .heroDescription {
+    font-size: 14px;
+    margin: 0 0 25px 0;
+  }
+  .ctaButton {
+    font-size: 1rem;
+    padding: 14px 28px;
+  }
+  .macbookImage {
+    max-width: 400px;
+  }
+  .macbookContainer {
+    max-width: 400px;
+    margin-bottom: -100px;
+  }
+}
+
+@media (max-height: 800px) and (min-width: 768px) {
+  .heroContent {
+    padding-top: 30px;
+    margin-bottom: 60px;
+  }
+  .heroDescription {
+    margin: 0 0 30px 0;
+  }
+  .macbookImage {
+    max-width: 550px;
+  }
+  .macbookContainer {
+    max-width: 550px;
+    margin-bottom: -140px;
+  }
+}
+
+@media (max-height: 700px) and (min-width: 768px) {
+  .heroContent {
+    padding-top: 20px;
+    margin-bottom: 40px;
+  }
+  .heroTitle {
+    font-size: 30px;
+    max-width: 800px;
+  }
+  .heroSubtitle {
+    font-size: 26px;
+    margin: -10px 0 12px 0;
+  }
+  .heroDescription {
+    font-size: 16px;
+    margin: 0 0 20px 0;
+  }
+  .macbookImage {
+    max-width: 500px;
+  }
+  .macbookContainer {
+    max-width: 500px;
+    margin-bottom: -120px;
+  }
+}
+
+@media (max-height: 600px) and (min-width: 768px) {
+  .heroContent {
+    padding-top: 15px;
+    margin-bottom: 30px;
+  }
+  .heroTitle {
+    font-size: 26px;
+  }
+  .heroSubtitle {
+    font-size: 22px;
+    margin: -8px 0 10px 0;
+  }
+  .heroDescription {
+    font-size: 14px;
+    margin: 0 0 15px 0;
+  }
+  .macbookImage {
+    max-width: 450px;
+  }
+  .macbookContainer {
+    max-width: 450px;
+    margin-bottom: -100px;
+  }
+}
+
+@media (max-width: 991px) and (max-height: 800px) {
+  .heroContent {
+    padding-top: 25px;
+    margin-bottom: 80px;
+  }
+  .heroDescription {
+    margin: 0 0 25px 0;
+  }
+  .macbookImage {
+    max-width: 450px;
+  }
+  .macbookContainer {
+    max-width: 450px;
+    margin-bottom: -100px;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 700px) {
+  .heroContent {
+    padding-top: 15px;
+    margin-bottom: 60px;
+  }
+  .heroTitle {
+    font-size: 22px;
+  }
+  .heroSubtitle {
+    font-size: 18px;
+  }
+  .heroDescription {
+    font-size: 13px;
+    margin: 0 0 20px 0;
+  }
+  .macbookImage {
+    max-width: 350px;
+  }
+  .macbookContainer {
+    max-width: 350px;
+    margin-bottom: -80px;
+  }
+}
+
+@media (max-width: 767px) and (max-height: 500px) {
+  .heroContent {
+    padding-top: 10px;
+    margin-bottom: 40px;
+  }
+  .heroTitle {
+    font-size: 20px;
+  }
+  .heroSubtitle {
+    font-size: 16px;
+    margin: -5px 0 8px 0;
+  }
+  .heroDescription {
+    font-size: 12px;
+    margin: 0 0 15px 0;
+  }
+  .macbookImage {
+    max-width: 300px;
+  }
+  .macbookContainer {
+    max-width: 300px;
+    margin-bottom: -60px;
+  }
+}

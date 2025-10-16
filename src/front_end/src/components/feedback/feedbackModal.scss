@@ -1,0 +1,185 @@
+.titleInputFeedbackModal {
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: #fff;
+  font-family: "SF Pro Display";
+  margin-bottom: 8px;
+}
+
+.blockInputFeedbackModal {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  width: 100%;
+  margin-bottom: 18px;
+}
+
+.containerFeedbackModal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 437px;
+}
+
+.titleFeedbackModal {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+  margin-bottom: 30px;
+}
+
+.btnBottomFeedbackModal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-block: 10px;
+  width: 100%;
+  background: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover:not(.loading) {
+    background-color: #f0f0f0;
+  }
+
+  &.loading {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.feedbackModalOverlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(2, 2, 2, 0.66);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+}
+
+.feedbackModal {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  padding-block: 40px;
+  padding-inline: 70px;
+  max-width: 500px;
+  min-width: 400px;
+  width: fit-content;
+  position: relative;
+  z-index: 10001;
+}
+
+.closeButtonFeedbackModal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.errorTextFeedbackModal {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: -0.02em;
+  color: #b62222;
+  margin-top: 2px;
+  margin-bottom: -10px;
+}
+
+.textareaFeedbackModal {
+  width: calc(100% - 36px);
+  height: 90px;
+  resize: none;
+  overflow-y: auto;
+  background-color: rgba(48, 48, 48, 1);
+  color: rgb(230, 230, 230);
+  border: none;
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-family: "SF Pro Display";
+  font-size: 16px;
+  outline: none;
+}
+
+.textareaFeedbackModal::-webkit-scrollbar {
+  display: none;
+}
+
+.textareaFeedbackModal {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.inputFeedbackModal {
+  width: calc(100% - 36px);
+  height: 44px;
+  background-color: rgba(48, 48, 48, 1);
+  color: rgb(230, 230, 230);
+  border: none;
+  border-radius: 10px;
+  padding-inline: 18px;
+  font-family: "SF Pro Display";
+  font-size: 16px;
+  outline: none;
+}
+
+.feedbackFabButton {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 9000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #2b2b2b 0%, #1b1b1b 100%);
+  border: 1px solid #3a3a3a;
+  color: #eaeaea;
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    background: linear-gradient(180deg, #323232 0%, #1e1e1e 100%);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55);
+    border-color: #4a4a4a;
+  }
+}
+
+.feedbackFabIcon {
+  width: 24px;
+  height: 24px;
+}

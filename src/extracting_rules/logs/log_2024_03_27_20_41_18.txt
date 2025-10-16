@@ -1,0 +1,92 @@
+{
+  "params": [
+    "font size",
+    "font type",
+    "paper color",
+    "paper format",
+    "line spacing",
+    "page"
+  ],
+  "elements": [
+    {
+      "element": "Text",
+      "description": "The text element includes all written content in the GOST document."
+    },
+    {
+      "element": "Table",
+      "description": "Tables are used to present data in a structured manner."
+    },
+    {
+      "element": "Figure",
+      "description": "Figures include images, graphs, charts, diagrams, etc."
+    },
+    {
+      "element": "Footnote",
+      "description": "Footnotes are notes at the bottom of the page used to provide additional information or references."
+    },
+    {
+      "element": "Formula",
+      "description": "Formulas are used to present mathematical or scientific expressions."
+    },
+    {
+      "element": "Link",
+      "description": "Links refer to external sources or cross-references within the document."
+    }
+  ],
+  "gost_params": {
+    "text": {
+      "font_size": 12,
+      "font_type": "Times New Roman"
+    },
+    "paper_size": {
+      "color": "white",
+      "format": "A4",
+      "line_spacing": 1.5,
+      "page": 1
+    },
+    "design": {
+      "fonts": {
+        "size": 12,
+        "type": "Times New Roman"
+      },
+      "colors": {
+        "text": "black",
+        "background": "white"
+      },
+      "indents": {
+        "top": 1,
+        "bottom": 1,
+        "left": 1,
+        "right": 1
+      },
+      "styles": {
+        "text": "plain",
+        "headings": "bold"
+      },
+      "numbering": {
+        "style": "arabic",
+        "start": 1
+      }
+    },
+    "tables": {
+      "border_thickness": 1,
+      "border_color": "black"
+    },
+    "figures": {
+      "size": "fit_to_page",
+      "color": "black_and_white"
+    },
+    "footnotes": {
+      "font_size": 10,
+      "style": "italic"
+    },
+    "formulas": {
+      "font_size": 12,
+      "style": "italic"
+    },
+    "links": {
+      "color": "blue",
+      "underlined": true
+    }
+  }
+}

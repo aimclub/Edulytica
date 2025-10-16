@@ -1,0 +1,63 @@
+{
+"params": ["font size", "font type", "line spacing", "margin", "colors", "styles", "alignment", "indentation", "list formatting", "table formatting", "figure formatting", "footnote formatting", "formula formatting", "link formatting"],
+"elements": [
+{"element": "Scope of application", "description": "Description of where GOST is applied"},
+{"element": "Requirements for structural elements of the report", "description": "Dictionary containing all structural elements of the report and their requirements"},
+{"element": "Design rules", "description": "All rules for the design of various tools such as fonts, sizes, indents, colors, styles, numbering, etc."}
+],
+"gost_params": {
+"font size": "12 pt",
+"font type": "Times New Roman",
+"line spacing": "1.5",
+"margin": "1 inch",
+"colors": {"text": "black", "background": "white"},
+"styles": {
+"text": "normal",
+"heading": "bold",
+"list item": "bulleted or numbered",
+"table header": "bold",
+"table row": "normal",
+"figure caption": "italic",
+"footnote": "superscript",
+"formula": "centered",
+"link": "blue with underline"
+},
+"alignment": {
+"text": "justified",
+"heading": "centered",
+"table": "centered",
+"figure": "centered",
+"footnote": "justified"
+},
+"indentation": {
+"first line": "0.5 inch",
+"paragraph": "0.2 inch"
+},
+"list formatting": {
+"bulleted": "• Bullet point",
+"numbered": "1. Numbered point"
+},
+"table formatting": {
+"border thickness": "1 pt",
+"cell padding": "5 px",
+"cell spacing": "0 px"
+},
+"figure formatting": {
+"caption position": "Below the figure",
+"image resolution": "300 dpi"
+},
+"footnote formatting": {
+"placement": "At the bottom of the page",
+"numbering": "Numeric",
+"size": "10 pt"
+},
+"formula formatting": {
+"font type": "Italic",
+"size": "10 pt"
+},
+"link formatting": {
+"hover effect": "Underline",
+"visited link color": "Purple"
+}
+}
+}

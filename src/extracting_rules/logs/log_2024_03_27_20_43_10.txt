@@ -1,0 +1,24 @@
+{
+"params": ["gost_params", "elements"],
+"elements": [
+ { 
+ "element": "Scope_of_application", 
+ "description": "GOST (Scopus) is a globally recognized source of abstracts and citations, applied in numerous humanities titles, book series, conference series, and research reports. It was launched in 2004 and has grown to include arts and humanities, social sciences, and more."}, 
+ { 
+ "element": "Requirements_for_structural_elements_of_the_report", 
+ "description": "GOST covers all structural elements inherent to research work. Essential elements include titles, abstracts, citations, bibliographies, and author information. Each element has specific requirements correlated to it for accuracy and uniformity."
+ }],
+"gost_params": {
+ "Coverage": 
+  {
+   "complete_coverage": "Scopus had 14,200 journals at launch, with about 7,500 new titles added since 2004. A total of 240 million cited references will be added by the end of 2016.",
+   "pre_and_post_1996_records": "Scopus is 99% complete for titles included back to 1996. 73% of articles have an abstract as far back as 1823, and 84% of records after 1995 have abstracts.",
+   "medline_coverage": "Scopus covers all 5,000 MEDLINE titles from 1966 and also includes OLDMEDLINE content published between 1949 and 1965."
+  },
+ "Content_Processing_and_Delivery": 
+  {
+   "obtaining_content": "Scopus receives data from over 5000 publishers globally, with 85% received electronically or sourced from journal websites.",
+   "articles_in_press": "Pre-published versions of accepted articles, known as Articles-in-Press, are de-duplicated when the final version is published. Scopus receives AiP from nearly 5,000 journals via FTP service."
+  }
+ }
+}

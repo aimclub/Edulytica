@@ -1,0 +1,43 @@
+{
+"params": ["font size", "font type", "title selection process", "coverage areas", "content sources", "Scopus content management"],
+"elements": [
+{"element": "Content Selection & Advisory Board", "description": "Comprises subject chairs responsible for reviewing titles within specific subject areas"},
+{"element": "Scopus Title Evaluation Platform (STEP)", "description": "Web-based system streamlining title evaluation process"},
+{"element": "Global coverage", "description": "Scopus covers titles from all geographical regions, including non-English titles with English abstracts"},
+{"element": "Subject area coverage", "description": "Scopus classifies titles under four broad subject clusters and further divides them into major and minor subject areas"},
+{"element": "Arts & humanities coverage expansion", "description": "Scopus increased the number of humanities titles through various projects"},
+{"element": "Complete coverage", "description": "Scopus adds new titles without backfilling content, but may cover back file content if provided"},
+{"element": "MEDLINE coverage", "description": "Scopus includes MEDLINE titles from 1966 onwards and OLDMEDLINE from 1949-1965"},
+{"element": "Content processing", "description": "Scopus obtains content electronically from publishers, with fast processing times for indexed data and Articles-in-Press (AiP) versions"}
+],
+"gost_params": {
+"font_size": "12 pt",
+"font_type": "Times New Roman",
+"title_selection_process": {
+"criteria": "Content Coverage Policy",
+"additional_reviewers": "Subject expertise and/or language skills required"
+},
+"coverage_areas": {
+"geographical_regions": "Global coverage by design, including non-English titles",
+"subject_clusters": "Life sciences, physical sciences, health sciences, social sciences & humanities",
+"journal_count": "More than 21,500 titles in Scopus",
+"subject_breakdown": {
+"life_sciences": 15%,
+"physical_sciences": 24%,
+"health_sciences": 32%,
+"social_sciences": 29%
+}
+},
+"design_rules": {
+"titles_list_link": "https://www.elsevier.com/solutions/scopus/content",
+"arts_humanities_link": "http://www.elsevier.com/solutions/scopus/content",
+"font": {"size": "12 pt", "type": "Times New Roman"},
+"hyperlinks": {"color": "blue", "underline": true},
+"table_design": {"border_color": "black", "cell_padding": "5 px"},
+"figures": {"caption": "Bold", "size": "10 pt"},
+"formulas": {"italics": true, "alignment": "center"},
+"footnotes": {"numbering": "Continuous", "format": "Superscript"},
+"links_in_text": {"color": "green", "hover_effect": true}
+}
+}
+}

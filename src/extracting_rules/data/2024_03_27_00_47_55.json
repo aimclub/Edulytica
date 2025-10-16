@@ -1,0 +1,189 @@
+{
+    "params": [
+        "font size",
+        "font type",
+        "colors",
+        "spacing",
+        "indentation",
+        "list style",
+        "numbering",
+        "line thickness",
+        "titles",
+        "footnotes",
+        "tables",
+        "figures",
+        "formulas",
+        "links",
+        "in-text citations"
+    ],
+    "elements": [
+        {
+            "element": "content selection & advisory board subject chairs",
+            "description": "Comprises 15 subject chairs responsible for reviewing all titles within specific subject areas."
+        },
+        {
+            "element": "scopus title evaluation platform",
+            "description": "A web-based editorial system streamlining the title evaluation process."
+        },
+        {
+            "element": "global coverage",
+            "description": "Scopus coverage is global to serve researchers' needs."
+        },
+        {
+            "element": "subject area coverage",
+            "description": "Scopus offers coverage across various subject clusters."
+        },
+        {
+            "element": "complete coverage",
+            "description": "Scopus contains over 14,000 titles and has added approximately 7,500 new titles since 2004."
+        },
+        {
+            "element": "MEDLINE coverage",
+            "description": "Scopus covers all 5,000 MEDLINE titles from 1966 and includes OLDMEDLINE content published between 1949 and 1965."
+        },
+        {
+            "element": "processing of scopus content",
+            "description": "Content is obtained from over 5,000 publishers worldwide."
+        },
+        {
+            "element": "articles-in-press (AiP)",
+            "description": "Pre-published versions of accepted articles that are de-duplicated once the final version is published."
+        }
+    ],
+    "gost_params": {
+        "font size": "12 pt",
+        "font type": "Times New Roman",
+        "line spacing": 1.5,
+        "page": "1",
+        "color": "white",
+        "format": "A4",
+        "structural_elements": {
+            "abstracts": [
+                "Include keywords",
+                "At least 150 words"
+            ],
+            "keywords": [
+                "Minimum 5 keywords"
+            ],
+            "cited references": [
+                "Include at least 10 references"
+            ],
+            "affiliation data": [
+                "Should include author's affiliations"
+            ],
+            "author profiles": [
+                "Author name, affiliation, email"
+            ],
+            "ORCID integration": [
+                "Integrate ORCID for authors"
+            ],
+            "content types": [
+                "Journals, trade publications, book series, conference papers"
+            ],
+            "metadata": [
+                "Abstracts, keywords, cited references, affiliation data, author profiles, ORCID integration"
+            ]
+        },
+        "design rules": {
+            "text": {
+                "font size": "12 pt",
+                "font type": "Times New Roman"
+            },
+            "tables": {
+                "font size": "10 pt",
+                "color": "black",
+                "border thickness": "0.5 pt"
+            },
+            "figures": {
+                "font size": "10 pt",
+                "color": "black",
+                "caption style": "italic"
+            },
+            "footnotes": {
+                "font size": "10 pt",
+                "indent": "0.5 inch"
+            },
+            "formulas": {
+                "font type": "Symbol",
+                "font size": "12 pt"
+            },
+            "links": {
+                "color": "blue",
+                "underline": true
+            }
+        },
+        "spacing": "one and a half",
+        "margin": "standard margin size",
+        "indentation": "standard indentation for paragraphs",
+        "bullet points": {
+            "style": "standard bullet points",
+            "indentation": "aligned with the text"
+        },
+        "numbering": "standard numbering format for lists",
+        "padding": "standard",
+        "line thickness": "0.5 mm",
+        "list format": {
+            "bullet points": "●",
+            "numbering": "1, 2, 3"
+        },
+        "link": {
+            "format": "URL",
+            "appearance": "underlined"
+        },
+        "design_rules": {
+            "font": {
+                "size": "12 pt",
+                "type": "Times New Roman"
+            },
+            "colors": {
+                "black": "#000000"
+            },
+            "spacing": {
+                "line": "1.5"
+            },
+            "indentation": {
+                "paragraphs": "0.5 inches",
+                "bullets": "0.3 inches"
+            },
+            "list_style": {
+                "type": "bullet points",
+                "symbol": "•"
+            },
+            "numbering": {
+                "style": "decimal"
+            },
+            "line_thickness": "1px",
+            "titles": {
+                "font_size": "14 pt",
+                "font_weight": "bold"
+            },
+            "footnotes": {
+                "font_size": "10 pt"
+            },
+            "tables": {
+                "font_size": "10 pt",
+                "border_thickness": "0.5 pt",
+                "header_background": "#f2f2f2",
+                "row_alternating_colors": [
+                    "#ffffff",
+                    "#f9f9f9"
+                ]
+            },
+            "figures": {
+                "caption_font_size": "12 pt",
+                "image_quality": "high resolution"
+            },
+            "formulas": {
+                "font_size": "11 pt",
+                "equation_numbering": true
+            },
+            "links": {
+                "color": "#0000EE",
+                "underline": true
+            },
+            "in-text citations": {
+                "style": "APA"
+            }
+        }
+    }
+}

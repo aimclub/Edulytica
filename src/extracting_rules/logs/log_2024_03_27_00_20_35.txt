@@ -1,0 +1,25 @@
+{
+"params": ["font size", "font type", "line spacing", "page", "format", "color", "number of subject chairs", "decision-making cycle", "number of titles in Scopus", "average time for processing and indexing articles", "number of AiP providers"],
+"elements": [
+{"element": "Content Selection & Advisory Board", "description": "Group of 15 subject chairs responsible for reviewing and voting on new journal titles for inclusion in Scopus"},
+{"element": "Scopus Title Evaluation Platform (STEP)", "description": "Web-based system for streamlining title evaluation process with benefits including feedback for new title suggestions"},
+{"element": "Global coverage", "description": "Coverage of Scopus being global, including titles from all geographic regions and languages with English abstracts"},
+{"element": "Subject area coverage", "description": "Classification of Scopus titles under four broad subject clusters further divided into subject areas"},
+{"element": "Complete coverage", "description": "Information on Scopus coverage since its launch, including new titles added and cited references expansion project"},
+{"element": "MEDLINE coverage", "description": "Inclusion of MEDLINE titles in Scopus with agreements with publishers directly for content"},
+{"element": "Processing of Scopus content", "description": "Content acquisition process of Scopus articles from publishers worldwide and handling of AiP versions"}
+],
+"gost_params": {
+"font size": "12 pt",
+"font type": "Times New Roman",
+"line spacing": 1.5,
+"page": 1,
+"format": "A4",
+"color": "white",
+"number of subject chairs": 15,
+"decision-making cycle": "short",
+"number of titles in Scopus": "more than 21,500",
+"average time for processing and indexing articles": "2-5 weeks",
+"number of AiP providers": 16
+}
+}

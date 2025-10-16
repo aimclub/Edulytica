@@ -1,0 +1,149 @@
+{
+    "params": [
+        "font size",
+        "font type",
+        "spacing",
+        "link"
+    ],
+    "elements": [
+        {
+            "element": "heading",
+            "description": "Main heading of the report"
+        },
+        {
+            "element": "body_text",
+            "description": "Main body content of the report"
+        },
+        {
+            "element": "footer",
+            "description": "Footer section of the report"
+        }
+    ],
+    "gost_params": {
+        "font size": {
+            "heading": "14 pt",
+            "body_text": "12 pt",
+            "footer": "10 pt"
+        },
+        "font type": {
+            "heading": "Arial",
+            "body_text": "Times New Roman",
+            "footer": "Calibri"
+        },
+        "line spacing": 1.5,
+        "table style": {
+            "font": "12 pt",
+            "border_thickness": "0.5 pt",
+            "cell_padding": "5 px",
+            "cell_spacing": "0 px",
+            "alignment": "center"
+        },
+        "figure style": {
+            "font": "11 pt",
+            "border_thickness": "1 pt",
+            "alignment": "center"
+        },
+        "footnotes style": {
+            "font": "10 pt",
+            "indentation": "10 pt"
+        },
+        "formula style": {
+            "font": "11 pt",
+            "color": "black",
+            "alignment": "left"
+        },
+        "link style": {
+            "color": "blue",
+            "hover_color": "red",
+            "text_decoration": "underline"
+        },
+        "fonts": {
+            "text": "Times New Roman",
+            "tables": "Calibri"
+        },
+        "sizes": {
+            "text": "12 pt",
+            "headers": "14 pt"
+        },
+        "colors": {
+            "primary": "Black",
+            "secondary": "Gray"
+        },
+        "styles": {
+            "bold": "font-weight: bold",
+            "italic": "font-style: italic",
+            "underline": "text-decoration: underline"
+        },
+        "spacing": {
+            "line": "1.5",
+            "paragraph": "6 pt",
+            "heading": "1.5",
+            "body_text": "1.15",
+            "footer": "1.0"
+        },
+        "indentation": {
+            "text": "0.5 inches",
+            "bullet_points": "0.25 inches"
+        },
+        "numbering": {
+            "figures": "Figure X: Description",
+            "tables": "Table X: Description",
+            "formulas": "Formula X: Description",
+            "footnotes": "Footnote X: Description"
+        },
+        "text": {
+            "font size": "12 pt",
+            "font type": "Times New Roman",
+            "spacing": "one and a half spacing"
+        },
+        "tables": {
+            "font size": "10 pt",
+            "font type": "Arial",
+            "line thickness": "0.5 mm",
+            "padding": "5 mm"
+        },
+        "figures": {
+            "font size": "11 pt",
+            "font type": "Calibri",
+            "colors": [
+                "blue",
+                "green",
+                "red"
+            ]
+        },
+        "footnotes": {
+            "font size": "10 pt",
+            "font type": "Times New Roman"
+        },
+        "formulas": {
+            "font size": "italic 13 pt",
+            "font type": "Cambria Math",
+            "colors": [
+                "black",
+                "gray"
+            ]
+        },
+        "links": {
+            "font size": "10 pt",
+            "font type": "Verdana",
+            "colors": [
+                "#3366cc"
+            ]
+        },
+        "color": "white",
+        "format": "A4",
+        "content selection & advisory board": "Review and voting on journal titles",
+        "scopus title evaluation platform": "Streamlines title evaluation process",
+        "global coverage": "Ensures global coverage and inclusion of non-English titles",
+        "subject area coverage": "Classification of titles under broad subject clusters",
+        "arts & humanities coverage": "Expansion of humanities titles in Scopus",
+        "complete coverage": "Information on journals added and cited references coverage",
+        "medline coverage": "Details on MEDLINE titles in Scopus",
+        "processing of scopus content": "Acquisition and processing of Scopus content",
+        "articles-in-press (aip)": "Pre-published versions of accepted articles and publishers providing AiP",
+        "link": {
+            "color": "blue",
+            "text_decoration": "underline"
+        }
+    }
+}

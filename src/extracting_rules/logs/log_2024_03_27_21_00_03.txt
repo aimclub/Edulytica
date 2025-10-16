@@ -1,0 +1,53 @@
+{
+  "params": ["title", "abstract", "introduction", "body", "conclusion"],
+  "elements": [
+    {
+      "element": "GOST title",
+      "description": "Contains the main research idea, should attract reader's attention and represent the findings"
+    },
+    {
+      "element": "GOST abstract",
+      "description": "Brief summary of each main sections of the paper. Usually between 100-250 words"
+    },
+    {
+      "element": "GOST introduction",
+      "description": "Explains the importance of the study, contains problem statement and literature review"
+    },
+    {
+      "element": "GOST body",
+      "description": "Main content of the paper. Contains methods used, results, and other relevant discussions"
+    },
+    {
+      "element": "GOST conclusion",
+      "description": "Brief summary of the study and its findings"
+    }
+  ],
+  "gost_params": {
+    "title": {
+      "length_limit": "Should be brief",
+      "format": "Reflect the contents of research",
+      "language": "English"
+    },
+    "abstract": {
+      "word_limit": 250,
+      "format": "Single paragraph",
+      "contents": "Summary of each main section",
+      "language": "English"
+    },
+    "introduction": {
+      "tense": "Present",
+      "format": "Brief description of problem, literature review, and method",
+      "language": "English"
+    },
+    "body": {
+      "tense": "Past for most parts",
+      "format": "Details of methods used, discussions, and results",
+      "language": "English"
+    },
+    "conclusion": {
+      "length_limit": "Should be brief",
+      "format": "Summary of the study and its findings",
+      "language": "English"
+    }
+  }
+}

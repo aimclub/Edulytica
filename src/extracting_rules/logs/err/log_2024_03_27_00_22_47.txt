@@ -1,0 +1,28 @@
+{
+"params": ["font size", "font type", "line spacing", "page", "URL", "percentage", "number of titles", "subject areas", "statistics", "languages", "coverage", "journal types", "titles"],
+"elements": [
+{"element": "Scope of application", "description": "Description of the areas where GOST is applied"},
+{"element": "Requirements for structural elements of the report", "description": "Structural elements of the report and their requirements"},
+{"element": "Design rules", "description": "Rules for the design of various tools including fonts, sizes, indents, colors, styles, numbering, etc."}
+],
+"gost_params": {
+"Scope of application": "GOST is applicable to Scopus documents and evaluation processes",
+"Requirements for structural elements of the report": {
+"Content Selection & Advisory Board": ["Comprises 15 subject chairs", "Responsible for reviewing all titles within a specific subject area", "Can involve additional reviewers"],
+"Scopus Title Evaluation Platform": ["Web-based editorial system for streamlining title evaluation process", "Provides feedback to suggestors and publishers", "Shortens decision-making cycle"],
+"Global coverage": ["Covers titles from all geographical regions", "English abstracts required for non-English titles", "Approximately 21% of titles in non-English languages"],
+"Subject area coverage": ["Classified under four broad subject clusters", "Divided into 27 major subject areas and 300+ minor subject areas", "Titles may belong to more than one subject area"],
+"Complete coverage": ["Scopus contained 14,200 journals at launch in 2004", "Approximately 7,500 new titles added since then", "Cited Reference Expansion project adds references back to 1970"],
+"MEDLINE coverage": ["Covers 5,000 MEDLINE titles from 1966", "Includes OLDMEDLINE content from 1949 to 1965", "Advantages of integration with Scopus citation network"],
+"Processing of Scopus content": ["Content obtained from over 5,000 publishers worldwide", "85% received electronically", "Articles-in-Press de-duplicated once final version is published"]
+},
+"Design rules": {
+"General": {"font size": "12 pt", "font type": "Times New Roman", "line spacing": "1.5"},
+"Links": {"color": "blue", "underline": "true", "hover color": "purple"},
+"Tables": {"border thickness": "1px", "cell padding": "5px", "cell spacing": "0"},
+"Figures": {"caption font style": "italic", "label font size": "10 pt"},
+"Footnotes": {"numbering": "continuous", "font size": "10 pt"},
+"Formulas": {"font style": "bold", "color": "black"},
+"Titles": {"font color": "black", "alignment": "center"}
+}
+}

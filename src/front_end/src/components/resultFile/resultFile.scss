@@ -1,0 +1,197 @@
+.titleResultFile {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 25px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+}
+.sectionHeaderContainerResultFile {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+  padding-block: 15px;
+  width: 170px;
+  border-radius: 13px 13px 0 0;
+  background: #676767;
+  cursor: pointer;
+}
+.sectionHeaderContainerResultFileActive {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #fff;
+  padding-block: 15px;
+  width: 170px;
+  border-radius: 13px 13px 0 0;
+  background: #434343;
+  cursor: pointer;
+}
+.headerContainerResultFile {
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  gap: 0;
+  margin-left: 44px;
+}
+.textContScrollResultFile {
+  font-family: "SF Pro Display";
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.03em;
+  color: #000;
+  height: 100%;
+  display: flex;
+  width: 100%;
+  margin: 30px 0;
+  flex-direction: column;
+  overflow-y: scroll;
+  align-items: start;
+  padding-right: 20px;
+  scrollbar-gutter: stable both-edges;
+}
+
+.textContScrollResultFile::-webkit-scrollbar {
+  width: 6px;
+}
+
+.textContScrollResultFile::-webkit-scrollbar-thumb {
+  background-color: rgb(86, 85, 85);
+  border-radius: 30px;
+  height: 20px;
+}
+
+.textContScrollResultFile::-webkit-scrollbar-track {
+  background-color: rgb(180, 179, 179);
+}
+
+.textContResultFile {
+  height: calc(100vh - 340px);
+  width: 100%;
+  min-width: 700px;
+  box-shadow: 6px 8px 7px 0 #060164;
+  background: #f1f5f9;
+  border-radius: 36px;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0 44px 60px 44px;
+}
+.containerResultFile {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: start;
+  justify-content: center;
+  width: 820px;
+  margin-bottom: 35px;
+}
+.resultFile {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 54px;
+
+  .ticketStatus {
+    margin: 10px 0;
+    padding: 10px;
+    background-color: #f5f7ff;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 786px;
+    width: 100%;
+
+    .statusLabel {
+      font-weight: 500;
+      color: #4a4a4a;
+    }
+
+    .statusValue {
+      color: #89aaff;
+      font-weight: 600;
+    }
+  }
+}
+.btnBottomResultFile {
+  font-family: "SF Pro Display";
+  font-weight: 400;
+  font-size: 21px;
+  letter-spacing: -0.03em;
+  color: #bebaba;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  width: 148px;
+  padding-block: 4px;
+  border: 1px solid #bebaba;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+
+  &:hover:not(.downloading) {
+    color: #89aaff;
+    border-color: #89aaff;
+    transform: translateY(-2px);
+  }
+
+  &.downloading {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    animation: spin 1s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.blockResultFile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  cursor: pointer;
+}
+.textLoadingResultFile {
+  font-family: "SF Pro Display";
+  font-weight: 500;
+  font-size: 34px;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: #aba7a7;
+  margin-top: 200px;
+}
+
+@media (max-width: 1255px) {
+  .containerResultFile {
+    width: 700px;
+  }
+  .textContResultFile {
+    min-width: 700px;
+    height: calc(100vh - 360px);
+  }
+}
+@media (max-width: 1110px) {
+  .containerResultFile {
+    width: 600px;
+  }
+  .textContResultFile {
+    min-width: 600px;
+    height: calc(100vh - 380px);
+  }
+}

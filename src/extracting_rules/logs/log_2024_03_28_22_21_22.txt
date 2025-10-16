@@ -1,0 +1,32 @@
+{
+  "params": ["scope_of_application", "structural_elements", "design_rules"],
+  "elements": [
+    {
+      "element": "introduction",
+      "description": "Brief description about GOST"
+    },
+    {
+      "element": "coverage_of_source_types",
+      "description": "Types of sources that GOST guidelines apply to"
+    },
+    {
+      "element": "coverage_of_metadata",
+      "description": "Types of metadata covered by GOST requirements"
+    },
+    {
+      "element": "coverage_of_sources",
+      "description": "Coverage of sources in detail based on periods, areas and others"
+    },
+    {
+      "element": "processing_of_Scopus_content",
+      "description": "Processing guidelines for applying GOST on Scopus content"
+    }
+  ],
+  "gost_params": {
+    "introduction": {"scope_of_application": "GOST applied on Scopus, a large abstract and citation database"},
+    "coverage_of_source_types": {"serial_source_types": "GOST applicable on peer-reviewed journals, trade publications, book series, conference papers, Articles-in-Press, books and patents"},
+    "coverage_of_metadata": {"document_types": "GOST requirements apply to various document types", "additional_metadata": "GOST covers abstracts, keywords, index terms, cited references, affiliation data, author profiles, ORCID integration, and other metadata"},
+    "coverage_of_sources": {"scopus_title_list": "21,500 titles", "global_coverage": "Worldwide", "subject_area_coverage": "Fields of science, technology, medicine, social science and arts and humanities", "complete_coverage": "Coverage dating back to 1823"},
+    "processing_of_Scopus_content": {"processing_requirements":"Application rules for GOST on Scopus content"}
+  }
+}

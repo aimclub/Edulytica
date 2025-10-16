@@ -1,0 +1,242 @@
+version: "3.9"
+
+services:
+  edulytica_db:
+    container_name: "EdulyticaDatabase"
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "${DB_EXTERNAL_PORT}:5432"
+    networks:
+      - edulytica_network
+
+  edulytica_redis:
+    container_name: "EdulyticaRedis"
+    image: redis:7-alpine
+    restart: always
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "${REDIS_PORT}:6379"
+    networks:
+      - edulytica_network
+
+  edulytica_api:
+    container_name: "EdulyticaAPI"
+    build:
+      context: .
+      dockerfile: ./src/edulytica_api/Dockerfile
+    volumes:
+      - api_files:/app/app_files
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    depends_on:
+      edulytica_db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    env_file:
+      - ./.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - edulytica_network
+
+  edulytica_auth:
+    container_name: "EdulyticaAuth"
+    build:
+      context: .
+      dockerfile: ./src/auth/Dockerfile
+    ports:
+      - "${AUTH_PORT}:${AUTH_PORT}"
+    depends_on:
+      edulytica_db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
+    env_file:
+      - ./.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - edulytica_network
+
+  edulytica_orchestration:
+    container_name: "EdulyticaOrchestration"
+    build:
+      context: .
+      dockerfile: ./src/orchestration/Dockerfile
+    ports:
+      - "${ORCHESTRATOR_PORT}:${ORCHESTRATOR_PORT}"
+    depends_on:
+      kafka:
+        condition: service_healthy
+      edulytica_redis:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_healthy
+      edulytica_rag:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    env_file:
+      - ./.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - edulytica_network
+
+  edulytica_rag:
+    container_name: "EdulyticaRag"
+    build:
+      context: .
+      dockerfile: ./src/rag/Dockerfile
+    volumes:
+      - rag_hf_cache:/root/.cache/huggingface
+    ports:
+      - "${RAG_PORT}:${RAG_PORT}"
+    depends_on:
+      edulytica_chromadb:
+        condition: service_healthy
+      edulytica_db:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    env_file:
+      - ./.env
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - edulytica_network
+
+  edulytica_chromadb:
+    container_name: "EdulyticaChromaDatabase"
+    image: "chromadb/chroma:1.0.15"
+    volumes:
+      - ./chromadb:/chroma/chroma
+    healthcheck:
+      test: [ "CMD", "bash", "-c", "cat < /dev/null > /dev/tcp/localhost/8000" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "${CHROMA_PORT}:8000"
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+      - ANONYMIZED_TELEMETRY=TRUE
+    networks:
+      - edulytica_network
+
+  zookeeper:
+    container_name: "EdulyticaZookeeper"
+    image: confluentinc/cp-zookeeper:7.6.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_ZOOKEEPER_4LW_COMMANDS_WHITELIST: "srvr,mntr"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "echo 'srvr' | nc -w 2 localhost 2181 | grep -q 'Mode:'"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - edulytica_network
+
+  kafka:
+    container_name: "EdulyticaKafka"
+    image: confluentinc/cp-kafka:7.6.0
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "0.0.0.0:${KAFKA_EXTERNAL_PORT}:${KAFKA_EXTERNAL_PORT}"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: INTERNAL://0.0.0.0:${KAFKA_INTERNAL_PORT},EXTERNAL://0.0.0.0:${KAFKA_EXTERNAL_PORT}
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:${KAFKA_INTERNAL_PORT},EXTERNAL://${LLM_KAFKA_BOOTSTRAP_SERVERS}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "${KAFKA_INTERNAL_PORT}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - edulytica_network
+
+  kafka_ui:
+    container_name: "EdulyticaKafkaUI"
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - "${KAFKA_UI_PORT}:8080"
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=${KAFKA_BOOTSTRAP_SERVERS}
+    networks:
+      - edulytica_network
+
+  edulytica_backup:
+    container_name: "EdulyticaBackup"
+    build:
+      context: .
+      dockerfile: ./src/backup/Dockerfile
+    volumes:
+      - api_files:/api_files:ro
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      - TZ=Europe/Moscow
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      edulytica_db:
+        condition: service_healthy
+    networks:
+      - edulytica_network
+
+networks:
+  edulytica_network:
+    driver: bridge
+
+volumes:
+  api_files:
+  rag_hf_cache:

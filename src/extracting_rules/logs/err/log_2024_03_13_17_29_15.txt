@@ -1,0 +1,125 @@
+{
+    "params": [
+        {
+            "id": 1,
+            "value": "единый",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 2,
+            "value": "Times New Roman",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 3,
+            "value": "черный",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 4,
+            "value": "не менее 12 пт.",
+            "operator": ">=",
+            "is_recommented": 1
+        },
+        {
+            "id": 5,
+            "value": "одинаковый по всему отчету",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 6,
+            "value": "по ширине",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 7,
+            "value": "полуторный",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 8,
+            "value": "1,25 см.",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 9,
+            "value": "0 см.",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 10,
+            "value": "для заголовков структурных элементов отчета",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 11,
+            "value": "для заголовков разделов и подразделов основной части отчета",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 12,
+            "value": "для обозначения объектов (биология, геология, медицина, нанотехнологии, генная инженерия и др.) и написания терминов (например, in vivo, in vitro) и иных объектов и терминов на латыни",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 13,
+            "value": "для акцентирования внимания, выделения текста в отчете",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 14,
+            "value": "того же кегля и гарнитуры",
+            "operator": "=",
+            "is_recommented": 1
+        },
+        {
+            "id": 15,
+            "value": "для написания определенных терминов, формул, теорем применять шрифты разной гарнитуры",
+            "operator": "=",
+            "is_recommented": 1
+        }
+    ],
+    "elements": [
+        {
+            "element": "Шрифт",
+            "description": "Единый шрифт для всего отчета"
+        },
+        {
+            "element": "Цвет",
+            "description": "Черный цвет"
+        },
+        {
+            "element": "Размер",
+            "description": "Не менее 12 пунктов"
+        },
+        {
+            "element": "Выравнивание текста",
+            "description": "По ширине"
+        },
+        {
+            "element": "Межстрочный интервал",
+            "description": "Полуторный"
+        },
+        {
+            "element": "Абзацный отступ",
+            "description": "1,25 см."
+        },
+        {
+            "element": "Отступы и интервалы в тексте",
+            "description": "0 см."
+        },
+        {
+            "element": "Полужирный шрифт",
+            "description": "Для заголовков структурных элементов

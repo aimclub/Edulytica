@@ -71,7 +71,7 @@ class TicketService {
    */
   async getEvents() {
     try {
-      const response = await $api.get("/actions/get_events")
+      const response = await $api.get("/events")
       return response.data.events
     } catch (error) {
       console.error("Error fetching events:", error)
@@ -83,9 +83,11 @@ class TicketService {
    * Получает историю тикетов пользователя
    * @returns {Promise<Array>} Массив тикетов
    */
-  async getTicketHistory() {
+  async getTicketHistory(page = 1, size = 20) {
     try {
-      const response = await $api.get("/account/ticket_history")
+      const response = await $api.get("/tickets", {
+        params: { page, size },
+      })
       return response.data.tickets
     } catch (error) {
       console.error("Error fetching ticket history:", error)
@@ -107,7 +109,7 @@ class TicketService {
       formData.append("event_id", eventId)
       formData.append("mega_task_id", mega_task_id)
 
-      const response = await $api.post("/actions/new_ticket", formData, {
+      const response = await $api.post("/tickets", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -127,7 +129,7 @@ class TicketService {
    */
   async getEventId(eventName) {
     try {
-      const response = await $api.get("/actions/get_event_id", {
+      const response = await $api.get("/events/by_name", {
         params: { event_name: eventName },
       })
       return response.data
@@ -144,9 +146,7 @@ class TicketService {
    */
   async getTicket(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket", {
-        params: { ticket_id: ticketId },
-      })
+      const response = await $api.get(`/tickets/${ticketId}`)
       return response.data
     } catch (error) {
       console.error("Error getting ticket:", error)
@@ -161,8 +161,7 @@ class TicketService {
    */
   async getTicketFile(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_file", {
-        params: { ticket_id: ticketId },
+      const response = await $api.get(`/files/${ticketId}/file`, {
         responseType: "blob",
       })
       return response.data
@@ -179,8 +178,7 @@ class TicketService {
    */
   async getTicketSummary(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_summary", {
-        params: { ticket_id: ticketId },
+      const response = await $api.get(`/tickets/${ticketId}/summary`, {
         responseType: "blob",
       })
       return response.data
@@ -197,8 +195,7 @@ class TicketService {
    */
   async getTicketResult(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_result", {
-        params: { ticket_id: ticketId },
+      const response = await $api.get(`/tickets/${ticketId}/result`, {
         responseType: "blob",
       })
       return response.data
@@ -215,8 +212,7 @@ class TicketService {
    */
   async downloadResult(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_result", {
-        params: { ticket_id: ticketId },
+      const response = await $api.get(`/tickets/${ticketId}/result`, {
         responseType: "blob",
       })
 
@@ -234,8 +230,7 @@ class TicketService {
    */
   async downloadDocument(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_file", {
-        params: { ticket_id: ticketId },
+      const response = await $api.get(`/files/${ticketId}/file`, {
         responseType: "blob",
       })
 
@@ -253,9 +248,7 @@ class TicketService {
    */
   async shareTicket(ticketId) {
     try {
-      const response = await $api.post("/actions/ticket_share", {
-        ticket_id: ticketId,
-      })
+      const response = await $api.post(`/tickets/${ticketId}/share`)
       return response.data
     } catch (error) {
       console.error("Error sharing ticket:", error)
@@ -270,9 +263,7 @@ class TicketService {
    */
   async getTicketStatus(ticketId) {
     try {
-      const response = await $api.get("/actions/get_ticket_status", {
-        params: { ticket_id: ticketId },
-      })
+      const response = await $api.get(`/tickets/${ticketId}/status`)
       return response.data
     } catch (error) {
       console.error("Error getting ticket status:", error)
@@ -308,9 +299,7 @@ class TicketService {
    */
   async getDocumentText(ticketId) {
     try {
-      const response = await $api.get("/actions/get_document_text", {
-        params: { ticket_id: ticketId },
-      })
+      const response = await $api.get(`/tickets/${ticketId}/file/text`)
       return response.data
     } catch (error) {
       console.error("Error getting document text:", error)
@@ -325,9 +314,7 @@ class TicketService {
    */
   async getResultText(ticketId) {
     try {
-      const response = await $api.get("/actions/get_result_text", {
-        params: { ticket_id: ticketId },
-      })
+      const response = await $api.get(`/tickets/${ticketId}/result/text`)
       return response.data
     } catch (error) {
       console.error("Error getting result text:", error)
@@ -343,7 +330,7 @@ class TicketService {
    */
   async addCustomEvent(eventName, description) {
     try {
-      const response = await $api.post("/actions/add_custom_event", {
+      const response = await $api.post("/events", {
         event_name: eventName,
         description: description,
       })
@@ -362,8 +349,7 @@ class TicketService {
    */
   async renameTicket(ticketId, newName) {
     try {
-      const response = await $api.post("/actions/edit_ticket_name", {
-        ticket_id: ticketId,
+      const response = await $api.patch(`/tickets/${ticketId}/name`, {
         name: newName,
       })
       return response.data
@@ -380,10 +366,8 @@ class TicketService {
    */
   async toggleTicketShare(ticketId) {
     try {
-      const response = await $api.post("/actions/ticket_share", {
-        ticket_id: ticketId,
-      })
-      console.log("Response from /actions/ticket_share:", response.data)
+      const response = await $api.post(`/tickets/${ticketId}/share`)
+      console.log("Response from /tickets/{ticketId}/share:", response.data)
       return response.data
     } catch (error) {
       console.error("Error toggling ticket share:", error)
@@ -398,10 +382,8 @@ class TicketService {
    */
   async deleteTicket(ticketId) {
     try {
-      const response = await $api.delete("/actions/delete_ticket", {
-        data: { ticket_id: ticketId },
-      })
-      console.log("Response from /actions/delete_ticket:", response.data)
+      const response = await $api.delete(`/tickets/${ticketId}`)
+      console.log("Response from /tickets/{ticketId}:", response.data)
       return response.data
     } catch (error) {
       console.error("Error deleting ticket:", error)
@@ -414,7 +396,7 @@ class TicketService {
    */
   async sendFeedback(payload) {
     try {
-      const response = await $api.post("/actions/send_feedback", payload)
+      const response = await $api.post("/feedback", payload)
       return response.data
     } catch (error) {
       console.error("Error sending feedback:", error)

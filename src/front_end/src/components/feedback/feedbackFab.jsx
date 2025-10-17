@@ -1,10 +1,12 @@
 import { useState, useCallback, useEffect } from "react"
+import { useSelector } from "react-redux"
 import { FeedbackModal } from "./feedbackModal"
 import { FeedbackNotification } from "./feedbackNotification"
 import { ticketService } from "../../services/ticket.service"
 import "./feedbackModal.scss"
 
 export const FeedbackFab = () => {
+  const userData = useSelector((state) => state.auth.currentUser)
   const [open, setOpen] = useState(false)
   const [showNotification, setShowNotification] = useState(false)
 
@@ -58,7 +60,11 @@ export const FeedbackFab = () => {
         </svg>
       </button>
       {open && (
-        <FeedbackModal onClose={() => setOpen(false)} onSubmit={handleSubmit} />
+        <FeedbackModal
+          onClose={() => setOpen(false)}
+          onSubmit={handleSubmit}
+          userData={userData}
+        />
       )}
       {showNotification && (
         <FeedbackNotification onClose={handleNotificationClose} />

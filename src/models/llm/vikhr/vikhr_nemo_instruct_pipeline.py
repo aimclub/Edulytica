@@ -4,7 +4,7 @@ from src.models.llm.model_pipeline import ModelPipeline
 class VikhrNemoInstructPipeline(ModelPipeline):
     """Class for Vikhr-Nemo instruct usage. For inference using huggingface transformers pipeline"""
 
-    def __init__(self, model_name=None, device_map="auto"):
+    def __init__(self, model_name: str = None, device_map: str = "auto") -> None:
         if model_name is None:
             model_name = "Vikhrmodels/Vikhr-Nemo-12B-Instruct-R-21-09-24"
 

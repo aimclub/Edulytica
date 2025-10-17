@@ -3,7 +3,7 @@ This module provides authentication and authorization utilities for handling JWT
 It includes functionality for verifying tokens, extracting user information, and password hashing.
 """
 
-from typing import Annotated
+from typing import Annotated, Optional
 from fastapi import HTTPException, Depends
 from jose import JWTError, jwt
 from passlib.context import CryptContext
@@ -41,7 +41,7 @@ class AuthDataGetterFromToken:
         secret_key (str): Secret key used for decoding the token.
     """
 
-    def __init__(self, token_type: str, secret_key: str):
+    def __init__(self, token_type: str, secret_key: str) -> None:
         self.token_type = token_type
         self.secret_key = secret_key
 
@@ -97,7 +97,7 @@ class AuthDataGetterFromToken:
         return user
 
     @staticmethod
-    def token_type_validate(payload: dict, token_type: str):
+    def token_type_validate(payload: dict, token_type: str) -> Optional[bool]:
         """
         Validates that the token type matches the expected type.
 

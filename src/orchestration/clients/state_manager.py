@@ -38,7 +38,7 @@ class StateManager:
     def __init__(
             self,
             redis_client: Redis,
-            session_factory: Optional[async_sessionmaker] = SessionLocal):
+            session_factory: Optional[async_sessionmaker] = SessionLocal) -> None:
         self._redis = redis_client
         self._session_factory = session_factory
 

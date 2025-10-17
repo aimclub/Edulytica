@@ -102,7 +102,7 @@ class Orchestrator:
             rag_client: RagClient,
             mega_task_id: str,
             event_name: str = None
-    ):
+    ) -> None:
         self.state_manager = state_manager
         self.kafka_producer = kafka_producer
         self.rag_client = rag_client

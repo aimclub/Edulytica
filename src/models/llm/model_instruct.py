@@ -1,20 +1,25 @@
+from typing import List, Dict, Optional
 import torch
+from black.lines import Callable
 from src.models.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
 from src.models.llm import DEFAULT_SYSTEM_PROMPT
 from src.models.llm.exceptions.quantization_exception import QuantizationException
 
 
+ChatTemplateFunc = Callable[[str], List[Dict[str, str]]]
+
+
 class ModelInstruct(IModel):
     def __init__(
             self,
-            model_name,
-            chat_template,
-            system_prompt=DEFAULT_SYSTEM_PROMPT,
-            device_map="auto",
-            quantization=None,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True):
+            model_name: str,
+            chat_template: ChatTemplateFunc,
+            system_prompt: str = DEFAULT_SYSTEM_PROMPT,
+            device_map: str = "auto",
+            quantization: Optional[str] = None,
+            bnb_4bit_quant_type: str = "nf4",
+            bnb_4bit_use_double_quant: bool = True) -> None:
         """To use quantization model pass argument quantization='4bit'
         to load in 4bit or quantization='8bit' to load in 8bit"""
 
@@ -37,7 +42,7 @@ class ModelInstruct(IModel):
         self.system_prompt = system_prompt
         self.chat_template = chat_template
 
-    def apply_chat_template(self, system_prompt: str, prompts: list):
+    def apply_chat_template(self, system_prompt: str, prompts: List[str]) -> List[str]:
         """Method for applying chat template"""
         messages = list()
         for prompt in prompts:
@@ -46,7 +51,7 @@ class ModelInstruct(IModel):
             message, tokenize=False, add_generation_prompt=True), messages))
         return texts
 
-    def __call__(self, prompts: list, max_new_tokens=512):
+    def __call__(self, prompts: List[str], max_new_tokens: int = 512) -> List[str]:
         """Method for text generation by model.
         Takes list of prompts1 and max new tokens and return list with model generated text"""
         generation_config = GenerationConfig(max_new_tokens=max_new_tokens)

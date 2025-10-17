@@ -1,1 +1,0 @@
-{ "error": "The input does not provide necessary information related to GOST, its structural elements, or design rules" }

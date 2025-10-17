@@ -2,7 +2,7 @@ from httpx import AsyncClient, HTTPStatusError
 
 
 class RagClient:
-    def __init__(self, http_client: AsyncClient, base_url: str):
+    def __init__(self, http_client: AsyncClient, base_url: str) -> None:
         self._http_client = http_client
         self._base_url = base_url
 

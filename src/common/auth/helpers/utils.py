@@ -81,7 +81,7 @@ def create_jwt(
         token_type: str = ACCESS_TOKEN_TYPE,
         jwt_secret: str = JWT_SECRET_KEY,
         expires_minutes: int = ACCESS_TOKEN_EXPIRE_MINUTES,
-        expires_delta: Optional[timedelta] = None):
+        expires_delta: Optional[timedelta] = None) -> str:
     """
     Creates a JWT token with specified token type.
 

@@ -1,4 +1,6 @@
-from src.models.llm import ModelInstruct
+from typing import Optional
+
+from src.models.llm import ModelInstruct, ChatTemplateFunc
 from src.models.llm import DEFAULT_SYSTEM_PROMPT
 
 
@@ -7,14 +9,14 @@ class QwenInstruct(ModelInstruct):
 
     def __init__(
             self,
-            model_name="RefalMachine/ruadapt_qwen2.5_7B_ext_u48_instruct",
-            chat_template=None,
-            system_prompt=DEFAULT_SYSTEM_PROMPT,
-            device_map="auto",
-            quantization=None,
-            bnb_4bit_quant_type="nf4",
-            bnb_4bit_use_double_quant=True
-    ):
+            model_name: str = "RefalMachine/ruadapt_qwen2.5_7B_ext_u48_instruct",
+            chat_template: ChatTemplateFunc = None,
+            system_prompt: str = DEFAULT_SYSTEM_PROMPT,
+            device_map: str = "auto",
+            quantization: Optional[str] = None,
+            bnb_4bit_quant_type: str = "nf4",
+            bnb_4bit_use_double_quant: bool = True
+    ) -> None:
         if chat_template is None:
             chat_template = lambda prompt: [
                 {"role": "system", "content": system_prompt},

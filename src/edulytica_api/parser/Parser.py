@@ -22,7 +22,7 @@ class Parser:
         file_type (str): The detected type of the file ('docx' or 'pdf').
     """
 
-    def __init__(self, path: Union[str, IO[bytes]], filename: str = None):
+    def __init__(self, path: Union[str, IO[bytes]], filename: str = None) -> None:
         self.path = path
         self.filename = filename
         self._temp_dir = tempfile.mkdtemp()
@@ -62,7 +62,7 @@ class Parser:
                 raise ValueError(f"Не удалось прочитать заголовок файла: {e}")
         raise ValueError("Не удалось определить тип файла. Поддерживаются только PDF и DOCX.")
 
-    def _extract_files(self):
+    def _extract_files(self) -> None:
         """
         Unpacks the DOCX file (a zip archive) into a temporary directory for parsing.
         """
@@ -111,7 +111,7 @@ class Parser:
             print(f"Ошибка парсинга PDF: {e}")
         return struct, potentially_damaged
 
-    def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id, list_view: bool = True):
+    def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id, list_view: bool = True) -> Union[str, List[str]]:
         """
         Extracts all text content located between two specified bookmarks (anchors) in a DOCX file.
         For PDF files, this method returns all text content from the document.
@@ -167,17 +167,6 @@ class Parser:
             if para_text.strip():
                 all_text.append(para_text.strip())
         return all_text
-
-
-def _handle_json(obj):
-    """
-    Custom JSON serializer function to handle non-standard objects like 'Elem' and 'None'.
-    """
-    if isinstance(obj, Elem):
-        return obj.to_dict()
-    if obj is None:
-        return "null"
-    return str(obj)
 
 
 def get_structural_paragraphs(file_stream: IO[bytes], filename: str = None) -> Dict:

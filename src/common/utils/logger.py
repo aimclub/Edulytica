@@ -6,9 +6,14 @@ and API request logging for FastAPI routes.
 import logging
 import inspect
 from functools import wraps
-from typing import List
+from typing import List, Callable, Any, Coroutine, TypeVar, Optional
 from colorlog import ColoredFormatter
 from src.common.utils.moscow_datetime import datetime_now_moscow
+
+
+T = TypeVar('T')
+Handler = Callable[..., Coroutine[Any, Any, T]]
+RouteDecorator = Callable[[Handler[T]], Handler[T]]
 
 
 class CustomColoredFormatter(ColoredFormatter):
@@ -16,7 +21,7 @@ class CustomColoredFormatter(ColoredFormatter):
     A custom log formatter that applies color coding to log messages based on severity level.
     """
 
-    def format(self, record):
+    def format(self, record: logging.LogRecord) -> str:
         levelname = record.levelname
         if record.levelname == "DEBUG":
             return f"\033[37m{levelname:<8} {record.getMessage()}\033[0m"
@@ -43,7 +48,7 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
-def _sub_api_logs(handler, exclude_args: List[str]):
+def _sub_api_logs(handler: Handler[T], exclude_args: List[str]) -> Handler[T]:
     """
     A decorator for logging API request details including timestamp, user, and parameters.
 
@@ -56,7 +61,7 @@ def _sub_api_logs(handler, exclude_args: List[str]):
     """
 
     @wraps(handler)
-    async def wrapper(*args, **kwargs):
+    async def wrapper(*args, **kwargs) -> T:
         bound_arguments = inspect.signature(handler).bind(*args, **kwargs).arguments
 
         to_exclude = {'session', 'auth_data'}.union(set(exclude_args))
@@ -85,7 +90,7 @@ def _sub_api_logs(handler, exclude_args: List[str]):
     return wrapper
 
 
-def api_logs(route_decorator, *, exclude_args: List[str] = None):
+def api_logs(route_decorator: RouteDecorator[T], *, exclude_args: List[str] = None) -> RouteDecorator[T]:
     """
     A decorator that integrates API logging into FastAPI route decorators.
 
@@ -97,7 +102,7 @@ def api_logs(route_decorator, *, exclude_args: List[str] = None):
         function: A wrapped route decorator with logging enabled.
     """
 
-    def wrapper(handler):
+    def wrapper(handler: Handler[T]) -> Handler[T]:
         wrapped_handler = _sub_api_logs(handler, exclude_args=exclude_args or [])
         return route_decorator(wrapped_handler)
 

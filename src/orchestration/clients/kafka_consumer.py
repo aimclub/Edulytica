@@ -14,7 +14,7 @@ class KafkaConsumer:
         state_manager: StateManager,
         kafka_producer: KafkaProducer,
         rag_client: RagClient,
-    ):
+    ) -> None:
         self._consumer = consumer
         self.state_manager = state_manager
         self.kafka_producer = kafka_producer

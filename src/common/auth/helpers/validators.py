@@ -7,7 +7,7 @@ from starlette import status
 from src.common.auth.helpers.utils import verify_password
 
 
-def password_validate(password1: str, password2: str):
+def password_validate(password1: str, password2: str) -> None:
     """
     Validates a password by comparing it with a hashed password.
 

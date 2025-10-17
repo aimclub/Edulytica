@@ -19,7 +19,7 @@ def set_moscow_timezone(dt: datetime) -> datetime:
         return dt.astimezone(moscow_tz)
 
 
-def datetime_now_moscow():
+def datetime_now_moscow() -> datetime:
     """
     Returns the current datetime in the Moscow timezone (UTC+3).
 

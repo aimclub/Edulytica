@@ -1,7 +1,7 @@
 import asyncio
 import json
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from confluent_kafka import Consumer, KafkaError, Producer, Message
 from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
@@ -27,7 +27,7 @@ else:
 producer = Producer({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
 
 
-def delivery_report(err, msg):
+def delivery_report(err: Optional[KafkaError], msg: Message) -> None:
     """ Called once for each message produced to indicate delivery result. """
     if err is not None:
         print(f'[{PREFIX}] Message delivery failed: {err}')
@@ -37,7 +37,7 @@ def delivery_report(err, msg):
 
 def send_to_kafka(
         result_message: Dict[str, Any]
-):
+) -> None:
     producer.produce(
         KAFKA_RESULT_TOPIC,
         value=json.dumps(result_message).encode('utf-8'),
@@ -47,7 +47,7 @@ def send_to_kafka(
     producer.flush()
 
 
-async def process_ticket(message_data: dict):
+async def process_ticket(message_data: Dict[str, Any]) -> None:
     """
         Expected message format:
         {
@@ -94,7 +94,7 @@ async def process_ticket(message_data: dict):
         raise
 
 
-def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
+def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]) -> None:
     new_topics = [
         NewTopic(topic, num_partitions=1, replication_factor=1) for topic in topics_to_create
     ]
@@ -113,7 +113,7 @@ def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
                 raise
 
 
-async def kafka_loop():
+async def kafka_loop() -> None:
     print(f"[{PREFIX}] Starting...")
 
     admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})

@@ -13,7 +13,7 @@ from email.utils import formataddr
 from src.common.config import SENDER_EMAIL, SENDER_PASSWORD, SMTP_PORT, SMTP_SERVER
 
 
-def send_email(to_email, code):
+def send_email(to_email: str, code: str) -> None:
     """
     Sends a confirmation code via email to the specified recipient.
 

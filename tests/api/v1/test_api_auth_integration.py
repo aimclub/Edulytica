@@ -13,8 +13,8 @@ static_code = generate_code()
 
 
 @pytest.mark.order(1)
-@patch("src.auth.api.auth.send_email")
-@patch("src.auth.api.auth.generate_code")
+@patch("src.auth.api.v1.auth.send_email")
+@patch("src.auth.api.v1.auth.generate_code")
 def test_registration_success(mock_generate_code, mock_send_email, integration_client):
     mock_generate_code.return_value = static_code
 

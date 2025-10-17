@@ -9,11 +9,11 @@ from src.common.utils.moscow_datetime import datetime_now_moscow
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_filtered_by_params")
-@patch("src.auth.api.auth.UserRoleCrud.get_filtered_by_params")
-@patch("src.auth.api.auth.UserCrud.create")
-@patch("src.auth.api.auth.CheckCodeCrud.create")
-@patch("src.auth.api.auth.send_email")
+@patch("src.auth.api.v1.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.UserRoleCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.UserCrud.create")
+@patch("src.auth.api.v1.auth.CheckCodeCrud.create")
+@patch("src.auth.api.v1.auth.send_email")
 async def test_registration_success(
         mock_send_email,
         mock_check_code_create,
@@ -41,7 +41,7 @@ async def test_registration_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.UserCrud.get_filtered_by_params")
 async def test_registration_existing_email(mock_user_get, client):
     mock_user_get.side_effect = [[AsyncMock()], []]
 
@@ -57,7 +57,7 @@ async def test_registration_existing_email(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.UserCrud.get_filtered_by_params")
 async def test_registration_existing_login(mock_user_get, client):
     mock_user_get.side_effect = [[], [AsyncMock()]]
 
@@ -73,7 +73,7 @@ async def test_registration_existing_login(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.UserCrud.get_filtered_by_params")
 async def test_registration_password_mismatch(mock_user_get, client):
     mock_user_get.side_effect = [[], []]
 
@@ -89,11 +89,11 @@ async def test_registration_password_mismatch(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.CheckCodeCrud.get_recent_code")
-@patch("src.auth.api.auth.UserCrud.get_by_id")
-@patch("src.auth.api.auth.UserCrud.get_active_users_by_email_or_login")
-@patch("src.auth.api.auth.UserCrud.update")
-@patch("src.auth.api.auth.TokenCrud.create")
+@patch("src.auth.api.v1.auth.CheckCodeCrud.get_recent_code")
+@patch("src.auth.api.v1.auth.UserCrud.get_by_id")
+@patch("src.auth.api.v1.auth.UserCrud.get_active_users_by_email_or_login")
+@patch("src.auth.api.v1.auth.UserCrud.update")
+@patch("src.auth.api.v1.auth.TokenCrud.create")
 def test_check_code_success(
         mock_token_create,
         mock_user_update,
@@ -120,7 +120,7 @@ def test_check_code_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.CheckCodeCrud.get_recent_code")
+@patch("src.auth.api.v1.auth.CheckCodeCrud.get_recent_code")
 def test_check_code_invalid_code(mock_get_recent_code, client):
     mock_get_recent_code.return_value = None
 
@@ -131,9 +131,9 @@ def test_check_code_invalid_code(mock_get_recent_code, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.CheckCodeCrud.get_recent_code")
-@patch("src.auth.api.auth.UserCrud.get_by_id")
-@patch("src.auth.api.auth.UserCrud.get_active_users_by_email_or_login")
+@patch("src.auth.api.v1.auth.CheckCodeCrud.get_recent_code")
+@patch("src.auth.api.v1.auth.UserCrud.get_by_id")
+@patch("src.auth.api.v1.auth.UserCrud.get_active_users_by_email_or_login")
 def test_check_code_user_exists(
         mock_get_active_user,
         mock_get_by_id,
@@ -155,8 +155,8 @@ def test_check_code_user_exists(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_active_user")
-@patch("src.auth.api.auth.TokenCrud.create")
+@patch("src.auth.api.v1.auth.UserCrud.get_active_user")
+@patch("src.auth.api.v1.auth.TokenCrud.create")
 def test_login_success(
         mock_token_create,
         mock_user_get,
@@ -180,7 +180,7 @@ def test_login_success(
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_active_user")
+@patch("src.auth.api.v1.auth.UserCrud.get_active_user")
 def test_login_user_not_found(mock_user_get, client):
     mock_user_get.return_value = []
 
@@ -194,8 +194,8 @@ def test_login_user_not_found(mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.UserCrud.get_active_user")
-@patch("src.auth.api.auth.verify_password")
+@patch("src.auth.api.v1.auth.UserCrud.get_active_user")
+@patch("src.auth.api.v1.auth.verify_password")
 def test_login_wrong_password(mock_verify_password, mock_user_get, client):
     mock_user_get.return_value = AsyncMock(id=1, login="user1", email="user@example.com",
                                            password_hash=get_hashed_password('testpassword'))
@@ -211,8 +211,8 @@ def test_login_wrong_password(mock_verify_password, mock_user_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.api.auth.TokenCrud.create")
+@patch("src.auth.api.v1.auth.TokenCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.TokenCrud.create")
 def test_get_access_success(mock_token_create, mock_token_get, client):
     mock_token_get.return_value = [
         AsyncMock(
@@ -229,7 +229,7 @@ def test_get_access_success(mock_token_create, mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.TokenCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.TokenCrud.get_filtered_by_params")
 def test_get_access_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 
@@ -241,8 +241,8 @@ def test_get_access_token_not_found(mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.api.auth.datetime_now_moscow")
+@patch("src.auth.api.v1.auth.TokenCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.datetime_now_moscow")
 def test_get_access_expired_token(mock_datetime, mock_token_get, client):
     mock_datetime.return_value = datetime_now_moscow()
 
@@ -259,21 +259,21 @@ def test_get_access_expired_token(mock_datetime, mock_token_get, client):
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.TokenCrud.get_filtered_by_params")
-@patch("src.auth.api.auth.TokenCrud.delete")
+@patch("src.auth.api.v1.auth.TokenCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.TokenCrud.delete")
 def test_logout_success(mock_token_delete, mock_token_get, client):
     mock_token_get.return_value = [AsyncMock(id=42)]
 
     response = client(app).get("/api/auth/v1/logout")
 
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["message"] == "Logout Successful"
+    assert response.json()["detail"] == "Logout Successful"
     assert response.cookies.get("refresh_token") is None
     mock_token_delete.assert_called_once_with(session=ANY, record_id=42)
 
 
 @pytest.mark.asyncio
-@patch("src.auth.api.auth.TokenCrud.get_filtered_by_params")
+@patch("src.auth.api.v1.auth.TokenCrud.get_filtered_by_params")
 def test_logout_token_not_found(mock_token_get, client):
     mock_token_get.return_value = []
 

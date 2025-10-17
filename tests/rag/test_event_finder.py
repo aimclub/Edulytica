@@ -1,7 +1,6 @@
 import unittest
 import numpy as np
-from unittest.mock import patch, MagicMock
-
+from unittest.mock import MagicMock
 from src.rag.core.event_specifics.event_finder import EventSpecifics
 
 

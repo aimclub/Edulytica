@@ -12,7 +12,7 @@ class RagClient:
             document_text: str,
             event_name: str
     ) -> str:
-        enrich_url = f"{self._base_url}/rag/get_result"
+        enrich_url = f"{self._base_url}/api/rag/v1/get_result"
 
         payload = {
             "prompt": original_prompt,

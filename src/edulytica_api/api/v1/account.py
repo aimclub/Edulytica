@@ -16,17 +16,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.auth.helpers.utils import verify_password, get_hashed_password
-from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.crud.ticket_crud import TicketCrud
 from src.common.database.crud.user_crud import UserCrud
 from src.common.database.database import get_session
 from src.common.utils.logger import api_logs
 from src.edulytica_api.schemas.account_schemas import EditProfileRequest, ChangePasswordRequest
 
 
-account_router = APIRouter(prefix="/account")
+account_v1 = APIRouter(prefix="/api/account/v1", tags=["account"])
 
 
-@api_logs(account_router.post("/edit_profile"))
+@api_logs(account_v1.patch(""))
 async def edit_profile(
     auth_data: dict = Depends(access_token_auth),
     data: EditProfileRequest = Body(...),
@@ -69,7 +69,7 @@ async def edit_profile(
         )
 
 
-@api_logs(account_router.post("/change_password"))
+@api_logs(account_v1.post("/password"), exclude_args=['data'])
 async def change_password(
     auth_data: dict = Depends(access_token_auth),
     data: ChangePasswordRequest = Body(...),
@@ -118,46 +118,7 @@ async def change_password(
         )
 
 
-@api_logs(account_router.get("/ticket_history"))
-async def ticket_history(
-    auth_data: dict = Depends(access_token_auth),
-    session: AsyncSession = Depends(get_session)
-):
-    """
-    Retrieves the ticket history for the authenticated user.
-
-    Returns all tickets associated with the user from the database.
-
-    Args:
-        auth_data (dict): Contains the authenticated user's data.
-        session (AsyncSession): Asynchronous database session.
-
-    Returns:
-        dict: A message confirming the retrieval and a list of tickets.
-
-    Raises:
-        HTTPException: If an internal error occurs during data retrieval.
-    """
-    try:
-        tickets = await TicketCrud.get_filtered_by_params(
-            session=session,
-            user_id=auth_data['user'].id
-        )
-
-        return {
-            'detail': 'Ticket history found',
-            'tickets': tickets
-        }
-    except HTTPException as http_exc:  # pragma: no cover
-        raise http_exc
-    except Exception as _e:  # pragma: no cover
-        raise HTTPException(
-            status_code=HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f'500 ERR: {_e}'
-        )
-
-
-@api_logs(account_router.get("/get_account"))
+@api_logs(account_v1.get(""))
 async def get_account(
     auth_data: dict = Depends(access_token_auth)
 ):

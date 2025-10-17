@@ -9,14 +9,14 @@ from starlette.status import HTTP_403_FORBIDDEN, HTTP_500_INTERNAL_SERVER_ERROR
 from src.common.config import INTERNAL_API_SECRET
 from src.common.database.crud.document_report_crud import DocumentReportCrud
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
-from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.crud.ticket_crud import TicketCrud
 from src.common.database.database import get_session
 from src.common.utils.default_enums import TicketStatusDefault
 from src.common.utils.logger import api_logs
 
 
-ROOT_DIR = Path(__file__).resolve().parents[3]
-internal_router = APIRouter(prefix="/internal")
+ROOT_DIR = Path(__file__).resolve().parents[4]
+internal_v1 = APIRouter(prefix="/api/internal/v1", tags=['internal'])
 
 
 async def verify_internal_secret(x_internal_secret: str = Header(...)):
@@ -27,7 +27,10 @@ async def verify_internal_secret(x_internal_secret: str = Header(...)):
         )
 
 
-@api_logs(internal_router.post("/upload_report", dependencies=[Depends(verify_internal_secret)]))
+@api_logs(
+    internal_v1.post("/upload_report", dependencies=[Depends(verify_internal_secret)]),
+    exclude_args=['report_text']
+)
 async def upload_report(
         ticket_id: uuid.UUID = Body(...),
         report_text: str = Body(...),
@@ -73,8 +76,8 @@ async def upload_report(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
 
 
-@api_logs(internal_router.post("/edit_ticket_name", dependencies=[Depends(verify_internal_secret)]))
-async def upload_report(
+@api_logs(internal_v1.post("/edit_ticket_name", dependencies=[Depends(verify_internal_secret)]))
+async def edit_ticket_name(
         ticket_id: uuid.UUID = Body(...),
         name: str = Body(...),
         session: AsyncSession = Depends(get_session)

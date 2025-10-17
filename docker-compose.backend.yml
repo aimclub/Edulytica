@@ -46,7 +46,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${API_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -69,7 +69,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f" "http://localhost:${AUTH_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -98,7 +98,7 @@ services:
       edulytica_rag:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
+      test: ["CMD", "curl", "-f", "http://localhost:${ORCHESTRATOR_PORT}/health"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -125,7 +125,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${RAG_PORT}/health" ]
       interval: 10s
       timeout: 5s
       retries: 5

@@ -2,7 +2,7 @@ import uuid
 from fastapi import APIRouter, Body, BackgroundTasks, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST
-from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.crud.ticket_crud import TicketCrud
 from src.common.database.database import get_session
 from src.orchestration.clients.client_dependencies import get_state_manager, get_kafka_producer, \
     get_rag_client
@@ -12,10 +12,10 @@ from src.orchestration.clients.state_manager import StateManager
 from src.orchestration.orchestrator import Orchestrator
 
 
-rt = APIRouter(prefix='/orchestrate')
+orchestrator_v1 = APIRouter(prefix='/api/orchestrator/v1', tags=['orchestrator'])
 
 
-@rt.post('/run_ticket')
+@orchestrator_v1.post('/run_ticket')
 async def run_ticket_handler(
         background_tasks: BackgroundTasks,
         ticket_id: uuid.UUID = Body(...),
@@ -54,7 +54,7 @@ async def run_ticket_handler(
         )
 
 
-@rt.delete('/tickets/{ticket_id}')
+@orchestrator_v1.delete('/tickets/{ticket_id}')
 async def delete_ticket(
     ticket_id: uuid.UUID,
     state_manager: StateManager = Depends(get_state_manager),

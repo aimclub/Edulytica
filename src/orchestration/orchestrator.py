@@ -265,7 +265,7 @@ class Orchestrator:
 
         try:
             response = await self.rag_client._http_client.post(
-                f"http://edulytica_api:{API_PORT}/internal/upload_report",
+                f"http://edulytica_api:{API_PORT}/api/internal/v1/upload_report",
                 json=payload,
                 headers=headers,
                 timeout=60.0
@@ -289,7 +289,7 @@ class Orchestrator:
 
         try:
             response = await self.rag_client._http_client.post(
-                f"http://edulytica_api:{API_PORT}/internal/edit_ticket_name",
+                f"http://edulytica_api:{API_PORT}/api/internal/v1/edit_ticket_name",
                 json=payload,
                 headers=headers,
                 timeout=60.0

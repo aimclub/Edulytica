@@ -1,16 +1,15 @@
 """
-This module defines authentication-related API endpoints for user registration, login,
-logout, token refreshing, and email code verification in a FastAPI application.
-
-The endpoints handle user authentication using JWT access and refresh tokens,
-email verification via confirmation codes, and secure session handling through HTTP-only cookies.
+Description
+    Authentication API for user sign-up with email verification, sign-in,
+    JWT issuance/rotation, and logout in a FastAPI application. Access tokens
+    are returned in the response body; refresh tokens are set as HTTP-only cookies.
 
 Routes:
-    POST /registration: Registers a new user and sends a verification code via email.
-    POST /check_code: Verifies the confirmation code and activates the user account.
-    POST /login: Authenticates user credentials and returns access and refresh tokens.
-    GET /get_access: Renews access and refresh tokens using a valid refresh token.
-    GET /logout: Revokes the refresh token and logs out the user.
+    POST /registration  — create inactive user, send confirmation code to email.
+    POST /check_code    — verify code, activate account, issue tokens (refresh in cookie).
+    POST /login         — authenticate and issue tokens (refresh in cookie).
+    GET  /get_access    — rotate refresh token and issue new access token.
+    GET  /logout        — revoke refresh token and clear cookie.
 """
 
 import uuid
@@ -33,10 +32,10 @@ from src.common.utils.email import send_email
 from src.common.utils.logger import api_logs
 from src.common.utils.moscow_datetime import datetime_now_moscow
 
-auth_router = APIRouter()
+auth_v1 = APIRouter(prefix='/api/auth/v1', tags=['auth'])
 
 
-@api_logs(auth_router.post('/registration'))
+@api_logs(auth_v1.post('/registration'), exclude_args=['background_tasks', 'password1', 'password2'])
 async def registration_handler(
         background_tasks: BackgroundTasks,
         login: str = Body(...),
@@ -46,25 +45,23 @@ async def registration_handler(
         session: AsyncSession = Depends(get_session),
 ):
     """
-    Registers a new user and sends a confirmation code to their email address.
-
-    Validates that the email and login are unique among active users,
-    checks that the passwords match, and creates a new inactive user.
-    Then sends a confirmation code via email.
+    Description
+        Register a new user and send an email confirmation code.
 
     Args:
-        background_tasks (BackgroundTasks): BackgroundTasks object
-        login (str): Desired login of the user.
-        email (str): User's email address.
-        password1 (str): Password input.
+        login (str): Desired unique login.
+        email (str): User email.
+        password1 (str): Password.
         password2 (str): Password confirmation.
-        session (AsyncSession): Asynchronous database session.
+        background_tasks (BackgroundTasks): Background task runner.
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: A message confirming the code has been sent.
-
-    Raises:
-        HTTPException: On duplicate login/email, password mismatch, or internal errors.
+    Responses:
+        200: {"detail": "Code has been sent"}
+        400: {"detail": "User with such email already exists" |
+                       "User with such login already exists" |
+                       "Passwords are not equal"}
+        500: {"detail": "500 ERR: <message>"}
     """
     try:
         if await UserCrud.get_filtered_by_params(
@@ -120,28 +117,27 @@ async def registration_handler(
         )
 
 
-@api_logs(auth_router.post('/check_code'))
+@api_logs(auth_v1.post('/check_code'), exclude_args=['response', 'code'])
 async def check_code_handler(
         response: Response,
         code: str = Body(..., embed=True),
         session: AsyncSession = Depends(get_session)
 ):
     """
-    Verifies a confirmation code and activates the corresponding user account.
-
-    If the code is valid and recent, marks the user as active and issues
-    access and refresh tokens. Sets the refresh token in an HTTP-only cookie.
+    Description
+        Verify a confirmation code, activate the account, and issue tokens.
+        Access token is returned in the body; refresh token is set as an HTTP-only cookie.
 
     Args:
-        response (Response): FastAPI response object for setting cookies.
-        code (str): Confirmation code sent to the user's email.
-        session (AsyncSession): Asynchronous database session.
+        code (str): Confirmation code from email.
+        response (Response): Response for setting cookies.
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: Message indicating success and the access token.
-
-    Raises:
-        HTTPException: On invalid code or internal errors.
+    Responses:
+        200: {"detail": "Code is correct", "access_token": "<JWT>"}
+        400: {"detail": "Wrong code" |
+                       "User with such email or login already is active"}
+        500: {"detail": "500 ERR: <message>"}
     """
     try:
         check_code = await CheckCodeCrud.get_recent_code(
@@ -203,7 +199,7 @@ async def check_code_handler(
         )
 
 
-@api_logs(auth_router.post('/login'))
+@api_logs(auth_v1.post('/login'), exclude_args=['response', 'password'])
 async def login_handler(
         response: Response,
         login: str = Body(...),
@@ -211,22 +207,20 @@ async def login_handler(
         session: AsyncSession = Depends(get_session)
 ):
     """
-    Authenticates a user and issues new access and refresh tokens.
-
-    Validates credentials, sets the refresh token in an HTTP-only cookie,
-    and returns the access token in the response.
+    Description
+        Authenticate an active user and issue tokens.
+        Access token is returned in the body; refresh token is set as an HTTP-only cookie.
 
     Args:
-        response (Response): FastAPI response object for setting cookies.
         login (str): User login.
         password (str): User password.
-        session (AsyncSession): Asynchronous database session.
+        response (Response): Response for setting cookies.
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: Message confirming successful authentication and the access token.
-
-    Raises:
-        HTTPException: On incorrect credentials or internal errors.
+    Responses:
+        200: {"detail": "Credentials are correct", "access_token": "<JWT>"}
+        401: {"detail": "Credentials are incorrect"}
+        500: {"detail": "500 ERR: <message>"}
     """
     try:
         user = await UserCrud.get_active_user(
@@ -267,28 +261,26 @@ async def login_handler(
         )
 
 
-@api_logs(auth_router.get('/get_access'))
+@api_logs(auth_v1.get('/get_access'), exclude_args=['response', 'refresh_token'])
 async def get_access_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),
         session: AsyncSession = Depends(get_session)
 ):
     """
-    Refreshes the access token using a valid refresh token.
-
-    Validates the existing refresh token, issues a new one along with a new access token,
-    and updates the stored token in the database.
+    Description
+        Rotate the refresh token and issue a new access token using a valid
+        refresh token from the HTTP-only cookie.
 
     Args:
-        response (Response): FastAPI response object for updating the cookie.
         refresh_token (dict): Parsed and validated refresh token data.
-        session (AsyncSession): Asynchronous database session.
+        response (Response): Response for updating cookies.
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: Message confirming token renewal and the new access token.
-
-    Raises:
-        HTTPException: If the refresh token is invalid or expired.
+    Responses:
+        200: {"detail": "Token is correct", "access_token": "<JWT>"}
+        400: {"detail": "Token is incorrect"}
+        500: {"detail": "500 ERR: <message>"}
     """
     try:
         token = await TokenCrud.get_filtered_by_params(
@@ -336,27 +328,25 @@ async def get_access_handler(
         )
 
 
-@api_logs(auth_router.get('/logout'))
+@api_logs(auth_v1.get('/logout'), exclude_args=['response', 'refresh_token'])
 async def logout_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),
         session: AsyncSession = Depends(get_session)
 ):
     """
-    Logs out the user by revoking the associated refresh token.
-
-    Deletes the refresh token from the database and clears it from cookies.
+    Description
+        Revoke the current refresh token and clear the HTTP-only cookie.
 
     Args:
-        response (Response): FastAPI response object for clearing cookies.
         refresh_token (dict): Parsed and validated refresh token data.
-        session (AsyncSession): Asynchronous database session.
+        response (Response): Response for clearing cookies.
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: Message confirming logout.
-
-    Raises:
-        HTTPException: If the token is invalid or missing in the database.
+    Responses:
+        200: {"detail": "Logout Successful"}
+        401: {"detail": "Exception in token validation"}
+        500: {"detail": "500 ERR: <message>"}
     """
     try:
         tokens = await TokenCrud.get_filtered_by_params(
@@ -373,7 +363,7 @@ async def logout_handler(
         await TokenCrud.delete(session=session, record_id=tokens[0].id)
 
         response.delete_cookie(key="refresh_token")
-        return {"message": "Logout Successful"}
+        return {"detail": "Logout Successful"}
     except HTTPException as http_exc:  # pragma: no cover
         raise http_exc
     except Exception as _e:  # pragma: no cover

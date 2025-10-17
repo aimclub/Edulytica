@@ -3,11 +3,11 @@ from src.common.utils.logger import api_logs
 from src.rag import RAGPipeline
 
 
-rag_router = APIRouter(prefix="/rag")
+rag_v1 = APIRouter(prefix="/api/rag/v1", tags=['rag'])
 pipeline = RAGPipeline()
 
 
-@api_logs(rag_router.post('/upload_text'))
+@api_logs(rag_v1.post('/upload_text'))
 async def upload_text_handler(
         text: str = Body(...),
         event_name: str = Body(...)
@@ -21,7 +21,7 @@ async def upload_text_handler(
     return {"status": "success" if success else "failed", "chunks_uploaded": len(chunks)}
 
 
-@api_logs(rag_router.post('/get_result'))
+@api_logs(rag_v1.post('/get_result'))
 async def get_result_handler(
         text: str = Body(...),
         event_name: str = Body(...),

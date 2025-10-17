@@ -7,7 +7,7 @@ Classes:
 """
 
 import uuid
-from typing import Optional
+from typing import Optional, List
 from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.common.database.crud.custom_event_crud import CustomEventCrud
@@ -74,3 +74,27 @@ class TicketCrud(
             return event.name
 
         return None
+
+    @staticmethod
+    async def get_paginated_user_tickets(
+            session: AsyncSession,
+            user_id: uuid.UUID,
+            skip: int = 0,
+            limit: int = 10
+    ) -> List[TicketGet]:
+        """
+        Retrieves a paginated list of tickets for a specific user.
+
+        Args:
+            session (AsyncSession): The SQLAlchemy asynchronous session.
+            user_id (uuid.UUID): The ID of the user whose tickets are to be retrieved.
+            skip (int): The number of records to skip for pagination.
+            limit (int): The maximum number of records to return.
+        Returns:
+            list[TicketGet]: A list of validated Pydantic models of the user's tickets.
+        """
+        result = await session.execute(
+            select(Ticket).where(Ticket.user_id == user_id).offset(skip).limit(limit)
+        )
+        tickets = result.scalars().all()
+        return [TicketGet.model_validate(ticket) for ticket in tickets]

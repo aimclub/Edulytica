@@ -6,6 +6,7 @@ and API request logging for FastAPI routes.
 import logging
 import inspect
 from functools import wraps
+from typing import List
 from colorlog import ColoredFormatter
 from src.common.utils.moscow_datetime import datetime_now_moscow
 
@@ -42,12 +43,13 @@ logger.setLevel(logging.DEBUG)
 logger.addHandler(handler)
 
 
-def _sub_api_logs(handler):
+def _sub_api_logs(handler, exclude_args: List[str]):
     """
     A decorator for logging API request details including timestamp, user, and parameters.
 
     Args:
         handler (function): The API route handler function.
+        exclude_args (List[str]): List of argument names to exclude from logging.
 
     Returns:
         function: A wrapped handler function with logging enabled.
@@ -56,11 +58,13 @@ def _sub_api_logs(handler):
     @wraps(handler)
     async def wrapper(*args, **kwargs):
         bound_arguments = inspect.signature(handler).bind(*args, **kwargs).arguments
+
+        to_exclude = {'session', 'auth_data'}.union(set(exclude_args))
+
         params = {
             key: value for key,
-            value in bound_arguments.items() if key not in (
-                'session',
-                'auth_data')}
+            value in bound_arguments.items() if key not in to_exclude
+        }
 
         log_text = ''
         if 'auth_data' in bound_arguments:
@@ -81,19 +85,20 @@ def _sub_api_logs(handler):
     return wrapper
 
 
-def api_logs(route_decorator):
+def api_logs(route_decorator, *, exclude_args: List[str] = None):
     """
     A decorator that integrates API logging into FastAPI route decorators.
 
     Args:
         route_decorator (DecoratedCallable): A FastAPI route decorator (e.g., @app.get, @app.post).
+        exclude_args (List[str], optional): List of argument names to exclude from logging. Defaults to None.
 
     Returns:
         function: A wrapped route decorator with logging enabled.
     """
 
     def wrapper(handler):
-        wrapped_handler = _sub_api_logs(handler)
+        wrapped_handler = _sub_api_logs(handler, exclude_args=exclude_args or [])
         return route_decorator(wrapped_handler)
 
     return wrapper

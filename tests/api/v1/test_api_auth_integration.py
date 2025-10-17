@@ -54,8 +54,8 @@ def test_get_access_success(integration_client):
     refresh_token = login_resp.cookies.get("refresh_token")
     assert refresh_token
 
-    response = integration_client.get("/api/auth/v1/get_access", cookies={
-        "refresh_token": refresh_token
+    response = integration_client.get("/api/auth/v1/get_access", headers={
+        "Authorization": f"Bearer {refresh_token}"
     })
 
     assert response.status_code == 200
@@ -73,6 +73,8 @@ def test_logout_success(integration_client):
     refresh_token = login_resp.cookies.get("refresh_token")
     assert refresh_token
 
-    response = integration_client.get("/api/auth/v1/logout", cookies={"refresh_token": refresh_token})
+    response = integration_client.get("/api/auth/v1/logout", headers={
+        "Authorization": f"Bearer {refresh_token}"
+    })
     assert response.status_code == 200
     assert response.json()["message"] == "Logout Successful"

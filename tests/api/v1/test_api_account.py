@@ -11,7 +11,7 @@ def test_edit_profile_success(mock_update, client):
         "name": "John",
         "organization": "TestOrg"
     })
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     mock_update.assert_called_once()
 
 
@@ -30,7 +30,7 @@ def test_change_password_success(mock_update, client):
         "new_password1": "newpass",
         "new_password2": "newpass"
     })
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
     mock_update.assert_called_once()
 
 

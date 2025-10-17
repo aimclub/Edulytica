@@ -75,4 +75,4 @@ def test_logout_success(integration_client):
 
     response = integration_client.get("/api/auth/v1/logout", cookies={"refresh_token": refresh_token})
     assert response.status_code == 200
-    assert response.json()["message"] == "Logout Successful"
+    assert response.json()["detail"] == "Logout Successful"

@@ -1,3 +1,19 @@
+"""
+Description
+    Tickets API for creating tickets from uploaded documents, listing a user's tickets,
+    retrieving ticket data and status, updating the ticket name, toggling sharing, and deletion.
+    Some operations interact with the Orchestrator service. All endpoints require a valid JWT access token.
+
+Routes:
+    GET    /                   — List user's tickets (paginated).
+    POST   /                   — Create a ticket (upload document + event + mega_task_id).
+    GET    /{ticket_id}        — Get ticket data (owned or shared with the user).
+    GET    /{ticket_id}/status — Get ticket status.
+    PATCH  /{ticket_id}/name   — Update ticket name (owner only).
+    DELETE /{ticket_id}        — Delete ticket (owner only).
+    POST   /{ticket_id}/share  — Toggle ticket share flag (owner only).
+"""
+
 import httpx
 import os
 
@@ -8,7 +24,7 @@ from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import JSONResponse
 from starlette.status import HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE, HTTP_500_INTERNAL_SERVER_ERROR, \
-    HTTP_403_FORBIDDEN
+    HTTP_403_FORBIDDEN, HTTP_200_OK, HTTP_202_ACCEPTED
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.config import ORCHESTRATOR_PORT
 from src.common.database.crud import EventCrud, CustomEventCrud, DocumentCrud, TicketStatusCrud, TicketTypeCrud, \
@@ -24,7 +40,7 @@ tickets_v1 = APIRouter(prefix="/api/tickets/v1", tags=["tickets"])
 ROOT_DIR = Path(__file__).resolve().parents[4]
 
 
-@api_logs(tickets_v1.get(""))
+@api_logs(tickets_v1.get("", status_code=HTTP_200_OK))
 async def list_tickets(
     auth_data: dict = Depends(access_token_auth),
     page: int = Query(1, ge=1),
@@ -32,21 +48,20 @@ async def list_tickets(
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Retrieves the ticket history for the authenticated user.
-
-    Returns all tickets associated with the user from the database.
+    Description
+        Return a paginated list of tickets owned by the authenticated user.
 
     Args:
-        auth_data (dict): Contains the authenticated user's data.
-        page (int): Page number for pagination (default is 1).
-        size (int): Number of tickets per page for pagination (default is 20).
-        session (AsyncSession): Asynchronous database session.
+        auth_data (dict): Authenticated user data.
+        page (int): Page number (>= 1).
+        size (int): Page size (>= 1).
+        session (AsyncSession): Database session.
 
-    Returns:
-        dict: A message confirming the retrieval and a list of tickets.
+    Responses:
+        200: {"detail": "Ticket history found", "tickets": [...]}
 
     Raises:
-        HTTPException: If an internal error occurs during data retrieval.
+        HTTPException: On unexpected failures.
     """
     try:
         tickets = await TicketCrud.get_paginated_user_tickets(
@@ -69,7 +84,7 @@ async def list_tickets(
         )
 
 
-@api_logs(tickets_v1.post(""), exclude_args=['file', 'http_client'])
+@api_logs(tickets_v1.post("", status_code=HTTP_202_ACCEPTED), exclude_args=['file', 'http_client'])
 async def create_ticket(
     auth_data: dict = Depends(access_token_auth),
     file: UploadFile = File(...),
@@ -79,25 +94,28 @@ async def create_ticket(
     http_client: httpx.AsyncClient = Depends(get_http_client)
 ):
     """
-    Creates a new ticket by uploading a document and associating it with an event.
-
-    Validates the event and file type, stores the file, creates a document record,
-    and initializes a ticket. Then queues a background task for LLM analysis.
+    Description
+        Create a new ticket by uploading a PDF/DOCX, associating it with a standard or custom event,
+        and enqueuing an Orchestrator task for analysis.
 
     Args:
         auth_data (dict): Authenticated user data.
-        file (UploadFile): Uploaded PDF or DOCX file.
-        event_id (UUID): ID of the associated event (standard or custom).
-        mega_task_id (str): ID of mega task
+        file (UploadFile): PDF or DOCX file.
+        event_id (UUID): Event identifier (standard or custom).
+        mega_task_id (str): Supported values: "1" or "2".
         session (AsyncSession): Database session.
-        http_client (AsyncClient): Async HTTP Client
+        http_client (httpx.AsyncClient): HTTP client instance.
 
-    Returns:
-        dict: Success message and ticket ID.
+    Responses:
+        202: {"detail": "Ticket has been created and sent for processing", "ticket_id": "<uuid>"}
+        400: Invalid event, unsupported file type, or parsing failure.
+        503: Orchestration service is unavailable.
+        500: Orchestrator failed to start task.
 
     Raises:
-        HTTPException: For invalid event ID, unsupported file type, or internal errors.
+        HTTPException: For validation and transport errors.
     """
+
     try:
         if mega_task_id not in ["1", "2"]:
             raise HTTPException(
@@ -208,25 +226,27 @@ async def create_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(tickets_v1.get("/{ticket_id}"))
+@api_logs(tickets_v1.get("/{ticket_id}", status_code=HTTP_200_OK))
 async def get_ticket(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Retrieves a ticket if it belongs to the user or was shared.
+    Description
+        Return ticket data if it belongs to the user or is shared with them.
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
 
-    Returns:
-        dict: Ticket data.
+    Responses:
+        200: {"detail": "Ticket was found", "ticket": {...}}
+        400: Ticket doesn't exist or access is not permitted.
 
     Raises:
-        HTTPException: If ticket not found or unauthorized access.
+        HTTPException: For access or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -244,12 +264,27 @@ async def get_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(tickets_v1.get('/{ticket_id}/status'))
+@api_logs(tickets_v1.get('/{ticket_id}/status', status_code=HTTP_200_OK))
 async def get_ticket_status(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session)
 ):
+    """
+    Description
+        Return the current status of the specified ticket.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket identifier.
+        session (AsyncSession): Database session.
+
+    Responses:
+        200: {"detail": "Ticket status was found", "status": "<name>"}
+
+    Raises:
+        HTTPException: On unexpected failures.
+    """
     try:
         ticket = await TicketCrud.get_by_id(session=session, record_id=ticket_id)
         ticket_status = await TicketStatusCrud.get_by_id(session=session, record_id=ticket.ticket_status_id)
@@ -261,13 +296,31 @@ async def get_ticket_status(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(tickets_v1.patch("/{ticket_id}/name"))
+@api_logs(tickets_v1.patch("/{ticket_id}/name", status_code=HTTP_200_OK))
 async def edit_ticket_name(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     name: str = Body(..., embed=True),
     session: AsyncSession = Depends(get_session)
 ):
+    """
+    Description
+        Update the ticket name. Only the ticket owner can perform this action.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket identifier.
+        name (str): New ticket name (max 60 chars).
+        session (AsyncSession): Database session.
+
+    Responses:
+        200: {"detail": "Ticket name has been updated"}
+        400: Ticket not found or name too long.
+        403: You're not ticket creator.
+
+    Raises:
+        HTTPException: For validation or authorization errors.
+    """
     try:
         ticket = await TicketCrud.get_by_id(session, record_id=ticket_id)
 
@@ -296,7 +349,7 @@ async def edit_ticket_name(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(tickets_v1.delete("/{ticket_id}"), exclude_args=['http_client'])
+@api_logs(tickets_v1.delete("/{ticket_id}", status_code=HTTP_200_OK), exclude_args=['http_client'])
 async def delete_ticket(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
@@ -304,19 +357,24 @@ async def delete_ticket(
     http_client: httpx.AsyncClient = Depends(get_http_client)
 ):
     """
-    Deletes a ticket owned by the user.
+    Description
+        Delete the specified ticket. Only the ticket owner can perform this action.
+        Requests the Orchestrator to remove any running/queued tasks for the ticket.
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
-        http_client (AsyncClient): Async HTTP Client.
+        http_client (httpx.AsyncClient): HTTP client instance.
 
-    Returns:
-        dict: Message confirming deletion.
+    Responses:
+        200: {"detail": "Ticket was deleted"}
+        400: You aren't ticket owner or ticket doesn't exist.
+        503: Orchestration service is unavailable.
+        500: Orchestrator failed to delete ticket.
 
     Raises:
-        HTTPException: If the user does not own the ticket, or it does not exist.
+        HTTPException: For authorization and transport errors.
     """
     try:
         tickets = await TicketCrud.get_filtered_by_params(
@@ -355,25 +413,27 @@ async def delete_ticket(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(tickets_v1.post("/{ticket_id}/share"))
+@api_logs(tickets_v1.post("/{ticket_id}/share", status_code=HTTP_200_OK))
 async def ticket_share(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session),
 ):
     """
-    Toggles the shared status of a ticket owned by the user.
+    Description
+        Toggle the share flag for the specified ticket. Only the ticket owner can change it.
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
 
-    Returns:
-        dict: Message confirming status change.
+    Responses:
+        200: {"detail": "Share status has been changed"}
+        400: You aren't ticket owner or ticket doesn't exist.
 
     Raises:
-        HTTPException: If the user does not own the ticket, or it does not exist.
+        HTTPException: For authorization or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_filtered_by_params(

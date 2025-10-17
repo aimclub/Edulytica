@@ -1,4 +1,4 @@
-from src.llm.qwen.QwenInstruct import QwenInstruct
+from src.models.llm.qwen import QwenInstruct
 
 if __name__ == "__main__":
     model = QwenInstruct(quantization="8bit")

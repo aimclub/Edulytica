@@ -16,7 +16,7 @@ import uuid
 from datetime import timedelta
 from fastapi import APIRouter, Body, Depends, HTTPException, Response, BackgroundTasks
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_401_UNAUTHORIZED, HTTP_200_OK
 from src.common.auth.auth_bearer import refresh_token_auth
 from src.common.auth.helpers.utils import get_hashed_password, create_access_token, create_refresh_token, get_expiry, \
     verify_password
@@ -32,10 +32,11 @@ from src.common.utils.email import send_email
 from src.common.utils.logger import api_logs
 from src.common.utils.moscow_datetime import datetime_now_moscow
 
+
 auth_v1 = APIRouter(prefix='/api/auth/v1', tags=['auth'])
 
 
-@api_logs(auth_v1.post('/registration'), exclude_args=['background_tasks', 'password1', 'password2'])
+@api_logs(auth_v1.post('/registration', status_code=HTTP_200_OK), exclude_args=['background_tasks', 'password1', 'password2'])
 async def registration_handler(
         background_tasks: BackgroundTasks,
         login: str = Body(...),
@@ -117,7 +118,7 @@ async def registration_handler(
         )
 
 
-@api_logs(auth_v1.post('/check_code'), exclude_args=['response', 'code'])
+@api_logs(auth_v1.post('/check_code', status_code=HTTP_200_OK), exclude_args=['response', 'code'])
 async def check_code_handler(
         response: Response,
         code: str = Body(..., embed=True),
@@ -199,7 +200,7 @@ async def check_code_handler(
         )
 
 
-@api_logs(auth_v1.post('/login'), exclude_args=['response', 'password'])
+@api_logs(auth_v1.post('/login', status_code=HTTP_200_OK), exclude_args=['response', 'password'])
 async def login_handler(
         response: Response,
         login: str = Body(...),
@@ -261,7 +262,7 @@ async def login_handler(
         )
 
 
-@api_logs(auth_v1.get('/get_access'), exclude_args=['response', 'refresh_token'])
+@api_logs(auth_v1.get('/get_access', status_code=HTTP_200_OK), exclude_args=['response', 'refresh_token'])
 async def get_access_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),
@@ -328,7 +329,7 @@ async def get_access_handler(
         )
 
 
-@api_logs(auth_v1.get('/logout'), exclude_args=['response', 'refresh_token'])
+@api_logs(auth_v1.get('/logout', status_code=HTTP_200_OK), exclude_args=['response', 'refresh_token'])
 async def logout_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),

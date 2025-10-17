@@ -1,6 +1,6 @@
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
-from src.llm import IModel
-from src.llm import DEFAULT_SYSTEM_PROMPT
+from src.models.llm import IModel
+from src.models.llm import DEFAULT_SYSTEM_PROMPT
 
 
 class ModelPipeline(IModel):

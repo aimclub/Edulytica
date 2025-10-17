@@ -1,11 +1,24 @@
+"""
+Description
+    Files API for downloading ticket-related files (original document, summary, result)
+    and for extracting parsed text from those files. All endpoints require a valid JWT access token.
+
+Routes:
+    GET /{ticket_id}/file         — Download the original uploaded file.
+    GET /{ticket_id}/summary      — Download the LLM-generated summary file.
+    GET /{ticket_id}/result       — Download the LLM-generated result/report file.
+    GET /{ticket_id}/file/text    — Return parsed text from the original file.
+    GET /{ticket_id}/result/text  — Return parsed text from the result/report.
+"""
+
 from io import BytesIO
 from mimetypes import guess_type
 from uuid import UUID
-from fastapi import APIRouter, Depends, Query, HTTPException, Path as FPath
+from fastapi import APIRouter, Depends, HTTPException, Path as FPath
 from pathlib import Path
 from sqlalchemy.ext.asyncio import AsyncSession
 from starlette.responses import FileResponse
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_200_OK
 
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.database.crud import TicketCrud, DocumentCrud, DocumentReportCrud, DocumentSummaryCrud
@@ -18,25 +31,27 @@ files_v1 = APIRouter(prefix="/api/files/v1", tags=["files"])
 ROOT_DIR = Path(__file__).resolve().parents[4]
 
 
-@api_logs(files_v1.get("/{ticket_id}/file"))
+@api_logs(files_v1.get("/{ticket_id}/file", status_code=HTTP_200_OK))
 async def get_ticket_file(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Downloads the original file attached to a ticket.
+    Description
+        Download the original file attached to the specified ticket (owned or shared).
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
 
-    Returns:
-        FileResponse: The original uploaded file.
+    Responses:
+        200: FileResponse with the original file.
+        400: Ticket not found / file missing in DB or storage.
 
     Raises:
-        HTTPException: If the ticket or file is not found.
+        HTTPException: For not found or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -66,25 +81,27 @@ async def get_ticket_file(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(files_v1.get("/{ticket_id}/summary"))
+@api_logs(files_v1.get("/{ticket_id}/summary", status_code=HTTP_200_OK))
 async def get_ticket_summary(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Downloads the LLM-generated document summary for a ticket.
+    Description
+        Download the LLM-generated summary file for the specified ticket.
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
 
-    Returns:
-        FileResponse: The summary file.
+    Responses:
+        200: FileResponse with the summary.
+        400: Ticket or summary not found.
 
     Raises:
-        HTTPException: If the summary or ticket does not exist.
+        HTTPException: For not found or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -113,25 +130,27 @@ async def get_ticket_summary(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(files_v1.get("/{ticket_id}/result"))
+@api_logs(files_v1.get("/{ticket_id}/result", status_code=HTTP_200_OK))
 async def get_ticket_result(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Downloads the LLM-generated result file for a ticket.
+    Description
+        Download the LLM-generated result file for the specified ticket.
 
     Args:
         auth_data (dict): Authenticated user data.
-        ticket_id (UUID): Ticket UUID.
+        ticket_id (UUID): Ticket identifier.
         session (AsyncSession): Database session.
 
-    Returns:
-        FileResponse: The result file.
+    Responses:
+        200: FileResponse with the result.
+        400: Ticket or result not found.
 
     Raises:
-        HTTPException: If the report is not found or ticket doesn't exist.
+        HTTPException: For not found or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -168,15 +187,28 @@ async def get_ticket_result(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(files_v1.get("/{ticket_id}/file/text"))
+@api_logs(files_v1.get("/{ticket_id}/file/text", status_code=HTTP_200_OK))
 async def get_document_text(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session),
 ):
     """
-    Returns parsed text from the original document file of a ticket.
-    If no file or text available, returns empty string.
+    Description
+        Parse and return text extracted from the original file attached to the ticket.
+        Returns an empty string if text cannot be extracted.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket identifier.
+        session (AsyncSession): Database session.
+
+    Responses:
+        200: {"detail": "Text extracted", "text": "<string>"}
+        400/404: Ticket/document/file not found.
+
+    Raises:
+        HTTPException: For not found or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -202,19 +234,34 @@ async def get_document_text(
             text = ""
 
         return {"detail": "Text extracted", "text": text}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
     except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(files_v1.get("/{ticket_id}/result/text"))
+@api_logs(files_v1.get("/{ticket_id}/result/text", status_code=HTTP_200_OK))
 async def get_result_text(
     auth_data: dict = Depends(access_token_auth),
     ticket_id: UUID = FPath(...),
     session: AsyncSession = Depends(get_session),
 ):
     """
-    Returns parsed text from the LLM result/report file of a ticket.
-    If no file or text available, returns empty string.
+    Description
+        Parse and return text extracted from the LLM result/report file of the ticket.
+        Returns an empty string if text cannot be extracted.
+
+    Args:
+        auth_data (dict): Authenticated user data.
+        ticket_id (UUID): Ticket identifier.
+        session (AsyncSession): Database session.
+
+    Responses:
+        200: {"detail": "Text extracted", "text": "<string>"}
+        404: Result or file not found.
+
+    Raises:
+        HTTPException: For not found or unexpected errors.
     """
     try:
         ticket = await TicketCrud.get_ticket_by_id_or_shared(
@@ -242,5 +289,7 @@ async def get_result_text(
             text = ""
 
         return {"detail": "Text extracted", "text": text}
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
     except Exception as _e:  # pragma: no cover
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')

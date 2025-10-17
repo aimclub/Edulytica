@@ -1,8 +1,8 @@
 import torch
-from src.llm import IModel
+from src.models.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
-from src.llm import DEFAULT_SYSTEM_PROMPT
-from src.exceptions.llm.quantization_exception import QuantizationException
+from src.models.llm import DEFAULT_SYSTEM_PROMPT
+from src.models.llm.exceptions.quantization_exception import QuantizationException
 
 
 class ModelInstruct(IModel):

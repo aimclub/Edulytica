@@ -1,22 +1,20 @@
 """
-This module defines user account-related API endpoints for editing profile information,
-changing passwords, and retrieving ticket history in a FastAPI application.
-
-The endpoints are protected via JWT-based access token authentication and provide secure
-ways for users to update their personal information or access their activity history.
+Description
+    Account API for retrieving the authenticated user profile, editing basic profile fields,
+    and changing the password. All endpoints require a valid JWT access token.
 
 Routes:
-    POST /account/edit_profile: Updates the user's profile details (name, surname, organization).
-    POST /account/change_password: Allows users to change their password after verifying the current one.
-    GET /account/ticket_history: Returns the user's ticket history.
+    GET   /           — Return the authenticated user object from the token.
+    PATCH /           — Update profile fields (name, surname, organization).
+    POST  /password   — Change password after verifying the old one.
 """
+
 
 from fastapi import APIRouter, Body, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_204_NO_CONTENT, HTTP_200_OK
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.auth.helpers.utils import verify_password, get_hashed_password
-from src.common.database.crud.ticket_crud import TicketCrud
 from src.common.database.crud.user_crud import UserCrud
 from src.common.database.database import get_session
 from src.common.utils.logger import api_logs
@@ -26,25 +24,55 @@ from src.edulytica_api.schemas.account_schemas import EditProfileRequest, Change
 account_v1 = APIRouter(prefix="/api/account/v1", tags=["account"])
 
 
-@api_logs(account_v1.patch(""))
+@api_logs(account_v1.get("", status_code=HTTP_200_OK))
+async def get_account(
+    auth_data: dict = Depends(access_token_auth)
+):
+    """
+    Description
+        Return the authenticated user object extracted from the access token.
+
+    Args:
+        auth_data (dict): Authenticated user data injected by the access token dependency.
+
+    Responses:
+        200: The user object (dict) as stored on the token.
+
+    Raises:
+        HTTPException: If the token is invalid or an unexpected error occurs.
+    """
+    try:
+        return auth_data['user']
+    except HTTPException as http_exc:  # pragma: no cover
+        raise http_exc
+    except Exception as _e:  # pragma: no cover
+        raise HTTPException(
+            status_code=500,
+            detail=f"500 ERR: {_e}"
+        )
+
+
+@api_logs(account_v1.patch("", status_code=HTTP_204_NO_CONTENT))
 async def edit_profile(
     auth_data: dict = Depends(access_token_auth),
     data: EditProfileRequest = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Updates the authenticated user's profile information.
-
-    Allows the user to modify one or more fields including their name, surname, and organization.
-    At least one field must be specified.
+    Description
+        Update one or more profile fields (name, surname, organization) for the authenticated user.
 
     Args:
-        auth_data (dict): Contains the authenticated user's data.
-        data (EditProfileRequest): Pydantic-model, that contains name, surname and organization
-        session (AsyncSession): Asynchronous database session.
+        auth_data (dict): Authenticated user data.
+        data (EditProfileRequest): Optional fields to update (at least one must be provided).
+        session (AsyncSession): Database session.
+
+    Responses:
+        204: Profile updated successfully (no content).
+        400: None of the fields were provided.
 
     Raises:
-        HTTPException: If no fields are provided or an internal error occurs.
+        HTTPException: For validation errors or unexpected failures.
     """
     try:
         if not (data.name or data.surname or data.organization):
@@ -69,26 +97,27 @@ async def edit_profile(
         )
 
 
-@api_logs(account_v1.post("/password"), exclude_args=['data'])
+@api_logs(account_v1.post("/password", status_code=HTTP_204_NO_CONTENT), exclude_args=['data'])
 async def change_password(
     auth_data: dict = Depends(access_token_auth),
     data: ChangePasswordRequest = Body(...),
     session: AsyncSession = Depends(get_session)
 ):
     """
-    Changes the password for the authenticated user.
-
-    Verifies that the provided old password is correct and the new passwords match
-    before updating the stored password hash.
+    Description
+        Change the user password after verifying the current password and matching the new passwords.
 
     Args:
-        auth_data (dict): Contains the authenticated user's data.
-        data (ChangePasswordRequest): Pydantic-model, that contain passwords
-        session (AsyncSession): Asynchronous database session.
+        auth_data (dict): Authenticated user data.
+        data (ChangePasswordRequest): old_password, new_password1, new_password2.
+        session (AsyncSession): Database session.
+
+    Responses:
+        204: Password updated successfully (no content).
+        400: Old password incorrect or new passwords do not match.
 
     Raises:
-        HTTPException: If the old password is incorrect, the new passwords do not match,
-        or if an internal error occurs.
+        HTTPException: For validation errors or unexpected failures.
     """
     try:
         if data.new_password1 != data.new_password2:
@@ -115,34 +144,4 @@ async def change_password(
         raise HTTPException(
             status_code=HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f'500 ERR: {_e}'
-        )
-
-
-@api_logs(account_v1.get(""))
-async def get_account(
-    auth_data: dict = Depends(access_token_auth)
-):
-    """
-    Retrieves basic information about the authenticated user.
-
-    This endpoint returns the user data extracted from the JWT access token,
-    which typically includes user ID, email, roles, and other metadata.
-
-    Args:
-        auth_data (dict): Contains the authenticated user's data from the access token.
-
-    Returns:
-        dict: A dictionary containing user information.
-
-    Raises:
-        HTTPException: If token is invalid or any unexpected error occurs.
-    """
-    try:
-        return auth_data['user']
-    except HTTPException as http_exc:  # pragma: no cover
-        raise http_exc
-    except Exception as _e:  # pragma: no cover
-        raise HTTPException(
-            status_code=500,
-            detail=f"500 ERR: {_e}"
         )

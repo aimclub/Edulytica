@@ -1,7 +1,7 @@
 import sys
 
-from src.llm.qwen import QwenInstruct
-from src.llm.vikhr import VikhrNemoInstruct
+from src.models.llm.qwen import QwenInstruct
+from src.models.llm.vikhr import VikhrNemoInstruct
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:

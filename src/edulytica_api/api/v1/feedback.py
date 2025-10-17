@@ -1,26 +1,18 @@
 """
-This module defines API endpoints for ticket and document-related actions in a FastAPI application.
-
-It enables users to upload documents, create and manage tickets, download ticket-related files such as
-summaries and reports, and retrieve event identifiers. The system supports both standard and custom events,
-and performs document processing through background tasks. All routes are protected with JWT-based access
-token authentication.
+Description
+    Feedback API for sending user messages to a Telegram forum thread (topic).
+    Uses MarkdownV2 formatting. All endpoints require a valid JWT access token.
 
 Routes:
-    POST /actions/new_ticket: Uploads a document and creates a new ticket for an event.
-    GET /actions/get_event_id: Retrieves the event ID by event name.
-    GET /actions/get_ticket: Retrieves a ticket if it belongs to the user or was shared.
-    GET /actions/get_ticket_file: Downloads the original file attached to the ticket.
-    GET /actions/get_ticket_summary: Downloads the LLM-generated document summary.
-    GET /actions/get_ticket_result: Downloads the LLM-generated result or report.
-    DELETE /actions/delete_ticket: Deletes a ticket owned by the user.
-    POST /actions/ticket_share: Toggles the shared status of a ticket.
+    POST / — Send feedback (name, email, text) to Telegram.
 """
+
 
 import httpx
 
 from fastapi import APIRouter, Body, Depends, HTTPException
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE
+from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR, HTTP_400_BAD_REQUEST, HTTP_503_SERVICE_UNAVAILABLE, \
+    HTTP_200_OK
 
 from src.common.auth.auth_bearer import access_token_auth
 from src.common.config import BOT_TOKEN, CHAT_ID, CHAT_THREAD_ID
@@ -33,28 +25,29 @@ from src.edulytica_api.dependencies import get_http_client
 feedback_v1 = APIRouter(prefix="/api/feedback/v1", tags=["actions"])
 
 
-@api_logs(feedback_v1.post(''), exclude_args=['http_client', 'payload'])
+@api_logs(feedback_v1.post('', status_code=HTTP_200_OK), exclude_args=['http_client', 'payload'])
 async def send_feedback_to_telegram(
     auth_data: dict = Depends(access_token_auth),
     payload: FeedbackIn = Body(...),
     http_client: httpx.AsyncClient = Depends(get_http_client)
 ):
     """
-    Sends feedback to a Telegram **topic** (forum thread) using MarkdownV2 formatting.
+    Description
+        Send a feedback message to a Telegram topic using MarkdownV2.
 
     Args:
         auth_data (dict): Authenticated user data.
-        payload (FeedbackIn): Validated feedback payload (EmailStr ensures proper email).
-        http_client (AsyncClient): Async HTTP Client.
+        payload (FeedbackIn): name, email, text (validated).
+        http_client (httpx.AsyncClient): HTTP client instance.
 
-    Returns:
-        dict: Message confirming delivery with Telegram message id.
+    Responses:
+        200: {"detail": "Feedback sent"}
+        400: Name/email/text exceed length limits.
+        503: Telegram API is unreachable.
+        500: Telegram API returned an error or misconfiguration.
 
     Raises:
-        HTTPException:
-            400: Empty name/text.
-            503: Telegram API is unreachable.
-            500: Misconfiguration or Telegram API error.
+        HTTPException: For validation and transport errors.
     """
     try:
         if len(payload.name) > 100:

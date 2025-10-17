@@ -7,9 +7,9 @@ from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
 from src.common.config import LLM_KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.common.utils.default_enums import SubtaskStatuses
-from src.llm import ModelInstruct
-from src.llm.qwen import QwenInstruct
-from src.llm.vikhr import VikhrNemoInstruct
+from src.models.llm import ModelInstruct
+from src.models.llm.qwen import QwenInstruct
+from src.models.llm.vikhr import VikhrNemoInstruct
 
 
 load_dotenv()

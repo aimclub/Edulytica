@@ -26,7 +26,7 @@ def test_registration_success(mock_generate_code, mock_send_email, integration_c
 
 @pytest.mark.order(2)
 def test_check_code_success(integration_client):
-    response = integration_client.post("/api/auth/v1check_code", json={"code": static_code})
+    response = integration_client.post("/api/auth/v1/check_code", json={"code": static_code})
     assert response.status_code == 200
     assert "access_token" in response.json()
     assert integration_client.cookies.get("refresh_token", "").strip('"').startswith("Bearer")

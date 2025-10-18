@@ -66,7 +66,7 @@ const authSlice = createSlice({
 export const fetchUserData = () => async (dispatch, getState) => {
   try {
     console.log("Fetching user data...")
-    const response = await $api.get("/account/get_account")
+    const response = await $api.get("/account")
     console.log("User data received:", response.data)
     dispatch(setUserData(response.data))
     return response.data

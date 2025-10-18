@@ -1,6 +1,5 @@
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Callable
 import torch
-from black.lines import Callable
 from src.models.llm import IModel
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig, BitsAndBytesConfig
 from src.models.llm import DEFAULT_SYSTEM_PROMPT

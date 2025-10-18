@@ -6,7 +6,7 @@ and API request logging for FastAPI routes.
 import logging
 import inspect
 from functools import wraps
-from typing import List, Callable, Any, Coroutine, TypeVar, Optional
+from typing import List, Callable, Any, Coroutine, TypeVar
 from colorlog import ColoredFormatter
 from src.common.utils.moscow_datetime import datetime_now_moscow
 

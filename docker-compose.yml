@@ -99,7 +99,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:${AUTH_PORT}/heath" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${AUTH_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5

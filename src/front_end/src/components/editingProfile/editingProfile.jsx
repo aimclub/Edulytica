@@ -50,7 +50,7 @@ export const EditingProfile = ({
         surname: localProfile.surname,
         organization: localProfile.organization,
       }
-      await $api.post("/account/edit_profile", payload)
+      await $api.patch("/account", payload)
       setOpenEditingProfileModal("info")
       setInfoProfile(localProfile)
       setEditingProfileModal(false)
@@ -85,7 +85,7 @@ export const EditingProfile = ({
   const handlePasswordReset = async () => {
     if (!validatePasswordForm()) return
     try {
-      await $api.post("/account/change_password", {
+      await $api.post("/account/password", {
         old_password: oldPassword,
         new_password1: newPassword1,
         new_password2: newPassword2,

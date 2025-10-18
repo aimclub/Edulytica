@@ -10,23 +10,32 @@ server {
   listen ${GATEWAY_PORT};
   
   location /auth/ {
-    proxy_pass http://auth_service/api/auth/v1/;
+    rewrite ^/auth/?$ /api/auth/v1 break;
+    rewrite ^/auth/(.*)$ /api/auth/v1/$1 break;
+
+    proxy_pass http://auth_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
   }
-  
+
   location /account/ {
-    proxy_pass http://api_service/api/account/v1/;
+    rewrite ^/account/?$ /api/account/v1 break;
+    rewrite ^/account/(.*)$ /api/account/v1/$1 break;
+
+    proxy_pass http://api_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header X-Forwarded-Proto $scheme;
   }
-  
+
   location /feedback/ {
-    proxy_pass http://api_service/api/feedback/v1/;
+    rewrite ^/feedback/?$ /api/feedback/v1 break;
+    rewrite ^/feedback/(.*)$ /api/feedback/v1/$1 break;
+
+    proxy_pass http://api_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -34,7 +43,10 @@ server {
   }
 
   location /tickets/ {
-    proxy_pass http://api_service/api/tickets/v1/;
+    rewrite ^/tickets/?$ /api/tickets/v1 break;
+    rewrite ^/tickets/(.*)$ /api/tickets/v1/$1 break;
+
+    proxy_pass http://api_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -42,7 +54,10 @@ server {
   }
 
   location /events/ {
-    proxy_pass http://api_service/api/events/v1/;
+    rewrite ^/events/?$ /api/events/v1 break;
+    rewrite ^/events/(.*)$ /api/events/v1/$1 break;
+
+    proxy_pass http://api_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -50,7 +65,10 @@ server {
   }
 
   location /files/ {
-    proxy_pass http://api_service/api/files/v1/;
+    rewrite ^/files/?$ /api/files/v1 break;
+    rewrite ^/files/(.*)$ /api/files/v1/$1 break;
+
+    proxy_pass http://api_service;
     proxy_set_header Host $host;
     proxy_set_header X-Real-IP $remote_addr;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;

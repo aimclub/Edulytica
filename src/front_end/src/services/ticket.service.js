@@ -178,7 +178,7 @@ class TicketService {
    */
   async getTicketSummary(ticketId) {
     try {
-      const response = await $api.get(`/tickets/${ticketId}/summary`, {
+      const response = await $api.get(`/files/${ticketId}/summary`, {
         responseType: "blob",
       })
       return response.data
@@ -195,7 +195,7 @@ class TicketService {
    */
   async getTicketResult(ticketId) {
     try {
-      const response = await $api.get(`/tickets/${ticketId}/result`, {
+      const response = await $api.get(`/files/${ticketId}/result`, {
         responseType: "blob",
       })
       return response.data
@@ -299,7 +299,7 @@ class TicketService {
    */
   async getDocumentText(ticketId) {
     try {
-      const response = await $api.get(`/tickets/${ticketId}/file/text`)
+      const response = await $api.get(`/files/${ticketId}/file/text`)
       return response.data
     } catch (error) {
       console.error("Error getting document text:", error)
@@ -314,7 +314,7 @@ class TicketService {
    */
   async getResultText(ticketId) {
     try {
-      const response = await $api.get(`/tickets/${ticketId}/result/text`)
+      const response = await $api.get(`/files/${ticketId}/result/text`)
       return response.data
     } catch (error) {
       console.error("Error getting result text:", error)

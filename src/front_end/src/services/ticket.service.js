@@ -212,7 +212,7 @@ class TicketService {
    */
   async downloadResult(ticketId) {
     try {
-      const response = await $api.get(`/tickets/${ticketId}/result`, {
+      const response = await $api.get(`/files/${ticketId}/result`, {
         responseType: "blob",
       })
 

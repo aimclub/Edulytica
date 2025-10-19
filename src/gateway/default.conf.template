@@ -9,7 +9,7 @@ upstream api_service {
 server {
   listen ${GATEWAY_PORT};
   
-  location /auth/ {
+  location ~ ^/auth(/|$) {
     rewrite ^/auth/?$ /api/auth/v1 break;
     rewrite ^/auth/(.*)$ /api/auth/v1/$1 break;
 
@@ -20,7 +20,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
-  location /account/ {
+  location ~ ^/account(/|$) {
     rewrite ^/account/?$ /api/account/v1 break;
     rewrite ^/account/(.*)$ /api/account/v1/$1 break;
 
@@ -31,7 +31,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
-  location /feedback/ {
+  location ~ ^/feedback(/|$) {
     rewrite ^/feedback/?$ /api/feedback/v1 break;
     rewrite ^/feedback/(.*)$ /api/feedback/v1/$1 break;
 
@@ -42,7 +42,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
-  location /tickets/ {
+  location ~ ^/tickets(/|$) {
     rewrite ^/tickets/?$ /api/tickets/v1 break;
     rewrite ^/tickets/(.*)$ /api/tickets/v1/$1 break;
 
@@ -53,7 +53,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
-  location /events/ {
+  location ~ ^/events(/|$) {
     rewrite ^/events/?$ /api/events/v1 break;
     rewrite ^/events/(.*)$ /api/events/v1/$1 break;
 
@@ -64,7 +64,7 @@ server {
     proxy_set_header X-Forwarded-Proto $scheme;
   }
 
-  location /files/ {
+  location ~ ^/files(/|$) {
     rewrite ^/files/?$ /api/files/v1 break;
     rewrite ^/files/(.*)$ /api/files/v1/$1 break;
 

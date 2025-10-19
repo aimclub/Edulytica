@@ -216,6 +216,7 @@ services:
 
   edulytica_backup:
     container_name: "EdulyticaBackup"
+    # profiles: ["backup"]
     build:
       context: .
       dockerfile: ./src/backup/Dockerfile

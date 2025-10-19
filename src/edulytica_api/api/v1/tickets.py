@@ -200,7 +200,7 @@ async def create_ticket(
 
         try:
             response = await http_client.post(f'http://edulytica_orchestration:{ORCHESTRATOR_PORT}'
-                                              f'/api/orchestrator/v1//run_ticket',
+                                              f'/api/orchestrator/v1/run_ticket',
                                               json=orchestrator_payload, timeout=30.0)
             response.raise_for_status()
         except httpx.RequestError as _re:

@@ -17,13 +17,11 @@ RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH=/app
 
-COPY src/models/download_models.py .
-
-ARG MODEL_TYPE
-RUN python3 download_models.py $MODEL_TYPE
-
 COPY src/common /app/src/common
 COPY src/models /app/src/models
+
+ARG MODEL_TYPE
+RUN python3 src/models/download_models.py $MODEL_TYPE
 
 ENV MODEL_TYPE=$MODEL_TYPE
 

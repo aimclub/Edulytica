@@ -9,10 +9,10 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY src/models/requirements.txt .
 COPY src/common/requirements_common.txt .
-
 RUN pip3 install -r requirements_common.txt
+
+COPY src/models/requirements.txt .
 RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH=/app

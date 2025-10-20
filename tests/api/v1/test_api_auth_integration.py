@@ -73,6 +73,9 @@ def test_logout_success(integration_client):
     refresh_token = login_resp.cookies.get("refresh_token")
     assert refresh_token
 
-    response = integration_client.get("/api/auth/v1/logout", cookies={"refresh_token": refresh_token})
+    response = integration_client.get(
+        "/api/auth/v1/logout",
+        cookies={
+            "refresh_token": refresh_token})
     assert response.status_code == 200
     assert response.json()["detail"] == "Logout Successful"

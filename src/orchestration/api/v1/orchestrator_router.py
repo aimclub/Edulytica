@@ -28,10 +28,13 @@ from src.orchestration.orchestrator import Orchestrator
 orchestrator_v1 = APIRouter(prefix='/api/orchestrator/v1', tags=['orchestrator'])
 
 
-@api_logs(
-    orchestrator_v1.post('/run_ticket', status_code=HTTP_202_ACCEPTED),
-    exclude_args=['background_tasks', 'state_manager', 'kafka_producer', 'rag_client', 'document_text']
-)
+@api_logs(orchestrator_v1.post('/run_ticket',
+                               status_code=HTTP_202_ACCEPTED),
+          exclude_args=['background_tasks',
+                        'state_manager',
+                        'kafka_producer',
+                        'rag_client',
+                        'document_text'])
 async def run_ticket_handler(
         background_tasks: BackgroundTasks,
         ticket_id: uuid.UUID = Body(...),
@@ -96,7 +99,9 @@ async def run_ticket_handler(
         )
 
 
-@api_logs(orchestrator_v1.delete('/tickets/{ticket_id}', status_code=HTTP_204_NO_CONTENT), exclude_args=['state_manager'])
+@api_logs(orchestrator_v1.delete('/tickets/{ticket_id}',
+                                 status_code=HTTP_204_NO_CONTENT),
+          exclude_args=['state_manager'])
 async def delete_ticket(
     ticket_id: uuid.UUID,
     state_manager: StateManager = Depends(get_state_manager),

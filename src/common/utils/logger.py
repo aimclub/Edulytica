@@ -90,7 +90,8 @@ def _sub_api_logs(handler: Handler[T], exclude_args: List[str]) -> Handler[T]:
     return wrapper
 
 
-def api_logs(route_decorator: RouteDecorator[T], *, exclude_args: List[str] = None) -> RouteDecorator[T]:
+def api_logs(route_decorator: RouteDecorator[T], *,
+             exclude_args: List[str] = None) -> RouteDecorator[T]:
     """
     A decorator that integrates API logging into FastAPI route decorators.
 

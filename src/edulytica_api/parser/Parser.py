@@ -111,7 +111,11 @@ class Parser:
             print(f"Ошибка парсинга PDF: {e}")
         return struct, potentially_damaged
 
-    def parse_paragraphs_from_anchor(self, anchor_id: str, next_anchor_id, list_view: bool = True) -> Union[str, List[str]]:
+    def parse_paragraphs_from_anchor(self,
+                                     anchor_id: str,
+                                     next_anchor_id,
+                                     list_view: bool = True) -> Union[str,
+                                                                      List[str]]:
         """
         Extracts all text content located between two specified bookmarks (anchors) in a DOCX file.
         For PDF files, this method returns all text content from the document.

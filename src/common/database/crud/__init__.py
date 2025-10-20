@@ -18,4 +18,3 @@ __all__ = [
     "TicketCrud", "TicketStatusCrud", "TicketTypeCrud", "UserCrud",
     "UserRoleCrud", "TokenCrud",
 ]
-

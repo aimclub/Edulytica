@@ -114,7 +114,8 @@ async def get_event_id(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {_e}')
 
 
-@api_logs(events_v1.post("", status_code=HTTP_201_CREATED), exclude_args=['http_client', 'description'])
+@api_logs(events_v1.post("", status_code=HTTP_201_CREATED),
+          exclude_args=['http_client', 'description'])
 async def add_custom_event(
     auth_data: dict = Depends(access_token_auth),
     event_name: str = Body(...),

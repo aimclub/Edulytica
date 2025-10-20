@@ -39,10 +39,10 @@ async def verify_internal_secret(x_internal_secret: str = Header(...)):
         )
 
 
-@api_logs(
-    internal_v1.post("/upload_report", dependencies=[Depends(verify_internal_secret)], status_code=HTTP_200_OK),
-    exclude_args=['report_text']
-)
+@api_logs(internal_v1.post("/upload_report",
+                           dependencies=[Depends(verify_internal_secret)],
+                           status_code=HTTP_200_OK),
+          exclude_args=['report_text'])
 async def upload_report(
         ticket_id: uuid.UUID = Body(...),
         report_text: str = Body(...),
@@ -105,7 +105,9 @@ async def upload_report(
         raise HTTPException(status_code=HTTP_500_INTERNAL_SERVER_ERROR, detail=f'500 ERR: {e}')
 
 
-@api_logs(internal_v1.post("/edit_ticket_name", dependencies=[Depends(verify_internal_secret)], status_code=HTTP_200_OK))
+@api_logs(internal_v1.post("/edit_ticket_name",
+                           dependencies=[Depends(verify_internal_secret)],
+                           status_code=HTTP_200_OK))
 async def edit_ticket_name(
         ticket_id: uuid.UUID = Body(...),
         name: str = Body(...),

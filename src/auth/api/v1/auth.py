@@ -36,7 +36,8 @@ from src.common.utils.moscow_datetime import datetime_now_moscow
 auth_v1 = APIRouter(prefix='/api/auth/v1', tags=['auth'])
 
 
-@api_logs(auth_v1.post('/registration', status_code=HTTP_200_OK), exclude_args=['background_tasks', 'password1', 'password2'])
+@api_logs(auth_v1.post('/registration', status_code=HTTP_200_OK),
+          exclude_args=['background_tasks', 'password1', 'password2'])
 async def registration_handler(
         background_tasks: BackgroundTasks,
         login: str = Body(...),
@@ -262,7 +263,8 @@ async def login_handler(
         )
 
 
-@api_logs(auth_v1.get('/get_access', status_code=HTTP_200_OK), exclude_args=['response', 'refresh_token'])
+@api_logs(auth_v1.get('/get_access', status_code=HTTP_200_OK),
+          exclude_args=['response', 'refresh_token'])
 async def get_access_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),
@@ -329,7 +331,8 @@ async def get_access_handler(
         )
 
 
-@api_logs(auth_v1.get('/logout', status_code=HTTP_200_OK), exclude_args=['response', 'refresh_token'])
+@api_logs(auth_v1.get('/logout', status_code=HTTP_200_OK),
+          exclude_args=['response', 'refresh_token'])
 async def logout_handler(
         response: Response,
         refresh_token: dict = Depends(refresh_token_auth),

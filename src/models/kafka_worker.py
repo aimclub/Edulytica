@@ -132,7 +132,7 @@ async def kafka_loop() -> None:
         print(f"[{PREFIX}] Subscribed to topics.")
 
         try:
-            with open('app/ready.txt', 'w') as f:
+            with open('/app/ready.txt', 'w') as f:
                 f.write('ready')
             print(f"[{PREFIX}] Healthcheck ready file created.")
         except Exception as e:

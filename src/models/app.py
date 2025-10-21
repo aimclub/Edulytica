@@ -10,7 +10,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Shutdown signal received.")
     finally:
-        if os.path.exists('app/ready.txt'):
-            os.remove('app/ready.txt')
+        if os.path.exists('/app/ready.txt'):
+            os.remove('/app/ready.txt')
             print("Healthcheck ready file removed on shutdown.")
         print("LLM container stopped.")

@@ -146,6 +146,12 @@ services:
       - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
       - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /app/ready.txt"]
+      interval: 60s
+      timeout: 5s
+      retries: 45
+      start_period: 60s
     networks:
       - edulytica_network
 
@@ -184,6 +190,12 @@ services:
       - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
       - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    healthcheck:
+      test: [ "CMD-SHELL", "test -f /app/ready.txt" ]
+      interval: 60s
+      timeout: 5s
+      retries: 45
+      start_period: 60s
     networks:
       - edulytica_network
 
@@ -259,6 +271,11 @@ services:
       - 8.8.8.8
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    depends_on: # Since LLM can download models at startup, not during build, we need to wait for them to be ready
+      edulytica_llm_qwen:
+        condition: service_healthy
+      edulytica_llm_vikhr:
+        condition: service_healthy
     networks:
       - edulytica_network
 

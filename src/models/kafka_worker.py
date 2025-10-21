@@ -115,20 +115,31 @@ def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]) 
 
 async def kafka_loop() -> None:
     print(f"[{PREFIX}] Starting...")
+    consumer = None
 
-    admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
-    create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
-
-    print(f"[{PREFIX}] Initializing Kafka clients...")
-    consumer = Consumer({
-        'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS,
-        'group.id': KAFKA_GROUP_ID,
-        'auto.offset.reset': 'earliest',
-        'enable.auto.commit': False
-    })
-    consumer.subscribe([KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
-    print(f"[{PREFIX}] Subscribed to topics. Starting polling loop...")
     try:
+        admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
+        create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+
+        print(f"[{PREFIX}] Initializing Kafka clients...")
+        consumer = Consumer({
+            'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS,
+            'group.id': KAFKA_GROUP_ID,
+            'auto.offset.reset': 'earliest',
+            'enable.auto.commit': False
+        })
+        consumer.subscribe([KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+        print(f"[{PREFIX}] Subscribed to topics.")
+
+        try:
+            with open('app/ready.txt', 'w') as f:
+                f.write('ready')
+            print(f"[{PREFIX}] Healthcheck ready file created.")
+        except Exception as e:
+            print(f"[{PREFIX}] FAILED to create ready file: {e}")
+            return
+
+        print(f"[{PREFIX}] Starting polling loop...")
         while True:
             msg: Message = consumer.poll(timeout=5.0)
             if msg is None:
@@ -149,4 +160,5 @@ async def kafka_loop() -> None:
         print(f"[{PREFIX}] Received interrupt signal")
     finally:
         print(f"[{PREFIX}] Closing consumer...")
-        consumer.close()
+        if consumer:
+            consumer.close()

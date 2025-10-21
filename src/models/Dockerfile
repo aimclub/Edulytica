@@ -20,9 +20,9 @@ ENV PYTHONPATH=/app
 COPY src/common /app/src/common
 COPY src/models /app/src/models
 
-ARG MODEL_TYPE
-RUN python3 src/models/download_models.py $MODEL_TYPE
+COPY src/models/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
 
 ENV MODEL_TYPE=$MODEL_TYPE
 
-CMD ["python3", "src/models/app.py"]
+ENTRYPOINT ["/app/entrypoint.sh"]

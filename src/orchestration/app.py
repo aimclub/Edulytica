@@ -11,7 +11,7 @@ from src.orchestration.clients.kafka_consumer import KafkaConsumer
 from src.orchestration.clients.kafka_producer import KafkaProducer
 from src.orchestration.clients.rag_client import RagClient
 from src.orchestration.clients.state_manager import StateManager
-from src.orchestration.routers.orchestrator_router import rt
+from src.orchestration.api.v1 import orchestrator_v1
 
 
 @asynccontextmanager
@@ -100,7 +100,15 @@ app.add_middleware(
 )
 
 
-app.include_router(rt)
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint to verify the service is running.
+    """
+    return {"status": "ok"}
+
+
+app.include_router(orchestrator_v1)
 
 
 if __name__ == "__main__":

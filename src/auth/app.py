@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from src.auth.routers.auth import auth_router
+from src.auth.api.v1 import auth_v1
 from src.common.config import AUTH_PORT, ALLOWED_ORIGINS
 
 app = FastAPI()
@@ -35,7 +35,15 @@ app.add_middleware(
 )
 
 
-app.include_router(auth_router)
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint to verify the service is running.
+    """
+    return {"status": "ok"}
+
+
+app.include_router(auth_v1)
 
 
 if __name__ == "__main__":

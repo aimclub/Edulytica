@@ -14,7 +14,7 @@
 ![GitHub Actions](https://img.shields.io/badge/GitHub%20Actions-%232088FF?logo=github%20actions&logoColor=white&labelColor=blue&color=blue)
 
 # Edulytica
-![logo](src/images/logo.png)
+![logo](images/logo.png)
 
 ## Description
 Edulytica is an open-source framework for evaluating text results of educational and scientific activities based on 
@@ -60,7 +60,7 @@ separately for [goals and objectives](https://huggingface.co/datasets/slavamarci
 ```celery -A src.edulytica_api.celery.tasks flower```
 
 ## Getting started
-![example](src/images/example.gif)
+![example](images/example.gif)
 
 First, you can familiarize yourself with the [examples](https://github.com/aimclub/Edulytica/tree/development/examples) 
 in JSON format of the system's responses to the test sample of works.

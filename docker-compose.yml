@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
@@ -74,7 +76,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${API_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -99,7 +101,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${AUTH_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -146,6 +148,12 @@ services:
       - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
       - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    healthcheck:
+      test: ["CMD-SHELL", "test -f /app/ready.txt"]
+      interval: 60s
+      timeout: 5s
+      retries: 45
+      start_period: 60s
     networks:
       - edulytica_network
 
@@ -184,6 +192,12 @@ services:
       - LLM_KAFKA_BOOTSTRAP_SERVERS=${LLM_KAFKA_BOOTSTRAP_SERVERS}
       - LLM_KAFKA_GROUP_ID=${KAFKA_GROUP_ID}
       - NVIDIA_VISIBLE_DEVICES=${NVIDIA_VISIBLE_DEVICES}
+    healthcheck:
+      test: [ "CMD-SHELL", "test -f /app/ready.txt" ]
+      interval: 60s
+      timeout: 5s
+      retries: 45
+      start_period: 60s
     networks:
       - edulytica_network
 
@@ -206,7 +220,7 @@ services:
       edulytica_rag:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${ORCHESTRATOR_PORT}/health" ]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -234,7 +248,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${RAG_PORT}/health" ]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -259,6 +273,11 @@ services:
       - 8.8.8.8
     ports:
       - "${FRONTEND_PORT}:${FRONTEND_PORT}"
+    depends_on: # Since LLM can download models at startup, not during build, we need to wait for them to be ready
+      edulytica_llm_qwen:
+        condition: service_healthy
+      edulytica_llm_vikhr:
+        condition: service_healthy
     networks:
       - edulytica_network
 
@@ -304,7 +323,7 @@ services:
       zookeeper:
         condition: service_healthy
     ports:
-      - "${KAFKA_PORT}:${KAFKA_PORT}"
+      - "${KAFKA_INTERNAL_PORT}:${KAFKA_INTERNAL_PORT}"
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -347,6 +366,7 @@ services:
 
   edulytica_backup:
     container_name: "EdulyticaBackup"
+    # profiles: ["backup"]
     build:
       context: .
       dockerfile: ./src/backup/Dockerfile
@@ -370,3 +390,4 @@ volumes:
   api_files:
   models_hf_cache:
   rag_hf_cache:
+  postgres_data:

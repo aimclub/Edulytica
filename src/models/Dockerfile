@@ -9,24 +9,20 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY src/models/requirements.txt .
 COPY src/common/requirements_common.txt .
-
 RUN pip3 install -r requirements_common.txt
+
+COPY src/models/requirements.txt .
 RUN pip3 install -r requirements.txt
 
 ENV PYTHONPATH=/app
 
-COPY src/llm /app/src/llm
-COPY src/models/download_models.py .
-COPY src/exceptions /app/src/exceptions
-
-ARG MODEL_TYPE
-RUN python3 download_models.py $MODEL_TYPE
-
 COPY src/common /app/src/common
 COPY src/models /app/src/models
 
+COPY src/models/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
 ENV MODEL_TYPE=$MODEL_TYPE
 
-CMD ["python3", "src/models/app.py"]
+ENTRYPOINT ["/app/entrypoint.sh"]

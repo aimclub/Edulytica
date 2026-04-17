@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import "./feedbackModal.scss"
 import {
   validateFeedbackName,
@@ -7,12 +7,29 @@ import {
   validateBackend,
 } from "../../utils/validation/validationUtils"
 
-export const FeedbackModal = ({ onClose, onSubmit }) => {
+export const FeedbackModal = ({ onClose, onSubmit, userData }) => {
   const [message, setMessage] = useState("")
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [errors, setErrors] = useState({})
+
+  // Автоматически заполняем поля из данных пользователя
+  useEffect(() => {
+    if (userData) {
+      // Заполняем имя, если оно указано
+      if (userData.name && userData.surname) {
+        setName(`${userData.name} ${userData.surname}`)
+      } else if (userData.name) {
+        setName(userData.name)
+      }
+
+      // Заполняем email, если он указан
+      if (userData.email) {
+        setEmail(userData.email)
+      }
+    }
+  }, [userData])
 
   /**
    * Валидация формы обратной связи

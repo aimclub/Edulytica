@@ -4,7 +4,7 @@ from aiokafka import AIOKafkaProducer
 
 
 class KafkaProducer:
-    def __init__(self, producer: AIOKafkaProducer):
+    def __init__(self, producer: AIOKafkaProducer) -> None:
         self._producer = producer
 
     async def send_and_wait(self, topic: str, message: Dict[str, Any]):

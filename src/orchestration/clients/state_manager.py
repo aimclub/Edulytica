@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from src.common.config import TICKET_TTL_SEC
 from src.common.database.crud.ticket_status_crud import TicketStatusCrud
-from src.common.database.crud.tickets_crud import TicketCrud
+from src.common.database.crud.ticket_crud import TicketCrud
 from src.common.database.database import SessionLocal
 from src.common.utils.default_enums import TicketStatusDefault, SubtaskStatuses
 
@@ -38,7 +38,7 @@ class StateManager:
     def __init__(
             self,
             redis_client: Redis,
-            session_factory: Optional[async_sessionmaker] = SessionLocal):
+            session_factory: Optional[async_sessionmaker] = SessionLocal) -> None:
         self._redis = redis_client
         self._session_factory = session_factory
 

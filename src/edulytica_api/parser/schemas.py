@@ -1,6 +1,8 @@
+from typing import Dict
+
 
 class __Schemas(dict):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self['wpc'] = 'http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas'
         self['cx'] = 'http://schemas.microsoft.com/office/drawing/2014/chartex'
@@ -36,14 +38,14 @@ class __Schemas(dict):
         self['wne'] = 'http://schemas.microsoft.com/office/word/2006/wordml'
         self['wps'] = 'http://schemas.microsoft.com/office/word/2010/wordprocessingShape'
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         return dict.__getitem__(self, key)
 
-    def __getattr__(self, attr):
+    def __getattr__(self, attr: str) -> str:
         return self[attr]
 
     @property
-    def to_namespace(self):
+    def to_namespace(self) -> Dict[str, str]:
         dict_return = {}
         for k, v in self.items():
             dict_return[k] = v

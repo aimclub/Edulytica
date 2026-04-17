@@ -7,7 +7,7 @@ Functions:
 from random import randint
 
 
-def generate_code():
+def generate_code() -> str:
     """
     Generates a 6-digit numeric verification code as a string.
 

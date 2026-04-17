@@ -1,15 +1,10 @@
 from contextlib import asynccontextmanager
-
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from httpx import AsyncClient
-
 from src.common.config import API_PORT, ALLOWED_ORIGINS
-from src.edulytica_api.routers.account import account_router
-from src.edulytica_api.routers.actions import actions_router
-from src.edulytica_api.routers.internal import internal_router
-from src.edulytica_api.routers.norm_services import normocontrol_router
+from src.edulytica_api.api.v1 import routers
 
 
 @asynccontextmanager
@@ -56,10 +51,16 @@ app.add_middleware(
 )
 
 
-app.include_router(normocontrol_router)
-app.include_router(account_router)
-app.include_router(actions_router)
-app.include_router(internal_router)
+@app.get("/health")
+async def health_check():
+    """
+    Health check endpoint to verify the service is running.
+    """
+    return {"status": "ok"}
+
+
+for rt in routers:
+    app.include_router(rt)
 
 
 if __name__ == "__main__":

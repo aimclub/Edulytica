@@ -1,7 +1,16 @@
 import sys
+import logging
+from src.models.llm.qwen import QwenInstruct
+from src.models.llm.vikhr import VikhrNemoInstruct
 
-from src.llm.qwen import QwenInstruct
-from src.llm.vikhr import VikhrNemoInstruct
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+
+logging.getLogger("huggingface_hub").setLevel(logging.INFO)
+logging.getLogger("transformers").setLevel(logging.INFO)
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
@@ -9,7 +18,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     model_type = sys.argv[1]
-    print(f"--- Downloading model for type: {model_type} ---")
+    print(f"--- Downloading/Loading model for type: {model_type} ---")
 
     if model_type == 'qwen':
         QwenInstruct(quantization='4bit')
@@ -19,4 +28,4 @@ if __name__ == "__main__":
         print(f"ERROR: Unknown model type: {model_type}")
         sys.exit(1)
 
-    print(f"--- Model for {model_type} downloaded successfully ---")
+    print(f"--- Model for {model_type} is ready ---")

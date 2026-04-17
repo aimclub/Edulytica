@@ -9,6 +9,8 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
       interval: 5s
@@ -46,7 +48,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${API_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${API_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -69,7 +71,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${AUTH_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f" "http://localhost:${AUTH_PORT}/health" ]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -98,7 +100,7 @@ services:
       edulytica_rag:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${ORCHESTRATOR_PORT} || exit 1" ]
+      test: ["CMD", "curl", "-f", "http://localhost:${ORCHESTRATOR_PORT}/health"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -125,7 +127,7 @@ services:
       edulytica_db:
         condition: service_healthy
     healthcheck:
-      test: [ "CMD-SHELL", "curl http://localhost:${RAG_PORT} || exit 1" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:${RAG_PORT}/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -216,6 +218,7 @@ services:
 
   edulytica_backup:
     container_name: "EdulyticaBackup"
+    # profiles: ["backup"]
     build:
       context: .
       dockerfile: ./src/backup/Dockerfile
@@ -240,3 +243,4 @@ networks:
 volumes:
   api_files:
   rag_hf_cache:
+  postgres_data:

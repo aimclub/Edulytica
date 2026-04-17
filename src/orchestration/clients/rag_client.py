@@ -2,7 +2,7 @@ from httpx import AsyncClient, HTTPStatusError
 
 
 class RagClient:
-    def __init__(self, http_client: AsyncClient, base_url: str):
+    def __init__(self, http_client: AsyncClient, base_url: str) -> None:
         self._http_client = http_client
         self._base_url = base_url
 
@@ -12,7 +12,7 @@ class RagClient:
             document_text: str,
             event_name: str
     ) -> str:
-        enrich_url = f"{self._base_url}/rag/get_result"
+        enrich_url = f"{self._base_url}/api/rag/v1/get_result"
 
         payload = {
             "prompt": original_prompt,

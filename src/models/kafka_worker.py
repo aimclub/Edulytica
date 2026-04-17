@@ -1,15 +1,15 @@
 import asyncio
 import json
 import os
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Optional
 from confluent_kafka import Consumer, KafkaError, Producer, Message
 from confluent_kafka.admin import AdminClient, NewTopic
 from dotenv import load_dotenv
 from src.common.config import LLM_KAFKA_BOOTSTRAP_SERVERS, KAFKA_GROUP_ID
 from src.common.utils.default_enums import SubtaskStatuses
-from src.llm import ModelInstruct
-from src.llm.qwen import QwenInstruct
-from src.llm.vikhr import VikhrNemoInstruct
+from src.models.llm import ModelInstruct
+from src.models.llm.qwen import QwenInstruct
+from src.models.llm.vikhr import VikhrNemoInstruct
 
 
 load_dotenv()
@@ -27,7 +27,7 @@ else:
 producer = Producer({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
 
 
-def delivery_report(err, msg):
+def delivery_report(err: Optional[KafkaError], msg: Message) -> None:
     """ Called once for each message produced to indicate delivery result. """
     if err is not None:
         print(f'[{PREFIX}] Message delivery failed: {err}')
@@ -37,7 +37,7 @@ def delivery_report(err, msg):
 
 def send_to_kafka(
         result_message: Dict[str, Any]
-):
+) -> None:
     producer.produce(
         KAFKA_RESULT_TOPIC,
         value=json.dumps(result_message).encode('utf-8'),
@@ -47,7 +47,7 @@ def send_to_kafka(
     producer.flush()
 
 
-async def process_ticket(message_data: dict):
+async def process_ticket(message_data: Dict[str, Any]) -> None:
     """
         Expected message format:
         {
@@ -94,7 +94,7 @@ async def process_ticket(message_data: dict):
         raise
 
 
-def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
+def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]) -> None:
     new_topics = [
         NewTopic(topic, num_partitions=1, replication_factor=1) for topic in topics_to_create
     ]
@@ -113,22 +113,33 @@ def create_kafka_topics(admin_client: AdminClient, topics_to_create: List[str]):
                 raise
 
 
-async def kafka_loop():
+async def kafka_loop() -> None:
     print(f"[{PREFIX}] Starting...")
+    consumer = None
 
-    admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
-    create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
-
-    print(f"[{PREFIX}] Initializing Kafka clients...")
-    consumer = Consumer({
-        'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS,
-        'group.id': KAFKA_GROUP_ID,
-        'auto.offset.reset': 'earliest',
-        'enable.auto.commit': False
-    })
-    consumer.subscribe([KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
-    print(f"[{PREFIX}] Subscribed to topics. Starting polling loop...")
     try:
+        admin_client = AdminClient({'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS})
+        create_kafka_topics(admin_client, [KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+
+        print(f"[{PREFIX}] Initializing Kafka clients...")
+        consumer = Consumer({
+            'bootstrap.servers': LLM_KAFKA_BOOTSTRAP_SERVERS,
+            'group.id': KAFKA_GROUP_ID,
+            'auto.offset.reset': 'earliest',
+            'enable.auto.commit': False
+        })
+        consumer.subscribe([KAFKA_INCOMING_TOPIC, 'llm_tasks.any'])
+        print(f"[{PREFIX}] Subscribed to topics.")
+
+        try:
+            with open('/app/ready.txt', 'w') as f:
+                f.write('ready')
+            print(f"[{PREFIX}] Healthcheck ready file created.")
+        except Exception as e:
+            print(f"[{PREFIX}] FAILED to create ready file: {e}")
+            return
+
+        print(f"[{PREFIX}] Starting polling loop...")
         while True:
             msg: Message = consumer.poll(timeout=5.0)
             if msg is None:
@@ -149,4 +160,5 @@ async def kafka_loop():
         print(f"[{PREFIX}] Received interrupt signal")
     finally:
         print(f"[{PREFIX}] Closing consumer...")
-        consumer.close()
+        if consumer:
+            consumer.close()

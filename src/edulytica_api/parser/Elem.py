@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Optional, List
 
 
@@ -10,13 +11,13 @@ class Elem:
     :param self.anchor_id: special id of the chapter
     """
 
-    def __init__(self, num: str, text: str, anchor_id: str = None):
+    def __init__(self, num: str, text: str, anchor_id: str = None) -> None:
         self.num: str = num
         self.text: str = text
         self.sub_elements: Optional[List[Elem]] = None
         self.anchor_id: str = anchor_id
 
-    def append(self, elem):
+    def append(self, elem: Elem) -> None:
         """
         Appends a subchapter in self.sub_elements
         """
@@ -24,7 +25,7 @@ class Elem:
             self.sub_elements = []
         self.sub_elements.append(elem)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
         Returns the length of self.sub_elements
         """

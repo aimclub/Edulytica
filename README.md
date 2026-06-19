@@ -24,6 +24,17 @@ It provides an integrated web application out of the box capable for extraction 
 its goals and objectives, scientific novelty, theoretical and applied significance, connections with similar texts.
 The result of such an analysis is a natural language review text. 
 
+A general-purpose AI model (e.g., Llama 3) does not "know" the specific criteria of particular scientific 
+events (conferences, journals, or university departments). In Edulytica this issue is addressed by a specific module RAG
+(Retrieval-Augmented Generation). It is an architectural solution that allows a Large Language Model 
+(LLM) to utilize external, up-to-date knowledge not included in its initial training data. At the moment,
+Edulytica RAG supports five events:
+- ITMO University Congress of Young Scientists
+- ITMO University Faculty Scientific and Educational-Methodological Conference
+- Young Scientists Conference on Computational Sciences
+- Framework for Research in Ubiquitous Communication Technologies (FRUCT) Сonference
+- Economics. Management. Innovation journal
+
 ## Goals 
 The project is aimed at supporting experts in reviewing theses and articles, potentially complete automation of the reviewing process.
 Another goal is reducing of time required for in-depth analysis of papers by scientists during their literature reviews and thus 
@@ -77,12 +88,22 @@ workflows, coordinates interactions between the API, knowledge base (RAG), and l
 models, and maintains session states.
 - **RAG (Retrieval-Augmented Generation)**: The context extraction engine. It handles 
 document parsing, embedding generation, vector database management, and semantic search 
-to inject relevant context into prompt payloads.
+to inject relevant context into prompt payloads (see src/rag/README.md for more detail).
 - **Models**: The AI abstraction layer. It provides unified interfaces and configurations 
 for interacting with Large Language Models (LLMs) and embedding models, supporting both 
 external APIs and locally hosted instances.
 
 # Deployment 
+## Prerequisites 
+Before running Edulytica, ensure you have the following software 
+installed on your host machine:
+
+* **Docker** (Version 20.10 or higher)
+* **Nvidia drivers** (Compatible with your GPU)
+* **Nvidia Container Toolkit** (To enable GPU acceleration inside the container)
+
+**Warning!** The project does not work with GPUs other than Nvidia. 
+
 ## Installation
 #### 1. Clone the repository 
 ```git clone https://github.com/aimclub/Edulytica.git```
@@ -145,34 +166,12 @@ educational and methodological conferences, the language is Russian.
 
 Choosing an event at the stage of sending a document is **mandatory** and affects the quality of the response generated.
 
-# Prerequisites 
-Before running Edulytica, ensure you have the following software 
-installed on your host machine:
-
-* **Docker** (Version 20.10 or higher)
-* **Nvidia drivers** (Compatible with your GPU)
-* **Nvidia Container Toolkit** (To enable GPU acceleration inside the container)
-
-**Warning!** The project does not work with GPUs other than Nvidia. 
-
-## Conferences and RAG: Description of supported event types (KMU, EPI, YSC, FRUCT, PPS) and their specifics.
 # Publications about Edulytica
 We also published several posts devoted to different aspects of the project:
 
 In Russian:
 - [Edulytica: LLM-ассистент для проверки научных работ](https://youtu.be/kDNREVv1IoI?si=lDzHTxTh333EcSaZ) - Scientific Open Source Meetup №8, October 2024, 1:05:15 - 1:22:36;
 - [Как мы научили LLM-ассистента рецензировать научные работы студентов ИТМО: вновь о проекте Edulytica](https://vkvideo.ru/video-173944682_456239041) - Scientific Open Source Meetup №10, July 2025, 1:07:30 - 1:34:00.
-
-
-## Contacts
-Our contacts:
-- Tereshchenko Vladislav, vvtereshchenko@itmo.ru.
-
-
-
-
-
-# EXTRA
 
 ## Documentation
 Details of the documentation can be found at the links below:
@@ -190,5 +189,10 @@ search, kNN and the mBERT model are used.
 
 Code documentation is available at [the link](https://aimclub.github.io/Edulytica/index.html).
 
-## Requirements
-For more information, see the file **[requiremets.txt](https://github.com/aimclub/Edulytica/blob/development/requirements.txt)**.
+## Contacts
+Our contacts:
+- Project Lead: Vladislav Tereshchenko — vvtereshchenko@itmo.ru
+
+[//]: # (## Requirements)
+
+[//]: # (For more information, see the file **[requiremets.txt]&#40;https://github.com/aimclub/Edulytica/blob/development/requirements.txt&#41;**.)

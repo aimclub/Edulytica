@@ -10,7 +10,7 @@ from typing import Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.common.config import EMAIL_CODE_EXPIRE_SECONDS
-from src.common.database.crud.base.generic_crud import GenericCrud
+from src.common.database.crud.base.generic_crud import GenericCrud, crud_retry
 from src.common.database.models import CheckCode
 from src.common.database.schemas.system_schemas import CheckCodeGet, CheckCodeCreate, CheckCodeUpdate
 from src.common.utils.moscow_datetime import datetime_now_moscow
@@ -24,6 +24,7 @@ class CheckCodeCrud(
     create_schema = CheckCodeCreate
     update_schema = CheckCodeUpdate
 
+    @crud_retry
     @staticmethod
     async def get_recent_code(session: AsyncSession, code: str) -> Optional[CheckCodeGet]:
         """

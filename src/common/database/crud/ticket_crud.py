@@ -12,7 +12,7 @@ from sqlalchemy import select, or_, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.common.database.crud.custom_event_crud import CustomEventCrud
 from src.common.database.crud.event_crud import EventCrud
-from src.common.database.crud.base.generic_crud import GenericCrud
+from src.common.database.crud.base.generic_crud import GenericCrud, crud_retry
 from src.common.database.models import Ticket
 from src.common.database.schemas.system_schemas import TicketGet, TicketCreate, TicketUpdate
 
@@ -25,6 +25,7 @@ class TicketCrud(
     create_schema = TicketCreate
     update_schema = TicketUpdate
 
+    @crud_retry
     @staticmethod
     async def get_ticket_by_id_or_shared(
             session: AsyncSession,
@@ -56,6 +57,7 @@ class TicketCrud(
 
         return TicketGet.model_validate(result) if result else None
 
+    @crud_retry
     @staticmethod
     async def get_event_name_for_ticket(
             session: AsyncSession,
@@ -75,6 +77,7 @@ class TicketCrud(
 
         return None
 
+    @crud_retry
     @staticmethod
     async def get_paginated_user_tickets(
             session: AsyncSession,

@@ -8,7 +8,7 @@ Classes:
 from typing import List, Optional
 from sqlalchemy import select, and_, or_
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.common.database.crud.base.generic_crud import GenericCrud
+from src.common.database.crud.base.generic_crud import GenericCrud, crud_retry
 from src.common.database.models import User
 from src.common.database.schemas.system_schemas import UserGet, UserCreate, UserUpdate
 
@@ -21,6 +21,7 @@ class UserCrud(
     create_schema = UserCreate
     update_schema = UserUpdate
 
+    @crud_retry
     @staticmethod
     async def get_active_users_by_email_or_login(
             session: AsyncSession,
@@ -52,6 +53,7 @@ class UserCrud(
 
         return [UserGet.model_validate(x) for x in result.scalars().all()]
 
+    @crud_retry
     @staticmethod
     async def get_active_user(
             session: AsyncSession,

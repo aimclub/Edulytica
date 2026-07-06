@@ -56,11 +56,11 @@ separately for [goals and objectives](https://huggingface.co/datasets/slavamarci
 # Technology Stack
 The project uses the following technologies.
 
-**Programming language**: Python 3.12 
+**Programming language**: Python 3.12. 
 
-**Frontend**: HTML, JavaScript, **???**.
+**Frontend**: HTML, JavaScript, React, Axios.
 
-**Backend**: FastAPI, sqlalchemy, pydantic, uvicorn, asyncio, alembic, **???**.
+**Backend**: FastAPI, Sqlalchemy, Pydantic, Uvicorn, Asyncio, Alembic.
 
 **Database**: PostgreSQL.
 
@@ -120,7 +120,7 @@ installed on your host machine:
 #### 4. Setup .env
 ```cp .env-template .env```
 
-#### 5. Launch docker containers or follow the instructions starting from point 3
+#### 5. Launch docker containers or follow the instructions starting from point 6
 ```docker compose up --build```
 
 #### 6. Start Application
